@@ -14,6 +14,7 @@ from general_utils import randomSleep, calcImgDiff, roughImgCompare
 import keyboard as kb
 import math
 import sys
+
 storeInterface = [822, 1422, 427, 790]
 bankInterface = [844, 1402, 438, 774]
 sodaInStore = [1254, 1276, 606, 616]
@@ -96,7 +97,7 @@ def hopWorlds():
     randomSleep(3.3,3.9)
     if calcImgDiff(ImageGrab.grab([22, 1212, 590, 1337]), Image.open('.\\screens\\w319.png')) < 3:
         kb.send('space')
-        randomSleep(1.1,1.3)
+        randomSleep(0.4,0.6)
         kb.send('2')
     randomSleep(10.6, 12.4)
     kb.send('esc')
@@ -175,25 +176,27 @@ def dumpBag():
     kb.send('esc')
     randomSleep(0.4,0.6)
 def main():
-    sandBought = 0
-    while sandBought < 2952:
+    while True:
         walkToDock()
-        while True:
+        #find charter ship traders
+        findSingleTarget()
+        #buy sand
+        buyStoreItems([1138, 1156, 606, 620])
+        kb.send('esc')
+        bagStatus = isBagFull()
+        print('bs', bagStatus)
+        #go bank
+        while not bagStatus:
+            randomSleep(0.2,0.4)
+            hopWorlds()
             findSingleTarget()
             #buy sand
             buyStoreItems([1138, 1156, 606, 620])
-            randomSleep(0.2,0.3)
+            bagStatus = isBagFull()
+            print('bs1', bagStatus)
             kb.send('esc')
-            randomSleep(0.2,0.3)
-            if isBagFull():
-                break
-            else:
-                randomSleep(0.2,0.4)
-                hopWorlds()
         goToBank()
         dumpBag()
-        sandBought += 27
-        print('sand bought ', sandBought)
         randomSleep(4.3,5.8)
         if random.randint(1,10) == 2:
             randomSleep(20.3,25.9)

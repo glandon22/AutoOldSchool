@@ -9,20 +9,24 @@ import math,operator
 from functools import reduce
 import sys
 import numpy
-from bezier import bezierMovement
-
+import cv2
+import sys
+numpy.set_printoptions(threshold=sys.maxsize)
 #chat box coords
 #im = ImageGrab.grab([2,1190,645,1350])
 
 #inv coords
 #im = ImageGrab.grab([2299, 2510, 1024, 1324])
 
-def calcImgDiff(im1, im2):
+def calcImgDiff(im1, im2, acceptableDiff):
     imageDifference = ImageChops.difference(im1,im2).histogram()
     diff = math.sqrt(reduce(operator.add,
         map(lambda h, i: h*(i**2), imageDifference, range(256))
     ) / (float(im1.size[0]) * im2.size[1]))
-    return diff
+    if diff > acceptableDiff:
+        return 'different'
+    else:
+        return 'same'
 
 def randomSleep(min,max):
     duration = round(random.uniform(min, max), 3)
@@ -109,9 +113,9 @@ def testImgDetect():
             if test.all():
                 print(x,y)
 
-def lastSlotFletched(currInv, fullInv):
+def isInvFull(currInv, fullInv):
     diff = calcImgDiff(currInv, fullInv)
-    print('last slot diff', diff)
+    print('bag diff', diff)
     if diff < 2: return True
     else: return False
 def nextTreeIsUp(curr, expected):
@@ -155,8 +159,23 @@ def cutStatus():
                 greenPixels = greenPixels + 1
             if greenPixels > 10:
                 break
-def didILvlFletch(img):
-    if roughImgCompare(img, .75, (2, 645, 1190, 800)):
-        return True
-    else:
-        False
+def quickScreenshot(name, add):
+    print('ready in 3')
+    time.sleep(3)
+    x,y = pyautogui.position()
+    print('sc box', x,y)
+    im = ImageGrab.grab([x,y,x + add,y + add])
+    # save image file
+    im.save(r'screens\\' +name + '.png', 'png')
+def getPos():
+    time.sleep(2)
+    print(pyautogui.position())
+def testfunc():
+    screen = ImageGrab.grab([750,0,1900,1440])
+    screen.save('.\\screens\\test.png')
+    screen = numpy.asarray(screen)
+def roughImgCompare(img, confidence, region):
+    loc = pyautogui.locateOnScreen(img, confidence=confidence, region=region)
+    if loc:
+        return {'x': loc[0], 'y': loc[1]}
+    return False

@@ -10,7 +10,7 @@ status = 'initing'
 bagsFletched = 0
 def bank():
      #click on bank
-    bezierMovement(1182, 1294, 436, 516)
+    bezierMovement(1146, 1256, 370, 454)
     randomSleep(0.1,0.3)
     agui.click()
     randomSleep(0.5,1.2)
