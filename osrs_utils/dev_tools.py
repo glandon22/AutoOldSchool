@@ -51,13 +51,13 @@ def captureScreenshot(name):
     print('sc box', screenshotBox)
     im = ImageGrab.grab([screenshotBox[0], screenshotBox[2], screenshotBox[1], screenshotBox[3]])
     # save image file
-    im.save(r'screens\\' + name + '.png', 'png')
+    im.save(r'..\\screens\\' + name + '.png', 'png')
 
 
 def captureSpecificScreenCoords(screenshotBox, name):
     im = ImageGrab.grab([screenshotBox[0], screenshotBox[2], screenshotBox[1], screenshotBox[3]])
     # save image file
-    im.save(r'screens\\' + name + '.png', 'png')
+    im.save(name + '.png', 'png')
     return im
 
 
@@ -67,3 +67,4 @@ def captureUnderMouse(name):
     hover = ImageGrab.grab([currentMouseX + 1, currentMouseY + 31, currentMouseX + 140, currentMouseY + 49])
     hover.save(r'screens\\' + name + '.png', 'png')
     return hover
+

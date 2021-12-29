@@ -1,5 +1,8 @@
-import pyautogui
-import random
+# chat box coords
+# im = ImageGrab.grab([2,1190,645,1350])
+
+# inv coords
+# im = ImageGrab.grab([2299, 2510, 1024, 1324])
 import numpy as np
 import time
 from scipy import interpolate
@@ -12,6 +15,7 @@ import pyscreenshot as ImageGrab
 import operator
 from functools import reduce
 import cv2
+import keyboard as kb
 
 
 def point_dist(x1, y1, x2, y2):
@@ -72,6 +76,10 @@ def calcImgDiff(im1, im2, acceptableDiff):
 
 
 def randomSleep(min, max):
+    """
+
+    :rtype: object
+    """
     duration = round(random.uniform(min, max), 3)
     print("Sleeping for ", duration, ' seconds')
     time.sleep(duration)
@@ -207,4 +215,28 @@ def process_with_tool(slot, button, expected_last_slot, max_cycles):
         else:
             cycles_waiting += 1
         randomSleep(1.4, 2.6)
+    return 'success'
+
+
+def hop_worlds():
+    kb.send('alt + shift + x')
+    randomSleep(3.3, 3.9)
+    if calcImgDiff(ImageGrab.grab([22, 1212, 590, 1337]), Image.open('.\\screens\\w319.png'), 3) == 'same':
+        print('hopping to world 319')
+        kb.send('space')
+        randomSleep(0.7, 0.9)
+        kb.send('2')
+    post_hop = Image.open('..\\screens\\post_hop.png')
+    cycles_waiting = 0
+    while True:
+        if roughImgCompare(post_hop, .8, (2270, 971, 2546, 1382)):
+            break
+        elif cycles_waiting > 1000:
+            return 'failed to hop worlds'
+        else:
+            cycles_waiting += 1
+        randomSleep(0.2, 0.5)
+    print('hitting esc')
+    kb.send('esc')
+    randomSleep(0.2, 0.4)
     return 'success'
