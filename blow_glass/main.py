@@ -11,7 +11,7 @@ def blow_glass():
     if not first_bank:
         return print('unable to find bank on script init')
     while molten_glass_made < 3246:
-        withdrawing = general_utils.withdrawItemsFromBank(['molten_glass_in_bank.png'], [816, 1430, 101, 1105])
+        withdrawing = general_utils.withdraw_items_from_bank(['molten_glass_in_bank.png'], [816, 1430, 101, 1105])
         if withdrawing != 'success':
             return print(withdrawing)
         general_utils.randomSleep(0.3, 0.4)

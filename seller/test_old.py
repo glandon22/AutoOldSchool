@@ -8,8 +8,8 @@ import pyautogui
 
 def process_img(image):
     # cyan color boundaries [B, G, R]
-    lower = [0, 255, 255]
-    upper = [0, 255, 255]
+    lower = [0, 0, 0]
+    upper = [255,0,0]
 
     # create NumPy arrays from the boundaries
     lower = np.array(lower, dtype="uint8")
@@ -25,24 +25,25 @@ def process_img(image):
         im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     if len(contours) != 0:
         # draw in blue the contours that were founded
-        cv2.drawContours(output, contours, -1, 255, 3)
+        cv2.drawContours(output, contours, -1, 255, cv2.FILLED)
 
         # find the biggest countour (c) by the area
         c = max(contours, key = cv2.contourArea)
         x,y,w,h = cv2.boundingRect(c)
         print(x,y,w,h)
-        pyautogui.moveTo((x + 805) + 10,(y + 36) + 10)
+        pyautogui.moveTo((x + 1165) + 5, (y + 563) + 5)
         # draw the biggest contour (c) in green
         cv2.rectangle(output,(x,y),(x+w,y+h),(0,255,0),2)
     return np.hstack([image, output])
+    #return np.array(output)
 
 def main():
     while True:
-        screen =  np.array(ImageGrab.grab(bbox=(805,36,1444,444)))
+        screen =  np.array(ImageGrab.grab(bbox=(1165, 563, 1374, 806)))
         start_time = time.time()
         new_screen = process_img(screen)
         cv2.imshow('window', new_screen)
-        print("FPS: ", 1.0 / (time.time() - start_time))
+        #print("FPS: ", 1.0 / (time.time() - start_time))
         if cv2.waitKey(25) & 0xFF == ord('q'):
             cv2.destroyAllWindows()
             break

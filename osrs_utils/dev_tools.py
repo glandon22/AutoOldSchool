@@ -67,4 +67,3 @@ def captureUnderMouse(name):
     hover = ImageGrab.grab([currentMouseX + 1, currentMouseY + 31, currentMouseX + 140, currentMouseY + 49])
     hover.save(r'screens\\' + name + '.png', 'png')
     return hover
-

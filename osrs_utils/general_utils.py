@@ -76,10 +76,6 @@ def calcImgDiff(im1, im2, acceptableDiff):
 
 
 def randomSleep(min, max):
-    """
-
-    :rtype: object
-    """
     duration = round(random.uniform(min, max), 3)
     print("Sleeping for ", duration, ' seconds')
     time.sleep(duration)
@@ -123,7 +119,18 @@ def dumpBag():
     return True
 
 
-def findFixedObject(image, xOffset, yOffset):
+def dump_bag():
+    location = roughImgCompare('..\\screens\\dump.png', .8, (0, 0, 2559, 1439))
+    if not location:
+        return False
+    bezierMovement(location.get('x'), location.get('x') + 5, location.get('y'), location.get('y') + 5)
+    randomSleep(0.2, 0.3)
+    pyautogui.click()
+    return True
+
+
+def find_fixed_object(image, x_offset, y_offset):
+    # image = np.array(ImageGrab.grab(box))
     # red color boundaries R,G,B
     lower = [255, 0, 0]
     upper = [255, 0, 0]
@@ -144,8 +151,8 @@ def findFixedObject(image, xOffset, yOffset):
         c = max(contours, key=cv2.contourArea)
         x, y, w, h = cv2.boundingRect(c)
         # this movement must also account for the offset of the target area bbox, i.e. the image coordinates passed to the findFixedObject function
-        bezierMovement(x + xOffset + (math.floor(w / 2)), x + xOffset + (math.floor(w / 2)),
-                       y + yOffset + math.floor(h / 2), y + yOffset + math.floor(h / 2))
+        bezierMovement(x + x_offset + (math.floor(w / 2)), x + x_offset + (math.floor(w / 2)),
+                       y + y_offset + math.floor(h / 2), y + y_offset + math.floor(h / 2))
         randomSleep(0.1, 0.3)
         pyautogui.click()
         return True
@@ -156,8 +163,8 @@ def goToTarget(targArea):
     attempts = 0
     while True:
         print(attempts)
-        screen = np.array(ImageGrab.grab(bbox=(targArea)))
-        didIFind = findFixedObject(screen, targArea[0], targArea[1])
+        screen = np.array(ImageGrab.grab(targArea))
+        didIFind = find_fixed_object(screen, targArea[0], targArea[1])
         if didIFind:
             randomSleep(0.5, 0.7)
             return True
@@ -168,18 +175,17 @@ def goToTarget(targArea):
             attempts += 1
 
 
-def withdrawItemsFromBank(items, bankInterface):
-    randomSleep(0.5, 0.9)
+def withdraw_items_from_bank(items, bank_interface):
     for item in items:
         targ = roughImgCompare('..\\screens\\' + item, .75,
-                               (bankInterface[0], bankInterface[2], bankInterface[1], bankInterface[3]))
+                               (bank_interface[0], bank_interface[2], bank_interface[1], bank_interface[3]))
         if targ:
             print('taking ', item, ' from the bank')
             bezierMovement(targ.get('x'), targ.get('x') + 6, targ.get('y'), targ.get('y') + 6)
             pyautogui.click()
             randomSleep(0.2, 0.4)
         else:
-            return 'unable to find anymore ' + item
+            return 'unable to find any more ' + item
     return 'success'
 
 
@@ -240,3 +246,275 @@ def hop_worlds():
     kb.send('esc')
     randomSleep(0.2, 0.4)
     return 'success'
+
+
+def find_fixed_npc(box, x_offset, y_offset):
+    image = np.array(ImageGrab.grab(bbox=box))
+    # red color boundaries R,G,B
+    lower = [0, 255, 255]
+    upper = [0, 255, 255]
+
+    # create NumPy arrays from the boundaries
+    lower = np.array(lower, dtype="uint8")
+    upper = np.array(upper, dtype="uint8")
+    # find the colors within the specified boundaries and apply
+    # the mask
+    mask = cv2.inRange(image, lower, upper)
+    _, thresh = cv2.threshold(mask, 40, 255, 0)
+    if (cv2.__version__[0] > '3'):
+        contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    else:
+        _, contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    if len(contours) != 0:
+        # find the biggest countour (c) by the area
+        c = max(contours, key=cv2.contourArea)
+        x, y, w, h = cv2.boundingRect(c)
+        # this movement must also account for the offset of the target area bbox, i.e. the image coordinates passed
+        # to the findFixedObject function
+        bezierMovement(x + x_offset + (math.floor(w / 2)), x + x_offset + (math.floor(w / 2)),
+                       y + y_offset + math.floor(h / 2), y + y_offset + math.floor(h / 2))
+        randomSleep(0.1, 0.3)
+        pyautogui.click()
+        return True
+    return False
+
+
+def wait_for_bank_interface(interface_loc, max_cycles):
+    cycles_waiting = 0
+    while True:
+        location = roughImgCompare('..\\screens\\dump.png', .8,
+                                   (interface_loc[0], interface_loc[2], interface_loc[1], interface_loc[3]))
+        if location:
+            break
+        elif cycles_waiting > max_cycles:
+            return 'did not see the bank interface in time'
+        else:
+            cycles_waiting += 1
+        randomSleep(1.0, 1.1)
+    return 'success'
+
+
+def find_contour_center(contour):
+    moment_temp = cv2.moments(contour)
+    if moment_temp['m00'] != 0:
+        cx = int(moment_temp['m10'] / moment_temp['m00'])
+        cy = int(moment_temp['m01'] / moment_temp['m00'])
+        return [cx, cy]
+    else:
+        return False
+
+
+def find_moving_target_with_draw(image):
+    # cyan color boundaries [B, G, R]
+    lower = [0, 255, 255]
+    upper = [0, 255, 255]
+
+    # create NumPy arrays from the boundaries
+    lower = np.array(lower, dtype="uint8")
+    upper = np.array(upper, dtype="uint8")
+    # find the colors within the specified boundaries and apply
+    # the mask
+    mask = cv2.inRange(image, lower, upper)
+    output = cv2.bitwise_and(image, image, mask=mask)
+    ret, thresh = cv2.threshold(mask, 40, 255, 0)
+    if (cv2.__version__[0] > '3'):
+        contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    else:
+        im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    if len(contours) != 0:
+        # draw in blue the contours that were founded
+        cv2.drawContours(output, contours, -1, 255, 3)
+
+        # find the biggest countour (c) by the area
+        # c = max(contours, key = cv2.contourArea)
+        distance = 999999999
+        closest_coords = [0, 0, 0, 0]
+        closest_contour = None
+        for c in contours:
+            x, y, w, h = cv2.boundingRect(c)
+            # pyautogui.moveTo((x + 805) + 10,(y + 36) + 10)
+            # draw the biggest contour (c) in green
+            cv2.rectangle(output, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            current_distance = point_dist(1275, 715, x, y)
+            if current_distance < distance:
+                closest_coords = [x, y, w, h]
+                distance = current_distance
+                closest_contour = c
+        center = find_contour_center(closest_contour)
+        if center:
+            cv2.drawContours(output, [closest_contour], -1, (0, 255, 0), 2)
+            cv2.circle(output, (center[0], center[1]), 7, (0, 0, 255), -1)
+            cv2.putText(output, "center", (center[0] - 20, center[1] - 20),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+    return np.array(output)
+
+
+def find_moving_target(image, scouting):
+    # cyan color boundaries [B, G, R]
+    lower = [0, 255, 255]
+    upper = [0, 255, 255]
+
+    # create NumPy arrays from the boundaries
+    lower = np.array(lower, dtype="uint8")
+    upper = np.array(upper, dtype="uint8")
+    # find the colors within the specified boundaries and apply
+    # the mask
+    mask = cv2.inRange(image, lower, upper)
+    ret, thresh = cv2.threshold(mask, 40, 255, 0)
+    if (cv2.__version__[0] > '3'):
+        contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    else:
+        im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    if len(contours) != 0:
+        # find the biggest contour (c) by the area
+        # c = max(contours, key = cv2.contourArea)
+        distance = 999999999
+        closest_coords = [0, 0, 0, 0]
+        closest_contour = None
+        for c in contours:
+            x, y, w, h = cv2.boundingRect(c)
+            current_distance = point_dist(1275, 715, x, y)
+            if current_distance < distance:
+                closest_coords = [x, y, w, h]
+                distance = current_distance
+                closest_contour = c
+        center = find_contour_center(closest_contour)
+        if center:
+            if scouting:
+                return True
+            else:
+                bezierMovement(center[0] - 10, center[0] + 10, center[1] - 10, center[1] + 10)
+                pyautogui.click()
+                # give the highlight a half second to pop up
+                randomSleep(0.5, 0.7)
+                # implement red x check ot make sure i clicked
+                screen = np.array(ImageGrab.grab())
+                did_click = find_click_x(screen)
+                if did_click:
+                    print('here1')
+                    return True
+                else:
+                    return False
+        return False
+    return False
+
+
+def find_click_x_with_draw(image):
+    # cyan color boundaries [B, G, R]
+    lower = [19, 0, 255]
+    upper = [19, 0, 255]
+
+    # create NumPy arrays from the boundaries
+    lower = np.array(lower, dtype="uint8")
+    upper = np.array(upper, dtype="uint8")
+    # find the colors within the specified boundaries and apply
+    # the mask
+    mask = cv2.inRange(image, lower, upper)
+    output = cv2.bitwise_and(image, image, mask=mask)
+    ret, thresh = cv2.threshold(mask, 40, 255, 0)
+    if (cv2.__version__[0] > '3'):
+        contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    else:
+        im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    if len(contours) != 0:
+        # draw in blue the contours that were founded
+        cv2.drawContours(output, contours, -1, 255, 3)
+        center = find_contour_center(contours[0])
+        if center:
+            cv2.drawContours(output, [contours[0]], -1, (0, 255, 0), 2)
+            cv2.circle(output, (center[0], center[1]), 7, (0, 0, 255), -1)
+            cv2.putText(output, "center", (center[0] - 20, center[1] - 20),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+
+    return np.array(output)
+
+
+def find_click_x(image):
+    # red color boundaries [B, G, R]
+    lower = [19, 0, 255]
+    upper = [19, 0, 255]
+
+    # create NumPy arrays from the boundaries
+    lower = np.array(lower, dtype="uint8")
+    upper = np.array(upper, dtype="uint8")
+    # find the colors within the specified boundaries and apply
+    # the mask
+    mask = cv2.inRange(image, lower, upper)
+    output = cv2.bitwise_and(image, image, mask=mask)
+    ret, thresh = cv2.threshold(mask, 40, 255, 0)
+    if (cv2.__version__[0] > '3'):
+        contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    else:
+        im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    if len(contours) != 0:
+        return True
+    return False
+
+
+def experimental_find_click_x(image):
+    # red color boundaries [B, G, R]
+    lower = [19, 0, 255]
+    upper = [19, 0, 255]
+
+    # create NumPy arrays from the boundaries
+    lower = np.array(lower, dtype="uint8")
+    upper = np.array(upper, dtype="uint8")
+    # find the colors within the specified boundaries and apply
+    # the mask
+    mask = cv2.inRange(image, lower, upper)
+    output = cv2.bitwise_and(image, image, mask=mask)
+    ret, thresh = cv2.threshold(mask, 40, 255, 0)
+    if (cv2.__version__[0] > '3'):
+        contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    else:
+        im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    if len(contours) != 0:
+        center = find_contour_center(contours[0])
+        if center:
+            return [True, center]
+        return True
+    return False
+
+
+def walk_north_minimap():
+    bezierMovement(2443, 2462, 43, 64)
+    randomSleep(0.1, 0.2)
+    pyautogui.click()
+    return True
+
+
+def look_for_item_in_bag(item):
+    is_in_bag = roughImgCompare('..\\screens\\' + item, .8, (2299, 1024, 2510, 1324))
+    if is_in_bag:
+        return is_in_bag
+    else:
+        return False
+
+
+def will_food_heal_full(rg_bim):
+    # Open image and make RGB and HSV versions
+    rg_bim = rg_bim.convert('RGB')
+    hs_vim = rg_bim.convert('HSV')
+
+    # Make numpy versions
+    rg_bna = np.array(rg_bim)
+    hs_vna = np.array(hs_vim)
+
+    # Extract Hue
+    h = hs_vna[:, :, 0]
+
+    # Find all green pixels, i.e. where 100 < Hue < 140
+    lo, hi = 100, 140
+    # Rescale to 0-255, rather than 0-360 because we are using uint8
+    lo = int((lo * 255) / 360)
+    hi = int((hi * 255) / 360)
+    green = np.where((h > lo) & (h < hi))
+
+    # Make all green pixels black in original image
+    rg_bna[green] = [255, 137, 0]
+    count = green[0].size
+    if count > 200:
+        return True
+    else:
+        return False
+

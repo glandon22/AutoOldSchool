@@ -22,50 +22,10 @@ seaweedInBag = [1176, 1199, 558, 576]
 sodaInBag = [1177, 1198, 497, 513]
 
 
-def find_fixed_object(image):
-    expected_store = ImageGrab.grab([980, 442, 1054, 463])
-    img = Image.open('.\\screens\\bank_interface.png')
-    if general_utils.calcImgDiff(img, expected_store, 10) == 'same':
-        return True
-    print('looking for martin')
-    # cyan color boundaries [B, G, R]
-    lower = [255, 0, 0]
-    upper = [255, 0, 0]
-
-    # create NumPy arrays from the boundaries
-    lower = np.array(lower, dtype="uint8")
-    upper = np.array(upper, dtype="uint8")
-    # find the colors within the specified boundaries and apply
-    # the mask
-    mask = cv2.inRange(image, lower, upper)
-    ret, thresh = cv2.threshold(mask, 40, 255, 0)
-    if cv2.__version__[0] > '3':
-        contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-    else:
-        im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-    if len(contours) != 0:
-        # draw in blue the contours that were founded
-        # cv2.drawContours(output, contours, -1, 255, 3)
-
-        # find the biggest contour (c) by the area
-        c = max(contours, key=cv2.contourArea)
-        x, y, w, h = cv2.boundingRect(c)
-        # this movement must also account for the offset of the target area bbox, i.e. the image coordinates passed
-        # to the findFixedObject function
-        print(x, y, w, h)
-        general_utils.bezierMovement(x + 400 + (math.floor(w / 2)), x + 400 + (math.floor(w / 2)), y + math.floor(h / 2),
-                       y + math.floor(h / 2))
-        general_utils.randomSleep(0.1, 0.3)
-        pyautogui.click()
-        general_utils.randomSleep(9.6, 10.5)
-    return False
-
-
 def go_to_bank():
     found = False
     while not found:
-        screen = np.array(ImageGrab.grab(bbox=([400, 0, 2096, 966])))
-        did_i_find = find_fixed_object(screen)
+        did_i_find = general_utils.find_fixed_object([400, 0, 2096, 966], 400, 0)
         if did_i_find:
             found = True
             general_utils.randomSleep(0.5, 0.7)
