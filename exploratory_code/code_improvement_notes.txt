@@ -1,0 +1,11 @@
+# Parsing HP value from the minimap interface
+1. https://pypi.org/project/pytesseract/
+2. https://stackoverflow.com/questions/59124487/how-to-extract-text-or-numbers-from-images-using-python
+
+# Create human like mouse movements
+1. Interesting looking bezier library: https://github.com/vincentbavitz/bezmouse/blob/master/mouse.py
+2. Seems like any machine learning is overkill for this project
+
+# Script boot runelite config editing (useful fields to edit in .runelite/settings.properties)
+1. npcindicators.npcToHighlight
+1. objectindicators.region shows which objects you have highlighted
