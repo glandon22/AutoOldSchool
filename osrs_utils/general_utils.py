@@ -16,7 +16,7 @@ import operator
 from functools import reduce
 import cv2
 import keyboard as kb
-
+import pytesseract
 
 def point_dist(x1, y1, x2, y2):
     return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
@@ -126,14 +126,14 @@ def dump_bag():
     bezierMovement(location.get('x'), location.get('x') + 5, location.get('y'), location.get('y') + 5)
     randomSleep(0.2, 0.3)
     pyautogui.click()
-    return True
+    return 'success'
 
 
 def find_fixed_object(image, x_offset, y_offset):
     # image = np.array(ImageGrab.grab(box))
     # red color boundaries R,G,B
-    lower = [255, 0, 0]
-    upper = [255, 0, 0]
+    lower = [255, 255, 0]
+    upper = [255, 255, 0]
 
     # create NumPy arrays from the boundaries
     lower = np.array(lower, dtype="uint8")
@@ -350,6 +350,11 @@ def find_moving_target_with_draw(image):
 
 
 def find_moving_target(image, scouting):
+    # failsafe to check if a monster aggro'd me
+    did_click = find_click_x(image)
+    if did_click:
+        print('here1')
+        return True
     # cyan color boundaries [B, G, R]
     lower = [0, 255, 255]
     upper = [0, 255, 255]
@@ -395,6 +400,46 @@ def find_moving_target(image, scouting):
                     return True
                 else:
                     return False
+        return False
+    return False
+
+
+def find_fixed_object_while_moving(area, scouting):
+    image = np.array(ImageGrab.grab(area))
+    # yellow color
+    lower = [255, 255, 0]
+    upper = [255, 255, 0]
+
+    # create NumPy arrays from the boundaries
+    lower = np.array(lower, dtype="uint8")
+    upper = np.array(upper, dtype="uint8")
+    # find the colors within the specified boundaries and apply
+    # the mask
+    mask = cv2.inRange(image, lower, upper)
+    ret, thresh = cv2.threshold(mask, 40, 255, 0)
+    if (cv2.__version__[0] > '3'):
+        contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    else:
+        im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    if len(contours) == 1:
+        if scouting:
+            x, y, w, h = cv2.boundingRect(contours[0])
+            return [x,y]
+        print('found a bank, going to click')
+        center = find_contour_center(contours[0])
+        if center:
+            bezierMovement(center[0] - 10, center[0] + 10, center[1] - 10, center[1] + 10)
+            pyautogui.click()
+            # give the highlight a half second to pop up
+            randomSleep(0.2, 0.3)
+            # implement red x check ot make sure i clicked
+            screen = np.array(ImageGrab.grab())
+            did_click = did_i_click_fixed_obj(screen)
+            if did_click:
+                print('here1')
+                return True
+            else:
+                return False
         return False
     return False
 
@@ -451,6 +496,28 @@ def find_click_x(image):
     return False
 
 
+def did_i_click_fixed_obj(image):
+    # red color boundaries [B, G, R]
+    lower = [255, 0, 255]
+    upper = [255, 0, 255]
+
+    # create NumPy arrays from the boundaries
+    lower = np.array(lower, dtype="uint8")
+    upper = np.array(upper, dtype="uint8")
+    # find the colors within the specified boundaries and apply
+    # the mask
+    mask = cv2.inRange(image, lower, upper)
+    output = cv2.bitwise_and(image, image, mask=mask)
+    ret, thresh = cv2.threshold(mask, 40, 255, 0)
+    if (cv2.__version__[0] > '3'):
+        contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    else:
+        im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    if len(contours) != 0:
+        return True
+    return False
+
+
 def experimental_find_click_x(image):
     # red color boundaries [B, G, R]
     lower = [19, 0, 255]
@@ -483,6 +550,12 @@ def walk_north_minimap():
     return True
 
 
+def walk_south_minimap():
+    bezierMovement(2446, 2459, 216, 223)
+    randomSleep(0.1, 0.2)
+    pyautogui.click()
+    return True
+
 def look_for_item_in_bag(item):
     is_in_bag = roughImgCompare('..\\screens\\' + item, .8, (2299, 1024, 2510, 1324))
     if is_in_bag:
@@ -491,29 +564,64 @@ def look_for_item_in_bag(item):
         return False
 
 
-def will_food_heal_full(rg_bim):
-    # Open image and make RGB and HSV versions
-    rg_bim = rg_bim.convert('RGB')
-    hs_vim = rg_bim.convert('HSV')
+def find_highlighted_item_on_ground(image, x_off, y_off):
+    image = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
+    # lower boundary RED color range values; Hue (0 - 10)
+    lower1 = np.array([0, 100, 20])
+    upper1 = np.array([10, 255, 255])
 
-    # Make numpy versions
-    rg_bna = np.array(rg_bim)
-    hs_vna = np.array(hs_vim)
+    # upper boundary RED color range values; Hue (160 - 180)
+    lower2 = np.array([160, 100, 20])
+    upper2 = np.array([179, 255, 255])
 
-    # Extract Hue
-    h = hs_vna[:, :, 0]
+    lower_mask = cv2.inRange(image, lower1, upper1)
+    upper_mask = cv2.inRange(image, lower2, upper2)
 
-    # Find all green pixels, i.e. where 100 < Hue < 140
-    lo, hi = 100, 140
-    # Rescale to 0-255, rather than 0-360 because we are using uint8
-    lo = int((lo * 255) / 360)
-    hi = int((hi * 255) / 360)
-    green = np.where((h > lo) & (h < hi))
+    mask = lower_mask + upper_mask
+    ret, thresh = cv2.threshold(mask, 40, 255, 0)
+    if (cv2.__version__[0] > '3'):
+        contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    else:
+        im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    if len(contours) != 0:
+        ## find all contours that look like highlighted tiles
+        distance = 999999999
+        closest_coords = [0, 0, 0, 0]
+        closest_contour = None
+        center = None
+        for c in contours:
+            x, y, w, h = cv2.boundingRect(c)
 
-    # Make all green pixels black in original image
-    rg_bna[green] = [255, 137, 0]
-    count = green[0].size
-    if count > 200:
+            if 70 >= w >= 20 and 70 >= h >= 20:
+                current_distance = point_dist(1275, 715, x, y)
+                if current_distance < distance:
+                    closest_coords = [x, y, w, h]
+                    distance = current_distance
+                    closest_contour = c
+        if closest_contour is not None:
+            center = find_contour_center(closest_contour)
+            return [center[0] + x_off, center[1] + y_off]
+    return None
+
+
+def check_health():
+    pytesseract.pytesseract.tesseract_cmd = r'C:\\Program Files\\Tesseract-OCR\\tesseract'
+    img = ImageGrab.grab((2270,  1030,2286, 1044))
+    img = cv2.cvtColor(np.array(img), cv2.COLOR_BGR2GRAY)
+    health = pytesseract.image_to_string(img, config='--psm 6 -c tessedit_char_whitelist=0123456789')
+    if health:
+        try:
+            health = int(health)
+        except ValueError:
+            health = None
+
+    return health
+
+
+def is_bag_full():
+    last_slot_empty = Image.open('..\\screens\\last_slot_empty.png')
+    slot_is_empty = roughImgCompare(last_slot_empty, .8, (2299, 1024, 2510, 1324))
+    if not slot_is_empty:
         return True
     else:
         return False
