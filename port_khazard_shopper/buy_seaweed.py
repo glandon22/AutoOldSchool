@@ -120,12 +120,12 @@ def find_single_target():
 
 
 def dump_item():
-    seaweed = general_utils.roughImgCompare('.\\screens\\seaweed_in_bag.png', .75, (844, 438, 1402, 774))
+    seaweed = general_utils._deprecated_rough_img_compare('.\\screens\\seaweed_in_bag.png', .75, (844, 438, 1402, 774))
     if seaweed:
         general_utils.bezierMovement(seaweed.get('x'), seaweed.get('x') + 7, seaweed.get('y'), seaweed.get('y') + 9)
         pyautogui.click()
         general_utils.randomSleep(0.2, 0.4)
-    soda = general_utils.roughImgCompare('.\\screens\\soda_in_bag.png', .75, (844, 438, 1402, 774))
+    soda = general_utils._deprecated_rough_img_compare('.\\screens\\soda_in_bag.png', .75, (844, 438, 1402, 774))
     if soda:
         general_utils.bezierMovement(soda.get('x'), soda.get('x') + 6, soda.get('y'), soda.get('y') + 6)
         pyautogui.click()

@@ -3,7 +3,6 @@ import time
 import pyautogui
 import pyscreenshot as ImageGrab
 
-
 def quick_screenshot(name, add):
     print('ready in 3')
     time.sleep(3)
@@ -49,6 +48,7 @@ def getInvCoords():
 def captureScreenshot(name):
     screenshotBox = calculateClickbox()
     print('sc box', screenshotBox)
+    time.sleep(1)
     im = ImageGrab.grab([screenshotBox[0], screenshotBox[2], screenshotBox[1], screenshotBox[3]])
     # save image file
     im.save(r'..\\screens\\' + name + '.png', 'png')
@@ -61,7 +61,7 @@ def captureSpecificScreenCoords(screenshotBox, name):
     return im
 
 
-def captureUnderMouse(name):
+def capture_under_mouse(name):
     print('capturing hover bar')
     currentMouseX, currentMouseY = pyautogui.position()
     hover = ImageGrab.grab([currentMouseX + 1, currentMouseY + 31, currentMouseX + 140, currentMouseY + 49])

@@ -45,7 +45,7 @@ def bezierMovement(xMin, xMax, yMin, yMax):
     xr[0] = yr[0] = xr[-1] = yr[-1] = 0
     x += xr
     y += yr
-
+    print('x,y', x, y)
     # Approximate using Bezier spline.
     degree = 3 if cp > 3 else cp - 1  # Degree of b-spline. 3 is recommended.
     # Must be less than number of control points.
@@ -94,15 +94,22 @@ def showInvCoords(slot):
     return invCoords[slot]
 
 
-def roughImgCompare(img, confidence, region):
+def _deprecated_rough_img_compare(img, confidence, region):
     loc = pyautogui.locateOnScreen(img, confidence=confidence, region=region)
     if loc:
         return {'x': loc[0], 'y': loc[1]}
     return False
 
 
+def rough_img_compare(img, confidence, region):
+    loc = pyautogui.locateOnScreen(img, confidence=confidence, region=region)
+    if loc:
+        return loc
+    return False
+
+
 def didLevel():
-    status = roughImgCompare('..\\screens\\level.png', .8, (2, 645, 1190, 1350))
+    status = _deprecated_rough_img_compare('..\\screens\\level.png', .8, (2, 645, 1190, 1350))
     if status:
         return True
     else:
@@ -110,7 +117,7 @@ def didLevel():
 
 
 def dumpBag():
-    location = roughImgCompare('..\\screens\\dump.png', .8, (0, 0, 2559, 1439))
+    location = _deprecated_rough_img_compare('..\\screens\\dump.png', .8, (0, 0, 2559, 1439))
     if not location:
         return False
     bezierMovement(location.get('x'), location.get('x') + 5, location.get('y'), location.get('y') + 5)
@@ -120,7 +127,7 @@ def dumpBag():
 
 
 def dump_bag():
-    location = roughImgCompare('..\\screens\\dump.png', .8, (0, 0, 2559, 1439))
+    location = _deprecated_rough_img_compare('..\\screens\\dump.png', .8, (0, 0, 2559, 1439))
     if not location:
         return False
     bezierMovement(location.get('x'), location.get('x') + 5, location.get('y'), location.get('y') + 5)
@@ -177,8 +184,8 @@ def goToTarget(targArea):
 
 def withdraw_items_from_bank(items, bank_interface):
     for item in items:
-        targ = roughImgCompare('..\\screens\\' + item, .75,
-                               (bank_interface[0], bank_interface[2], bank_interface[1], bank_interface[3]))
+        targ = _deprecated_rough_img_compare('..\\screens\\' + item, .75,
+                                             (bank_interface[0], bank_interface[2], bank_interface[1], bank_interface[3]))
         if targ:
             print('taking ', item, ' from the bank')
             bezierMovement(targ.get('x'), targ.get('x') + 6, targ.get('y'), targ.get('y') + 6)
@@ -235,7 +242,7 @@ def hop_worlds():
     post_hop = Image.open('..\\screens\\post_hop.png')
     cycles_waiting = 0
     while True:
-        if roughImgCompare(post_hop, .8, (2270, 971, 2546, 1382)):
+        if _deprecated_rough_img_compare(post_hop, .8, (2270, 971, 2546, 1382)):
             break
         elif cycles_waiting > 1000:
             return 'failed to hop worlds'
@@ -282,8 +289,8 @@ def find_fixed_npc(box, x_offset, y_offset):
 def wait_for_bank_interface(interface_loc, max_cycles):
     cycles_waiting = 0
     while True:
-        location = roughImgCompare('..\\screens\\dump.png', .8,
-                                   (interface_loc[0], interface_loc[2], interface_loc[1], interface_loc[3]))
+        location = _deprecated_rough_img_compare('..\\screens\\dump.png', .8,
+                                                 (interface_loc[0], interface_loc[2], interface_loc[1], interface_loc[3]))
         if location:
             break
         elif cycles_waiting > max_cycles:
@@ -428,7 +435,7 @@ def find_fixed_object_while_moving(area, scouting):
         print('found a bank, going to click')
         center = find_contour_center(contours[0])
         if center:
-            bezierMovement(center[0] - 10, center[0] + 10, center[1] - 10, center[1] + 10)
+            bezierMovement(center[0] - 2, center[0] + 2, center[1] - 2, center[1] + 2)
             pyautogui.click()
             # give the highlight a half second to pop up
             randomSleep(0.2, 0.3)
@@ -557,7 +564,7 @@ def walk_south_minimap():
     return True
 
 def look_for_item_in_bag(item):
-    is_in_bag = roughImgCompare('..\\screens\\' + item, .8, (2299, 1024, 2510, 1324))
+    is_in_bag = _deprecated_rough_img_compare('..\\screens\\' + item, .8, (2299, 1024, 2510, 1324))
     if is_in_bag:
         return is_in_bag
     else:
@@ -620,9 +627,41 @@ def check_health():
 
 def is_bag_full():
     last_slot_empty = Image.open('..\\screens\\last_slot_empty.png')
-    slot_is_empty = roughImgCompare(last_slot_empty, .8, (2299, 1024, 2510, 1324))
+    slot_is_empty = _deprecated_rough_img_compare(last_slot_empty, .8, (2299, 1024, 2510, 1324))
     if not slot_is_empty:
         return True
     else:
         return False
+
+def walking_with_full_run_energy():
+    full_run = Image.open('..\\screens\\run_energy.png')
+    run_energy = rough_img_compare(full_run, .8, (2276, 32, 2548, 273))
+    print('run: ', run_energy)
+    if run_energy:
+        bezierMovement(run_energy[0] - 2, run_energy[0] + 2, run_energy[1] - 2, run_energy[1] + 2)
+        randomSleep(0.1, 0.2)
+        pyautogui.click()
+    else:
+        return False
+
+
+def solve_bank_pin():
+    for i in range(4):
+        num = None
+        if i == 0 or i == 3:
+            num = '8'
+        else:
+            num = '7'
+
+        loc = rough_img_compare('..\\screens\\bank_pin_' + num + '.png', .8, [641, 306, 1648, 1008])
+        if loc:
+            bezierMovement(loc[0], loc[0] + 1, loc[1], loc[1] + 1)
+            randomSleep(0.2,0.3)
+            pyautogui.click()
+            randomSleep(0.2, 0.3)
+            bezierMovement(1200,1700,12,209)
+        else:
+            return 'couldnt find ' + num
+        randomSleep(1.1, 1.2)
+
 

@@ -157,6 +157,13 @@ def generic_killer():
 
 
 def go_to_bank():
+    #check to see if im running or not
+    run_status = general_utils.walking_with_full_run_energy()
+    if run_status:
+        general_utils.bezierMovement(run_status.get('x'), run_status.get('x') + 3, run_status.get('y'), run_status.get('y') + 3)
+        general_utils.randomSleep(0.4, 0.5)
+        print('clicking')
+        pyautogui.click()
     # begin walking north to find some moss giants
     cycles_looking_for_bank = 0
     while True:
@@ -169,7 +176,7 @@ def go_to_bank():
             pyautogui.click()
             print('found bank, sleeping for a sec')
             break
-        elif cycles_looking_for_bank > 10:
+        elif cycles_looking_for_bank > 20:
             return 'unable to find bank'
         else:
             print('didnt find the bank')
@@ -184,7 +191,7 @@ def go_to_bank():
             print('clicked bank')
             break
         elif cycles_trying_to_click_bank > 5:
-            return 'unable to find bank'
+            return 'unable to find bank 2'
         else:
             print('didnt find the bank')
             cycles_trying_to_click_bank += 1
@@ -192,8 +199,8 @@ def go_to_bank():
 
 
 def collect_loot():
+    general_utils.randomSleep(1.2, 1.3)
     cycles_waiting_for_loot = 0
-    general_utils.randomSleep(3.2, 3.3)
     while True:
         loot = general_utils.find_highlighted_item_on_ground(np.array(ImageGrab.grab([1167, 565, 1406, 800])), 1167,
                                                              565)
@@ -201,11 +208,12 @@ def collect_loot():
         cycles_looting = 0
         # found loot on ground
         if loot:
+            print('found some loot')
             click_loc = loot
             # loot the pile, loop through in case there are multiple valuable drops
             while True:
                 print('cycles looting', cycles_looting)
-                general_utils.bezierMovement(click_loc[0] - 5, click_loc[0] + 5, click_loc[1] - 5, click_loc[1] + 5)
+                general_utils.bezierMovement(click_loc[0] - 2, click_loc[0] + 2, click_loc[1] - 2, click_loc[1] + 2)
                 general_utils.randomSleep(0.1, 0.2)
                 pyautogui.click()
                 general_utils.randomSleep(2.1, 2.2)
@@ -257,6 +265,7 @@ def main():
             kill = kill_giant()
             if kill != 'success':
                 return print(kill)
+            collect_loot()
             # check my hp
             health = general_utils.check_health()
             if health and 10 < health < 40:
@@ -266,7 +275,7 @@ def main():
                     print(did_i_eat)
                     # return to bank to get more food
                     break
-            collect_loot()
+
             is_bag_full = general_utils.is_bag_full()
             # return to bank if bag is full
             if is_bag_full:
@@ -280,7 +289,7 @@ def main():
         dump_bag = general_utils.dump_bag()
         if dump_bag != 'success':
             return print(dump_bag)
-        withdraw_tuna = general_utils.withdraw_items_from_bank('tuna_in_bank.png', [821, 1424, 108, 1102])
+        withdraw_tuna = general_utils.withdraw_items_from_bank(['tuna_in_bank.png'], [821, 1424, 108, 1102])
         if withdraw_tuna != 'success':
             return print(withdraw_tuna)
 

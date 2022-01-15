@@ -25,7 +25,7 @@ def waiting_to_arrive_at_furnace():
     cycles_waiting_for_prompt = 0
     while True:
         print('waiting to see molten glass make prompt')
-        is_prompt_up = general_utils.roughImgCompare('.\\screens\\molten_glass_prompt.png', .8, (2, 1190, 645, 1350))
+        is_prompt_up = general_utils._deprecated_rough_img_compare('.\\screens\\molten_glass_prompt.png', .8, (2, 1190, 645, 1350))
         im = ImageGrab.grab([2, 1190, 645, 1350])
         im.save('.\\screens\\currChatBox.png')
         if is_prompt_up:
@@ -55,7 +55,7 @@ def make_glass():
         elif cycles_making_glass > 10:
             return print('never finished making glass, exiting')
         # check if I leveled
-        elif general_utils.roughImgCompare('.\\screens\\level.png', .8, (2, 645, 1190, 1350)):
+        elif general_utils._deprecated_rough_img_compare('.\\screens\\level.png', .8, (2, 645, 1190, 1350)):
             found_furnace = run_to_furnace([1078, 584, 1376, 854])
             if found_furnace != 'success':
                 return found_furnace
