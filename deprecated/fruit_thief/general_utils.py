@@ -8,7 +8,7 @@ import pyscreenshot as ImageGrab
 import math,operator
 from functools import reduce
 import sys
-emptySlot = Image.open('.\\screens\\empty_slot.png')
+emptySlot = Image.open('screens/empty_slot.png')
 
 def calcImgDiff(im1, im2):
     imageDifference = ImageChops.difference(im1,im2).histogram()

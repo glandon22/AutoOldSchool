@@ -39,9 +39,9 @@ def attack_giants():
         attack_giant = general_utils.find_moving_target(screen, False)
         if attack_giant:
             cycles_to_attack_giant = 0
-            general_utils.bezierMovement(3500,4000,700,1200)
+            """general_utils.bezierMovement(3500,4000,700,1200)
             general_utils.randomSleep(0.1,0.2)
-            pyautogui.click()
+            pyautogui.click()"""
             return 'success'
         elif cycles_to_attack_giant > 7:
             return 'couldnt attack a giant'
@@ -148,13 +148,13 @@ def generic_killer():
         kill = kill_giant()
         if kill != 'success':
             return print(kill)
-        kills += 1
+        """kills += 1
         if kills % 5 == 0:
             # check if I need to eat
             ate = check_to_eat('tuna_in_bag.png')
             if ate != 'success':
                 return print(ate)
-
+"""
 
 def go_to_bank():
     #check to see if im running or not
@@ -172,19 +172,21 @@ def go_to_bank():
         general_utils.walk_south_minimap()
         found_bank = general_utils.find_fixed_object_while_moving([0, 0, 2560, 1440], True)
         if found_bank:
-            general_utils.bezierMovement(found_bank[0], found_bank[0] + 10, found_bank[1], found_bank[1] + 10)
-            pyautogui.click()
-            print('found bank, sleeping for a sec')
+            print('found bank, waiting to stop moving')
+            waiting = general_utils.wait_until_stationary()
+            if waiting != 'success':
+                return waiting
+            general_utils.randomSleep(0.4,0.5)
             break
         elif cycles_looking_for_bank > 20:
             return 'unable to find bank'
         else:
-            print('didnt find the bank')
             cycles_looking_for_bank += 1
+            print('havent seen bank yet. cycles: ', cycles_looking_for_bank)
         general_utils.randomSleep(3.3, 4.8)
-    general_utils.randomSleep(5.2, 5.6)
     cycles_trying_to_click_bank = 0
     while True:
+        general_utils.randomSleep(1.2, 1.4)
         screen = np.array(ImageGrab.grab())
         clicked_bank = general_utils.find_fixed_object_while_moving([0, 0, 2560, 1440], False)
         if clicked_bank:
@@ -204,7 +206,6 @@ def collect_loot():
     while True:
         loot = general_utils.find_highlighted_item_on_ground(np.array(ImageGrab.grab([1167, 565, 1406, 800])), 1167,
                                                              565)
-        loot_collected = False
         cycles_looting = 0
         # found loot on ground
         if loot:
@@ -216,32 +217,28 @@ def collect_loot():
                 general_utils.bezierMovement(click_loc[0] - 2, click_loc[0] + 2, click_loc[1] - 2, click_loc[1] + 2)
                 general_utils.randomSleep(0.1, 0.2)
                 pyautogui.click()
-                general_utils.randomSleep(2.1, 2.2)
+                general_utils.randomSleep(.5, .6)
                 more_loot = general_utils.find_highlighted_item_on_ground(
                     np.array(ImageGrab.grab([1167, 565, 1406, 800])), 1167, 565)
                 # there is more loot on the ground
                 if more_loot:
                     # more loot is on ground, but i havent been able to get it after five tries or my bag is full
-                    if cycles_looting > 5 or general_utils.is_bag_full():
+                    if cycles_looting > 10:
                         print('unable to finish looting')
                         loot_collected = True
-                        break
+                        return 'looting max cycles'
+                    elif general_utils.is_bag_full():
+                        return 'full bag'
                     click_loc = more_loot
                     cycles_looting += 1
                     continue
                 # I picked up all the loot
                 else:
-                    loot_collected = True
-                    break
+                    return 'loot collected'
             break
         # could not find loot after 150 cycles
         elif cycles_waiting_for_loot > 150:
-            print('failed to get loot')
-            break
-        # i have gathered all the loot
-        elif loot_collected:
-            print('got all loot')
-            break
+            return 'didnt find loot'
         # continuing to look for loot pile
         else:
             print('waiting for loot')
@@ -265,7 +262,10 @@ def main():
             kill = kill_giant()
             if kill != 'success':
                 return print(kill)
-            collect_loot()
+            bag_full = False
+            looted = collect_loot()
+            if looted == 'full bag':
+                bag_full = True
             # check my hp
             health = general_utils.check_health()
             if health and 10 < health < 40:
@@ -294,5 +294,4 @@ def main():
             return print(withdraw_tuna)
 
 
-
-main()
+generic_killer()

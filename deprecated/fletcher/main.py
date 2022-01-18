@@ -4,8 +4,8 @@ from general_utils import lastSlotFletched, randomSleep, roughImgCompare, didILv
 from bezier import bezierMovement
 import pyautogui as agui
 from PIL import Image, ImageGrab
-bow = Image.open('.\\screens\\bow.png')
-level = Image.open('.\\screens\\level.png')
+bow = Image.open('screens/bow.png')
+level = Image.open('screens/level.png')
 status = 'initing'
 bagsFletched = 0
 def bank():

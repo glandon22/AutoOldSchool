@@ -3,6 +3,7 @@
 
 # inv coords
 # im = ImageGrab.grab([2299, 2510, 1024, 1324])
+import keyboard
 import numpy as np
 import time
 from scipy import interpolate
@@ -39,17 +40,24 @@ def bezierMovement(xMin, xMax, yMin, yMax):
     y = np.linspace(y1, y2, num=cp, dtype='int')
 
     # Randomise inner points a bit (+-RND at most).
-    RND = 10
-    xr = [random.randint(-RND, RND) for k in range(cp)]
-    yr = [random.randint(-RND, RND) for k in range(cp)]
+    rnd = random.randint(9, 11)
+    xr = [random.randint(-rnd, rnd) for k in range(cp)]
+    yr = [random.randint(-rnd, rnd) for k in range(cp)]
     xr[0] = yr[0] = xr[-1] = yr[-1] = 0
     x += xr
     y += yr
+
     print('x,y', x, y)
     # Approximate using Bezier spline.
     degree = 3 if cp > 3 else cp - 1  # Degree of b-spline. 3 is recommended.
     # Must be less than number of control points.
-    tck, u = interpolate.splprep([x, y], k=degree)
+    tck, u = [None, None]
+    try:
+        tck, u = interpolate.splprep([x, y], k=degree)
+    except ValueError:
+        print('bezier movement blew up')
+        pyautogui.moveTo(x2, y2)
+        return [x2, y2]
     # Move upto a certain number of points
     u = np.linspace(0, 1, num=2 + int(point_dist(x1, y1, x2, y2) / 50.0))
     points = interpolate.splev(u, tck)
@@ -664,4 +672,123 @@ def solve_bank_pin():
             return 'couldnt find ' + num
         randomSleep(1.1, 1.2)
 
+
+def wait_until_stationary():
+    cycles = 0
+    same_frame_count = 0
+    prev_img = ImageGrab.grab((2082,  36, 2238, 100))
+    time.sleep(.5)
+    while True:
+        print('running', same_frame_count)
+        curr_img = ImageGrab.grab((2082,  36, 2238, 100))
+        player_loc = calcImgDiff(prev_img, curr_img, 3)
+        if player_loc == 'same' and same_frame_count > 8:
+            return 'success'
+        elif player_loc == 'same':
+            same_frame_count += 1
+            print('frame count', same_frame_count)
+            continue
+        elif cycles > 1500:
+            return 'never stopped moving'
+        cycles += 1
+        same_frame_count = 0
+        prev_img = curr_img
+
+def find_moving_target_no_verify(image):
+    # cyan color boundaries [B, G, R]
+    lower = [0, 255, 255]
+    upper = [0, 255, 255]
+
+    # create NumPy arrays from the boundaries
+    lower = np.array(lower, dtype="uint8")
+    upper = np.array(upper, dtype="uint8")
+    # find the colors within the specified boundaries and apply
+    # the mask
+    mask = cv2.inRange(image, lower, upper)
+    ret, thresh = cv2.threshold(mask, 40, 255, 0)
+    if (cv2.__version__[0] > '3'):
+        contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    else:
+        im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    if len(contours) != 0:
+        print('here')
+        # find the biggest contour (c) by the area
+        # c = max(contours, key = cv2.contourArea)
+        distance = 999999999
+        closest_coords = [0, 0, 0, 0]
+        closest_contour = None
+        for c in contours:
+            x, y, w, h = cv2.boundingRect(c)
+            current_distance = point_dist(1275, 715, x, y)
+            if current_distance < distance:
+                closest_coords = [x, y, w, h]
+                distance = current_distance
+                closest_contour = c
+        center = find_contour_center(closest_contour)
+        if center:
+            print('here')
+            bezierMovement(center[0] - 3, center[0] + 3, center[1] - 3, center[1] + 3)
+            pyautogui.click()
+            return True
+        return False
+    return False
+
+
+def change_npc_highlights(npc):
+    bezierMovement(2444, 2453, 8, 17)
+    randomSleep(0.1, 0.2)
+    pyautogui.click()
+    bezierMovement(2278, 2337, 54, 68)
+    randomSleep(0.1, 0.2)
+    pyautogui.click()
+    keyboard.send('ctrl + a')
+    keyboard.send('del')
+    type_something('npc indi')
+    bezierMovement(2452, 2458, 108, 114)
+    randomSleep(0.1, 0.2)
+    pyautogui.click()
+    bezierMovement(2232, 2286, 452, 464)
+    randomSleep(0.2, 0.3)
+    pyautogui.click()
+    keyboard.send('ctrl + a')
+    keyboard.send('del')
+    type_something(npc)
+    bezierMovement(2229, 2240, 45, 56)
+    randomSleep(0.1, 0.2)
+    pyautogui.click()
+    bezierMovement(2444, 2453, 8, 17)
+    randomSleep(0.1, 0.2)
+    pyautogui.click()
+
+def type_something(phrase):
+    for char in phrase:
+        keyboard.send(char)
+        randomSleep(0.1,0.2)
+
+
+def change_fishing_settings():
+    bezierMovement(2444, 2453, 8, 17)
+    randomSleep(0.1, 0.2)
+    pyautogui.click()
+    bezierMovement(2278, 2337, 54, 68)
+    randomSleep(0.1, 0.2)
+    pyautogui.click()
+    keyboard.send('ctrl + a')
+    keyboard.send('del')
+    type_something('fishing')
+    bezierMovement(2452, 2458, 108, 114)
+    randomSleep(0.1, 0.2)
+    pyautogui.click()
+    bezierMovement(2477, 2486, 135, 142)
+    randomSleep(0.1, 0.2)
+    pyautogui.click()
+    bezierMovement(2479, 2488, 174, 178)
+    randomSleep(0.1, 0.2)
+    pyautogui.click()
+    bezierMovement(2230, 2239, 46, 54)
+    randomSleep(0.1, 0.2)
+    pyautogui.click()
+    bezierMovement(2444, 2453, 8, 17)
+    randomSleep(0.1, 0.2)
+    pyautogui.click()
 

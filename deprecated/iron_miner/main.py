@@ -19,7 +19,7 @@ rockCoords = [
     [1199, 1290, 400, 475],
     [1540, 1600, 744, 807]
 ]
-emptySlot = Image.open('.\\screens\\empty_slot.png')
+emptySlot = Image.open('screens/empty_slot.png')
 
 
 def check_bag():
