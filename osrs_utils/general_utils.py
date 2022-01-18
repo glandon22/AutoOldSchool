@@ -19,11 +19,12 @@ import cv2
 import keyboard as kb
 import pytesseract
 
+
 def point_dist(x1, y1, x2, y2):
     return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
 
 
-def bezierMovement(xMin, xMax, yMin, yMax):
+def bezier_movement(x_min, x_max, y_min, y_max):
     # Any duration less than this is rounded to 0.0 to instantly move the mouse.
     pyautogui.MINIMUM_DURATION = 0  # Default: 0.1
     # Minimal number of seconds to sleep between mouse moves.
@@ -32,8 +33,8 @@ def bezierMovement(xMin, xMax, yMin, yMax):
     pyautogui.PAUSE = 0  # Default: 0.1
     cp = random.randint(3, 5)  # Number of control points. Must be at least 2.
     x1, y1 = pyautogui.position()
-    x2 = random.randint(xMin, xMax)
-    y2 = random.randint(yMin, yMax)
+    x2 = random.randint(x_min, x_max)
+    y2 = random.randint(y_min, y_max)
     print('clicking ', x2, y2)
     # Distribute control points between start and destination evenly.
     x = np.linspace(x1, x2, num=cp, dtype='int')
@@ -53,6 +54,7 @@ def bezierMovement(xMin, xMax, yMin, yMax):
     # Must be less than number of control points.
     tck, u = [None, None]
     try:
+        # noinspection PyTupleAssignmentBalance
         tck, u = interpolate.splprep([x, y], k=degree)
     except ValueError:
         print('bezier movement blew up')
@@ -72,25 +74,25 @@ def bezierMovement(xMin, xMax, yMin, yMax):
     return [x2, y2]
 
 
-def calcImgDiff(im1, im2, acceptableDiff):
-    imageDifference = ImageChops.difference(im1, im2).histogram()
+def calc_img_diff(im1, im2, acceptable_diff):
+    image_difference = ImageChops.difference(im1, im2).histogram()
     diff = math.sqrt(reduce(operator.add,
-                            map(lambda h, i: h * (i ** 2), imageDifference, range(256))
+                            map(lambda h, i: h * (i ** 2), image_difference, range(256))
                             ) / (float(im1.size[0]) * im2.size[1]))
-    if diff > acceptableDiff:
+    if diff > acceptable_diff:
         return 'different'
     else:
         return 'same'
 
 
-def randomSleep(min, max):
-    duration = round(random.uniform(min, max), 3)
+def random_sleep(min_time, max_time):
+    duration = round(random.uniform(min_time, max_time), 3)
     print("Sleeping for ", duration, ' seconds')
     time.sleep(duration)
 
 
-def showInvCoords(slot):
-    invCoords = [
+def show_inv_coords(slot):
+    inv_coords = [
         [2317, 2343, 1030, 1056], [2371, 2395, 1034, 1058], [2424, 2448, 1034, 1060], [2476, 2500, 1036, 1058],
         [2320, 2344, 1082, 1103], [2372, 2394, 1082, 1102], [2425, 2448, 1082, 1100], [2478, 2499, 1082, 1102],
         [2320, 2340, 1128, 1144], [2372, 2395, 1126, 1146], [2422, 2446, 1126, 1144], [2476, 2500, 1127, 1142],
@@ -99,7 +101,7 @@ def showInvCoords(slot):
         [2320, 2342, 1259, 1282], [2372, 2394, 1261, 1280], [2425, 2446, 1262, 1280], [2478, 2500, 1261, 1280],
         [2319, 2342, 1305, 1326], [2370, 2393, 1306, 1322], [2426, 2445, 1306, 1324], [2476, 2500, 1304, 1324]
     ]
-    return invCoords[slot]
+    return inv_coords[slot]
 
 
 def _deprecated_rough_img_compare(img, confidence, region):
@@ -110,36 +112,34 @@ def _deprecated_rough_img_compare(img, confidence, region):
 
 
 def rough_img_compare(img, confidence, region):
+    """
+
+    :param img:
+    :param confidence:
+    :param region:
+    :return: Array or bool
+    """
     loc = pyautogui.locateOnScreen(img, confidence=confidence, region=region)
     if loc:
         return loc
-    return False
+    else:
+        return False
 
 
-def didLevel():
-    status = _deprecated_rough_img_compare('..\\screens\\level.png', .8, (2, 645, 1190, 1350))
+def did_level():
+    status = rough_img_compare('..\\screens\\level.png', .8, (2, 645, 1190, 1350))
     if status:
         return True
     else:
         return False
 
 
-def dumpBag():
-    location = _deprecated_rough_img_compare('..\\screens\\dump.png', .8, (0, 0, 2559, 1439))
-    if not location:
-        return False
-    bezierMovement(location.get('x'), location.get('x') + 5, location.get('y'), location.get('y') + 5)
-    randomSleep(0.2, 0.3)
-    pyautogui.click()
-    return True
-
-
 def dump_bag():
-    location = _deprecated_rough_img_compare('..\\screens\\dump.png', .8, (0, 0, 2559, 1439))
+    location = rough_img_compare('..\\screens\\dump.png', .8, (0, 0, 2559, 1439))
     if not location:
         return False
-    bezierMovement(location.get('x'), location.get('x') + 5, location.get('y'), location.get('y') + 5)
-    randomSleep(0.2, 0.3)
+    bezier_movement(location[0], location[0] + 5, location[1], location[1] + 5)
+    random_sleep(0.2, 0.3)
     pyautogui.click()
     return 'success'
 
@@ -157,31 +157,33 @@ def find_fixed_object(image, x_offset, y_offset):
     # the mask
     mask = cv2.inRange(image, lower, upper)
     _, thresh = cv2.threshold(mask, 40, 255, 0)
-    if (cv2.__version__[0] > '3'):
+    # noinspection PyUnresolvedReferences
+    if cv2.__version__[0] > '3':
         contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     else:
         _, contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     if len(contours) != 0:
-        # find the biggest countour (c) by the area
+        # find the biggest contour (c) by the area
         c = max(contours, key=cv2.contourArea)
         x, y, w, h = cv2.boundingRect(c)
-        # this movement must also account for the offset of the target area bbox, i.e. the image coordinates passed to the findFixedObject function
-        bezierMovement(x + x_offset + (math.floor(w / 2)), x + x_offset + (math.floor(w / 2)),
-                       y + y_offset + math.floor(h / 2), y + y_offset + math.floor(h / 2))
-        randomSleep(0.1, 0.3)
+        # this movement must also account for the offset of the target area bbox, i.e. the image coordinates passed
+        # to the findFixedObject function
+        bezier_movement(x + x_offset + (math.floor(w / 2)), x + x_offset + (math.floor(w / 2)),
+                        y + y_offset + math.floor(h / 2), y + y_offset + math.floor(h / 2))
+        random_sleep(0.1, 0.3)
         pyautogui.click()
         return True
     return False
 
 
-def goToTarget(targArea):
+def go_to_target(targ_area):
     attempts = 0
     while True:
         print(attempts)
-        screen = np.array(ImageGrab.grab(targArea))
-        didIFind = find_fixed_object(screen, targArea[0], targArea[1])
-        if didIFind:
-            randomSleep(0.5, 0.7)
+        screen = np.array(ImageGrab.grab(targ_area))
+        did_i_find = find_fixed_object(screen, targ_area[0], targ_area[1])
+        if did_i_find:
+            random_sleep(0.5, 0.7)
             return True
         elif attempts > 10:
             print('exiting, was unable to find target')
@@ -193,12 +195,13 @@ def goToTarget(targArea):
 def withdraw_items_from_bank(items, bank_interface):
     for item in items:
         targ = _deprecated_rough_img_compare('..\\screens\\' + item, .75,
-                                             (bank_interface[0], bank_interface[2], bank_interface[1], bank_interface[3]))
+                                             (bank_interface[0], bank_interface[2], bank_interface[1],
+                                              bank_interface[3]))
         if targ:
             print('taking ', item, ' from the bank')
-            bezierMovement(targ.get('x'), targ.get('x') + 6, targ.get('y'), targ.get('y') + 6)
+            bezier_movement(targ.get('x'), targ.get('x') + 6, targ.get('y'), targ.get('y') + 6)
             pyautogui.click()
-            randomSleep(0.2, 0.4)
+            random_sleep(0.2, 0.4)
         else:
             return 'unable to find any more ' + item
     return 'success'
@@ -206,28 +209,28 @@ def withdraw_items_from_bank(items, bank_interface):
 
 def process_with_tool(slot, button, expected_last_slot, max_cycles):
     # click on knife
-    bezierMovement(2317, 2343, 1030, 1056)
+    bezier_movement(2317, 2343, 1030, 1056)
     pyautogui.click()
-    randomSleep(0.2, 0.5)
+    random_sleep(0.2, 0.5)
     # click on log
     if slot == 1:
-        bezierMovement(2371, 2395, 1034, 1058)
+        bezier_movement(2371, 2395, 1034, 1058)
     else:
-        bezierMovement(2476, 2500, 1304, 1324)
+        bezier_movement(2476, 2500, 1304, 1324)
     pyautogui.click()
-    randomSleep(1.2, 1.7)
+    random_sleep(1.2, 1.7)
     pyautogui.press(button)
-    randomSleep(0.3, 0.7)
+    random_sleep(0.3, 0.7)
     # move off-screen
-    bezierMovement(3500, 4000, 0, 250)
-    randomSleep(0.4, 0.7)
+    bezier_movement(3500, 4000, 0, 250)
+    random_sleep(0.4, 0.7)
     pyautogui.click()
     cycles_waiting = 0
     while True:
-        last_slot = calcImgDiff(Image.open(expected_last_slot), ImageGrab.grab([2476, 1304, 2500, 1324]), 3)
+        last_slot = calc_img_diff(Image.open(expected_last_slot), ImageGrab.grab([2476, 1304, 2500, 1324]), 3)
         if last_slot == 'same':
             break
-        elif didLevel():
+        elif did_level():
             restart = process_with_tool(27, '7', '.\\screens\\lens_in_bag.png', 35)
             if restart != 'success':
                 return 'after leveling, did not successfully finish processing'
@@ -235,17 +238,17 @@ def process_with_tool(slot, button, expected_last_slot, max_cycles):
             return 'did not finishing processing in acceptable number of cycles'
         else:
             cycles_waiting += 1
-        randomSleep(1.4, 2.6)
+        random_sleep(1.4, 2.6)
     return 'success'
 
 
 def hop_worlds():
     kb.send('alt + shift + x')
-    randomSleep(3.3, 3.9)
-    if calcImgDiff(ImageGrab.grab([22, 1212, 590, 1337]), Image.open('.\\screens\\w319.png'), 3) == 'same':
+    random_sleep(3.3, 3.9)
+    if calc_img_diff(ImageGrab.grab([22, 1212, 590, 1337]), Image.open('.\\screens\\w319.png'), 3) == 'same':
         print('hopping to world 319')
         kb.send('space')
-        randomSleep(0.7, 0.9)
+        random_sleep(0.7, 0.9)
         kb.send('2')
     post_hop = Image.open('..\\screens\\post_hop.png')
     cycles_waiting = 0
@@ -256,10 +259,10 @@ def hop_worlds():
             return 'failed to hop worlds'
         else:
             cycles_waiting += 1
-        randomSleep(0.2, 0.5)
+        random_sleep(0.2, 0.5)
     print('hitting esc')
     kb.send('esc')
-    randomSleep(0.2, 0.4)
+    random_sleep(0.2, 0.4)
     return 'success'
 
 
@@ -276,7 +279,8 @@ def find_fixed_npc(box, x_offset, y_offset):
     # the mask
     mask = cv2.inRange(image, lower, upper)
     _, thresh = cv2.threshold(mask, 40, 255, 0)
-    if (cv2.__version__[0] > '3'):
+    # noinspection PyUnresolvedReferences
+    if cv2.__version__[0] > '3':
         contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     else:
         _, contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
@@ -286,9 +290,9 @@ def find_fixed_npc(box, x_offset, y_offset):
         x, y, w, h = cv2.boundingRect(c)
         # this movement must also account for the offset of the target area bbox, i.e. the image coordinates passed
         # to the findFixedObject function
-        bezierMovement(x + x_offset + (math.floor(w / 2)), x + x_offset + (math.floor(w / 2)),
-                       y + y_offset + math.floor(h / 2), y + y_offset + math.floor(h / 2))
-        randomSleep(0.1, 0.3)
+        bezier_movement(x + x_offset + (math.floor(w / 2)), x + x_offset + (math.floor(w / 2)),
+                        y + y_offset + math.floor(h / 2), y + y_offset + math.floor(h / 2))
+        random_sleep(0.1, 0.3)
         pyautogui.click()
         return True
     return False
@@ -298,14 +302,15 @@ def wait_for_bank_interface(interface_loc, max_cycles):
     cycles_waiting = 0
     while True:
         location = _deprecated_rough_img_compare('..\\screens\\dump.png', .8,
-                                                 (interface_loc[0], interface_loc[2], interface_loc[1], interface_loc[3]))
+                                                 (interface_loc[0], interface_loc[2], interface_loc[1],
+                                                  interface_loc[3]))
         if location:
             break
         elif cycles_waiting > max_cycles:
             return 'did not see the bank interface in time'
         else:
             cycles_waiting += 1
-        randomSleep(1.0, 1.1)
+        random_sleep(1.0, 1.1)
     return 'success'
 
 
@@ -332,7 +337,8 @@ def find_moving_target_with_draw(image):
     mask = cv2.inRange(image, lower, upper)
     output = cv2.bitwise_and(image, image, mask=mask)
     ret, thresh = cv2.threshold(mask, 40, 255, 0)
-    if (cv2.__version__[0] > '3'):
+    # noinspection PyUnresolvedReferences
+    if cv2.__version__[0] > '3':
         contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     else:
         im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -340,7 +346,7 @@ def find_moving_target_with_draw(image):
         # draw in blue the contours that were founded
         cv2.drawContours(output, contours, -1, 255, 3)
 
-        # find the biggest countour (c) by the area
+        # find the biggest contour (c) by the area
         # c = max(contours, key = cv2.contourArea)
         distance = 999999999
         closest_coords = [0, 0, 0, 0]
@@ -381,7 +387,8 @@ def find_moving_target(image, scouting):
     # the mask
     mask = cv2.inRange(image, lower, upper)
     ret, thresh = cv2.threshold(mask, 40, 255, 0)
-    if (cv2.__version__[0] > '3'):
+    # noinspection PyUnresolvedReferences
+    if cv2.__version__[0] > '3':
         contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     else:
         im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -403,10 +410,10 @@ def find_moving_target(image, scouting):
             if scouting:
                 return True
             else:
-                bezierMovement(center[0] - 10, center[0] + 10, center[1] - 10, center[1] + 10)
+                bezier_movement(center[0] - 10, center[0] + 10, center[1] - 10, center[1] + 10)
                 pyautogui.click()
                 # give the highlight a half second to pop up
-                randomSleep(0.5, 0.7)
+                random_sleep(0.5, 0.7)
                 # implement red x check ot make sure i clicked
                 screen = np.array(ImageGrab.grab())
                 did_click = find_click_x(screen)
@@ -432,21 +439,22 @@ def find_fixed_object_while_moving(area, scouting):
     # the mask
     mask = cv2.inRange(image, lower, upper)
     ret, thresh = cv2.threshold(mask, 40, 255, 0)
-    if (cv2.__version__[0] > '3'):
+    # noinspection PyUnresolvedReferences
+    if cv2.__version__[0] > '3':
         contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     else:
         im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     if len(contours) == 1:
         if scouting:
             x, y, w, h = cv2.boundingRect(contours[0])
-            return [x,y]
+            return [x, y]
         print('found a bank, going to click')
         center = find_contour_center(contours[0])
         if center:
-            bezierMovement(center[0] - 2, center[0] + 2, center[1] - 2, center[1] + 2)
+            bezier_movement(center[0] - 2, center[0] + 2, center[1] - 2, center[1] + 2)
             pyautogui.click()
             # give the highlight a half second to pop up
-            randomSleep(0.2, 0.3)
+            random_sleep(0.2, 0.3)
             # implement red x check ot make sure i clicked
             screen = np.array(ImageGrab.grab())
             did_click = did_i_click_fixed_obj(screen)
@@ -472,7 +480,8 @@ def find_click_x_with_draw(image):
     mask = cv2.inRange(image, lower, upper)
     output = cv2.bitwise_and(image, image, mask=mask)
     ret, thresh = cv2.threshold(mask, 40, 255, 0)
-    if (cv2.__version__[0] > '3'):
+    # noinspection PyUnresolvedReferences
+    if cv2.__version__[0] > '3':
         contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     else:
         im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -502,7 +511,8 @@ def find_click_x(image):
     mask = cv2.inRange(image, lower, upper)
     output = cv2.bitwise_and(image, image, mask=mask)
     ret, thresh = cv2.threshold(mask, 40, 255, 0)
-    if (cv2.__version__[0] > '3'):
+    # noinspection PyUnresolvedReferences
+    if cv2.__version__[0] > '3':
         contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     else:
         im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -524,7 +534,8 @@ def did_i_click_fixed_obj(image):
     mask = cv2.inRange(image, lower, upper)
     output = cv2.bitwise_and(image, image, mask=mask)
     ret, thresh = cv2.threshold(mask, 40, 255, 0)
-    if (cv2.__version__[0] > '3'):
+    # noinspection PyUnresolvedReferences
+    if cv2.__version__[0] > '3':
         contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     else:
         im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -546,7 +557,8 @@ def experimental_find_click_x(image):
     mask = cv2.inRange(image, lower, upper)
     output = cv2.bitwise_and(image, image, mask=mask)
     ret, thresh = cv2.threshold(mask, 40, 255, 0)
-    if (cv2.__version__[0] > '3'):
+    # noinspection PyUnresolvedReferences
+    if cv2.__version__[0] > '3':
         contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     else:
         im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -559,17 +571,18 @@ def experimental_find_click_x(image):
 
 
 def walk_north_minimap():
-    bezierMovement(2443, 2462, 43, 64)
-    randomSleep(0.1, 0.2)
+    bezier_movement(2443, 2462, 43, 64)
+    random_sleep(0.1, 0.2)
     pyautogui.click()
     return True
 
 
 def walk_south_minimap():
-    bezierMovement(2446, 2459, 216, 223)
-    randomSleep(0.1, 0.2)
+    bezier_movement(2446, 2459, 216, 223)
+    random_sleep(0.1, 0.2)
     pyautogui.click()
     return True
+
 
 def look_for_item_in_bag(item):
     is_in_bag = _deprecated_rough_img_compare('..\\screens\\' + item, .8, (2299, 1024, 2510, 1324))
@@ -594,12 +607,13 @@ def find_highlighted_item_on_ground(image, x_off, y_off):
 
     mask = lower_mask + upper_mask
     ret, thresh = cv2.threshold(mask, 40, 255, 0)
-    if (cv2.__version__[0] > '3'):
+    # noinspection PyUnresolvedReferences
+    if cv2.__version__[0] > '3':
         contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     else:
         im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     if len(contours) != 0:
-        ## find all contours that look like highlighted tiles
+        # find all contours that look like highlighted tiles
         distance = 999999999
         closest_coords = [0, 0, 0, 0]
         closest_contour = None
@@ -621,7 +635,7 @@ def find_highlighted_item_on_ground(image, x_off, y_off):
 
 def check_health():
     pytesseract.pytesseract.tesseract_cmd = r'C:\\Program Files\\Tesseract-OCR\\tesseract'
-    img = ImageGrab.grab((2270,  1030,2286, 1044))
+    img = ImageGrab.grab((2270, 1030, 2286, 1044))
     img = cv2.cvtColor(np.array(img), cv2.COLOR_BGR2GRAY)
     health = pytesseract.image_to_string(img, config='--psm 6 -c tessedit_char_whitelist=0123456789')
     if health:
@@ -641,13 +655,14 @@ def is_bag_full():
     else:
         return False
 
+
 def walking_with_full_run_energy():
     full_run = Image.open('..\\screens\\run_energy.png')
     run_energy = rough_img_compare(full_run, .8, (2276, 32, 2548, 273))
     print('run: ', run_energy)
     if run_energy:
-        bezierMovement(run_energy[0] - 2, run_energy[0] + 2, run_energy[1] - 2, run_energy[1] + 2)
-        randomSleep(0.1, 0.2)
+        bezier_movement(run_energy[0] - 2, run_energy[0] + 2, run_energy[1] - 2, run_energy[1] + 2)
+        random_sleep(0.1, 0.2)
         pyautogui.click()
     else:
         return False
@@ -663,25 +678,25 @@ def solve_bank_pin():
 
         loc = rough_img_compare('..\\screens\\bank_pin_' + num + '.png', .8, [641, 306, 1648, 1008])
         if loc:
-            bezierMovement(loc[0], loc[0] + 1, loc[1], loc[1] + 1)
-            randomSleep(0.2,0.3)
+            bezier_movement(loc[0], loc[0] + 1, loc[1], loc[1] + 1)
+            random_sleep(0.2, 0.3)
             pyautogui.click()
-            randomSleep(0.2, 0.3)
-            bezierMovement(1200,1700,12,209)
+            random_sleep(0.2, 0.3)
+            bezier_movement(1200, 1700, 12, 209)
         else:
             return 'couldnt find ' + num
-        randomSleep(1.1, 1.2)
+        random_sleep(1.1, 1.2)
 
 
 def wait_until_stationary():
     cycles = 0
     same_frame_count = 0
-    prev_img = ImageGrab.grab((2082,  36, 2238, 100))
+    prev_img = ImageGrab.grab((2082, 36, 2238, 100))
     time.sleep(.5)
     while True:
         print('running', same_frame_count)
-        curr_img = ImageGrab.grab((2082,  36, 2238, 100))
-        player_loc = calcImgDiff(prev_img, curr_img, 3)
+        curr_img = ImageGrab.grab((2082, 36, 2238, 100))
+        player_loc = calc_img_diff(prev_img, curr_img, 3)
         if player_loc == 'same' and same_frame_count > 8:
             return 'success'
         elif player_loc == 'same':
@@ -693,6 +708,7 @@ def wait_until_stationary():
         cycles += 1
         same_frame_count = 0
         prev_img = curr_img
+
 
 def find_moving_target_no_verify(image):
     # cyan color boundaries [B, G, R]
@@ -706,7 +722,8 @@ def find_moving_target_no_verify(image):
     # the mask
     mask = cv2.inRange(image, lower, upper)
     ret, thresh = cv2.threshold(mask, 40, 255, 0)
-    if (cv2.__version__[0] > '3'):
+    # noinspection PyUnresolvedReferences
+    if cv2.__version__[0] > '3':
         contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     else:
         im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -727,7 +744,7 @@ def find_moving_target_no_verify(image):
         center = find_contour_center(closest_contour)
         if center:
             print('here')
-            bezierMovement(center[0] - 3, center[0] + 3, center[1] - 3, center[1] + 3)
+            bezier_movement(center[0] - 3, center[0] + 3, center[1] - 3, center[1] + 3)
             pyautogui.click()
             return True
         return False
@@ -735,60 +752,60 @@ def find_moving_target_no_verify(image):
 
 
 def change_npc_highlights(npc):
-    bezierMovement(2444, 2453, 8, 17)
-    randomSleep(0.1, 0.2)
+    bezier_movement(2444, 2453, 8, 17)
+    random_sleep(0.1, 0.2)
     pyautogui.click()
-    bezierMovement(2278, 2337, 54, 68)
-    randomSleep(0.1, 0.2)
+    bezier_movement(2278, 2337, 54, 68)
+    random_sleep(0.1, 0.2)
     pyautogui.click()
     keyboard.send('ctrl + a')
     keyboard.send('del')
     type_something('npc indi')
-    bezierMovement(2452, 2458, 108, 114)
-    randomSleep(0.1, 0.2)
+    bezier_movement(2452, 2458, 108, 114)
+    random_sleep(0.1, 0.2)
     pyautogui.click()
-    bezierMovement(2232, 2286, 452, 464)
-    randomSleep(0.2, 0.3)
+    bezier_movement(2232, 2286, 452, 464)
+    random_sleep(0.2, 0.3)
     pyautogui.click()
     keyboard.send('ctrl + a')
     keyboard.send('del')
     type_something(npc)
-    bezierMovement(2229, 2240, 45, 56)
-    randomSleep(0.1, 0.2)
+    bezier_movement(2229, 2240, 45, 56)
+    random_sleep(0.1, 0.2)
     pyautogui.click()
-    bezierMovement(2444, 2453, 8, 17)
-    randomSleep(0.1, 0.2)
+    bezier_movement(2444, 2453, 8, 17)
+    random_sleep(0.1, 0.2)
     pyautogui.click()
+
 
 def type_something(phrase):
     for char in phrase:
         keyboard.send(char)
-        randomSleep(0.1,0.2)
+        random_sleep(0.1, 0.2)
 
 
 def change_fishing_settings():
-    bezierMovement(2444, 2453, 8, 17)
-    randomSleep(0.1, 0.2)
+    bezier_movement(2444, 2453, 8, 17)
+    random_sleep(0.1, 0.2)
     pyautogui.click()
-    bezierMovement(2278, 2337, 54, 68)
-    randomSleep(0.1, 0.2)
+    bezier_movement(2278, 2337, 54, 68)
+    random_sleep(0.1, 0.2)
     pyautogui.click()
     keyboard.send('ctrl + a')
     keyboard.send('del')
     type_something('fishing')
-    bezierMovement(2452, 2458, 108, 114)
-    randomSleep(0.1, 0.2)
+    bezier_movement(2452, 2458, 108, 114)
+    random_sleep(0.1, 0.2)
     pyautogui.click()
-    bezierMovement(2477, 2486, 135, 142)
-    randomSleep(0.1, 0.2)
+    bezier_movement(2477, 2486, 135, 142)
+    random_sleep(0.1, 0.2)
     pyautogui.click()
-    bezierMovement(2479, 2488, 174, 178)
-    randomSleep(0.1, 0.2)
+    bezier_movement(2479, 2488, 174, 178)
+    random_sleep(0.1, 0.2)
     pyautogui.click()
-    bezierMovement(2230, 2239, 46, 54)
-    randomSleep(0.1, 0.2)
+    bezier_movement(2230, 2239, 46, 54)
+    random_sleep(0.1, 0.2)
     pyautogui.click()
-    bezierMovement(2444, 2453, 8, 17)
-    randomSleep(0.1, 0.2)
+    bezier_movement(2444, 2453, 8, 17)
+    random_sleep(0.1, 0.2)
     pyautogui.click()
-

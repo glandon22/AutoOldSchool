@@ -27,35 +27,35 @@ def go_to_bank():
         did_i_find = general_utils.find_fixed_object([400, 0, 2096, 966], 400, 0)
         if did_i_find:
             found = True
-            general_utils.randomSleep(0.5, 0.7)
+            general_utils.random_sleep(0.5, 0.7)
 
 
 def buy_store_items(shop_coords):
-    click_coords = general_utils.bezierMovement(shop_coords[0], shop_coords[1], shop_coords[2], shop_coords[3])
-    general_utils.randomSleep(0.2, 0.3)
+    click_coords = general_utils.bezier_movement(shop_coords[0], shop_coords[1], shop_coords[2], shop_coords[3])
+    general_utils.random_sleep(0.2, 0.3)
     pyautogui.click(button="right")
-    general_utils.randomSleep(0.1, 0.2)
-    general_utils.bezierMovement(click_coords[0], click_coords[0] + 15, click_coords[1] + 100, click_coords[1] + 108)
-    general_utils.randomSleep(0.2, 0.3)
+    general_utils.random_sleep(0.1, 0.2)
+    general_utils.bezier_movement(click_coords[0], click_coords[0] + 15, click_coords[1] + 100, click_coords[1] + 108)
+    general_utils.random_sleep(0.2, 0.3)
     pyautogui.click()
-    general_utils.randomSleep(0.5, 0.7)
+    general_utils.random_sleep(0.5, 0.7)
 
 
 def is_bag_full():
     curr_slot = ImageGrab.grab([2474, 1306, 2512, 1330])
     curr_slot.save('.\\screens\\curr_slot.png')
 
-    if general_utils.calcImgDiff(curr_slot, emptyLastSlot, 5) == 'same':
+    if general_utils.calc_img_diff(curr_slot, emptyLastSlot, 5) == 'same':
         return False
     else:
         return True
 
 
 def walk_to_dock():
-    general_utils.bezierMovement(1787, 1883, 1320, 1372)
-    general_utils.randomSleep(0.1, 0.2)
+    general_utils.bezier_movement(1787, 1883, 1320, 1372)
+    general_utils.random_sleep(0.1, 0.2)
     general_utils.pyautogui.click()
-    general_utils.randomSleep(7.6, 8.3)
+    general_utils.random_sleep(7.6, 8.3)
 
 
 def process_img(image, iters):
@@ -66,14 +66,14 @@ def process_img(image, iters):
         print('checking to see if we are on the ship')
         curr_map = ImageGrab.grab([2450, 76, 2486, 108])
         curr_map.save('.\\screens\\currMap.png')
-        if general_utils.calcImgDiff(curr_map, Image.open('.\\screens\\ship_map.png'), 2) == 'same':
+        if general_utils.calc_img_diff(curr_map, Image.open('.\\screens\\ship_map.png'), 2) == 'same':
             print('on ship')
-            general_utils.bezierMovement(1277, 1290, 672, 685)
+            general_utils.bezier_movement(1277, 1290, 672, 685)
             pyautogui.click()
-            general_utils.randomSleep(2.4, 3.2)
+            general_utils.random_sleep(2.4, 3.2)
     expected_store = ImageGrab.grab([1016, 436, 1064, 450])
     img = Image.open('.\\screens\\stan.png')
-    if general_utils.calcImgDiff(img, expected_store, 5) == 'same':
+    if general_utils.calc_img_diff(img, expected_store, 5) == 'same':
         return True
     print('looking for martin')
     # cyan color boundaries [B, G, R]
@@ -98,10 +98,10 @@ def process_img(image, iters):
         # find the biggest contour (c) by the area
         c = max(contours, key=cv2.contourArea)
         x, y, w, h = cv2.boundingRect(c)
-        general_utils.bezierMovement((x + 926) + 10, (x + 926) + 15, (y + 344) + 10, (y + 344) + 15)
-        general_utils.randomSleep(0.1, 0.2)
+        general_utils.bezier_movement((x + 926) + 10, (x + 926) + 15, (y + 344) + 10, (y + 344) + 15)
+        general_utils.random_sleep(0.1, 0.2)
         pyautogui.click()
-        general_utils.randomSleep(2.7, 3.1)
+        general_utils.random_sleep(2.7, 3.1)
         # pyautogui.moveTo((x + 926) + 10,(y + 344) + 10)
         # draw the biggest contour (c) in green
     return False
@@ -116,22 +116,22 @@ def find_single_target():
         did_i_find = process_img(screen, iters)
         if did_i_find:
             found = True
-            general_utils.randomSleep(0.5, 0.7)
+            general_utils.random_sleep(0.5, 0.7)
 
 
 def dump_item():
     seaweed = general_utils._deprecated_rough_img_compare('.\\screens\\seaweed_in_bag.png', .75, (844, 438, 1402, 774))
     if seaweed:
-        general_utils.bezierMovement(seaweed.get('x'), seaweed.get('x') + 7, seaweed.get('y'), seaweed.get('y') + 9)
+        general_utils.bezier_movement(seaweed.get('x'), seaweed.get('x') + 7, seaweed.get('y'), seaweed.get('y') + 9)
         pyautogui.click()
-        general_utils.randomSleep(0.2, 0.4)
+        general_utils.random_sleep(0.2, 0.4)
     soda = general_utils._deprecated_rough_img_compare('.\\screens\\soda_in_bag.png', .75, (844, 438, 1402, 774))
     if soda:
-        general_utils.bezierMovement(soda.get('x'), soda.get('x') + 6, soda.get('y'), soda.get('y') + 6)
+        general_utils.bezier_movement(soda.get('x'), soda.get('x') + 6, soda.get('y'), soda.get('y') + 6)
         pyautogui.click()
-        general_utils.randomSleep(0.2, 0.4)
+        general_utils.random_sleep(0.2, 0.4)
     kb.send('esc')
-    general_utils.randomSleep(0.4, 0.6)
+    general_utils.random_sleep(0.4, 0.6)
 
 
 def main():
@@ -148,7 +148,7 @@ def main():
             # buy soda ash
             buy_store_items([1254, 1276, 606, 616])
             kb.send('esc')
-            general_utils.randomSleep(0.3, 0.5)
+            general_utils.random_sleep(0.3, 0.5)
             if is_bag_full():
                 print('bag is full')
                 break
@@ -157,9 +157,9 @@ def main():
                 return print(hopped)
         go_to_bank()
         dump_item()
-        general_utils.randomSleep(4.3, 5.8)
+        general_utils.random_sleep(4.3, 5.8)
         if random.randint(1, 10) == 2:
-            general_utils.randomSleep(20.3, 25.9)
+            general_utils.random_sleep(20.3, 25.9)
 
 
 main()

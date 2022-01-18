@@ -28,7 +28,7 @@ def find_giants():
             return 'unable to find giants after banking'
         else:
             cycles_looking_for_giant += 1
-        general_utils.randomSleep(2.3, 3.8)
+        general_utils.random_sleep(2.3, 3.8)
     return 'success'
 
 
@@ -47,7 +47,7 @@ def attack_giants():
             return 'couldnt attack a giant'
         else:
             cycles_to_attack_giant += 1
-        general_utils.randomSleep(1.1, 1.2)
+        general_utils.random_sleep(1.1, 1.2)
 
 
 def kill_giant():
@@ -59,7 +59,7 @@ def kill_giant():
         # been in combat for too long something is wrong, leave the area
         if cycles_in_combat > 5000:
             general_utils.walk_north_minimap()
-            general_utils.randomSleep(1.1, 1.4)
+            general_utils.random_sleep(1.1, 1.4)
             general_utils.walk_north_minimap()
             return 'been in combat for too long, leave the area'
         elif still_in_combat:
@@ -73,7 +73,7 @@ def experimental_kill_giant():
     center_finds = 0
     aggregate_center = [0, 0]
     while True:
-        general_utils.randomSleep(0.1, 0.2)
+        general_utils.random_sleep(0.1, 0.2)
         print('cycles in combat: ', cycles_in_combat)
         screen = np.array(ImageGrab.grab())
         still_in_combat = general_utils.experimental_find_click_x(screen)
@@ -84,7 +84,7 @@ def experimental_kill_giant():
             # been in combat for too long something is wrong, leave the area
             if cycles_in_combat > 5000:
                 general_utils.walk_north_minimap()
-                general_utils.randomSleep(1.1, 1.4)
+                general_utils.random_sleep(1.1, 1.4)
                 general_utils.walk_north_minimap()
                 return 'been in combat for too long, leave the area'
             elif still_in_combat[0]:
@@ -96,7 +96,7 @@ def experimental_kill_giant():
         else:
             if cycles_in_combat > 5000:
                 general_utils.walk_north_minimap()
-                general_utils.randomSleep(1.1, 1.4)
+                general_utils.random_sleep(1.1, 1.4)
                 general_utils.walk_north_minimap()
                 return 'been in combat for too long, leave the area'
             elif still_in_combat:
@@ -109,9 +109,9 @@ def experimental_kill_giant():
 def eat(food):
     food_loc = general_utils.look_for_item_in_bag(food)
     if food_loc:
-        general_utils.bezierMovement(food_loc.get('x') + 2, food_loc.get('x') + 5, food_loc.get('y') + 2,
-                                     food_loc.get('y') + 5)
-        general_utils.randomSleep(0.1,0.2)
+        general_utils.bezier_movement(food_loc.get('x') + 2, food_loc.get('x') + 5, food_loc.get('y') + 2,
+                                      food_loc.get('y') + 5)
+        general_utils.random_sleep(0.1, 0.2)
         pyautogui.click()
         return 'success'
     else:
@@ -121,8 +121,8 @@ def check_to_eat(food):
     while True:
         food_loc = general_utils.look_for_item_in_bag(food)
         if food_loc:
-            general_utils.bezierMovement(food_loc.get('x') + 2, food_loc.get('x') + 5, food_loc.get('y') + 2, food_loc.get('y') + 5)
-            general_utils.randomSleep(0.2,0.3)
+            general_utils.bezier_movement(food_loc.get('x') + 2, food_loc.get('x') + 5, food_loc.get('y') + 2, food_loc.get('y') + 5)
+            general_utils.random_sleep(0.2, 0.3)
             screen = ImageGrab.grab([2299, 1024, 2510, 1324])
             ate = general_utils.will_food_heal_full(screen)
             # I have food, but i no longer will get the max hp restore from eating
@@ -132,7 +132,7 @@ def check_to_eat(food):
             else:
                 print('eating')
                 pyautogui.click()
-                general_utils.randomSleep(0.5,0.6)
+                general_utils.random_sleep(0.5, 0.6)
         else:
             return 'no food'
     return 'success'
@@ -160,8 +160,8 @@ def go_to_bank():
     #check to see if im running or not
     run_status = general_utils.walking_with_full_run_energy()
     if run_status:
-        general_utils.bezierMovement(run_status.get('x'), run_status.get('x') + 3, run_status.get('y'), run_status.get('y') + 3)
-        general_utils.randomSleep(0.4, 0.5)
+        general_utils.bezier_movement(run_status.get('x'), run_status.get('x') + 3, run_status.get('y'), run_status.get('y') + 3)
+        general_utils.random_sleep(0.4, 0.5)
         print('clicking')
         pyautogui.click()
     # begin walking north to find some moss giants
@@ -176,17 +176,17 @@ def go_to_bank():
             waiting = general_utils.wait_until_stationary()
             if waiting != 'success':
                 return waiting
-            general_utils.randomSleep(0.4,0.5)
+            general_utils.random_sleep(0.4, 0.5)
             break
         elif cycles_looking_for_bank > 20:
             return 'unable to find bank'
         else:
             cycles_looking_for_bank += 1
             print('havent seen bank yet. cycles: ', cycles_looking_for_bank)
-        general_utils.randomSleep(3.3, 4.8)
+        general_utils.random_sleep(3.3, 4.8)
     cycles_trying_to_click_bank = 0
     while True:
-        general_utils.randomSleep(1.2, 1.4)
+        general_utils.random_sleep(1.2, 1.4)
         screen = np.array(ImageGrab.grab())
         clicked_bank = general_utils.find_fixed_object_while_moving([0, 0, 2560, 1440], False)
         if clicked_bank:
@@ -201,7 +201,7 @@ def go_to_bank():
 
 
 def collect_loot():
-    general_utils.randomSleep(1.2, 1.3)
+    general_utils.random_sleep(1.2, 1.3)
     cycles_waiting_for_loot = 0
     while True:
         loot = general_utils.find_highlighted_item_on_ground(np.array(ImageGrab.grab([1167, 565, 1406, 800])), 1167,
@@ -214,10 +214,10 @@ def collect_loot():
             # loot the pile, loop through in case there are multiple valuable drops
             while True:
                 print('cycles looting', cycles_looting)
-                general_utils.bezierMovement(click_loc[0] - 2, click_loc[0] + 2, click_loc[1] - 2, click_loc[1] + 2)
-                general_utils.randomSleep(0.1, 0.2)
+                general_utils.bezier_movement(click_loc[0] - 2, click_loc[0] + 2, click_loc[1] - 2, click_loc[1] + 2)
+                general_utils.random_sleep(0.1, 0.2)
                 pyautogui.click()
-                general_utils.randomSleep(.5, .6)
+                general_utils.random_sleep(.5, .6)
                 more_loot = general_utils.find_highlighted_item_on_ground(
                     np.array(ImageGrab.grab([1167, 565, 1406, 800])), 1167, 565)
                 # there is more loot on the ground
@@ -252,7 +252,7 @@ def main():
         if find != 'success':
             return find
         print('found giants')
-        general_utils.randomSleep(2.0, 2.1)
+        general_utils.random_sleep(2.0, 2.1)
         # attack giants until bag is full
         while True:
             attack = attack_giants()
