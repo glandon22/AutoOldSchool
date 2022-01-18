@@ -68,44 +68,6 @@ def kill_giant():
             return 'success'
 
 
-def experimental_kill_giant():
-    cycles_in_combat = 0
-    center_finds = 0
-    aggregate_center = [0, 0]
-    while True:
-        general_utils.random_sleep(0.1, 0.2)
-        print('cycles in combat: ', cycles_in_combat)
-        screen = np.array(ImageGrab.grab())
-        still_in_combat = general_utils.experimental_find_click_x(screen)
-        if isinstance(still_in_combat, list):
-            center_finds += 1
-            aggregate_center[0] = still_in_combat[1][0] + aggregate_center[0] / center_finds
-            aggregate_center[1] = still_in_combat[1][1] + aggregate_center[1] / center_finds
-            # been in combat for too long something is wrong, leave the area
-            if cycles_in_combat > 5000:
-                general_utils.walk_north_minimap()
-                general_utils.random_sleep(1.1, 1.4)
-                general_utils.walk_north_minimap()
-                return 'been in combat for too long, leave the area'
-            elif still_in_combat[0]:
-                cycles_in_combat += 1
-            else:
-                print('ag', round(aggregate_center[0]), round(aggregate_center[1]))
-                pyautogui.moveTo(round(aggregate_center[0]) + 40, round(aggregate_center[1]) - 25)
-                return 'success'
-        else:
-            if cycles_in_combat > 5000:
-                general_utils.walk_north_minimap()
-                general_utils.random_sleep(1.1, 1.4)
-                general_utils.walk_north_minimap()
-                return 'been in combat for too long, leave the area'
-            elif still_in_combat:
-                cycles_in_combat += 1
-            else:
-                print('ag', round(aggregate_center[0]), round(aggregate_center[1]))
-                pyautogui.moveTo(round(aggregate_center[0]) + 40, round(aggregate_center[1]) - 25)
-                return 'success'
-
 def eat(food):
     food_loc = general_utils.look_for_item_in_bag(food)
     if food_loc:

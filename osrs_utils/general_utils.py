@@ -12,7 +12,7 @@ import random
 import pyautogui
 from PIL import Image
 from PIL import ImageChops
-import pyscreenshot as ImageGrab
+import pyscreenshot
 import operator
 from functools import reduce
 import cv2
@@ -42,8 +42,8 @@ def bezier_movement(x_min, x_max, y_min, y_max):
 
     # Randomise inner points a bit (+-RND at most).
     rnd = random.randint(9, 11)
-    xr = [random.randint(-rnd, rnd) for k in range(cp)]
-    yr = [random.randint(-rnd, rnd) for k in range(cp)]
+    xr = [random.randint(-rnd, rnd) for _ in range(cp)]
+    yr = [random.randint(-rnd, rnd) for _ in range(cp)]
     xr[0] = yr[0] = xr[-1] = yr[-1] = 0
     x += xr
     y += yr
@@ -180,7 +180,7 @@ def go_to_target(targ_area):
     attempts = 0
     while True:
         print(attempts)
-        screen = np.array(ImageGrab.grab(targ_area))
+        screen = np.array(pyscreenshot.grab(targ_area))
         did_i_find = find_fixed_object(screen, targ_area[0], targ_area[1])
         if did_i_find:
             random_sleep(0.5, 0.7)
@@ -227,7 +227,7 @@ def process_with_tool(slot, button, expected_last_slot, max_cycles):
     pyautogui.click()
     cycles_waiting = 0
     while True:
-        last_slot = calc_img_diff(Image.open(expected_last_slot), ImageGrab.grab([2476, 1304, 2500, 1324]), 3)
+        last_slot = calc_img_diff(Image.open(expected_last_slot), pyscreenshot.grab([2476, 1304, 2500, 1324]), 3)
         if last_slot == 'same':
             break
         elif did_level():
@@ -245,7 +245,7 @@ def process_with_tool(slot, button, expected_last_slot, max_cycles):
 def hop_worlds():
     kb.send('alt + shift + x')
     random_sleep(3.3, 3.9)
-    if calc_img_diff(ImageGrab.grab([22, 1212, 590, 1337]), Image.open('.\\screens\\w319.png'), 3) == 'same':
+    if calc_img_diff(pyscreenshot.grab([22, 1212, 590, 1337]), Image.open('.\\screens\\w319.png'), 3) == 'same':
         print('hopping to world 319')
         kb.send('space')
         random_sleep(0.7, 0.9)
@@ -267,7 +267,7 @@ def hop_worlds():
 
 
 def find_fixed_npc(box, x_offset, y_offset):
-    image = np.array(ImageGrab.grab(bbox=box))
+    image = np.array(pyscreenshot.grab(bbox=box))
     # red color boundaries R,G,B
     lower = [0, 255, 255]
     upper = [0, 255, 255]
@@ -415,7 +415,7 @@ def find_moving_target(image, scouting):
                 # give the highlight a half second to pop up
                 random_sleep(0.5, 0.7)
                 # implement red x check ot make sure i clicked
-                screen = np.array(ImageGrab.grab())
+                screen = np.array(pyscreenshot.grab())
                 did_click = find_click_x(screen)
                 if did_click:
                     print('here1')
@@ -427,7 +427,7 @@ def find_moving_target(image, scouting):
 
 
 def find_fixed_object_while_moving(area, scouting):
-    image = np.array(ImageGrab.grab(area))
+    image = np.array(pyscreenshot.grab(area))
     # yellow color
     lower = [255, 255, 0]
     upper = [255, 255, 0]
@@ -456,7 +456,7 @@ def find_fixed_object_while_moving(area, scouting):
             # give the highlight a half second to pop up
             random_sleep(0.2, 0.3)
             # implement red x check ot make sure i clicked
-            screen = np.array(ImageGrab.grab())
+            screen = np.array(pyscreenshot.grab())
             did_click = did_i_click_fixed_obj(screen)
             if did_click:
                 print('here1')
@@ -509,7 +509,6 @@ def find_click_x(image):
     # find the colors within the specified boundaries and apply
     # the mask
     mask = cv2.inRange(image, lower, upper)
-    output = cv2.bitwise_and(image, image, mask=mask)
     ret, thresh = cv2.threshold(mask, 40, 255, 0)
     # noinspection PyUnresolvedReferences
     if cv2.__version__[0] > '3':
@@ -532,7 +531,6 @@ def did_i_click_fixed_obj(image):
     # find the colors within the specified boundaries and apply
     # the mask
     mask = cv2.inRange(image, lower, upper)
-    output = cv2.bitwise_and(image, image, mask=mask)
     ret, thresh = cv2.threshold(mask, 40, 255, 0)
     # noinspection PyUnresolvedReferences
     if cv2.__version__[0] > '3':
@@ -540,32 +538,6 @@ def did_i_click_fixed_obj(image):
     else:
         im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     if len(contours) != 0:
-        return True
-    return False
-
-
-def experimental_find_click_x(image):
-    # red color boundaries [B, G, R]
-    lower = [19, 0, 255]
-    upper = [19, 0, 255]
-
-    # create NumPy arrays from the boundaries
-    lower = np.array(lower, dtype="uint8")
-    upper = np.array(upper, dtype="uint8")
-    # find the colors within the specified boundaries and apply
-    # the mask
-    mask = cv2.inRange(image, lower, upper)
-    output = cv2.bitwise_and(image, image, mask=mask)
-    ret, thresh = cv2.threshold(mask, 40, 255, 0)
-    # noinspection PyUnresolvedReferences
-    if cv2.__version__[0] > '3':
-        contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    else:
-        im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    if len(contours) != 0:
-        center = find_contour_center(contours[0])
-        if center:
-            return [True, center]
         return True
     return False
 
@@ -635,7 +607,7 @@ def find_highlighted_item_on_ground(image, x_off, y_off):
 
 def check_health():
     pytesseract.pytesseract.tesseract_cmd = r'C:\\Program Files\\Tesseract-OCR\\tesseract'
-    img = ImageGrab.grab((2270, 1030, 2286, 1044))
+    img = pyscreenshot.grab((2270, 1030, 2286, 1044))
     img = cv2.cvtColor(np.array(img), cv2.COLOR_BGR2GRAY)
     health = pytesseract.image_to_string(img, config='--psm 6 -c tessedit_char_whitelist=0123456789')
     if health:
@@ -691,11 +663,11 @@ def solve_bank_pin():
 def wait_until_stationary():
     cycles = 0
     same_frame_count = 0
-    prev_img = ImageGrab.grab((2082, 36, 2238, 100))
+    prev_img = pyscreenshot.grab((2082, 36, 2238, 100))
     time.sleep(.5)
     while True:
         print('running', same_frame_count)
-        curr_img = ImageGrab.grab((2082, 36, 2238, 100))
+        curr_img = pyscreenshot.grab((2082, 36, 2238, 100))
         player_loc = calc_img_diff(prev_img, curr_img, 3)
         if player_loc == 'same' and same_frame_count > 8:
             return 'success'
