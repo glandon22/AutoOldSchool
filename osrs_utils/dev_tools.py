@@ -1,14 +1,15 @@
 import pyautogui
 import time
 import pyautogui
-import pyscreenshot as ImageGrab
+import pyscreenshot
+
 
 def quick_screenshot(name, add):
     print('ready in 3')
     time.sleep(3)
     x, y = pyautogui.position()
     print('sc box', x, y)
-    im = ImageGrab.grab([x, y, x + add, y + add])
+    im = pyscreenshot.grab([x, y, x + add, y + add])
     # save image file
     im.save(r'screens\\' + name + '.png', 'png')
 
@@ -18,7 +19,7 @@ def get_pos():
     print(pyautogui.position())
 
 
-def calculateClickbox():
+def calculate_clickbox():
     i = 0
     points = list()
     while i < 4:
@@ -34,28 +35,17 @@ def calculateClickbox():
     return [x1, x2, y1, y2]
 
 
-def getInvCoords():
-    fullCoords = []
-    i = 0
-    while i < 28:
-        print('getting inv slot ', i + 1)
-        fullCoords.append(calculateClickbox())
-        print('full coords ', fullCoords)
-        print(i + 1, ' completed. moving to next slot')
-        i = i + 1
-
-
-def captureScreenshot(name):
-    screenshotBox = calculateClickbox()
-    print('sc box', screenshotBox)
+def capture_screenshot(name):
+    screenshot_box = calculate_clickbox()
+    print('sc box', screenshot_box)
     time.sleep(1)
-    im = ImageGrab.grab([screenshotBox[0], screenshotBox[2], screenshotBox[1], screenshotBox[3]])
+    im = pyscreenshot.grab([screenshot_box[0], screenshot_box[2], screenshot_box[1], screenshot_box[3]])
     # save image file
     im.save(r'..\\screens\\' + name + '.png', 'png')
 
 
-def captureSpecificScreenCoords(screenshotBox, name):
-    im = ImageGrab.grab([screenshotBox[0], screenshotBox[2], screenshotBox[1], screenshotBox[3]])
+def capture_specific_screen_coords(screenshot_box, name):
+    im = pyscreenshot.grab([screenshot_box[0], screenshot_box[2], screenshot_box[1], screenshot_box[3]])
     # save image file
     im.save(name + '.png', 'png')
     return im
@@ -63,8 +53,8 @@ def captureSpecificScreenCoords(screenshotBox, name):
 
 def capture_under_mouse(name):
     print('capturing hover bar')
-    currentMouseX, currentMouseY = pyautogui.position()
-    hover = ImageGrab.grab([currentMouseX + 1, currentMouseY + 31, currentMouseX + 140, currentMouseY + 49])
+    current_mouse_x, current_mouse_y = pyautogui.position()
+    hover = pyscreenshot.grab([current_mouse_x + 1, current_mouse_y + 31, current_mouse_x + 140, current_mouse_y + 49])
     hover.save(r'screens\\' + name + '.png', 'png')
     return hover
 
