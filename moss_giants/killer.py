@@ -71,8 +71,7 @@ def kill_giant():
 def eat(food):
     food_loc = general_utils.look_for_item_in_bag(food)
     if food_loc:
-        general_utils.bezier_movement(food_loc.get('x') + 2, food_loc.get('x') + 5, food_loc.get('y') + 2,
-                                      food_loc.get('y') + 5)
+        general_utils.bezier_movement(food_loc[0] + 2, food_loc[0] + 5, food_loc[1] + 2, food_loc[1] + 5)
         general_utils.random_sleep(0.1, 0.2)
         pyautogui.click()
         return 'success'
@@ -83,7 +82,7 @@ def check_to_eat(food):
     while True:
         food_loc = general_utils.look_for_item_in_bag(food)
         if food_loc:
-            general_utils.bezier_movement(food_loc.get('x') + 2, food_loc.get('x') + 5, food_loc.get('y') + 2, food_loc.get('y') + 5)
+            general_utils.bezier_movement(food_loc[0] + 2, food_loc[0] + 5, food_loc[1] + 2, food_loc[1] + 5)
             general_utils.random_sleep(0.2, 0.3)
             screen = ImageGrab.grab([2299, 1024, 2510, 1324])
             ate = general_utils.will_food_heal_full(screen)

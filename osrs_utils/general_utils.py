@@ -2,7 +2,7 @@
 # im = ImageGrab.grab([2,1190,645,1350])
 
 # inv coords
-# im = ImageGrab.grab([2299, 2510, 1024, 1324])
+# im = ImageGrab.grab([2299, 1024, 2510, 1324])
 import keyboard
 import numpy as np
 import time
@@ -10,8 +10,7 @@ from scipy import interpolate
 import math
 import random
 import pyautogui
-from PIL import Image
-from PIL import ImageChops
+from PIL import Image, ImageChops
 import pyscreenshot
 import operator
 from functools import reduce
@@ -101,24 +100,10 @@ def show_inv_coords(slot):
         [2320, 2342, 1259, 1282], [2372, 2394, 1261, 1280], [2425, 2446, 1262, 1280], [2478, 2500, 1261, 1280],
         [2319, 2342, 1305, 1326], [2370, 2393, 1306, 1322], [2426, 2445, 1306, 1324], [2476, 2500, 1304, 1324]
     ]
-    return inv_coords[slot]
-
-
-def _deprecated_rough_img_compare(img, confidence, region):
-    loc = pyautogui.locateOnScreen(img, confidence=confidence, region=region)
-    if loc:
-        return {'x': loc[0], 'y': loc[1]}
-    return False
+    return [inv_coords[slot][0], inv_coords[slot][2], inv_coords[slot][1], inv_coords[slot][3],]
 
 
 def rough_img_compare(img, confidence, region):
-    """
-
-    :param img:
-    :param confidence:
-    :param region:
-    :return: Array or bool
-    """
     loc = pyautogui.locateOnScreen(img, confidence=confidence, region=region)
     if loc:
         return loc
@@ -163,14 +148,10 @@ def find_fixed_object(image, x_offset, y_offset):
     else:
         _, contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     if len(contours) != 0:
-        # find the biggest contour (c) by the area
-        c = max(contours, key=cv2.contourArea)
-        x, y, w, h = cv2.boundingRect(c)
-        # this movement must also account for the offset of the target area bbox, i.e. the image coordinates passed
-        # to the findFixedObject function
-        bezier_movement(x + x_offset + (math.floor(w / 2)), x + x_offset + (math.floor(w / 2)),
-                        y + y_offset + math.floor(h / 2), y + y_offset + math.floor(h / 2))
-        random_sleep(0.1, 0.3)
+        closest_contour = find_closest_contour(contours)
+        center = find_contour_center(closest_contour)
+        bezier_movement(center[0] - 3, center[0] + 3, center[1] - 3, center[1] + 3)
+        random_sleep(0.2, 0.3)
         pyautogui.click()
         return True
     return False
@@ -194,14 +175,15 @@ def go_to_target(targ_area):
 
 def withdraw_items_from_bank(items, bank_interface):
     for item in items:
-        targ = _deprecated_rough_img_compare('..\\screens\\' + item, .75,
+        targ = rough_img_compare('..\\screens\\' + item, .75,
                                              (bank_interface[0], bank_interface[2], bank_interface[1],
                                               bank_interface[3]))
         if targ:
             print('taking ', item, ' from the bank')
-            bezier_movement(targ.get('x'), targ.get('x') + 6, targ.get('y'), targ.get('y') + 6)
+            bezier_movement(targ[0], targ[0] + 6, targ[1], targ[1] + 6)
+            random_sleep(0.3, 0.4)
+            print('clicking')
             pyautogui.click()
-            random_sleep(0.2, 0.4)
         else:
             return 'unable to find any more ' + item
     return 'success'
@@ -231,7 +213,7 @@ def process_with_tool(slot, button, expected_last_slot, max_cycles):
         if last_slot == 'same':
             break
         elif did_level():
-            restart = process_with_tool(27, '7', '.\\screens\\lens_in_bag.png', 35)
+            restart = process_with_tool(27, button, expected_last_slot, max_cycles)
             if restart != 'success':
                 return 'after leveling, did not successfully finish processing'
         elif cycles_waiting > max_cycles:
@@ -253,7 +235,7 @@ def hop_worlds():
     post_hop = Image.open('..\\screens\\post_hop.png')
     cycles_waiting = 0
     while True:
-        if _deprecated_rough_img_compare(post_hop, .8, (2270, 971, 2546, 1382)):
+        if rough_img_compare(post_hop, .8, (2270, 971, 2546, 1382)):
             break
         elif cycles_waiting > 1000:
             return 'failed to hop worlds'
@@ -301,7 +283,7 @@ def find_fixed_npc(box, x_offset, y_offset):
 def wait_for_bank_interface(interface_loc, max_cycles):
     cycles_waiting = 0
     while True:
-        location = _deprecated_rough_img_compare('..\\screens\\dump.png', .8,
+        location = rough_img_compare('..\\screens\\dump.png', .8,
                                                  (interface_loc[0], interface_loc[2], interface_loc[1],
                                                   interface_loc[3]))
         if location:
@@ -322,6 +304,43 @@ def find_contour_center(contour):
         return [cx, cy]
     else:
         return False
+
+
+def find_closest_contour(contours):
+    # find the biggest contour (c) by the area
+    # c = max(contours, key = cv2.contourArea)
+    distance = 999999999
+    closest_coords = [0, 0, 0, 0]
+    closest_contour = None
+    for c in contours:
+        x, y, w, h = cv2.boundingRect(c)
+        # pyautogui.moveTo((x + 805) + 10,(y + 36) + 10)
+        # draw the biggest contour (c) in green
+        current_distance = point_dist(1275, 715, x, y)
+        if current_distance < distance:
+            closest_coords = [x, y, w, h]
+            distance = current_distance
+            closest_contour = c
+    return closest_contour
+
+
+def find_closest_contour_draw(contours, output):
+    # find the biggest contour (c) by the area
+    # c = max(contours, key = cv2.contourArea)
+    distance = 999999999
+    closest_coords = [0, 0, 0, 0]
+    closest_contour = None
+    for c in contours:
+        x, y, w, h = cv2.boundingRect(c)
+        # pyautogui.moveTo((x + 805) + 10,(y + 36) + 10)
+        # draw the biggest contour (c) in green
+        cv2.rectangle(output, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        current_distance = point_dist(1275, 715, x, y)
+        if current_distance < distance:
+            closest_coords = [x, y, w, h]
+            distance = current_distance
+            closest_contour = c
+    return closest_contour, output
 
 
 def find_moving_target_with_draw(image):
@@ -346,21 +365,7 @@ def find_moving_target_with_draw(image):
         # draw in blue the contours that were founded
         cv2.drawContours(output, contours, -1, 255, 3)
 
-        # find the biggest contour (c) by the area
-        # c = max(contours, key = cv2.contourArea)
-        distance = 999999999
-        closest_coords = [0, 0, 0, 0]
-        closest_contour = None
-        for c in contours:
-            x, y, w, h = cv2.boundingRect(c)
-            # pyautogui.moveTo((x + 805) + 10,(y + 36) + 10)
-            # draw the biggest contour (c) in green
-            cv2.rectangle(output, (x, y), (x + w, y + h), (0, 255, 0), 2)
-            current_distance = point_dist(1275, 715, x, y)
-            if current_distance < distance:
-                closest_coords = [x, y, w, h]
-                distance = current_distance
-                closest_contour = c
+        closest_contour, output = find_closest_contour_draw(contours, output)
         center = find_contour_center(closest_contour)
         if center:
             cv2.drawContours(output, [closest_contour], -1, (0, 255, 0), 2)
@@ -557,7 +562,7 @@ def walk_south_minimap():
 
 
 def look_for_item_in_bag(item):
-    is_in_bag = _deprecated_rough_img_compare('..\\screens\\' + item, .8, (2299, 1024, 2510, 1324))
+    is_in_bag = rough_img_compare('..\\screens\\' + item, .8, (2299, 1024, 2510, 1324))
     if is_in_bag:
         return is_in_bag
     else:
@@ -620,12 +625,16 @@ def check_health():
 
 
 def is_bag_full():
-    last_slot_empty = Image.open('..\\screens\\last_slot_empty.png')
-    slot_is_empty = _deprecated_rough_img_compare(last_slot_empty, .8, (2299, 1024, 2510, 1324))
-    if not slot_is_empty:
-        return True
-    else:
-        return False
+    # loop backwards
+    for slot in range(27, -1, -1):
+        if calc_img_diff(
+                pyscreenshot.grab(show_inv_coords(slot)),
+                Image.open('..\\screens\\empty_bag\\slot' + str(slot) + '.png'),
+                3
+        ) == 'same':
+            return False
+    return True
+
 
 
 def walking_with_full_run_energy():
@@ -781,3 +790,10 @@ def change_fishing_settings():
     bezier_movement(2444, 2453, 8, 17)
     random_sleep(0.1, 0.2)
     pyautogui.click()
+
+def click_inv_slot(slot):
+    slot = show_inv_coords(slot)
+    bezier_movement(slot[0], slot[2], slot[1], slot[3])
+    random_sleep(0.2, 0.3)
+    pyautogui.click()
+

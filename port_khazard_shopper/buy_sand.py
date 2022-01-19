@@ -121,9 +121,9 @@ def find_single_target():
 
 
 def dump_item():
-    seaweed = general_utils._deprecated_rough_img_compare('.\\screens\\sand_in_bag.png', .75, (844, 438, 1402, 774))
+    seaweed = general_utils.rough_img_compare('.\\screens\\sand_in_bag.png', .75, (844, 438, 1402, 774))
     if seaweed:
-        general_utils.bezier_movement(seaweed.get('x'), seaweed.get('x') + 7, seaweed.get('y'), seaweed.get('y') + 9)
+        general_utils.bezier_movement(seaweed[0], seaweed[0] + 7, seaweed[1], seaweed[1] + 9)
         pyautogui.click()
         general_utils.random_sleep(0.2, 0.4)
     kb.send('esc')
