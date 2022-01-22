@@ -1,0 +1,9 @@
+numpy
+opencv-contrib-python
+pyautogui
+keyboard
+pillow
+pyscreenshot
+scipy
+pytesseract
+imutils
