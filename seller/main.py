@@ -4,30 +4,25 @@ import cv2
 import time
 import pyautogui
 from bezier import bezierMovement
-from general_utils import randomSleep, calcImgDiff
 import keyboard as kb
+from osrs_utils import general_utils
 print('--------------------------------------------------------------------------------------------------')
 print('WARNING: this code needs to be refactored to handle w319 dialogue prompt in the hopWorlds function')
 print('--------------------------------------------------------------------------------------------------')
 def sellBows():
     clickCoords = bezierMovement(1513, 1534, 303, 325)
     print('prev right click coords', clickCoords)
-    randomSleep(0.1,0.2)
+    general_utils.random_sleep(0.1,0.2)
     pyautogui.click(button='RIGHT')
-    randomSleep(0.2,0.4)
+    general_utils.random_sleep(0.2,0.4)
     #sell all bows
     bezierMovement(1513, 1534,clickCoords[1] + 100,clickCoords[1] + 108)
-    randomSleep(0.1,0.2)
+    general_utils.random_sleep(0.1,0.2)
     pyautogui.click()
-    randomSleep(0.3,0.5)
+    general_utils.random_sleep(0.3,0.5)
     kb.send('esc')
-    randomSleep(0.3,0.5)
+    general_utils.random_sleep(0.3,0.5)
 
-def hopWorlds():
-    kb.send('alt + shift + x')
-    randomSleep(10.6, 12.4)
-    kb.send('esc')
-    randomSleep(0.2,0.4)
 
 def process_img(image):
     print('looking for martin')
@@ -54,13 +49,13 @@ def process_img(image):
         # find the biggest countour (c) by the area
         c = max(contours, key = cv2.contourArea)
         x,y,w,h = cv2.boundingRect(c)
-        bezierMovement((x + 805) + 10, (x + 805) + 15, (y + 36) + 10, (y + 36) + 15)
+        bezierMovement((x) + 10, (x) + 15, (y) + 10, (y) + 15)
         pyautogui.click()
-        randomSleep(0.5,0.7)
+        general_utils.random_sleep(0.5,0.7)
         #pyautogui.moveTo((x + 805) + 10,(y + 36) + 10)
         # draw the biggest contour (c) in green
     expctedStore = ImageGrab.grab([996, 71, 1048, 84])
-    if calcImgDiff(expctedStore, Image.open('.\\screens\\shop_interface.png')) < 5:
+    if general_utils.calc_img_diff(expctedStore, Image.open('../screens/martin_shop_interface.png'), 5) == 'same':
         return True
     else:
         return False
@@ -68,7 +63,7 @@ def process_img(image):
 def findSingleTarget():
     found = False
     while not found:
-        screen =  np.array(ImageGrab.grab(bbox=(805,36,1444,444)))
+        screen =  np.array(ImageGrab.grab())
         didIFind = process_img(screen)
         if didIFind:
             found = True
@@ -77,5 +72,5 @@ def main():
     while True:
         findSingleTarget()
         sellBows()
-        hopWorlds()
+        general_utils.hop_worlds()
 main()

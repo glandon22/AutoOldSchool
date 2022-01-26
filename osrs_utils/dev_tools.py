@@ -72,3 +72,4 @@ def capture_empty_bag():
     for slot in range(len(inv_coords)):
         pyscreenshot.grab((inv_coords[slot][0], inv_coords[slot][2], inv_coords[slot][1], inv_coords[slot][3])).save('..\\screens\\empty_bag\\slot' + str(slot) + '.png')
 
+#calculate_clickbox()

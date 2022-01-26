@@ -170,7 +170,7 @@ def getPos():
     print(pyautogui.position())
 def testfunc():
     screen = ImageGrab.grab([750,0,1900,1440])
-    screen.save('.\\screens\\test.png')
+    screen.save('.\\screens\\maple_long_bag.png')
     screen = numpy.asarray(screen)
 def roughImgCompare(img, confidence, region):
     loc = pyautogui.locateOnScreen(img, confidence=confidence, region=region)

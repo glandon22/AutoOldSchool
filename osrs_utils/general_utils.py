@@ -3,6 +3,7 @@
 
 # inv coords
 # im = ImageGrab.grab([2299, 1024, 2510, 1324])
+import PIL.ImageGrab
 import keyboard
 import numpy as np
 import time
@@ -150,7 +151,7 @@ def find_fixed_object(image, x_offset, y_offset):
     if len(contours) != 0:
         closest_contour = find_closest_contour(contours)
         center = find_contour_center(closest_contour)
-        bezier_movement(center[0] - 3, center[0] + 3, center[1] - 3, center[1] + 3)
+        bezier_movement(center[0] - 3 + x_offset, center[0] + 3 + x_offset, center[1] - 3 + y_offset, center[1] + 3 + y_offset)
         random_sleep(0.2, 0.3)
         pyautogui.click()
         return True
@@ -224,10 +225,41 @@ def process_with_tool(slot, button, expected_last_slot, max_cycles):
     return 'success'
 
 
+def combine_two_items_14_times(expected_last_slot, max_cycles):
+    # click on first item
+    first_item = show_inv_coords(0)
+    bezier_movement(first_item[0], first_item[2], first_item[1], first_item[3])
+    pyautogui.click()
+    random_sleep(0.2, 0.5)
+    # click on second thing
+    second_thing = show_inv_coords(14)
+    bezier_movement(second_thing[0], second_thing[2], second_thing[1], second_thing[3])
+    random_sleep(0.2, 0.3)
+    pyautogui.click()
+    random_sleep(1, 1.2)
+    pyautogui.press('space')
+    random_sleep(0.3, 0.7)
+    # move off-screen
+    bezier_movement(3500, 4000, 0, 250)
+    random_sleep(0.4, 0.7)
+    pyautogui.click()
+    cycles_waiting = 0
+    while True:
+        last_slot = calc_img_diff(Image.open(expected_last_slot), pyscreenshot.grab([2476, 1304, 2500, 1324]), 3)
+        if last_slot == 'same' or did_level():
+            break
+        elif cycles_waiting > max_cycles:
+            return 'did not finishing processing in acceptable number of cycles'
+        else:
+            cycles_waiting += 1
+        random_sleep(1.4, 2.6)
+    return 'success'
+
+
 def hop_worlds():
     kb.send('alt + shift + x')
     random_sleep(3.3, 3.9)
-    if calc_img_diff(pyscreenshot.grab([22, 1212, 590, 1337]), Image.open('.\\screens\\w319.png'), 3) == 'same':
+    if calc_img_diff(pyscreenshot.grab([22, 1212, 590, 1337]), Image.open('..\\screens\\w319.png'), 3) == 'same':
         print('hopping to world 319')
         kb.send('space')
         random_sleep(0.7, 0.9)
@@ -279,6 +311,81 @@ def find_fixed_npc(box, x_offset, y_offset):
         return True
     return False
 
+
+def find_random_event(box, scouting):
+    image = np.array(pyscreenshot.grab(bbox=box))
+    # red color boundaries R,G,B
+    lower = [0, 255, 255]
+    upper = [0, 255, 255]
+
+    # create NumPy arrays from the boundaries
+    lower = np.array(lower, dtype="uint8")
+    upper = np.array(upper, dtype="uint8")
+    # find the colors within the specified boundaries and apply
+    # the mask
+    mask = cv2.inRange(image, lower, upper)
+    _, thresh = cv2.threshold(mask, 40, 255, 0)
+    # noinspection PyUnresolvedReferences
+    if cv2.__version__[0] > '3':
+        contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    else:
+        _, contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    if len(contours) != 0:
+        if scouting:
+            return True
+        # find the biggest countour (c) by the area
+        c = max(contours, key=cv2.contourArea)
+        center = find_contour_center(c)
+        x, y, w, h = cv2.boundingRect(c)
+        # this movement must also account for the offset of the target area bbox, i.e. the image coordinates passed
+        # to the findFixedObject function
+        bezier_movement(center[0]- 5, center[0] + 5, center[1] - 5, center[1] + 5)
+        random_sleep(0.2, 0.3)
+        pyautogui.click(button='right')
+        random_sleep(0.4, 0.5)
+        is_my_random = rough_img_compare('..\\screens\\blurry_dismiss.png', .7, (0, 0, 2560, 1440))
+        if is_my_random:
+            bezier_movement(is_my_random[0] - 3, is_my_random[0] + 3, is_my_random[1] - 3, is_my_random[1] + 3)
+            random_sleep(0.2, 0.3)
+            pyautogui.click()
+        else:
+            return 'not mine'
+        return True
+    return False
+
+
+def find_rooftop_clickbox(box, x_offset, y_offset, color, scouting=False):
+    image = np.array(pyscreenshot.grab(bbox=box))
+    # red color boundaries R,G,B
+    lower = color
+    upper = color
+
+    # create NumPy arrays from the boundaries
+    lower = np.array(lower, dtype="uint8")
+    upper = np.array(upper, dtype="uint8")
+    # find the colors within the specified boundaries and apply
+    # the mask
+    mask = cv2.inRange(image, lower, upper)
+    _, thresh = cv2.threshold(mask, 40, 255, 0)
+    # noinspection PyUnresolvedReferences
+    if cv2.__version__[0] > '3':
+        contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    else:
+        _, contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    if len(contours) != 0:
+        if scouting:
+            return True
+        # find the biggest countour (c) by the area
+        c = max(contours, key=cv2.contourArea)
+        x, y, w, h = cv2.boundingRect(c)
+        # this movement must also account for the offset of the target area bbox, i.e. the image coordinates passed
+        # to the findFixedObject function
+        center = find_contour_center(c)
+        bezier_movement(center[0] - 5 + x_offset, center[0] + 5 + x_offset, center[1] - 5 + y_offset, center[1] + 5 + y_offset)
+        random_sleep(0.1, 0.3)
+        pyautogui.click()
+        return True
+    return False
 
 def wait_for_bank_interface(interface_loc, max_cycles):
     cycles_waiting = 0
@@ -375,7 +482,7 @@ def find_moving_target_with_draw(image):
     return np.array(output)
 
 
-def find_moving_target(image, scouting):
+def find_moving_target(image, scouting, x_off=0, y_off=0):
     # failsafe to check if a monster aggro'd me
     did_click = find_click_x(image)
     if did_click:
@@ -415,7 +522,7 @@ def find_moving_target(image, scouting):
             if scouting:
                 return True
             else:
-                bezier_movement(center[0] - 10, center[0] + 10, center[1] - 10, center[1] + 10)
+                bezier_movement(center[0] - 10 + x_off, center[0] + 10 + x_off, center[1] - 10 + y_off, center[1] + 10 + y_off)
                 pyautogui.click()
                 # give the highlight a half second to pop up
                 random_sleep(0.5, 0.7)
@@ -672,13 +779,13 @@ def solve_bank_pin():
 def wait_until_stationary():
     cycles = 0
     same_frame_count = 0
-    prev_img = pyscreenshot.grab((2082, 36, 2238, 100))
+    prev_img = pyscreenshot.grab((2390, 284, 2542, 342))
     time.sleep(.5)
     while True:
         print('running', same_frame_count)
-        curr_img = pyscreenshot.grab((2082, 36, 2238, 100))
-        player_loc = calc_img_diff(prev_img, curr_img, 3)
-        if player_loc == 'same' and same_frame_count > 8:
+        curr_img = pyscreenshot.grab((2390, 284, 2542, 342))
+        player_loc = calc_img_diff(prev_img, curr_img,   3)
+        if player_loc == 'same' and same_frame_count > 3:
             return 'success'
         elif player_loc == 'same':
             same_frame_count += 1
@@ -796,4 +903,53 @@ def click_inv_slot(slot):
     bezier_movement(slot[0], slot[2], slot[1], slot[3])
     random_sleep(0.2, 0.3)
     pyautogui.click()
+
+def antiban_rest():
+    if random.randint(0, 10) == 1:
+        random_sleep(5.1, 6.8)
+    elif random.randint(0, 25) == 1:
+        random_sleep(33.5, 34.9)
+    elif random.randint(0, 75) == 1:
+        random_sleep(64.5, 83.9)
+
+def antiban_randoms():
+    is_random_present = find_random_event((0, 0, 2560, 1440), True)
+    if is_random_present == True:
+        is_mine = find_random_event((0, 0, 2560, 1440), False)
+        if is_mine == 'not mine':
+            return 'not mine'
+        else:
+            return is_mine
+
+
+def completed_rooftop_obstacle(prev_xp):
+    curr_xp = PIL.ImageGrab.grab((103, 122, 162, 134))
+    status = calc_img_diff(prev_xp, curr_xp, 1)
+    if status == 'different':
+        return True
+    else:
+        return False
+
+
+def do_obstacle(color):
+    prev_xp = PIL.ImageGrab.grab((103, 122, 162, 134))
+    find_rooftop_clickbox((0, 0, 2560, 1440), 0, 0, color)
+    cycles = 0
+    while not completed_rooftop_obstacle(prev_xp):
+        if cycles > 175:
+            return False
+        elif cycles == 50 or cycles == 100 or cycles == 150:
+            find_rooftop_clickbox((0, 0, 2560, 1440), 0, 0, color)
+        cycles += 1
+        random_sleep(0.2, 0.3)
+    return True
+
+
+def find_mark():
+    exists = find_rooftop_clickbox((572, 330, 1681, 1069), 572, 330, [0, 0, 254], True)
+    if exists:
+        random_sleep(0.6, 0.7)
+        find_rooftop_clickbox((572, 330, 1681, 1069), 572, 330, [0, 0, 254])
+    print(exists)
+    return exists
 

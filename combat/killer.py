@@ -4,6 +4,7 @@ import cv2
 import time
 import pyautogui
 from osrs_utils import general_utils
+import keyboard
 import math
 mini_map_north_click = [2440, 2458, 42, 54]
 # click north every couple seconds until i see the cyan blobs
@@ -62,6 +63,10 @@ def kill_giant():
             general_utils.random_sleep(1.1, 1.4)
             general_utils.walk_north_minimap()
             return 'been in combat for too long, leave the area'
+        elif general_utils.did_level():
+            keyboard.send('space')
+            general_utils.random_sleep(0.5,0.6)
+            keyboard.send('space')
         elif still_in_combat:
             cycles_in_combat += 1
         else:
