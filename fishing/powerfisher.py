@@ -50,7 +50,7 @@ def main():
         general_utils.antiban_rest()
         data = general_utils.get_player_info()
         random_event = general_utils.check_and_dismiss_random(data["randomEvent"])
-        if random == 'didnt find the dismiss option':
+        if random_event == 'didnt find the dismiss option':
             print('failed to handle random: ', random)
             break
         start_fishing = find_spot()
@@ -81,7 +81,8 @@ def main():
                 continue
         general_utils.random_sleep(2, 5)
         data = general_utils.get_player_info()
-        general_utils.power_drop(data["inv"], [0, 1], [335, 331])
+        #salmon + trout = 335, 331
+        general_utils.power_drop(data["inv"], [0, 1], [11328])
 
 
-main()
+print(main())

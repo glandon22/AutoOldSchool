@@ -7,3 +7,5 @@ pyscreenshot
 scipy
 pytesseract
 imutils
+pandas
+plotly

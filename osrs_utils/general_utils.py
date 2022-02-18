@@ -3,6 +3,8 @@
 
 # inv coords
 # im = ImageGrab.grab([2299, 1024, 2510, 1324])
+import datetime
+
 import PIL.ImageGrab
 import keyboard
 import numpy as np
@@ -21,10 +23,10 @@ import pytesseract
 
 
 def point_dist(x1, y1, x2, y2):
-    return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+    return abs(math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2))
 
 
-def bezier_movement(x_min, x_max, y_min, y_max):
+def bezier_movement(x_min, y_min, x_max, y_max):
     # Any duration less than this is rounded to 0.0 to instantly move the mouse.
     pyautogui.MINIMUM_DURATION = 0  # Default: 0.1
     # Minimal number of seconds to sleep between mouse moves.
@@ -35,7 +37,6 @@ def bezier_movement(x_min, x_max, y_min, y_max):
     x1, y1 = pyautogui.position()
     x2 = random.randint(x_min, x_max)
     y2 = random.randint(y_min, y_max)
-    print('clicking ', x2, y2)
     # Distribute control points between start and destination evenly.
     x = np.linspace(x1, x2, num=cp, dtype='int')
     y = np.linspace(y1, y2, num=cp, dtype='int')
@@ -68,6 +69,7 @@ def bezier_movement(x_min, x_max, y_min, y_max):
     duration = 0.1
     timeout = duration / len(points[0])
     point_list = zip(*(i.astype(int) for i in points))
+
     for point in point_list:
         pyautogui.moveTo(*point)
         time.sleep(timeout)
@@ -86,22 +88,23 @@ def calc_img_diff(im1, im2, acceptable_diff):
 
 
 def random_sleep(min_time, max_time):
-    duration = round(random.uniform(min_time, max_time), 3)
+    duration = round(random.uniform(min_time, max_time), 6)
     print("Sleeping for ", duration, ' seconds')
     time.sleep(duration)
 
 
 def show_inv_coords(slot):
     inv_coords = [
-        [2317, 2343, 1030, 1056], [2371, 2395, 1034, 1058], [2424, 2448, 1034, 1060], [2476, 2500, 1036, 1058],
-        [2320, 2344, 1082, 1103], [2372, 2394, 1082, 1102], [2425, 2448, 1082, 1100], [2478, 2499, 1082, 1102],
-        [2320, 2340, 1128, 1144], [2372, 2395, 1126, 1146], [2422, 2446, 1126, 1144], [2476, 2500, 1127, 1142],
-        [2323, 2340, 1168, 1190], [2372, 2396, 1172, 1192], [2424, 2446, 1174, 1192], [2478, 2503, 1173, 1190],
-        [2320, 2342, 1216, 1238], [2374, 2394, 1215, 1238], [2425, 2447, 1216, 1233], [2479, 2500, 1220, 1238],
-        [2320, 2342, 1259, 1282], [2372, 2394, 1261, 1280], [2425, 2446, 1262, 1280], [2478, 2500, 1261, 1280],
-        [2319, 2342, 1305, 1326], [2370, 2393, 1306, 1322], [2426, 2445, 1306, 1324], [2476, 2500, 1304, 1324]
+        [1722, 752, 1747, 777], [1764, 752, 1789, 777], [1806, 752, 1831, 777], [1848, 752, 1873, 777],
+        [1722, 788, 1747, 813], [1764, 788, 1789, 813], [1806, 788, 1831, 813], [1848, 788, 1873, 813],
+        [1722, 824, 1747, 849], [1764, 824, 1789, 849], [1806, 824, 1831, 849], [1848, 824, 1873, 849],
+        [1722, 860, 1747, 885], [1764, 860, 1789, 885], [1806, 860, 1831, 885], [1848, 860, 1873, 885],
+        [1722, 896, 1747, 921], [1764, 896, 1789, 921], [1806, 896, 1831, 921], [1848, 896, 1873, 921],
+        [1722, 932, 1747, 957], [1764, 932, 1789, 957], [1806, 932, 1831, 957], [1848, 932, 1873, 957],
+        [1722, 968, 1747, 993], [1764, 968, 1789, 993], [1806, 968, 1831, 993], [1848, 968, 1873, 993]
     ]
-    return [inv_coords[slot][0], inv_coords[slot][2], inv_coords[slot][1], inv_coords[slot][3],]
+
+    return [inv_coords[slot][0], inv_coords[slot][1], inv_coords[slot][2], inv_coords[slot][3],]
 
 
 def rough_img_compare(img, confidence, region):
@@ -538,6 +541,47 @@ def find_moving_target(image, scouting, x_off=0, y_off=0):
     return False
 
 
+def find_moving_target_near(image, scouting, x_off=0, y_off=0):
+    # failsafe to check if a monster aggro'd me
+    did_click = find_click_x(image)
+    if did_click:
+        print('here1')
+        return True
+    # cyan color boundaries [B, G, R]
+    lower = [0, 255, 255]
+    upper = [0, 255, 255]
+
+    # create NumPy arrays from the boundaries
+    lower = np.array(lower, dtype="uint8")
+    upper = np.array(upper, dtype="uint8")
+    # find the colors within the specified boundaries and apply
+    # the mask
+    mask = cv2.inRange(image, lower, upper)
+    ret, thresh = cv2.threshold(mask, 40, 255, 0)
+    # noinspection PyUnresolvedReferences
+    if cv2.__version__[0] > '3':
+        contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    else:
+        im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    if len(contours) != 0:
+        center = find_contour_center(contours[0])
+        if center:
+            bezier_movement(center[0] - 10 + x_off, center[0] + 10 + x_off, center[1] - 10 + y_off,
+                            center[1] + 10 + y_off)
+            pyautogui.click()
+            # give the highlight a half second to pop up
+            random_sleep(0.5, 0.7)
+            # implement red x check ot make sure i clicked
+            screen = np.array(pyscreenshot.grab())
+            did_click = find_click_x(screen)
+            if did_click:
+                return True
+            else:
+                return False
+        return False
+    return False
+
+
 def find_fixed_object_while_moving(area, scouting):
     image = np.array(pyscreenshot.grab(area))
     # yellow color
@@ -780,16 +824,13 @@ def wait_until_stationary():
     cycles = 0
     same_frame_count = 0
     prev_img = pyscreenshot.grab((2390, 284, 2542, 342))
-    time.sleep(.5)
     while True:
-        print('running', same_frame_count)
         curr_img = pyscreenshot.grab((2390, 284, 2542, 342))
         player_loc = calc_img_diff(prev_img, curr_img,   3)
         if player_loc == 'same' and same_frame_count > 3:
             return 'success'
         elif player_loc == 'same':
             same_frame_count += 1
-            print('frame count', same_frame_count)
             continue
         elif cycles > 1500:
             return 'never stopped moving'
@@ -905,10 +946,11 @@ def click_inv_slot(slot):
     pyautogui.click()
 
 def antiban_rest():
+    #maybe instead of just sleeping i can move the mouse around the other screen for a while
     if random.randint(0, 10) == 1:
         random_sleep(5.1, 6.8)
     elif random.randint(0, 25) == 1:
-        random_sleep(33.5, 34.9)
+        random_sleep(27.2, 39.9)
     elif random.randint(0, 75) == 1:
         random_sleep(64.5, 83.9)
 
@@ -953,3 +995,155 @@ def find_mark():
     print(exists)
     return exists
 
+
+def get_player_info(port=1488):
+    import socket
+    import re
+    import json
+
+    host = 'localhost'
+    socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    socket.bind((host, port))
+    socket.listen(1)
+    conn, addr = socket.accept()
+    data = conn.recv(8192)
+    conn.close()
+    if data:
+        decoded = data.decode('utf-8')
+        body = re.split(r"\s(?=[{\[])", decoded)[-1]
+        parsed = json.loads(body)
+        #print(json.dumps(parsed, sort_keys=True, indent=4))
+        return parsed
+    else:
+        return False
+
+
+def find_loot(image, x_offset, y_offset):
+    # red color boundaries R,G,B
+    lower = [255, 0, 0]
+    upper = [255, 0, 0]
+
+    # create NumPy arrays from the boundaries
+    lower = np.array(lower, dtype="uint8")
+    upper = np.array(upper, dtype="uint8")
+    # find the colors within the specified boundaries and apply
+    # the mask
+    mask = cv2.inRange(image, lower, upper)
+    _, thresh = cv2.threshold(mask, 40, 255, 0)
+    # noinspection PyUnresolvedReferences
+    if cv2.__version__[0] > '3':
+        contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    else:
+        _, contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    if len(contours) != 0:
+        # find the biggest countour (c) by the area
+        c = max(contours, key=cv2.contourArea)
+        center = find_contour_center(c)
+        if center:
+            bezier_movement(center[0] - 3 + x_offset, center[0] + 3 + x_offset, center[1] - 3 + y_offset, center[1] + 3 + y_offset)
+            random_sleep(0.1 ,0.2)
+            pyautogui.click(button='right')
+            bezier_movement(center[0] - 3 + x_offset, center[0] + 3 + x_offset, center[1] + y_offset + 28, center[1] + y_offset + 33)
+            random_sleep(0.2, 0.3)
+            pyautogui.click()
+            return True
+    return False
+
+
+def move_and_click(x, y, w, h, button='left'):
+    bezier_movement(x - w, y - h, x + w, y + h)
+    random_sleep(0.15, 0.25)
+    pyautogui.click() if button == 'left' else pyautogui.click(button='right')
+    random_sleep(0.15, 0.25)
+
+
+def click_off_screen():
+    bezier_movement(3000, 100, 3100, 200)
+    random_sleep(0.15, 0.25)
+    pyautogui.click()
+    random_sleep(0.15, 0.25)
+
+
+def power_drop(inv, slots_to_skip, items_to_drop):
+    patterns = [
+        [
+            0, 1, 2, 3,
+            7, 6, 5, 4,
+            8, 9, 10, 11,
+            15, 14, 13, 12,
+            16, 17, 18, 19,
+            23, 22, 21, 20,
+            24, 25, 26, 27
+         ],
+        [
+            0, 4, 8, 12, 16, 20, 24,
+            25, 21, 17, 13, 9, 5, 1,
+            2, 6, 10, 14, 18, 22, 26,
+            27, 23, 19, 15, 11, 7, 3
+        ],
+        [
+            0, 4, 5, 1,
+            2, 3, 7, 6,
+            11, 10, 9, 8,
+            12, 16, 20, 24,
+            25, 21, 17, 13,
+            14, 15, 19, 18,
+            22, 23, 27, 26
+        ],
+        [
+            3, 7, 11, 15,
+            19, 23, 27, 26,
+            25, 24, 20, 21,
+            22, 18, 17, 16,
+            12, 13, 14, 10,
+            6, 2, 1, 5,
+            9, 8, 4, 0
+        ]
+    ]
+    pattern = random.randint(0, len(patterns * 2) - 1)
+    # reverse the array
+    if pattern >= len(patterns):
+        pattern = patterns[math.floor(pattern / 2)]
+        pattern = pattern[::-1]
+        print('here', pattern)
+    else:
+        pattern = patterns[pattern]
+    for num in pattern:
+        # dont drop whatever is in this slot
+        if len(slots_to_skip) != 0 and num in slots_to_skip:
+            continue
+        # dont drop this item type
+        elif not inv[num]["id"] in items_to_drop:
+            continue
+
+        move_and_click(inv[num]["x"], inv[num]["y"], 5, 5)
+
+
+def check_and_dismiss_random(random_data):
+    print('d', random_data)
+    if len(random_data) == 0:
+        return 'no randoms'
+    move_and_click(math.floor(random_data[0]['x']), math.floor(random_data[0]['y']), 7, 7, 'right')
+    random_sleep(0.5, 0.6)
+    dismiss = rough_img_compare('..\\screens\\dismiss.png', .9, (0, 0, 1920, 1080))
+    if dismiss:
+        move_and_click(int(dismiss[0]), int(dismiss[1]), 4, 4)
+        return 'success'
+    else:
+        return 'didnt find the dismiss option'
+
+
+def long_break_manager(run_time, max_run_time, desired_break_time):
+    if run_time > max_run_time:
+        start_rest = datetime.datetime.now()
+        while True:
+            break_runtime = datetime.datetime.now() - start_rest
+            if break_runtime > desired_break_time:
+                return [datetime.datetime.now(), random.randint(3422, 4329), random.randint(543, 847)]
+            else:
+                click_off_screen()
+                time.sleep(60)
+    else:
+        return 'no break'
+
+print(get_player_info(8888))
