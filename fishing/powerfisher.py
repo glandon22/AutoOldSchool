@@ -51,7 +51,7 @@ def main():
         data = general_utils.get_player_info()
         random_event = general_utils.check_and_dismiss_random(data["randomEvent"])
         if random_event == 'didnt find the dismiss option':
-            print('failed to handle random: ', random)
+            print('failed to handle random: ', random_event)
             break
         start_fishing = find_spot()
         if start_fishing != 'success':

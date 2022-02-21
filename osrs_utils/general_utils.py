@@ -945,13 +945,13 @@ def click_inv_slot(slot):
     random_sleep(0.2, 0.3)
     pyautogui.click()
 
-def antiban_rest():
+def antiban_rest(short = 10, med = 25, long = 75):
     #maybe instead of just sleeping i can move the mouse around the other screen for a while
-    if random.randint(0, 10) == 1:
+    if random.randint(0, short) == 1:
         random_sleep(5.1, 6.8)
-    elif random.randint(0, 25) == 1:
+    elif random.randint(0, med) == 1:
         random_sleep(27.2, 39.9)
-    elif random.randint(0, 75) == 1:
+    elif random.randint(0, long) == 1:
         random_sleep(64.5, 83.9)
 
 def antiban_randoms():
@@ -1056,6 +1056,27 @@ def move_and_click(x, y, w, h, button='left'):
     pyautogui.click() if button == 'left' else pyautogui.click(button='right')
     random_sleep(0.15, 0.25)
 
+def advanced_move_and_click(x, y, w, h, button='left'):
+    bezier_movement(x - w, y - h, x + w, y + h)
+    while True:
+        data = get_player_info(8889)
+        if data["canAttack"]:
+            break
+        closest = {
+            "dist": 999,
+            "x": None,
+            "y": None
+        }
+        for npc in data["npcs"]:
+            if npc["dist"] < closest["dist"]:
+                closest = {
+                    "dist": npc["dist"],
+                    "x": npc["x"],
+                    "y": npc["y"]
+                }
+        bezier_movement(closest["x"] - 3, closest["y"] - 3, closest["x"] + 1, closest["y"] + 1)
+    pyautogui.click() if button == 'left' else pyautogui.click(button='right')
+    random_sleep(0.15, 0.25)
 
 def click_off_screen():
     bezier_movement(3000, 100, 3100, 200)
@@ -1063,6 +1084,9 @@ def click_off_screen():
     pyautogui.click()
     random_sleep(0.15, 0.25)
 
+def move_around_center_screen():
+    bezier_movement(800, 400, 1000, 600)
+    random_sleep(0.15, 0.25)
 
 def power_drop(inv, slots_to_skip, items_to_drop):
     patterns = [
@@ -1124,7 +1148,7 @@ def check_and_dismiss_random(random_data):
     if len(random_data) == 0:
         return 'no randoms'
     move_and_click(math.floor(random_data[0]['x']), math.floor(random_data[0]['y']), 7, 7, 'right')
-    random_sleep(0.5, 0.6)
+    random_sleep(1, 1.1)
     dismiss = rough_img_compare('..\\screens\\dismiss.png', .9, (0, 0, 1920, 1080))
     if dismiss:
         move_and_click(int(dismiss[0]), int(dismiss[1]), 4, 4)
@@ -1145,5 +1169,3 @@ def long_break_manager(run_time, max_run_time, desired_break_time):
                 time.sleep(60)
     else:
         return 'no break'
-
-print(get_player_info(8888))
