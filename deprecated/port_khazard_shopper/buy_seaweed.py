@@ -17,10 +17,9 @@ storeInterface = [822, 1422, 427, 790]
 bankInterface = [844, 1402, 438, 774]
 sodaInStore = [1254, 1276, 606, 616]
 seaweedInstore = [1196, 1220, 607, 620]
-emptyLastSlot = Image.open('.\\screens\\empty_slot.png')
+emptyLastSlot = Image.open('screens/empty_slot.png')
 seaweedInBag = [1176, 1199, 558, 576]
 sodaInBag = [1177, 1198, 497, 513]
-
 
 def go_to_bank():
     found = False
@@ -67,13 +66,13 @@ def process_img(image, iters):
         print('checking to see if we are on the ship')
         curr_map = ImageGrab.grab([2450, 76, 2486, 108])
         curr_map.save('.\\screens\\currMap.png')
-        if general_utils.calc_img_diff(curr_map, Image.open('.\\screens\\ship_map.png'), 2) == 'same':
+        if general_utils.calc_img_diff(curr_map, Image.open('screens/ship_map.png'), 2) == 'same':
             print('on ship')
             general_utils.bezier_movement(1277, 1290, 672, 685)
             pyautogui.click()
             general_utils.random_sleep(2.4, 3.2)
     expected_store = ImageGrab.grab([1016, 436, 1064, 450])
-    img = Image.open('.\\screens\\stan.png')
+    img = Image.open('screens/stan.png')
     if general_utils.calc_img_diff(img, expected_store, 5) == 'same':
         return True
     print('looking for martin')
@@ -121,9 +120,14 @@ def find_single_target():
 
 
 def dump_item():
-    seaweed = general_utils.rough_img_compare('.\\screens\\sand_in_bag.png', .75, (844, 438, 1402, 774))
+    seaweed = general_utils.rough_img_compare('.\\screens\\seaweed_in_bag.png', .75, (844, 438, 1402, 774))
     if seaweed:
         general_utils.bezier_movement(seaweed[0], seaweed[0] + 7, seaweed[1], seaweed[1] + 9)
+        pyautogui.click()
+        general_utils.random_sleep(0.2, 0.4)
+    soda = general_utils.rough_img_compare('.\\screens\\soda_in_bag.png', .75, (844, 438, 1402, 774))
+    if soda:
+        general_utils.bezier_movement(soda[0], soda[0] + 6, soda[1], soda[1] + 6)
         pyautogui.click()
         general_utils.random_sleep(0.2, 0.4)
     kb.send('esc')
@@ -137,8 +141,12 @@ def main():
             # find charter ship traders
             find_single_target()
             # buy items
-            buy_store_items([1138, 1156, 606, 620])
-            general_utils.random_sleep(0.3, 0.5)
+            buy_store_items([1196, 1220, 607, 620])
+            if is_bag_full():
+                print('bag is full')
+                break
+            # buy soda ash
+            buy_store_items([1254, 1276, 606, 616])
             kb.send('esc')
             general_utils.random_sleep(0.3, 0.5)
             if is_bag_full():

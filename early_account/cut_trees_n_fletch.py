@@ -4,14 +4,14 @@ import numpy as np
 import keyboard
 
 def chop_highlighted_tree():
-    prev_inv = pyscreenshot.grab((2299, 1024, 2510, 1324))
+    prev_inv = pyscreenshot.grab((1709, 746, 1877, 988))
     general_utils.find_fixed_object(np.array(pyscreenshot.grab((0, 0, 2560, 1440))), 0, 0)
     return prev_inv
 
 
 def did_get_log(prev_inv):
     while True:
-        curr_inv = pyscreenshot.grab((2299, 1024, 2510, 1324))
+        curr_inv = pyscreenshot.grab((1709, 746, 1877, 988))
         if general_utils.calc_img_diff(prev_inv, curr_inv, 1) == 'different':
             break
 
@@ -22,6 +22,7 @@ def main():
         while True:
             try:
                 inv = chop_highlighted_tree()
+                general_utils.click_off_screen()
                 break
             except TypeError:
                 continue

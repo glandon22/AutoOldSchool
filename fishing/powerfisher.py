@@ -82,7 +82,8 @@ def main():
         general_utils.random_sleep(2, 5)
         data = general_utils.get_player_info()
         #salmon + trout = 335, 331
-        general_utils.power_drop(data["inv"], [0, 1], [11328])
+        # shrimp anchovie 317, 321
+        general_utils.power_drop(data["inv"], [0, 1], [335, 331])
 
 
 print(main())

@@ -49,7 +49,7 @@ def make_glass():
         last_slot = ImageGrab.grab([2476, 1304, 2500, 1324])
         last_slot.save('.\\screens\\currLastSlot.png')
         # check to see if last inv slot contains a molten glass
-        if general_utils.calc_img_diff(last_slot, Image.open('.\\screens\\glass_in_bag.png'), 4) == 'same':
+        if general_utils.calc_img_diff(last_slot, Image.open('screens/glass_in_bag.png'), 4) == 'same':
             print('done making glass')
             return 'success'
         elif cycles_making_glass > 10:

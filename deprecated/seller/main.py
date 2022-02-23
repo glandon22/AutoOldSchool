@@ -55,7 +55,7 @@ def process_img(image):
         #pyautogui.moveTo((x + 805) + 10,(y + 36) + 10)
         # draw the biggest contour (c) in green
     expctedStore = ImageGrab.grab([996, 71, 1048, 84])
-    if general_utils.calc_img_diff(expctedStore, Image.open('../screens/martin_shop_interface.png'), 5) == 'same':
+    if general_utils.calc_img_diff(expctedStore, Image.open('../../screens/martin_shop_interface.png'), 5) == 'same':
         return True
     else:
         return False

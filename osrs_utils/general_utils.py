@@ -154,7 +154,7 @@ def find_fixed_object(image, x_offset, y_offset):
     if len(contours) != 0:
         closest_contour = find_closest_contour(contours)
         center = find_contour_center(closest_contour)
-        bezier_movement(center[0] - 3 + x_offset, center[0] + 3 + x_offset, center[1] - 3 + y_offset, center[1] + 3 + y_offset)
+        bezier_movement(center[0] - 3 + x_offset, center[1] - 3 + y_offset, center[0] + 3 + x_offset, center[1] + 3 + y_offset)
         random_sleep(0.2, 0.3)
         pyautogui.click()
         return True
@@ -1169,3 +1169,4 @@ def long_break_manager(run_time, max_run_time, desired_break_time):
                 time.sleep(60)
     else:
         return 'no break'
+

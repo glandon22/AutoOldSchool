@@ -144,25 +144,37 @@ def talk_to_sanfew():
         else:
             general_utils.random_sleep(1.5, 2.2)
     # find the stairs
-    found_stairs = False
+    ######
+    ## did not successfully climb stairs
+    ######
+    # find stairs
+    while True:
+        found_stairs = False
+        objs = general_utils.get_player_info(1489)["objects"]
+        print('objs', objs)
+        if len(objs):
+            for obj in objs:
+                if obj["Id"] == 16671:
+                    general_utils.move_and_click(1845, 104, 7, 7)
+                    found_stairs = True
+                    general_utils.random_sleep(3, 3.1)
+        if found_stairs:
+            break
+    general_utils.random_sleep(3, 4)
+    # click stairs
     while True:
         objs = general_utils.get_player_info(1489)["objects"]
         if len(objs):
             for obj in objs:
                 if obj["Id"] == 16671:
-                    general_utils.wait_until_stationary()
-                    general_utils.random_sleep(.7, .9)
-                    if found_stairs:
-                        general_utils.move_and_click(math.floor(obj["x"]), math.floor(obj["y"]), 7, 7)
-                        general_utils.random_sleep(1.2, 1.3)
-                        found_stairs = 'complete'
-                        break
-                    else:
-                        found_stairs = True
-            if found_stairs == 'complete':
-                break
+                    general_utils.move_and_click(math.floor(obj["x"]), math.floor(obj["y"]), 2, 2)
+                    general_utils.random_sleep(7, 7.1)
+        data = general_utils.get_player_info(1489)
+        if data['world']['z'] == 1:
+            break
 
     while True:
+        print('down')
         npcs = general_utils.get_player_info(1489)["npcs"]
         click = False
         if len(npcs):
@@ -227,10 +239,10 @@ def walk_to_cauldron():
             break
         else:
             general_utils.random_sleep(1.5, 2.2)
-    # west
-    general_utils.move_and_click(1777, 95, 7, 7)
+    # middle of minimap
+    general_utils.move_and_click(1845, 104, 7, 7)
     general_utils.wait_until_stationary()
-    general_utils.random_sleep(.7, .9)
+    general_utils.random_sleep(7, 7.1)
     while True:
         objs = general_utils.get_player_info(1489)["objects"]
         clicked = False
@@ -243,7 +255,7 @@ def walk_to_cauldron():
                     break
             if clicked:
                 break
-
+    general_utils.random_sleep(7, 8)
     #walk up to the cauldron
     while True:
         # north
@@ -321,16 +333,17 @@ def back_to_taverley():
             break
         else:
             general_utils.random_sleep(1.5, 2.2)
-    objs = general_utils.get_player_info(1489)["objects"]
-    print('ooo', objs)
-    if len(objs):
-        for obj in objs:
-            if obj["Id"] == 17385:
-                general_utils.move_and_click(math.floor(obj["x"]), math.floor(obj["y"]), 3, 3)
-        while True:
-            data = general_utils.get_player_info(1489)
-            if data["world"]["y"] <= 3400:
-                break
+    # find ladder
+    while True:
+        objs = general_utils.get_player_info(1489)["objects"]
+        if len(objs):
+            for obj in objs:
+                if obj["Id"] == 17385:
+                    general_utils.move_and_click(math.floor(obj["x"]), math.floor(obj["y"]), 3, 3)
+        data = general_utils.get_player_info(1489)
+        if data["world"]["y"] <= 3400:
+            break
+        general_utils.random_sleep(3, 3.1)
 
 def return_to_sanfew():
     # walk north
@@ -487,5 +500,6 @@ def return_to_kaqemeex():
     general_utils.random_sleep(2.1, 2.2)
     keyboard.send('space')
     general_utils.random_sleep(2.1, 2.2)
+    keyboard.send('esc')
 
 main()
