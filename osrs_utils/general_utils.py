@@ -1170,3 +1170,11 @@ def long_break_manager(run_time, max_run_time, desired_break_time):
     else:
         return 'no break'
 
+
+def is_item_in_inventory(inv, item_to_find):
+    if not inv:
+        return False
+    for item in inv:
+        if item['id'] == item_to_find:
+            return [item['x'], item['y']]
+    return False

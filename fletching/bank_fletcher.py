@@ -34,7 +34,7 @@ def main():
                 if item['id'] != 946:
                     general_utils.move_and_click(item['x'], item['y'], 5, 5)
                     break
-        data = general_utils.get_player_info(8814)
+        data = general_utils.get_player_info(8814) 
         if data["bank"]:
             for item in data["bank"]:
                 if item["id"] == 1517:
