@@ -1,2 +1,4 @@
 *.png
 deprecated
+secrets
+config.py
