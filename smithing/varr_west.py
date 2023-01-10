@@ -29,7 +29,7 @@ def find_bank(data):
             #steel bar 2353
             # iron bar 2351
             #mith bar 2359
-            if item["id"] == 2359:
+            if item["id"] == 2351:
                 general_utils.move_and_click(item["x"], item["y"], 8, 8)
                 general_utils.random_sleep(0.3, 0.7)
 
