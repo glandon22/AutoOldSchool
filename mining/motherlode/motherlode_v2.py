@@ -34,7 +34,6 @@ def click_i1():
     while True:
         data = general_utils.query_game_data(queries.I1)
         if 'tiles' in data and '374856550' in data['tiles'] and data['tiles']['374856550']['y'] < 1010:
-            print('i1', data['tiles']['374856550']['x'], data['tiles']['374856550']['y'])
             general_utils.move_and_click(data['tiles']['374856550']['x'], data['tiles']['374856550']['y'], 7, 7)
             break
 

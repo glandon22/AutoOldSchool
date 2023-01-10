@@ -172,6 +172,10 @@ SET_YAW = {
     'setYaw': '512'
 }
 
+SET_YAW_NORTH = {
+    'setYaw': '0'
+}
+
 MINING_STATUS_AND_INV_AND_POSE = {
     'isMining': True,
     'inv': True,
@@ -180,4 +184,109 @@ MINING_STATUS_AND_INV_AND_POSE = {
 
 TARGET_OBJ = {
     'getTargetObj': True
+}
+
+UPPER_ORE_VEINS = {
+    'wallObjects': [
+        {
+            'tile': '3758,5675,0',
+            'object': '26661'
+        },
+        {
+            'tile': '3759,5674,0',
+            'object': '26662'
+        },
+        {
+            'tile': '3760,5674,0',
+            'object': '26663'
+        },
+        {
+            'tile': '3761,5674,0',
+            'object': '26664'
+        },
+        {
+            'tile': '3762,5673,0',
+            'object': '26662'
+        },
+        {
+            'tile': '3762,5672,0',
+            'object': '26662'
+        },
+        {
+            'tile': '3762,5671,0',
+            'object': '26662'
+        },
+        {
+            'tile': '3762,5670,0',
+            'object': '26662'
+        },
+        {
+            'tile': '3755,5677,0',
+            'object': '26662'
+        },
+        {
+            'tile': '3754,5678,0',
+            'object': '26662'
+        },
+        {
+            'tile': '3751,5680,0',
+            'object': '26662'
+        },
+        {
+            'tile': '3751,5681,0',
+            'object': '26662'
+        },
+        {
+            'tile': '3750,5682,0',
+            'object': '26662'
+        },
+        {
+            'tile': '3749,5682,0',
+            'object': '26662'
+        },
+        {
+            'tile': '3748,5682,0',
+            'object': '26662'
+        },
+        {
+            'tile': '3752,5684,0',
+            'object': '26662'
+        },
+        {
+            'tile': '3753,5684,0',
+            'object': '26662'
+        },
+        {
+            'tile': '3753,5680,0',
+            'object': '26662'
+        }
+    ]
+}
+
+UPPER_LADDER = {
+'gameObjects': [
+        {
+            'tile': '3755,5674,0',
+            'object': '19045'
+        }
+    ]
+}
+
+LOWER_LADDER = {
+    'gameObjects': [
+            {
+                'tile': '3755,5673,0',
+                'object': '19044'
+            }
+        ]
+}
+
+CLICKED_OBJECT = {
+    'getTargetObj': True
+}
+
+I3 = {
+    'tiles': [
+        '3750,5662,0'  # i3
+    ],
 }
