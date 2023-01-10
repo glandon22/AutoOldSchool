@@ -21,7 +21,7 @@ def main():
         general_utils.bezier_movement(1721,  753, 1874, 802)
         # wait for the rock to be mined
         found_ore = False
-        general_utils.antiban_rest(50, 150, 250)
+        general_utils.antiban_rest(100, 300, 500)
         while True:
             data = general_utils.get_player_info(7776)
             general_utils.check_and_dismiss_random(data["randomEvent"])
@@ -32,5 +32,5 @@ def main():
                         found_ore = True
                 if found_ore:
                     break
-        general_utils.antiban_rest(50, 150, 250)
+        general_utils.antiban_rest(100, 300, 500)
 main()

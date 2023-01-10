@@ -1,11 +1,47 @@
+import datetime
+import random
+import time
+
 from osrs_utils import general_utils
 import math
 import keyboard
 
+def string():
+    data = general_utils.get_player_info(8814)
+    for item in data["inv"]:
+        # 66 yew long
+        # 70 mage long
+        # 62 maple long
+        if item["id"] == 1777:
+            general_utils.move_and_click(item["x"], item["y"], 8, 8)
+            break
+    for item in data["inv"]:
+        if item["id"] == 66:
+            general_utils.move_and_click(item["x"], item["y"], 8, 8)
+            break
+    general_utils.random_sleep(.9, 1.2)
+    keyboard.send('space')
+    general_utils.random_sleep(0.3, 0.4)
+    general_utils.click_off_screen()
+
 #need to be able to handle level ups
 def main():
+    fletching_level = -1
+    start_time = datetime.datetime.now()
     while True:
+        take_break = general_utils.break_every_hour(random.randint(53, 69), start_time)
+        if take_break:
+            general_utils.logout()
+            break_start_time = datetime.datetime.now()
+            while (datetime.datetime.now() - break_start_time).total_seconds() < random.randint(587, 874):
+                time.sleep(5)
+                general_utils.click_off_screen()
+            start_time = datetime.datetime.now()
+            general_utils.login('pass_70')
+            general_utils.random_sleep(0.4, 0.5)
         data = general_utils.get_player_info(8814)
+        fletching_level = data['fletchingLevel']
+        print(data)
         if len(data["npcs"]) != 0:
             closest_npc = {
                 "dist": 999,
@@ -36,22 +72,13 @@ def main():
                     general_utils.move_and_click(item["x"], item["y"], 8, 8)
             keyboard.send('esc')
             general_utils.random_sleep(0.9, 1.1)
-        data = general_utils.get_player_info(8814)
-        for item in data["inv"]:
-            if item["id"] == 66:
-                general_utils.move_and_click(item["x"], item["y"], 8, 8)
-                break
-        for item in data["inv"]:
-            if item["id"] == 1777:
-                general_utils.move_and_click(item["x"], item["y"], 8, 8)
-                break
-        general_utils.random_sleep(.9, 1.2)
-        keyboard.send('space')
-        general_utils.random_sleep(0.3, 0.4)
-        general_utils.click_off_screen()
+        string()
         while True:
             data = general_utils.get_player_info(8814)
-            if len(data["inv"]) == 14:
-                general_utils.antiban_rest()
+            if 'inv' in data and len(data["inv"]) == 14:
+                general_utils.antiban_rest(40, 100, 150)
                 break
+            elif data['fletchingLevel'] != fletching_level:
+                fletching_level = data['fletchingLevel']
+                string()
 main()
