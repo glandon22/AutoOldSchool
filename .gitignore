@@ -3,3 +3,6 @@ deprecated
 deprecated/*
 secrets
 config.py
+/exploratory_code/data.csv
+/exploratory_code/points.csv
+/quests/x_marks_the_spot.py
