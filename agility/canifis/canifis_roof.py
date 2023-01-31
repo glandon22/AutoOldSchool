@@ -327,7 +327,7 @@ def look_up():
 def main():
     start_time = datetime.datetime.now()
     while True:
-        start_time = general_utils.break_manager(start_time, 47, 54, 423, 551, 'pass_71', look_up)
+        start_time = general_utils.break_manager(start_time, 47, 54, 423, 551, 'pass_70', look_up)
         fell7 = False
         fell4 = False
         step1()

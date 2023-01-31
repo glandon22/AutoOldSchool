@@ -6,7 +6,7 @@ BOWSTRING = 1777
 # 66 yew long
 # 70 mage long
 # 62 maple long
-UNSTRUNG_BOW = 70
+UNSTRUNG_BOW = 66
 
 
 def string():
@@ -58,24 +58,21 @@ def dump_inventory_in_bank():
 
 
 def withdraw_materials():
-    q = {
-        'bank': True
-    }
     found_unstrung = False
     found_bowstring = False
     while True:
-        data = general_utils.query_game_data(q)
-        if 'bankItems' in data and len(data['bankItems']) > 0:
-            for item in data["bankItems"]:
-                if item["id"] == UNSTRUNG_BOW:
-                    general_utils.move_and_click(item["x"], item["y"], 8, 8)
-                    found_unstrung = True
-                elif item["id"] == BOWSTRING:
-                    general_utils.move_and_click(item["x"], item["y"], 8, 8)
-                    found_bowstring = True
-            keyboard.send('esc')
-            break
+        data = general_utils.get_bank_data()
+        for item in data:
+            if item["id"] == UNSTRUNG_BOW:
+                general_utils.move_and_click(item["x"], item["y"], 8, 8)
+                found_unstrung = True
+            elif item["id"] == BOWSTRING:
+                general_utils.move_and_click(item["x"], item["y"], 8, 8)
+                found_bowstring = True
+        keyboard.send('esc')
+        break
     if not found_bowstring or not found_unstrung:
+        print(data)
         exit("no more unstrung bows or bowstrings")
     general_utils.random_sleep(0.9, 1.1)
 
@@ -92,7 +89,7 @@ def main():
     fletching_level = get_fletching_level()
     start_time = datetime.datetime.now()
     while True:
-        start_time = general_utils.break_manager(start_time, 53, 69, 587, 874, 'pass_70')
+        start_time = general_utils.break_manager(start_time, 53, 69, 587, 874, 'pass_70', False)
         print('Clicking on banker.')
         click_banker()
         print('Waiting for bank interface to open.')

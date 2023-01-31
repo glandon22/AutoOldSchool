@@ -37,10 +37,11 @@ def determine_item_to_make(lvl):
     elif lvl < 100:
         return '6'
 
+
 def main():
     start_time = datetime.datetime.now()
     while True:
-        take_break = general_utils.break_every_hour(random.randint(63, 74), start_time)
+        take_break = general_utils.break_every_hour(random.randint(56, 63), start_time)
         if take_break:
             general_utils.logout()
             break_start_time = datetime.datetime.now()

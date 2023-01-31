@@ -154,12 +154,12 @@ def solve_bank_pin():
         random_sleep(1.1, 1.2)
 
 
-def wait_until_stationary():
+def wait_until_stationary(port='56799'):
     POSE_ANIMATION = {
         'poseAnimation': True
     }
     while True:
-        data = query_game_data(POSE_ANIMATION)
+        data = query_game_data(POSE_ANIMATION, port)
         # i am not moving
         if 'poseAnimation' in data and data['poseAnimation'] == 808:
             break
@@ -334,6 +334,16 @@ def is_item_in_inventory(inv, item_to_find):
     return False
 
 
+# check if one particular item is in inventory
+def is_item_in_inventory_v2(inv, item_to_find):
+    if not inv:
+        return False
+    for item in inv:
+        if item['id'] == item_to_find:
+            return item
+    return False
+
+
 # check for presence of one of multiple items
 # this is useful for supporting multiple food types in combat
 # if you don't care which food is consumed
@@ -343,6 +353,15 @@ def are_items_in_inventory(inv, items_to_find):
     for item in inv:
         if item['id'] in items_to_find:
             return [item['x'], item['y']]
+    return False
+
+
+def are_items_in_inventory_v2(inv, items_to_find):
+    if not inv:
+        return False
+    for item in inv:
+        if item['id'] in items_to_find:
+            return item
     return False
 
 
@@ -411,7 +430,7 @@ def break_every_hour(max_run, start_time=-1):
         return False
 
 
-def logout():
+def logout(port='56799'):
     LOGOUT_ICON = {
         'widget': '161,52'
     }
@@ -421,20 +440,20 @@ def logout():
     WORLD_SWITCHER_LOGOUT = {
         'widget': '69,23'
     }
-    icon = query_game_data(LOGOUT_ICON)
+    icon = query_game_data(LOGOUT_ICON, port)
     move_and_click(icon['widget']['x'], icon['widget']['y'], 10, 10)
     random_sleep(1, 1.4)
-    logout_button = query_game_data(LOGOUT_BUTTON)
+    logout_button = query_game_data(LOGOUT_BUTTON, port)
     if 'widget' in logout_button:
         move_and_click(logout_button['widget']['x'], logout_button['widget']['y'], 10, 10)
         random_sleep(0.3, 0.4)
     else:
-        logout_button = query_game_data(WORLD_SWITCHER_LOGOUT)
+        logout_button = query_game_data(WORLD_SWITCHER_LOGOUT, port)
         move_and_click(logout_button['widget']['x'], logout_button['widget']['y'], 10, 10)
         random_sleep(0.3, 0.4)
 
 
-def login(password):
+def login(password, port='56799'):
     existing_user = rough_img_compare('C:\\Users\\gland\\osrs_yolov3\\screens\\existing_user.png', 0.8, (0, 0, 1920, 1080))
     while True:
         existing_user = rough_img_compare('C:\\Users\\gland\\osrs_yolov3\\screens\\existing_user.png', 0.8, (0, 0, 1920, 1080))
@@ -470,15 +489,15 @@ def login(password):
 
     while True:
         q = {
-            'clickToPlay':  True
+            'widget': '378,81'
         }
-        r = query_game_data(q)
-        if 'clickToPlay' in r:
-            ctp = r['clickToPlay']
+        widget = query_game_data(q, port)
+        if 'widget' in widget:
+            ctp = widget['widget']
             # once the click to play button is loaded, it takes a couple seconds to get accurate coords
             # due to some underlying game mechanics (i guess)
             if ctp['x'] == coords['x'] and ctp['y'] == coords['y']:
-                move_and_click(r['clickToPlay']['x'], r['clickToPlay']['y'], 15, 15)
+                move_and_click(ctp['x'], ctp['y'], 15, 15)
                 break
             else:
                 coords['x'] = ctp['x']
@@ -499,11 +518,12 @@ def dump_items_in_bank():
             break
 
 
-def break_manager(start_time, min_session, max_session, min_rest, max_rest, password, post_login_steps):
+def break_manager(start_time, min_session, max_session, min_rest, max_rest, password, post_login_steps, port='56799'):
     take_break = break_every_hour(random.randint(min_session, max_session), start_time)
     if take_break:
         print('Taking extended break, signing off.')
-        logout()
+        random_sleep(20, 30)
+        logout(port)
         break_start_time = datetime.datetime.now()
         while (datetime.datetime.now() - break_start_time).total_seconds() < random.randint(min_rest, max_rest):
             print(
@@ -514,7 +534,7 @@ def break_manager(start_time, min_session, max_session, min_rest, max_rest, pass
             )
             time.sleep(30)
             click_off_screen()
-        login(password)
+        login(password, port)
         random_sleep(0.4, 0.5)
         if post_login_steps:
             post_login_steps()
@@ -522,13 +542,48 @@ def break_manager(start_time, min_session, max_session, min_rest, max_rest, pass
     return start_time
 
 
-def query_game_data(q):
+def multi_break_manager(start_time, min_session, max_session, min_rest, max_rest, acc_configs):
+    take_break = break_every_hour(random.randint(min_session, max_session), start_time)
+    if take_break:
+        print('Taking extended break, signing off. Current time: ', datetime.datetime.now())
+        random_sleep(20, 30)
+        for acc in acc_configs:
+            print(acc)
+            logout(acc['port'])
+            random_sleep(3, 3.1)
+            keyboard.send('alt + tab')
+        break_start_time = datetime.datetime.now()
+        while (datetime.datetime.now() - break_start_time).total_seconds() < random.randint(min_rest, max_rest):
+            print(
+                'Break has currently run for: ',
+                (datetime.datetime.now() - break_start_time).total_seconds(),
+                ' and can run for up to: ',
+                max_rest
+            )
+            time.sleep(30)
+            click_off_screen(200, 250, 200, 250)
+        for acc in acc_configs:
+            login(acc['password'], acc['port'])
+            keyboard.send('alt + tab')
+            random_sleep(3, 3.1)
+        random_sleep(0.4, 0.5)
+        for acc in acc_configs:
+            if acc['post_login_steps']:
+                acc['post_login_steps']()
+                keyboard.send('alt + tab')
+                random_sleep(3, 3.1)
+        return datetime.datetime.now()
+    return start_time
+
+
+def query_game_data(q, port='56799'):
     while True:
         try:
-            r = session.get(url='http://localhost:56799/osrs', json=q)
+            r = session.get(url='http://localhost:{}/osrs'.format(port), json=q)
             return r.json()
         except:
             print('Got an error trying to query the db.')
+
 
 def deposit_box_dump_inv():
     q = {
@@ -549,3 +604,285 @@ def deposit_box_dump_inv():
             break
     keyboard.send('esc')
 
+
+def get_inv(port='56799'):
+    while True:
+        q = {
+            'inv': True
+        }
+        data = query_game_data(q, port)
+        if 'inv' in data:
+            return data['inv']
+
+
+def get_game_object(tile, obj, port='56799'):
+    q = {
+        'gameObjects': [
+            {
+                'tile': tile,
+                'object': obj
+            }
+        ]
+    }
+    data = query_game_data(q, port)
+    if 'gameObjects' in data and obj in data['gameObjects']:
+        return data['gameObjects'][obj]
+    else:
+        return False
+
+
+def get_game_objects(lookup, port='56799'):
+    q = {
+        'gameObjects': lookup
+    }
+    data = query_game_data(q, port)
+    if 'gameObjects' in data:
+        return data['gameObjects']
+    else:
+        return False
+
+
+
+def get_widget(widget_string, port='56799'):
+    q = {
+        'widget': widget_string
+    }
+    data = query_game_data(q, port)
+    if 'widget' in data:
+        return data['widget']
+    else:
+        return False
+
+
+def wait_for_bank_interface(port='56799'):
+    q = {
+        'dumpInvButton': True
+    }
+    while True:
+        data = query_game_data(q, port)
+        if 'dumpInvButton' in data:
+            random_sleep(0.9, 0.8)
+            return
+
+
+def bank_dump_inv(port='56799'):
+    q = {
+        'dumpInvButton': True
+    }
+    while True:
+        data = query_game_data(q, port)
+        if 'dumpInvButton' in data:
+            move_and_click(data['dumpInvButton']['x'], data['dumpInvButton']['y'], 3, 4)
+            break
+
+
+def find_item_in_bank(item_to_find, port='56799'):
+    q = {
+        'bank': True
+    }
+    while True:
+        data = query_game_data(q, port)
+        if 'bankItems' in data:
+            for item in data['bankItems']:
+                if item['id'] == item_to_find:
+                    return item
+            return False
+
+
+def get_world_location(port='56799'):
+    q = {
+        'playerWorldPoint': True
+    }
+    while True:
+        data = query_game_data(q, port)
+        if 'playerWorldPoint' in data:
+            return data['playerWorldPoint']
+
+
+def get_bank_data(port='56799'):
+    q = {
+        'bank': True
+    }
+    while True:
+        data = query_game_data(q, port)
+        if 'bankItems' in data:
+            return data['bankItems']
+
+def get_skill_data(skill, port='56799'):
+    """
+
+    :param skill:
+    :return:
+    {'level': 98, 'xp': 12164703, 'boostedLevel': 98}
+    """
+    while True:
+        q = {
+            'skills': [skill]
+        }
+        skill_data = query_game_data(q, port)
+        if 'skills' in skill_data and skill in skill_data['skills']:
+            return skill_data['skills'][skill]
+
+
+def generate_surrounding_tiles(dist, port='56799'):
+    player_loc = get_world_location(port)
+    tiles = []
+    for x in range(player_loc['x'] - dist, player_loc['x'] + dist):
+        for y in range(player_loc['y'] - dist, player_loc['y'] + dist):
+            tiles.append('{},{},{}'.format(x, y, player_loc['z']))
+    return tiles
+
+
+# t bow 20997
+def get_surrounding_ground_items(dist, items):
+    tiles = generate_surrounding_tiles(dist)
+    q = {
+        'groundItems': []
+    }
+    for tile in tiles:
+        item_to_find = '20997'
+        if len(items) > 0:
+            item_to_find = items[len(items) - 1]
+            items.pop()
+        q['groundItems'].append({
+            'tile': tile,
+            'object': str(item_to_find)
+        })
+    data = query_game_data(q)
+    if 'groundItems' in data:
+        return data['groundItems']
+
+
+# t bow 20997
+def get_surrounding_game_objects(dist, items, port='56799'):
+    tiles = generate_surrounding_tiles(dist, port)
+    q = {
+        'gameObjects': []
+    }
+    for tile in tiles:
+        item_to_find = '20997'
+        if len(items) > 0:
+            item_to_find = items[len(items) - 1]
+            items.pop()
+        q['gameObjects'].append({
+            'tile': tile,
+            'object': str(item_to_find)
+        })
+    print(q)
+    data = query_game_data(q, port)
+    if 'gameObjects' in data:
+        return data['gameObjects']
+
+
+def run_to_loc(steps, port='56799'):
+    # dont click on squares hidden by my inventory
+    q = {
+        'widget': '161,95'
+    }
+    inv = query_game_data(q, port)
+    inv_container = {
+        'x_max': inv['widget']['x'] + 130,
+        'x_min': inv['widget']['x'] - 130,
+        'y_max': inv['widget']['y'] + 175,
+        'y_min': inv['widget']['y'] - 175,
+    }
+    for step in steps:
+        while True:
+            data = query_game_data({
+                'tiles': [step]
+            }, port)
+            formatted_step = step.replace(',', '')
+            if 'tiles' in data and formatted_step in data['tiles'] and \
+                    75 < data['tiles'][formatted_step]['y'] < 1040 and \
+                    (data['tiles'][formatted_step]['x'] < inv_container['x_min'] or
+                     data['tiles'][formatted_step]['y'] < inv_container['y_min']):
+                move_and_click(data['tiles'][formatted_step]['x'], data['tiles'][formatted_step]['y'], 7, 7)
+                break
+        random_sleep(1.5, 1.6)
+    wait_until_stationary(port)
+    random_sleep(0.5, 0.6)
+
+
+def right_click_menu_select(item, entry, port='56799', entry_string=None, entry_action=None):
+    move_and_click(item['x'], item['y'], 3, 3, 'right')
+    random_sleep(0.5, 0.6)
+    q = {
+        'getMenuEntries': True
+    }
+    data = query_game_data(q, port)
+    if 'menuEntries' in data:
+        curr_pos = pyautogui.position()
+        if entry:
+            additional_pixels = 20 + (entry - 1) * 15 + 3
+            move_and_click(curr_pos[0], curr_pos[1] + additional_pixels, 7, 1)
+        elif entry_string and entry_action:
+            for i in range(len(data['menuEntries']['items'])):
+                if entry_string in data['menuEntries']['items'][i] and entry_action in data['menuEntries']['items'][i]:
+                    additional_pixels = (len(data['menuEntries']['items']) - 1 - i) * 15 + 25
+                    move_and_click(curr_pos[0], curr_pos[1] + additional_pixels, 7, 1)
+                    random_sleep(2, 2.1)
+
+
+def get_player_animation(port='56799'):
+    q = {
+        'playerAnimation': True
+    }
+    data = query_game_data(q, port)
+    if 'playerAnimation' in data:
+        return data['playerAnimation']
+    else:
+        return -1
+
+
+def get_target_obj(port='56799'):
+    q = {
+        'getTargetObj': True
+    }
+    data = query_game_data(q, port)
+    if 'targetObj' in data:
+        return data['targetObj']
+    else:
+        return -1
+
+
+def get_target_npc(port='56799'):
+    q = {
+        'getTargetNPC': True
+    }
+    data = query_game_data(q, port)
+    if 'targetObj' in data:
+        return data['targetNPC']
+    else:
+        return
+
+
+def get_npc_by_id(npc_id, port):
+    q = {
+        'npcsID': [npc_id]
+    }
+    npcs = query_game_data(q, port)
+    if 'npcs' in npcs:
+        for npc in npcs['npcs']:
+            if str(npc['id']) == npc_id:
+                return npc
+    return False
+
+
+def get_chat_options(port):
+    q = {
+        'chatOptions': True
+    }
+    chat = query_game_data(q, port)
+    if 'chatOptions' in chat:
+        return chat['chatOptions']
+    return False
+
+
+def get_varbit_value(varbit, port):
+    q = {
+        'varBit': varbit
+    }
+    vb = query_game_data(q, port)
+    if 'varBit' in vb:
+        return vb['varBit']
+    return False

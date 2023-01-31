@@ -18,8 +18,6 @@ fish_to_catch_config = {
     '7': 'barbarian'
 }
 
-fish_to_catch = fish_to_catch_config['2']
-
 fish_spot_ids = {
     'shrimp': [
         '1514',
@@ -72,11 +70,11 @@ fish_to_drop_ids = {
 }
 
 
-def find_spot():
+def find_spot(fish_to_catch, port):
     q = {
         'npcsID': fish_spot_ids[fish_to_catch]
     }
-    data = general_utils.query_game_data(q)
+    data = general_utils.query_game_data(q, port)
     if 'npcs' in data:
         closest = general_utils.find_closest_target(data['npcs'])
         general_utils.move_and_click(closest['x'], closest['y'], 8, 8)
@@ -87,30 +85,35 @@ def find_spot():
         general_utils.random_sleep(2, 3)
 
 
-def main():
-    start_time = datetime.datetime.now()
-    while True:
-        start_time = general_utils.break_manager(start_time, 53, 58, 423, 551, 'pass_71', False)
-        q = {
-            'isFishing': True,
-            'inv': True,
-            'poseAnimation': True
-        }
-        data = general_utils.query_game_data(q)
-        if data["isFishing"]:
-            print('Currently fishing.')
-            continue
-        elif len(data["inv"]) == 28:
-            # salmon + trout = 335, 331
-            # shrimp anchovie 317, 321
-            # leaping trout 11328
-            general_utils.power_drop(data["inv"], [], fish_to_drop_ids[fish_to_catch])
-        elif not data["isFishing"] and data['poseAnimation'] == 808:
-            print('not fishing')
-            # wait a second or two so that I dont click the spot right before it disappears
-            general_utils.random_sleep(1.2, 1.5)
-            general_utils.antiban_rest(40, 75, 100)
-            find_spot()
-            general_utils.random_sleep(1.2, 1.5)
-
-main()
+def catch_fish(fish_num, port):
+    """
+    :param fish_num:
+    '1': 'shrimp',
+    '2': 'salmon',
+    '3': 'shark',
+    '4': 'monkfish',
+    '5': 'lobster',
+    '6': 'tuna',
+    '7': 'barbarian'
+    """
+    fish_to_catch = fish_to_catch_config[fish_num]
+    q = {
+        'isFishing': True,
+        'inv': True,
+        'poseAnimation': True
+    }
+    data = general_utils.query_game_data(q, port)
+    if data["isFishing"]:
+        return print('Currently fishing.')
+    elif len(data["inv"]) == 28:
+        # salmon + trout = 335, 331
+        # shrimp anchovie 317, 321
+        # leaping trout 11328
+        general_utils.power_drop(data["inv"], [], fish_to_drop_ids[fish_to_catch])
+        return print('power dropped inv')
+    elif not data["isFishing"] and data['poseAnimation'] == 808:
+        print('not fishing')
+        # wait a second or two so that I dont click the spot right before it disappears
+        general_utils.random_sleep(1.2, 1.5)
+        find_spot(fish_to_catch, port)
+        general_utils.random_sleep(1.2, 1.5)

@@ -45,6 +45,7 @@ def cook_fish_on_fire(fish_to_cook):
     general_utils.random_sleep(.9, 1.2)
     keyboard.send('space')
 
+
 def main():
     start_time = datetime.datetime.now()
     while True:
