@@ -153,6 +153,7 @@ def deposit_paydirt():
             break
         else:
             general_utils.random_sleep(0.1, 0.2)
+    general_utils.random_sleep(0.6, 0.7)
     while True:
         data = general_utils.query_game_data(queries.ORE_CART)
         if 'gameObjects' in data and '26674' in data['gameObjects']:
