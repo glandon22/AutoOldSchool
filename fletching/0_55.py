@@ -35,6 +35,7 @@ def determine_button(lvl):
         return None
 
 def main():
+    general_utils.random_sleep(5, 6)
     while True:
         general_utils.antiban_rest()
         data = general_utils.get_player_info(8814)

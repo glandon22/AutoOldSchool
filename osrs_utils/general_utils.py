@@ -1,20 +1,19 @@
 import datetime
-import keyboard
 import numpy as np
 import time
 from scipy import interpolate
 import math
 import random
 import pyautogui
-from PIL import Image, ImageChops
-import pyscreenshot
+from PIL import ImageChops
 import operator
 from functools import reduce
 import ctypes
-import keyboard as kb
 from secret_keepr import get_config
 import requests
+from pynput.keyboard import Key, Controller
 
+keyboard = Controller()
 mouseeventf_absolute = 0x8000
 mouseeventf_leftdown = 0x0002
 mouseeventf_leftup = 0x0004
@@ -110,7 +109,7 @@ def rough_img_compare(img, confidence, region):
             print('error calling screenshot, retrying.')
 
 
-def hop_worlds():
+'''def hop_worlds():
     kb.send('alt + shift + x')
     random_sleep(3.3, 3.9)
     if calc_img_diff(pyscreenshot.grab([22, 1212, 590, 1337]), Image.open('..\\screens\\w319.png'), 3) == 'same':
@@ -132,6 +131,7 @@ def hop_worlds():
     kb.send('esc')
     random_sleep(0.2, 0.4)
     return 'success'
+'''
 
 
 def solve_bank_pin():
@@ -168,34 +168,7 @@ def wait_until_stationary(port='56799'):
 
 
 def type_something(phrase):
-    keyboard.write(phrase)
-
-
-def change_fishing_settings():
-    bezier_movement(2444, 2453, 8, 17)
-    random_sleep(0.1, 0.2)
-    pyautogui.click()
-    bezier_movement(2278, 2337, 54, 68)
-    random_sleep(0.1, 0.2)
-    pyautogui.click()
-    keyboard.send('ctrl + a')
-    keyboard.send('del')
-    type_something('fishing')
-    bezier_movement(2452, 2458, 108, 114)
-    random_sleep(0.1, 0.2)
-    pyautogui.click()
-    bezier_movement(2477, 2486, 135, 142)
-    random_sleep(0.1, 0.2)
-    pyautogui.click()
-    bezier_movement(2479, 2488, 174, 178)
-    random_sleep(0.1, 0.2)
-    pyautogui.click()
-    bezier_movement(2230, 2239, 46, 54)
-    random_sleep(0.1, 0.2)
-    pyautogui.click()
-    bezier_movement(2444, 2453, 8, 17)
-    random_sleep(0.1, 0.2)
-    pyautogui.click()
+    keyboard.type(phrase)
 
 
 def antiban_rest(short=10, med=25, long=75):
@@ -418,6 +391,7 @@ def find_closest_target(targs):
             }
     return closest
 
+
 def break_every_hour(max_run, start_time=-1):
     if start_time == -1:
         start_time = datetime.datetime.now()
@@ -454,9 +428,11 @@ def logout(port='56799'):
 
 
 def login(password, port='56799'):
-    existing_user = rough_img_compare('C:\\Users\\gland\\osrs_yolov3\\screens\\existing_user.png', 0.8, (0, 0, 1920, 1080))
+    existing_user = rough_img_compare('C:\\Users\\gland\\osrs_yolov3\\screens\\existing_user.png', 0.8,
+                                      (0, 0, 1920, 1080))
     while True:
-        existing_user = rough_img_compare('C:\\Users\\gland\\osrs_yolov3\\screens\\existing_user.png', 0.8, (0, 0, 1920, 1080))
+        existing_user = rough_img_compare('C:\\Users\\gland\\osrs_yolov3\\screens\\existing_user.png', 0.8,
+                                          (0, 0, 1920, 1080))
         if existing_user:
             break
         time.sleep(1)
@@ -469,9 +445,11 @@ def login(password, port='56799'):
     random_sleep(1, 2)
     type_something(get_config(password))
     random_sleep(0.2, 0.4)
-    login_button = rough_img_compare('C:\\Users\\gland\\osrs_yolov3\\screens\\login_button.png', 0.8, (0, 0, 1920, 1080))
+    login_button = rough_img_compare('C:\\Users\\gland\\osrs_yolov3\\screens\\login_button.png', 0.8,
+                                     (0, 0, 1920, 1080))
     while True:
-        login_button = rough_img_compare('C:\\Users\\gland\\osrs_yolov3\\screens\\login_button.png', 0.8, (0, 0, 1920, 1080))
+        login_button = rough_img_compare('C:\\Users\\gland\\osrs_yolov3\\screens\\login_button.png', 0.8,
+                                         (0, 0, 1920, 1080))
         if login_button:
             break
         time.sleep(1)
@@ -513,7 +491,8 @@ def dump_items_in_bank():
             loc = rough_img_compare('..\\screens\\dump.png', .9, (0, 0, 1920, 1080))
             move_and_click(loc[0] + 15, loc[1] + 15, 4, 4)
             random_sleep(.5, .6)
-            keyboard.send('esc')
+            keyboard.press(Key.esc)
+            keyboard.release(Key.esc)
             random_sleep(.5, .6)
             break
 
@@ -551,7 +530,9 @@ def multi_break_manager(start_time, min_session, max_session, min_rest, max_rest
             print(acc)
             logout(acc['port'])
             random_sleep(3, 3.1)
-            keyboard.send('alt + tab')
+            with keyboard.pressed(Key.alt):
+                keyboard.press(Key.tab)
+                keyboard.release(Key.tab)
         break_start_time = datetime.datetime.now()
         while (datetime.datetime.now() - break_start_time).total_seconds() < random.randint(min_rest, max_rest):
             print(
@@ -564,13 +545,17 @@ def multi_break_manager(start_time, min_session, max_session, min_rest, max_rest
             click_off_screen(200, 250, 200, 250)
         for acc in acc_configs:
             login(acc['password'], acc['port'])
-            keyboard.send('alt + tab')
+            with keyboard.pressed(Key.alt):
+                keyboard.press(Key.tab)
+                keyboard.release(Key.tab)
             random_sleep(3, 3.1)
         random_sleep(0.4, 0.5)
         for acc in acc_configs:
             if acc['post_login_steps']:
                 acc['post_login_steps']()
-                keyboard.send('alt + tab')
+                with keyboard.pressed(Key.alt):
+                    keyboard.press(Key.tab)
+                    keyboard.release(Key.tab)
                 random_sleep(3, 3.1)
         return datetime.datetime.now()
     return start_time
@@ -602,7 +587,8 @@ def deposit_box_dump_inv():
         if 'widget' in data:
             move_and_click(data['widget']['x'], data['widget']['y'], 6, 6)
             break
-    keyboard.send('esc')
+    keyboard.press(Key.esc)
+    keyboard.release(Key.esc)
 
 
 def get_inv(port='56799'):
@@ -640,7 +626,6 @@ def get_game_objects(lookup, port='56799'):
         return data['gameObjects']
     else:
         return False
-
 
 
 def get_widget(widget_string, port='56799'):
@@ -708,6 +693,7 @@ def get_bank_data(port='56799'):
         if 'bankItems' in data:
             return data['bankItems']
 
+
 def get_skill_data(skill, port='56799'):
     """
 
@@ -734,7 +720,7 @@ def generate_surrounding_tiles(dist, port='56799'):
 
 
 # t bow 20997
-def get_surrounding_ground_items(dist, items):
+def get_surrounding_ground_items(dist, items, port='56799'):
     tiles = generate_surrounding_tiles(dist)
     q = {
         'groundItems': []
@@ -748,7 +734,7 @@ def get_surrounding_ground_items(dist, items):
             'tile': tile,
             'object': str(item_to_find)
         })
-    data = query_game_data(q)
+    data = query_game_data(q, port)
     if 'groundItems' in data:
         return data['groundItems']
 
@@ -886,3 +872,35 @@ def get_varbit_value(varbit, port):
     if 'varBit' in vb:
         return vb['varBit']
     return False
+
+
+def have_leveled_up(port='56799'):
+    leveled_up_widget = get_widget('233,0', port)
+    if leveled_up_widget:
+        return True
+    return False
+
+
+def click_banker(port='56799'):
+    q = {
+        'npcs': ['Banker']
+    }
+    data = query_game_data(q, port)
+    if len(data["npcs"]) != 0:
+        closest = find_closest_npc(data['npcs'])
+        move_and_click(closest['x'], closest['y'], 5, 6)
+
+
+def deposit_all_but_x_in_bank(items, port='56799'):
+    while True:
+        found_additional_items = False
+        inv = get_inv(port)
+        for item in inv:
+            if item['id'] not in items:
+                found_additional_items = True
+                move_and_click(item['x'], item['y'], 3, 3)
+                random_sleep(0.5, 0.6)
+                break
+        if not found_additional_items:
+            break
+    random_sleep(0.5, 0.6)

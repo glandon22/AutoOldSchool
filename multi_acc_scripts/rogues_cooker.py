@@ -1,7 +1,4 @@
 import datetime
-
-import keyboard
-
 from cooking import cook_handler
 from osrs_utils import general_utils
 '''

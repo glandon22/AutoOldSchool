@@ -15,9 +15,10 @@ import datetime
 import random
 import time
 
-import keyboard
 import pyautogui
+from pynput.keyboard import Key, Controller
 
+keyboard = Controller()
 from osrs_utils import general_utils
 import queries
 
@@ -233,9 +234,9 @@ def look_west_and_zoom_out():
     general_utils.query_game_data(queries.SET_YAW)
     pyautogui.scroll(-4000, 500, 500)
     general_utils.random_sleep(0.5, 0.6)
-    keyboard.press('up')
+    keyboard.press(Key.up)
     general_utils.random_sleep(1, 1.2)
-    keyboard.release('up')
+    keyboard.release(Key.up)
 
 
 def main():

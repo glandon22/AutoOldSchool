@@ -1,17 +1,9 @@
 import datetime
-import random
-import time
 from osrs_utils import general_utils
-import math
-import keyboard
-# check my fishing level
-# decide which fish to look for based on fishing level
-# go bank
-# if not empty, dump bag
-# withdraw the needed fish
-# cook the fish on the fire
-# if i level, cook again, plan for muli levels per bag
-# repeat
+from pynput.keyboard import Key, Controller
+
+keyboard = Controller()
+
 
 cooking_animations = [896, 897]
 possible_raw_fish = [327, 335, 331, 359, 377, 371, 383, 363]
@@ -37,7 +29,8 @@ def cook_fish_on_fire(port):
     if fire:
         general_utils.move_and_click(fire['x'], fire['y'], 4, 5)
     general_utils.random_sleep(.9, 1.2)
-    keyboard.send('space')
+    keyboard.press(Key.space)
+    keyboard.release(Key.space)
     general_utils.click_off_screen(300, 1400, 200, 1000, False)
 
 
@@ -61,9 +54,11 @@ def bank(port):
                 if fish_loc:
                     general_utils.move_and_click(fish_loc['x'], fish_loc['y'], 4, 4)
                     general_utils.random_sleep(0.5, 0.6)
-                    keyboard.send('esc')
+                    keyboard.press(Key.esc)
+                    keyboard.release(Key.esc)
                     return True
-                keyboard.send('esc')
+                keyboard.press(Key.esc)
+                keyboard.release(Key.esc)
     return False
 
 
