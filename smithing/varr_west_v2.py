@@ -9,9 +9,10 @@ widget = '312,29'
 #  2347 hammer
 # widget - dart tips - 312,29
 # widget - bolts - 312,34
-bar = 2359  # steel
-
-
+bar = 2359
+# 2351 # iron
+#2359  # mith
+# 2353 steel
 def bank():
     booth = general_utils.get_game_object('3186,3436,0', '34810', port)
     general_utils.move_and_click(booth['x'], booth['y'], 3, 3)
@@ -67,10 +68,9 @@ def post_login():
 
 def main():
     # 2349  # bronze
-
     start_time = datetime.datetime.now()
     while True:
-        start_time = general_utils.break_manager(start_time, 51, 57, 453, 609, 'pass_71', post_login)
+        start_time = general_utils.break_manager(start_time, 51, 57, 453, 609, 'pass_70', post_login)
         inv = general_utils.get_inv(port)
         bar_in_inv = general_utils.is_item_in_inventory_v2(inv, bar)
         if not bar_in_inv:

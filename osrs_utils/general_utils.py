@@ -167,6 +167,18 @@ def wait_until_stationary(port='56799'):
             random_sleep(0.1, 0.2)
 
 
+def am_stationary(port='56799'):
+    POSE_ANIMATION = {
+        'poseAnimation': True
+    }
+    data = query_game_data(POSE_ANIMATION, port)
+    if 'poseAnimation' in data and data['poseAnimation'] == 808:
+        return True
+    else:
+        return False
+
+
+
 def type_something(phrase):
     keyboard.type(phrase)
 
@@ -312,7 +324,7 @@ def is_item_in_inventory_v2(inv, item_to_find):
     if not inv:
         return False
     for item in inv:
-        if item['id'] == item_to_find:
+        if item['id'] == int(item_to_find):
             return item
     return False
 
@@ -591,14 +603,17 @@ def deposit_box_dump_inv():
     keyboard.release(Key.esc)
 
 
-def get_inv(port='56799'):
+#  this call occasionally fails on the backend, so if we know there should be something in inventory,
+#  retry until its returned
+def get_inv(port='56799', reject_empty=False):
     while True:
         q = {
             'inv': True
         }
         data = query_game_data(q, port)
         if 'inv' in data:
-            return data['inv']
+            if len(data['inv']) > 0 or not reject_empty:
+                return data['inv']
 
 
 def get_game_object(tile, obj, port='56799'):
@@ -613,6 +628,22 @@ def get_game_object(tile, obj, port='56799'):
     data = query_game_data(q, port)
     if 'gameObjects' in data and obj in data['gameObjects']:
         return data['gameObjects'][obj]
+    else:
+        return False
+
+
+def get_ground_object(tile, obj, port='56799'):
+    q = {
+        'groundObjects': [
+            {
+                'tile': tile,
+                'object': obj
+            }
+        ]
+    }
+    data = query_game_data(q, port)
+    if 'groundObjects' in data and obj in data['groundObjects']:
+        return data['groundObjects'][obj]
     else:
         return False
 
@@ -754,7 +785,6 @@ def get_surrounding_game_objects(dist, items, port='56799'):
             'tile': tile,
             'object': str(item_to_find)
         })
-    print(q)
     data = query_game_data(q, port)
     if 'gameObjects' in data:
         return data['gameObjects']
@@ -782,7 +812,7 @@ def run_to_loc(steps, port='56799'):
                     75 < data['tiles'][formatted_step]['y'] < 1040 and \
                     (data['tiles'][formatted_step]['x'] < inv_container['x_min'] or
                      data['tiles'][formatted_step]['y'] < inv_container['y_min']):
-                move_and_click(data['tiles'][formatted_step]['x'], data['tiles'][formatted_step]['y'], 7, 7)
+                move_and_click(data['tiles'][formatted_step]['x'], data['tiles'][formatted_step]['y'], 3, 3)
                 break
         random_sleep(1.5, 1.6)
     wait_until_stationary(port)
@@ -806,7 +836,7 @@ def right_click_menu_select(item, entry, port='56799', entry_string=None, entry_
                 if entry_string in data['menuEntries']['items'][i] and entry_action in data['menuEntries']['items'][i]:
                     additional_pixels = (len(data['menuEntries']['items']) - 1 - i) * 15 + 25
                     move_and_click(curr_pos[0], curr_pos[1] + additional_pixels, 7, 1)
-                    random_sleep(2, 2.1)
+                    random_sleep(0.5, 0.6)
 
 
 def get_player_animation(port='56799'):
@@ -904,3 +934,11 @@ def deposit_all_but_x_in_bank(items, port='56799'):
         if not found_additional_items:
             break
     random_sleep(0.5, 0.6)
+
+
+def get_item_quantity_in_inv(inv, targ):
+    quantity = 0
+    for item in inv:
+        if item['id'] == int(targ):
+            quantity += item['quantity']
+    return quantity

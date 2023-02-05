@@ -246,7 +246,7 @@ def main():
     not_mining_timestamp = -1
     start_time = datetime.datetime.now()
     while True:
-        start_time = general_utils.break_manager(start_time, 53, 59, 432, 673, 'pass_71', look_west_and_zoom_out)
+        start_time = general_utils.break_manager(start_time, 53, 59, 432, 673, 'pass_70', look_west_and_zoom_out)
         data = general_utils.query_game_data(queries.MINING_STATUS_AND_INV_AND_POSE)
         if 'inv' in data and len(data['inv']) == 28:
             not_mining_timestamp = -1
