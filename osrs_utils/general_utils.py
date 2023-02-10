@@ -12,6 +12,7 @@ import ctypes
 from secret_keepr import get_config
 import requests
 from pynput.keyboard import Key, Controller
+import platform
 
 keyboard = Controller()
 mouseeventf_absolute = 0x8000
@@ -105,8 +106,8 @@ def rough_img_compare(img, confidence, region):
                 return loc
             else:
                 return False
-        except:
-            print('error calling screenshot, retrying.')
+        except Exception as e:
+            print('error calling screenshot, retrying.', e)
 
 
 '''def hop_worlds():
@@ -176,7 +177,6 @@ def am_stationary(port='56799'):
         return True
     else:
         return False
-
 
 
 def type_something(phrase):
@@ -440,10 +440,18 @@ def logout(port='56799'):
 
 
 def login(password, port='56799'):
-    existing_user = rough_img_compare('C:\\Users\\gland\\osrs_yolov3\\screens\\existing_user.png', 0.8,
+    existing_user_paths = {
+        'Linux': '../screens/existing_user.png',
+        'Windows': 'C:\\Users\\gland\\osrs_yolov3\\screens\\existing_user.png'
+    }
+    login_paths = {
+        'Linux': '../screens/login.png',
+        'Windows': 'C:\\Users\\gland\\osrs_yolov3\\screens\\login_button.png'
+    }
+    existing_user = rough_img_compare(existing_user_paths[platform.system()], 0.8,
                                       (0, 0, 1920, 1080))
     while True:
-        existing_user = rough_img_compare('C:\\Users\\gland\\osrs_yolov3\\screens\\existing_user.png', 0.8,
+        existing_user = rough_img_compare(existing_user_paths[platform.system()], 0.8,
                                           (0, 0, 1920, 1080))
         if existing_user:
             break
@@ -457,10 +465,10 @@ def login(password, port='56799'):
     random_sleep(1, 2)
     type_something(get_config(password))
     random_sleep(0.2, 0.4)
-    login_button = rough_img_compare('C:\\Users\\gland\\osrs_yolov3\\screens\\login_button.png', 0.8,
+    login_button = rough_img_compare(login_paths[platform.system()], 0.8,
                                      (0, 0, 1920, 1080))
     while True:
-        login_button = rough_img_compare('C:\\Users\\gland\\osrs_yolov3\\screens\\login_button.png', 0.8,
+        login_button = rough_img_compare(login_paths[platform.system()], 0.8,
                                          (0, 0, 1920, 1080))
         if login_button:
             break
@@ -542,9 +550,10 @@ def multi_break_manager(start_time, min_session, max_session, min_rest, max_rest
             print(acc)
             logout(acc['port'])
             random_sleep(3, 3.1)
-            with keyboard.pressed(Key.alt):
-                keyboard.press(Key.tab)
-                keyboard.release(Key.tab)
+            if len(acc_configs) > 1:
+                with keyboard.pressed(Key.alt):
+                    keyboard.press(Key.tab)
+                    keyboard.release(Key.tab)
         break_start_time = datetime.datetime.now()
         while (datetime.datetime.now() - break_start_time).total_seconds() < random.randint(min_rest, max_rest):
             print(
@@ -557,17 +566,19 @@ def multi_break_manager(start_time, min_session, max_session, min_rest, max_rest
             click_off_screen(200, 250, 200, 250)
         for acc in acc_configs:
             login(acc['password'], acc['port'])
-            with keyboard.pressed(Key.alt):
-                keyboard.press(Key.tab)
-                keyboard.release(Key.tab)
+            if len(acc_configs) > 1:
+                with keyboard.pressed(Key.alt):
+                    keyboard.press(Key.tab)
+                    keyboard.release(Key.tab)
             random_sleep(3, 3.1)
         random_sleep(0.4, 0.5)
         for acc in acc_configs:
             if acc['post_login_steps']:
                 acc['post_login_steps']()
-                with keyboard.pressed(Key.alt):
-                    keyboard.press(Key.tab)
-                    keyboard.release(Key.tab)
+                if len(acc_configs) > 1:
+                    with keyboard.pressed(Key.alt):
+                        keyboard.press(Key.tab)
+                        keyboard.release(Key.tab)
                 random_sleep(3, 3.1)
         return datetime.datetime.now()
     return start_time
@@ -866,7 +877,8 @@ def get_target_npc(port='56799'):
         'getTargetNPC': True
     }
     data = query_game_data(q, port)
-    if 'targetObj' in data:
+    print(data)
+    if 'targetNPC' in data:
         return data['targetNPC']
     else:
         return
@@ -892,6 +904,15 @@ def get_chat_options(port):
     if 'chatOptions' in chat:
         return chat['chatOptions']
     return False
+
+
+def select_chat_option(chat_options, phrase):
+    if not chat_options:
+        return -1
+    for i, option in enumerate(chat_options):
+        if phrase in option:
+            return i
+    return -1
 
 
 def get_varbit_value(varbit, port):
