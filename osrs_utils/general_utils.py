@@ -288,7 +288,7 @@ def power_drop(inv, slots_to_skip, items_to_drop):
         if len(slots_to_skip) != 0 and num in slots_to_skip:
             continue
         # make sure slot is in range
-        elif num > len(inv):
+        elif num >= len(inv):
             continue
         # dont drop this item type
         elif inv[num]["id"] in items_to_drop:
@@ -487,7 +487,7 @@ def login(password, port='56799'):
 
     while True:
         q = {
-            'widget': '378,81'
+            'widget': '378,72'
         }
         widget = query_game_data(q, port)
         if 'widget' in widget:
@@ -783,6 +783,13 @@ def get_surrounding_ground_items(dist, items, port='56799'):
 
 # t bow 20997
 def get_surrounding_game_objects(dist, items, port='56799'):
+    """
+
+    :param dist: integer, how many tiles around to look for items, ie 7x7
+    :param items: array of strings of item codes to search for
+    :param port: default is 56799
+    :return: {'9345': {'x': 881, 'y': 538, 'dist': 1}}
+    """
     tiles = generate_surrounding_tiles(dist, port)
     q = {
         'gameObjects': []
