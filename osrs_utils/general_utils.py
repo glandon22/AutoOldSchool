@@ -970,3 +970,41 @@ def get_item_quantity_in_inv(inv, targ):
         if item['id'] == int(targ):
             quantity += item['quantity']
     return quantity
+
+
+def run_towards_square(destination, port):
+    """
+
+    :param destination: obj {x: 2341, y: 687, z:0}
+    :type port: str
+    """
+
+    loc = get_world_location(port)
+    steps = []
+    while loc['x'] != destination['x'] or loc['y'] != destination['y']:
+        x_diff = destination['x'] - loc['x']
+        x_inc = 0
+        if x_diff > 0:
+            x_inc = min(5, x_diff)
+        else:
+            x_inc = max(-5, x_diff)
+        y_diff = destination['y'] - loc['y']
+        y_inc = 0
+        if y_diff > 0:
+            y_inc = min(5, y_diff)
+        else:
+            y_inc = max(-5, y_diff)
+        loc['x'] = loc['x'] + x_inc
+        loc['y'] = loc['y'] + y_inc
+        next_sq = '{},{},{}'.format(loc['x'], loc['y'], loc['z'])
+        steps.append(next_sq)
+    print(steps)
+    run_to_loc(steps)
+
+def objective_click_handler(fn, exit_condition, max_iter):
+    iterations = 0
+    while iterations < max_iter:
+        fn()
+        if exit_condition:
+            return True
+    return False
