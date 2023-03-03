@@ -103,7 +103,7 @@ def main():
     start_time = datetime.datetime.now()
     general_utils.random_sleep(3, 3.1)
     while True:
-        start_time = general_utils.break_manager(start_time, 49, 54, 432, 673, 'pass_71', False, port)
+        start_time = general_utils.break_manager(start_time, 49, 54, 432, 673, 'pass_70', False, port)
         general_utils.antiban_rest(45, 100, 300)
         build_until_out()
         general_utils.antiban_rest(45, 100, 300)

@@ -4,7 +4,7 @@ from osrs_utils import general_utils
 from pynput.keyboard import Key, Controller
 
 keyboard = Controller()
-port = '56800'
+port = '56799'
 built_chair = '6752'
 chair_slot = '4517'
 item_to_make = '1'
@@ -101,10 +101,11 @@ def main():
     start_time = datetime.datetime.now()
     while True:
         start_time = general_utils.break_manager(start_time, 49, 54, 432, 673, 'pass_71', False, port)
+        build_until_out()
         general_utils.antiban_rest(45, 100, 300)
         click_phials()
         general_utils.antiban_rest(45, 100, 300)
         enter_home()
         general_utils.antiban_rest(45, 100, 300)
-        build_until_out()
-        general_utils.antiban_rest(45, 100, 300)
+
+main()
