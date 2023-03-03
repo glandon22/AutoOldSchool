@@ -4,7 +4,7 @@ from osrs_utils import general_utils
 from pynput.keyboard import Key, Controller
 
 keyboard = Controller()
-port = '56800'
+port = '56799'
 coal = 453
 mith_ore = 447
 coal_bag = 12019
@@ -16,7 +16,7 @@ mithril_bar = 2359
 
 
 def put_ore_on_belt():
-    general_utils.run_to_loc(['1943,4967,0'], port)
+    general_utils.run_to_loc(['1943,4969,0'], port)
     while True:
         inv = general_utils.get_inv(port)
         if len(inv) == 1 and inv[0]['id'] == coal_bag:
@@ -47,21 +47,21 @@ def drink_stam(bank_data):
     inv = general_utils.get_inv(port, True)
     print('inv', inv)
     stam_inv = general_utils.is_item_in_inventory_v2(inv, single_dose_stam)
-    general_utils.move_and_click(stam_inv['x'], stam_inv['y'], 2, 2)
-    general_utils.random_sleep(0.6, 0.7)
-    while True:
-        inv = general_utils.get_inv(port)
-        vial_inv = general_utils.is_item_in_inventory_v2(inv, vial)
-        if vial_inv:
-            general_utils.right_click_menu_select(vial_inv, 2, port)
-            break
+    if stam_inv:
+        general_utils.move_and_click(stam_inv['x'], stam_inv['y'], 2, 2)
+        general_utils.random_sleep(0.6, 0.7)
+        while True:
+            inv = general_utils.get_inv(port)
+            vial_inv = general_utils.is_item_in_inventory_v2(inv, vial)
+            if vial_inv:
+                general_utils.right_click_menu_select(vial_inv, 2, port)
+                break
+
 
 def click_bank():
     bank_chest = general_utils.get_game_object('1948,4956,0', '26707', port)
-    general_utils.random_sleep(0.6, 0.7)
     general_utils.move_and_click(bank_chest['x'], bank_chest['y'], 3, 3)
     general_utils.wait_for_bank_interface(port)
-    general_utils.random_sleep(0.5, 0.6)
     return general_utils.get_bank_data(port)
 
 
@@ -72,9 +72,10 @@ def bank(trip_count):
     coal_bag_inv = general_utils.is_item_in_inventory_v2(inv_data,  coal_bag)
     general_utils.right_click_menu_select(coal_bag_inv, None, port, 'Coal bag', 'Fill')
     run_energy = general_utils.get_widget('160,28', port)
-    if run_energy and int(run_energy['text']) < 25:
+    if run_energy and int(run_energy['text']) < 35:
         drink_stam(bank_data)
         bank_data = click_bank()
+        general_utils.deposit_all_but_x_in_bank([coal_bag], port)
     if trip_count == 0:
         coal_bank = general_utils.is_item_in_inventory_v2(bank_data, coal)
         if not coal_bank:
@@ -90,19 +91,19 @@ def bank(trip_count):
 
 
 def collect_bars():
+    general_utils.run_to_loc(['1939,4963,0'], port)
+    general_utils.random_sleep(0.5, 0.6)
+    general_utils.wait_until_stationary(port)
     while True:
         mith_bars_in_dispenser = general_utils.get_varbit_value('944', port)
         if mith_bars_in_dispenser == 27:
-            general_utils.random_sleep(0.6, 0.7)
             general_utils.run_to_loc(['1940,4963,0'], port)
-            general_utils.random_sleep(0.5, 0.6)
             while True:
                 interface = general_utils.get_widget('270,4', port)
                 if interface and 'text' in interface:
                     break
                 elif general_utils.am_stationary(port):
                     general_utils.run_to_loc(['1940,4963,0'], port)
-            general_utils.random_sleep(0.5, 0.6)
             keyboard.press(Key.space)
             keyboard.release(Key.space)
             break
@@ -112,7 +113,7 @@ def main():
     trip_count = 0
     start_time = datetime.datetime.now()
     while True:
-        start_time = general_utils.break_manager(start_time, 49, 54, 432, 673, 'pass_71', False, port)
+        start_time = general_utils.break_manager(start_time, 49, 54, 432, 673, 'pass_70', False, port)
         bank(trip_count % 3)
         put_ore_on_belt()
         print(trip_count, trip_count % 3, trip_count % 3 != 0)
@@ -120,5 +121,5 @@ def main():
             collect_bars()
         trip_count += 1
 
-
+general_utils.random_sleep(2, 3)
 main()

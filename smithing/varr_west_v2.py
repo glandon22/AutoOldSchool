@@ -30,7 +30,7 @@ def bank():
             break
     bank_data = general_utils.get_bank_data(port)
     bar_in_bank = general_utils.is_item_in_inventory_v2(bank_data, bar)
-    if not bar:
+    if not bar_in_bank:
         exit('no more bars')
     general_utils.move_and_click(bar_in_bank['x'], bar_in_bank['y'], 4, 4)
     general_utils.random_sleep(0.5, 0.6)
