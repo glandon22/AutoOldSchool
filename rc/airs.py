@@ -21,12 +21,13 @@ q = {
 import keyboard
 
 from osrs_utils import general_utils
-
+port = '56799'
 
 def click_home_tab():
     inv = general_utils.get_inv()
-    home_tab = general_utils.is_item_in_inventory(inv, 8013)
-    general_utils.move_and_click(home_tab[0], home_tab[1], 4, 6)
+    home_tab = general_utils.is_item_in_inventory_v2(inv, 8013)
+    general_utils.right_click_menu_select(home_tab, False, port, 'Teleport to house', 'Outside')
+    general_utils.random_sleep(3, 4)
 
 
 def run_to_loc(steps):
@@ -87,9 +88,7 @@ def tele_to_ferox():
         if not ring_slot:
             general_utils.random_sleep(1, 2)
         else:
-            general_utils.move_and_click(ring_slot['x'], ring_slot['y'], 7, 7, 'right')
-            general_utils.random_sleep(0.5, 0.6)
-            general_utils.move_and_click(ring_slot['x'], ring_slot['y'] + 69, 15, 2)
+            general_utils.right_click_menu_select(ring_slot, 4)
             keyboard.send('esc')
             general_utils.random_sleep(2, 2.1)
             break
@@ -156,7 +155,6 @@ def main():
         click_altar()
         tele_to_ferox()
         ring_charges -= 1
-        run_to_loc(['3134,3628,0'])
         click_bank()
         general_utils.wait_for_bank_interface()
         handle_banking(ring_charges)
