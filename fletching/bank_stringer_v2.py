@@ -89,7 +89,7 @@ def main():
     fletching_level = get_fletching_level()
     start_time = datetime.datetime.now()
     while True:
-        start_time = general_utils.break_manager(start_time, 53, 69, 587, 874, 'pass_70', False)
+        start_time = general_utils.break_manager(start_time, 53, 58, 587, 874, 'pass_70', False)
         print('Clicking on banker.')
         click_banker()
         print('Waiting for bank interface to open.')

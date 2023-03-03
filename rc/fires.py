@@ -180,7 +180,7 @@ def main():
     trips = 0
     start_time = datetime.datetime.now()
     while True:
-        start_time = general_utils.break_manager(start_time, 47, 54, 423, 551, 'pass_71', False)
+        start_time = general_utils.break_manager(start_time, 47, 54, 423, 551, 'pass_70', False)
         tele_to_altar()
         general_utils.random_sleep(0.5, 0.6)
         click_ruins()
