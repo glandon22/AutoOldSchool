@@ -9,8 +9,12 @@ minimum_eat_health = 35
 food_to_eat = [7946, 379, 361]
 port = '56799'
 
+'''
+some npcs have the same ID, which breaks my other script. i filter by ID in order to not click to 
+attack the monster i just killed, and if all the npcs i want to kill have the same id it gets all fucked up
+
+'''
 def main():
-    npc_curr_target_id = 0
     start_time = datetime.datetime.now()
     pot_time = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
@@ -52,9 +56,8 @@ def main():
                 'npcsToKill': [monster_to_kill],
             }
             data = general_utils.query_game_data(q)
-            closest = general_utils.find_closest_npc(data['npcs'], npc_curr_target_id)
+            closest = general_utils.find_an_npc(data['npcs'], 3)
             general_utils.move_and_click(closest['x'], closest['y'], 2, 2)
-            npc_curr_target_id = closest['id']
             general_utils.random_sleep(3, 4)
 
 main()
