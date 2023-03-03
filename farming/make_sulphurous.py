@@ -21,10 +21,7 @@ def main():
                     }
             general_utils.move_and_click(math.floor(closest_npc["x"]),math.floor( closest_npc["y"]), 5, 6)
 
-        while True:
-            loc = general_utils.rough_img_compare('..\\screens\\bank_interface.png', .9, (0, 0, 1920, 1080))
-            if loc:
-                break
+        general_utils.wait_for_bank_interface('56799')
         if data.get("inv") is not None:
             loc = general_utils.rough_img_compare('..\\screens\\dump.png', .9, (0, 0, 1920, 1080))
             general_utils.move_and_click(loc[0] + 5, loc[1] + 5, 4, 4)
