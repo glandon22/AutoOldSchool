@@ -387,6 +387,24 @@ def find_closest_npc(npcs, ignore=-1):
     return closest
 
 
+def find_an_npc(npcs, min_dist):
+    closest = {
+        "dist": 999,
+        "x": None,
+        "y": None,
+        "id": None
+    }
+    for npc in npcs:
+        if closest["dist"] > npc["dist"] >= min_dist:
+            closest = {
+                "dist": npc["dist"],
+                "x": math.floor(npc["x"]),
+                "y": math.floor(npc["y"]),
+                "id": npc["id"]
+            }
+    return closest
+
+
 def find_closest_target(targs):
     closest = {
         "dist": 999,
@@ -395,7 +413,7 @@ def find_closest_target(targs):
         "id": None
     }
     for targ in targs:
-        if targ["dist"] < closest["dist"]:
+        if int(targ["dist"]) < int(closest["dist"]):
             closest = {
                 "dist": targ["dist"],
                 "x": math.floor(targ["x"]),
@@ -616,7 +634,7 @@ def deposit_box_dump_inv():
 
 #  this call occasionally fails on the backend, so if we know there should be something in inventory,
 #  retry until its returned
-def get_inv(port='56799', reject_empty=False):
+def get_inv(port='56799', reject_empty=True):
     while True:
         q = {
             'inv': True
@@ -639,6 +657,22 @@ def get_game_object(tile, obj, port='56799'):
     data = query_game_data(q, port)
     if 'gameObjects' in data and obj in data['gameObjects']:
         return data['gameObjects'][obj]
+    else:
+        return False
+
+
+def get_wall_object(tile, obj, port='56799'):
+    q = {
+        'wallObjects': [
+            {
+                'tile': tile,
+                'object': obj
+            }
+        ]
+    }
+    data = query_game_data(q, port)
+    if 'wallObjects' in data and obj in data['wallObjects']:
+        return data['wallObjects'][obj][0]
     else:
         return False
 
@@ -808,6 +842,45 @@ def get_surrounding_game_objects(dist, items, port='56799'):
         return data['gameObjects']
 
 
+# t bow 20997
+def get_surrounding_wall_objects(dist, items, port='56799'):
+    tiles = generate_surrounding_tiles(dist, port)
+    q = {
+        'wallObjects': []
+    }
+    for tile in tiles:
+        item_to_find = '20997'
+        if len(items) > 0:
+            item_to_find = items[len(items) - 1]
+            items.pop()
+        q['wallObjects'].append({
+            'tile': tile,
+            'object': str(item_to_find)
+        })
+    data = query_game_data(q, port)
+    if 'wallObjects' in data:
+        return data['wallObjects']
+
+
+# t bow 20997
+def get_multiple_surrounding_game_objects(dist, items, port='56799'):
+    tiles = generate_surrounding_tiles(dist, port)
+    q = {
+        'multipleGameObjects': []
+    }
+    for tile in tiles:
+        item_to_find = '20997'
+        if len(items) > 0:
+            item_to_find = items[len(items) - 1]
+            items.pop()
+        q['multipleGameObjects'].append({
+            'tile': tile,
+            'object': str(item_to_find)
+        })
+    data = query_game_data(q, port)
+    if 'multipleGameObjects' in data:
+        return data['multipleGameObjects']
+
 def run_to_loc(steps, port='56799'):
     # dont click on squares hidden by my inventory
     q = {
@@ -971,6 +1044,43 @@ def get_item_quantity_in_inv(inv, targ):
             quantity += item['quantity']
     return quantity
 
+def run_towards_square(destination, port):
+    """
+
+    :param destination: obj {x: 2341, y: 687, z:0}
+    :type port: str
+    """
+
+    loc = get_world_location(port)
+    steps = []
+    while loc['x'] != destination['x'] or loc['y'] != destination['y']:
+        x_diff = destination['x'] - loc['x']
+        x_inc = 0
+        if x_diff > 0:
+            x_inc = min(5, x_diff)
+        else:
+            x_inc = max(-5, x_diff)
+        y_diff = destination['y'] - loc['y']
+        y_inc = 0
+        if y_diff > 0:
+            y_inc = min(5, y_diff)
+        else:
+            y_inc = max(-5, y_diff)
+        loc['x'] = loc['x'] + x_inc
+        loc['y'] = loc['y'] + y_inc
+        next_sq = '{},{},{}'.format(loc['x'], loc['y'], loc['z'])
+        steps.append(next_sq)
+    print(steps)
+    run_to_loc(steps)
+
+def objective_click_handler(fn, exit_condition, max_iter):
+    iterations = 0
+    while iterations < max_iter:
+        fn()
+        if exit_condition:
+            return True
+    return False
+
 
 def run_towards_square(destination, port):
     """
@@ -1000,6 +1110,7 @@ def run_towards_square(destination, port):
         steps.append(next_sq)
     print(steps)
     run_to_loc(steps)
+
 
 def objective_click_handler(fn, exit_condition, max_iter):
     iterations = 0
