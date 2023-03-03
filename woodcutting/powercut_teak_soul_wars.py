@@ -7,23 +7,27 @@ wc_animations = [
 ]
 # reg logs 1511
 # oak log 1521
-expected_logs = 1521
+# willow 1519
+# teak 6333
+expected_logs = 6333
 #reg trees
 # oak tree 10820
 # teak
-expected_tree = '10820'
+expected_tree = '40758'
 port = '56799'
 
 tiles = [
-    '3107,3283,0',
-    '3102,3287,0',
-    '3097,3288,0'
+    '2185,2990,0',
+    '2185,2988,0',
+    '2187,2992,0'
 ]
 
 
 def main():
     last_click = datetime.datetime.now()
+    start_time = datetime.datetime.now()
     while True:
+        start_time = general_utils.break_manager(start_time, 51, 57, 456, 578, 'pass_70', False)
         animation = general_utils.get_player_animation(port)
         inv = general_utils.get_inv(port)
         if animation in wc_animations:
@@ -42,6 +46,7 @@ def main():
             if expected_tree in tree:
                 general_utils.move_and_click(tree[expected_tree]['x'], tree[expected_tree]['y'], 2, 2)
                 last_click = datetime.datetime.now()
+                general_utils.random_sleep(0.5, 1.6)
                 general_utils.click_off_screen(300, 1200, 400, 900, False)
 
 

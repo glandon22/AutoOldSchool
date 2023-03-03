@@ -7,17 +7,18 @@ wc_animations = [
 ]
 # reg logs 1511
 # oak log 1521
-expected_logs = 1521
+# willow 1519
+expected_logs = 1519
 #reg trees
 # oak tree 10820
 # teak
-expected_tree = '10820'
+expected_tree = '10819'
 port = '56799'
 
 tiles = [
-    '3107,3283,0',
-    '3102,3287,0',
-    '3097,3288,0'
+    '2913,3305,0',
+    '2912,3303,0',
+    '2914,3300,0'
 ]
 
 
@@ -42,6 +43,7 @@ def main():
             if expected_tree in tree:
                 general_utils.move_and_click(tree[expected_tree]['x'], tree[expected_tree]['y'], 2, 2)
                 last_click = datetime.datetime.now()
+                general_utils.random_sleep(0.5, 1.6)
                 general_utils.click_off_screen(300, 1200, 400, 900, False)
 
 
