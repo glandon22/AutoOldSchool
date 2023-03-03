@@ -288,7 +288,7 @@ def power_drop(inv, slots_to_skip, items_to_drop):
         if len(slots_to_skip) != 0 and num in slots_to_skip:
             continue
         # make sure slot is in range
-        elif num > len(inv):
+        elif num >= len(inv):
             continue
         # dont drop this item type
         elif inv[num]["id"] in items_to_drop:
@@ -487,7 +487,7 @@ def login(password, port='56799'):
 
     while True:
         q = {
-            'widget': '378,81'
+            'widget': '378,72'
         }
         widget = query_game_data(q, port)
         if 'widget' in widget:
@@ -783,6 +783,13 @@ def get_surrounding_ground_items(dist, items, port='56799'):
 
 # t bow 20997
 def get_surrounding_game_objects(dist, items, port='56799'):
+    """
+
+    :param dist: integer, how many tiles around to look for items, ie 7x7
+    :param items: array of strings of item codes to search for
+    :param port: default is 56799
+    :return: {'9345': {'x': 881, 'y': 538, 'dist': 1}}
+    """
     tiles = generate_surrounding_tiles(dist, port)
     q = {
         'gameObjects': []
@@ -963,3 +970,41 @@ def get_item_quantity_in_inv(inv, targ):
         if item['id'] == int(targ):
             quantity += item['quantity']
     return quantity
+
+
+def run_towards_square(destination, port):
+    """
+
+    :param destination: obj {x: 2341, y: 687, z:0}
+    :type port: str
+    """
+
+    loc = get_world_location(port)
+    steps = []
+    while loc['x'] != destination['x'] or loc['y'] != destination['y']:
+        x_diff = destination['x'] - loc['x']
+        x_inc = 0
+        if x_diff > 0:
+            x_inc = min(5, x_diff)
+        else:
+            x_inc = max(-5, x_diff)
+        y_diff = destination['y'] - loc['y']
+        y_inc = 0
+        if y_diff > 0:
+            y_inc = min(5, y_diff)
+        else:
+            y_inc = max(-5, y_diff)
+        loc['x'] = loc['x'] + x_inc
+        loc['y'] = loc['y'] + y_inc
+        next_sq = '{},{},{}'.format(loc['x'], loc['y'], loc['z'])
+        steps.append(next_sq)
+    print(steps)
+    run_to_loc(steps)
+
+def objective_click_handler(fn, exit_condition, max_iter):
+    iterations = 0
+    while iterations < max_iter:
+        fn()
+        if exit_condition:
+            return True
+    return False
