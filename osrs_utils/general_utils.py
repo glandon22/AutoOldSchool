@@ -611,6 +611,10 @@ def query_game_data(q, port='56799'):
             print('Got an error trying to query the db.')
 
 
+def sleep_one_tick():
+    random_sleep(0.6, 0.7)
+
+
 def deposit_box_dump_inv():
     q = {
         'widget': '192,5'
@@ -793,6 +797,43 @@ def generate_surrounding_tiles(dist, port='56799'):
         for y in range(player_loc['y'] - dist, player_loc['y'] + dist):
             tiles.append('{},{},{}'.format(x, y, player_loc['z']))
     return tiles
+
+
+def generate_game_tiles_in_coords(x_min, x_max, y_min, y_max, z, port='56799'):
+    tiles = []
+    for x in range(x_min, x_max + 1):
+        for y in range(y_min, y_max + 1):
+            tiles.append('{},{},{}'.format(x, y, z))
+    return tiles
+
+
+# t bow 20997
+def get_ground_items_in_coords(x_min, x_max, y_min, y_max, z, items, port='56799'):
+    tiles = generate_game_tiles_in_coords(x_min, x_max, y_min, y_max, z,)
+    q = {
+        'groundItems': []
+    }
+    for tile in tiles:
+        item_to_find = '20997'
+        if len(items) > 0:
+            item_to_find = items[len(items) - 1]
+            items.pop()
+        q['groundItems'].append({
+            'tile': tile,
+            'object': str(item_to_find)
+        })
+    data = query_game_data(q, port)
+    if 'groundItems' in data:
+        return data['groundItems']
+
+
+def handle_marks(x_min, x_max, y_min, y_max, z, port):
+    # {'1704': [{'x': 817, 'y': 531, 'dist': 0, 'id': 1704}]}
+    marks = get_ground_items_in_coords(x_min, x_max, y_min, y_max, z, ['11849'], port)
+    if '11849' in marks:
+        move_and_click(marks['11849'][0]['x'], marks['11849'][0]['y'], 2, 3)
+        random_sleep(0.5, 0.6)
+        wait_until_stationary()
 
 
 # t bow 20997
