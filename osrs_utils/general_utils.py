@@ -535,7 +535,7 @@ def dump_items_in_bank():
             break
 
 
-def break_manager(start_time, min_session, max_session, min_rest, max_rest, password, post_login_steps, port='56799', pre_logout_steps=None):
+def break_manager(start_time, min_session, max_session, min_rest, max_rest, password, post_login_steps=None, port='56799', pre_logout_steps=None):
     take_break = break_every_hour(random.randint(min_session, max_session), start_time)
     if take_break:
         print('Taking extended break, signing off.')
@@ -652,6 +652,13 @@ def get_inv(port='56799', reject_empty=True):
 
 
 def get_game_object(tile, obj, port='56799'):
+    """
+
+    :param tile: string
+    :param obj: string
+    :param port: string
+    :return: {'x': 1088, 'y': 572, 'dist': 1, 'x_coord': 2197, 'y_coord': 2792}
+    """
     q = {
         'gameObjects': [
             {
@@ -830,12 +837,20 @@ def get_ground_items_in_coords(x_min, x_max, y_min, y_max, z, items, port='56799
 
 
 def handle_marks(x_min, x_max, y_min, y_max, z, port):
-    # {'1704': [{'x': 817, 'y': 531, 'dist': 0, 'id': 1704}]}
-    marks = get_ground_items_in_coords(x_min, x_max, y_min, y_max, z, ['11849'], port)
-    if '11849' in marks:
-        move_and_click(marks['11849'][0]['x'], marks['11849'][0]['y'], 2, 3)
-        random_sleep(0.5, 0.6)
-        wait_until_stationary()
+    retries = 0
+    while retries < random.randint(3, 8):
+        marks = get_ground_items_in_coords(x_min, x_max, y_min, y_max, z, ['11849'], port)
+        if '11849' in marks:
+            loc = get_world_location(port)
+            if 'x' in loc and x_min <= loc['x'] <= x_max and y_min <= loc['y'] <= y_max and loc['z'] == z:
+                move_and_click(marks['11849'][0]['x'], marks['11849'][0]['y'], 2, 3)
+                random_sleep(0.5, 0.6)
+                wait_until_stationary()
+                retries += 1
+            else:
+                break
+        else:
+            break
 
 
 # t bow 20997
@@ -1175,3 +1190,14 @@ def objective_click_handler(fn, exit_condition, max_iter):
         if exit_condition:
             return True
     return False
+
+
+def is_mining(port='56799'):
+    q = {
+        'isMining': True,
+    }
+    data = query_game_data(q, port)
+    if 'isMining' in data:
+        return data['isMining']
+    return False
+
