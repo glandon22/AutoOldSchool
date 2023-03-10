@@ -162,7 +162,7 @@ def wait_until_stationary(port='56799'):
     while True:
         data = query_game_data(POSE_ANIMATION, port)
         # i am not moving
-        if 'poseAnimation' in data and data['poseAnimation'] == 808:
+        if 'poseAnimation' in data and (data['poseAnimation'] == 808 or data['poseAnimation'] == 813):
             break
         else:
             random_sleep(0.1, 0.2)
@@ -535,10 +535,12 @@ def dump_items_in_bank():
             break
 
 
-def break_manager(start_time, min_session, max_session, min_rest, max_rest, password, post_login_steps, port='56799'):
+def break_manager(start_time, min_session, max_session, min_rest, max_rest, password, post_login_steps, port='56799', pre_logout_steps=None):
     take_break = break_every_hour(random.randint(min_session, max_session), start_time)
     if take_break:
         print('Taking extended break, signing off.')
+        if pre_logout_steps:
+            pre_logout_steps()
         random_sleep(20, 30)
         logout(port)
         break_start_time = datetime.datetime.now()
@@ -882,6 +884,32 @@ def get_surrounding_game_objects(dist, items, port='56799'):
     if 'gameObjects' in data:
         return data['gameObjects']
 
+# t bow 20997
+def get_game_objects_in_coords(x_min, x_max, y_min, y_max, z, items, port='56799'):
+    """
+
+    :param dist: integer, how many tiles around to look for items, ie 7x7
+    :param items: array of strings of item codes to search for
+    :param port: default is 56799
+    :return: {'9345': {'x': 881, 'y': 538, 'dist': 1}}
+    """
+    tiles = generate_game_tiles_in_coords(x_min, x_max, y_min, y_max, z)
+    q = {
+        'multipleGameObjects': []
+    }
+    for tile in tiles:
+        item_to_find = '20997'
+        if len(items) > 0:
+            item_to_find = items[len(items) - 1]
+            items.pop()
+        q['multipleGameObjects'].append({
+            'tile': tile,
+            'object': str(item_to_find)
+        })
+    data = query_game_data(q, port)
+    if 'multipleGameObjects' in data:
+        return data['multipleGameObjects']
+
 
 # t bow 20997
 def get_surrounding_wall_objects(dist, items, port='56799'):
@@ -1016,6 +1044,15 @@ def get_npc_by_id(npc_id, port):
                 return npc
     return False
 
+def get_npcs_by_id(npc_id, port):
+    q = {
+        'npcsID': [npc_id]
+    }
+    npcs = query_game_data(q, port)
+    if 'npcs' in npcs:
+        return npcs['npcs']
+    return False
+
 
 def get_chat_options(port):
     q = {
@@ -1069,6 +1106,21 @@ def deposit_all_but_x_in_bank(items, port='56799'):
         inv = get_inv(port)
         for item in inv:
             if item['id'] not in items:
+                found_additional_items = True
+                move_and_click(item['x'], item['y'], 3, 3)
+                random_sleep(0.5, 0.6)
+                break
+        if not found_additional_items:
+            break
+    random_sleep(0.5, 0.6)
+
+
+def deposit_all_of_x(items, port='56799'):
+    while True:
+        found_additional_items = False
+        inv = get_inv(port)
+        for item in inv:
+            if item['id'] in items:
                 found_additional_items = True
                 move_and_click(item['x'], item['y'], 3, 3)
                 random_sleep(0.5, 0.6)
