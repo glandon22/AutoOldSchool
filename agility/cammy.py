@@ -25,6 +25,7 @@ def click_allowed(lc, cd, step):
 def start_course(lc):
     loc = general_utils.get_world_location(port)
     if 'z' in loc and loc['z'] == 0 and click_allowed(lc, 3, 1):
+        general_utils.sleep_one_tick()
         q = {
             'decorativeObjects': [{
                 'tile': '2729,3489,0',
@@ -280,7 +281,7 @@ def main():
     }
     start_time = datetime.datetime.now()
     while True:
-        start_time = general_utils.break_manager(start_time, 43, 48, 423, 551, 'julenth', False)
+        start_time = general_utils.break_manager(start_time, 43, 48, 423, 551, 'pass_70', False)
         general_utils.wait_until_stationary(port)
         drink_stam()
         last_click = start_course(last_click)
