@@ -226,11 +226,6 @@ def move_and_click(x, y, w, h, button='left'):
     random_sleep(0.15, 0.25)
 
 
-def fast_move_and_click(x, y, w, h, button='left'):
-    bezier_movement(x - w, y - h, x + w, y + h)
-    pyautogui.click()
-
-
 def click_off_screen(x1=3000, x2=3100, y1=100, y2=200, click=True):
     bezier_movement(x1, y1, x2, y2)
     random_sleep(0.15, 0.25)
@@ -696,13 +691,6 @@ def get_wall_object(tile, obj, port='56799'):
 
 
 def get_ground_object(tile, obj, port='56799'):
-    """
-
-    :param tile: str
-    :param obj: str
-    :param port: str
-    :return: {'x': 215, 'y': 321, 'dist': 10}
-    """
     q = {
         'groundObjects': [
             {
@@ -990,43 +978,58 @@ def run_to_loc(steps, port='56799'):
         'y_min': inv['widget']['y'] - 175,
     }
     for step in steps:
+        start_time = datetime.datetime.now()
         while True:
             data = query_game_data({
                 'tiles': [step]
             }, port)
             formatted_step = step.replace(',', '')
             if 'tiles' in data and formatted_step in data['tiles'] and \
-                    75 < data['tiles'][formatted_step]['y'] < 1040 and \
+                    75 < data['tiles'][formatted_step]['y'] < 1005 and \
                     (data['tiles'][formatted_step]['x'] < inv_container['x_min'] or
                      data['tiles'][formatted_step]['y'] < inv_container['y_min']):
                 move_and_click(data['tiles'][formatted_step]['x'], data['tiles'][formatted_step]['y'], 3, 3)
+                break
+            elif (datetime.datetime.now() - start_time).total_seconds() > 5:
                 break
         random_sleep(1.5, 1.6)
     wait_until_stationary(port)
     random_sleep(0.5, 0.6)
 
-
-def spam_click(tile, seconds, port='56799'):
-    start_time = datetime.datetime.now()
-    while True:
-        if (datetime.datetime.now() - start_time).total_seconds() > seconds:
-            break
-        else:
-            while True:
-                data = query_game_data({
-                    'tiles': [tile]
-                }, port)
-                formatted_step = tile.replace(',', '')
-                if 'tiles' in data and formatted_step in data['tiles'] and \
-                        75 < data['tiles'][formatted_step]['y'] < 1040:
-                    fast_move_and_click(data['tiles'][formatted_step]['x'], data['tiles'][formatted_step]['y'], 3, 3)
-                    break
-                random_sleep(0.3, 0.4)
+def run_to_loc_v2(steps, port='56799'):
+    # dont click on squares hidden by my inventory
+    q = {
+        'widget': '161,95'
+    }
+    inv = query_game_data(q, port)
+    inv_container = {
+        'x_max': inv['widget']['x'] + 130,
+        'x_min': inv['widget']['x'] - 130,
+        'y_max': inv['widget']['y'] + 175,
+        'y_min': inv['widget']['y'] - 175,
+    }
+    for step in steps:
+        start_time = datetime.datetime.now()
+        while True:
+            data = query_game_data({
+                'tiles': [step]
+            }, port)
+            formatted_step = step.replace(',', '')
+            if 'tiles' in data and formatted_step in data['tiles'] and \
+                    75 < data['tiles'][formatted_step]['y'] < 1005 and \
+                    (data['tiles'][formatted_step]['x'] < inv_container['x_min'] or
+                     data['tiles'][formatted_step]['y'] < inv_container['y_min']):
+                move_and_click(data['tiles'][formatted_step]['x'], data['tiles'][formatted_step]['y'], 3, 3)
+                break
+            elif (datetime.datetime.now() - start_time).total_seconds() > 5:
+                break
+        sleep_one_tick()
+    wait_until_stationary(port)
 
 
 def right_click_menu_select(item, entry, port='56799', entry_string=None, entry_action=None):
     move_and_click(item['x'], item['y'], 3, 3, 'right')
-    random_sleep(0.5, 0.6)
+    random_sleep(0.4, 0.5)
     q = {
         'getMenuEntries': True
     }
@@ -1051,6 +1054,21 @@ def get_player_animation(port='56799'):
     data = query_game_data(q, port)
     if 'playerAnimation' in data:
         return data['playerAnimation']
+    else:
+        return -1
+
+
+def get_full_player_animation(port='56799'):
+    q = {
+        'playerAnimation': True,
+        'poseAnimation': True
+    }
+    data = query_game_data(q, port)
+    if 'playerAnimation' in data and 'primaryPlayerAnimation' in data:
+        return {
+            'primary': data['playerAnimation'],
+            'secondary': data['poseAnimation']
+        }
     else:
         return -1
 
@@ -1212,6 +1230,38 @@ def run_towards_square(destination, port):
     print(steps)
     run_to_loc(steps)
 
+def run_towards_square_v2(destination, port):
+    """
+
+    :param destination: obj {x: 2341, y: 687, z:0}
+    :type port: str
+    """
+
+    loc = get_world_location(port)
+    steps = []
+    while loc['x'] != destination['x'] or loc['y'] != destination['y']:
+        x_diff = destination['x'] - loc['x']
+        x_inc = 0
+        if x_diff > 0:
+            x_inc = min(5, x_diff)
+        else:
+            x_inc = max(-5, x_diff)
+        y_diff = destination['y'] - loc['y']
+        y_inc = 0
+        if y_diff > 0:
+            y_inc = min(5, y_diff)
+        else:
+            y_inc = max(-5, y_diff)
+
+        if abs(x_inc) < 5 and abs(y_inc) < 5:
+            break
+        loc['x'] = loc['x'] + x_inc
+        loc['y'] = loc['y'] + y_inc
+        next_sq = '{},{},{}'.format(loc['x'], loc['y'], loc['z'])
+        steps.append(next_sq)
+    print(steps)
+    run_to_loc_v2(steps)
+
 
 def objective_click_handler(fn, exit_condition, max_iter):
     iterations = 0
@@ -1231,10 +1281,23 @@ def is_mining(port='56799'):
         return data['isMining']
     return False
 
+def spam_click(tile, seconds, port='56799'):
+    start_time = datetime.datetime.now()
+    while True:
+        if (datetime.datetime.now() - start_time).total_seconds() > seconds:
+            break
+        else:
+            while True:
+                data = query_game_data({
+                    'tiles': [tile]
+                }, port)
+                formatted_step = tile.replace(',', '')
+                if 'tiles' in data and formatted_step in data['tiles'] and \
+                        75 < data['tiles'][formatted_step]['y'] < 1040:
+                    fast_move_and_click(data['tiles'][formatted_step]['x'], data['tiles'][formatted_step]['y'], 3, 3)
+                    break
+                random_sleep(0.3, 0.4)
 
-def set_yaw(val, port='56799'):
-    q = {
-        'setYaw': str(val)
-    }
-    query_game_data(q, port)
-
+def fast_move_and_click(x, y, w, h, button='left'):
+    bezier_movement(x - w, y - h, x + w, y + h)
+    pyautogui.click()
