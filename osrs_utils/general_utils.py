@@ -226,6 +226,11 @@ def move_and_click(x, y, w, h, button='left'):
     random_sleep(0.15, 0.25)
 
 
+def fast_move_and_click(x, y, w, h, button='left'):
+    bezier_movement(x - w, y - h, x + w, y + h)
+    pyautogui.click()
+
+
 def click_off_screen(x1=3000, x2=3100, y1=100, y2=200, click=True):
     bezier_movement(x1, y1, x2, y2)
     random_sleep(0.15, 0.25)
@@ -691,6 +696,13 @@ def get_wall_object(tile, obj, port='56799'):
 
 
 def get_ground_object(tile, obj, port='56799'):
+    """
+
+    :param tile: str
+    :param obj: str
+    :param port: str
+    :return: {'x': 215, 'y': 321, 'dist': 10}
+    """
     q = {
         'groundObjects': [
             {
@@ -994,6 +1006,24 @@ def run_to_loc(steps, port='56799'):
     random_sleep(0.5, 0.6)
 
 
+def spam_click(tile, seconds, port='56799'):
+    start_time = datetime.datetime.now()
+    while True:
+        if (datetime.datetime.now() - start_time).total_seconds() > seconds:
+            break
+        else:
+            while True:
+                data = query_game_data({
+                    'tiles': [tile]
+                }, port)
+                formatted_step = tile.replace(',', '')
+                if 'tiles' in data and formatted_step in data['tiles'] and \
+                        75 < data['tiles'][formatted_step]['y'] < 1040:
+                    fast_move_and_click(data['tiles'][formatted_step]['x'], data['tiles'][formatted_step]['y'], 3, 3)
+                    break
+                random_sleep(0.3, 0.4)
+
+
 def right_click_menu_select(item, entry, port='56799', entry_string=None, entry_action=None):
     move_and_click(item['x'], item['y'], 3, 3, 'right')
     random_sleep(0.5, 0.6)
@@ -1200,4 +1230,11 @@ def is_mining(port='56799'):
     if 'isMining' in data:
         return data['isMining']
     return False
+
+
+def set_yaw(val, port='56799'):
+    q = {
+        'setYaw': str(val)
+    }
+    query_game_data(q, port)
 
