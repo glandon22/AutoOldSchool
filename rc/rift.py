@@ -1,8 +1,3 @@
-# rubble to descend 43724 3634,9503,0
-# large guardian remains 43719 3640,9498,0 not sure if this is an instance yet
-# rubble to ascend 43726 3636,9503,0
-# east big orb 43729 <- think this is always the same
-# orb to leave 38044
 import datetime
 
 # active body portal 43709
@@ -16,21 +11,6 @@ import datetime
 # mind portal 43705
 # altar 34761
 # exit 34749
-
-
-# huge guardian remains 43720
-
-# great guardin npc 11403
-
-# rune deposit pool 43696
-
-# workbench 43754
-
-# widget container for portal orb thats 25 seconds 746,26
-# 746,28 contains the text to find where it is
-
-# open elemental altar 746,20
-# open cata altar 746,23
 
 # portal you can pass thru to start game 43700
 
@@ -48,55 +28,117 @@ frag_portal_dict = {
 sprite_to_rift_obj_dict = {
     '4353': { # air
         'tile': '3617,9494,0',
-        'id': '43701'
+        'id': '43701',
+        'tile_obj': {
+            'x': 3617,
+            'y': 9494,
+            'z': 0
+        }
     },
     '4359' : { # cosmic
         'tile': '3621,9496,0',
-        'id': '43710'
+        'id': '43710',
+        'tile_obj': {
+            'x': 3621,
+            'y': 9496,
+            'z': 0
+        }
     },
     '4355' : { # water
         'tile': '3623,9500,0',
-        'id': '43702'
+        'id': '43702',
+        'tile_obj': {
+            'x': 3623,
+            'y': 9500,
+            'z': 0
+        }
     },
     '4356' : { # earth
         'tile': '3623,9505,0',
-        'id': '43703'
+        'id': '43703',
+        'tile_obj': {
+            'x': 3623,
+            'y': 9505,
+            'z': 0
+        }
     },
     '4361' : { # nat
         'tile': '3621,9509,0',
-        'id': '43711'
+        'id': '43711',
+        'tile_obj': {
+            'x': 3621,
+            'y': 9509,
+            'z': 0
+        }
     },
     '4357' : { # fire
         'tile': '3617,9511,0',
-        'id': '43704'
+        'id': '43704',
+        'tile_obj': {
+            'x': 3617,
+            'y': 9511,
+            'z': 0
+        }
     },
     '4364' : { # blood
         'tile': '3612,9511,0',
-        'id': '43708'
+        'id': '43708',
+        'tile_obj': {
+            'x': 3612,
+            'y': 9511,
+            'z': 0
+        }
     },
     '4362' : { # law
         'tile': '3609,9510,0',
-        'id': '43712'
+        'id': '43712',
+        'tile_obj': {
+            'x': 3609,
+            'y': 9510,
+            'z': 0
+        }
     },
     '4363' : { # death
         'tile': '3607,9506,0',
-        'id': '43707'
+        'id': '43707',
+        'tile_obj': {
+            'x': 3607,
+            'y': 9506,
+            'z': 0
+        }
     },
     '4360' : { # chaos
         'tile': '3607,9501,0',
-        'id': '43706'
+        'id': '43706',
+        'tile_obj': {
+            'x': 3607,
+            'y': 9501,
+            'z': 0
+        }
     },
     '4358' : { # body
         'tile': '3609,9497,0',
-        'id': '43709'
+        'id': '43709',
+        'tile_obj': {
+            'x': 3609,
+            'y': 9497,
+            'z': 0
+        }
     },
     '4354' : { # mind
         'tile': '3612,9495,0',
-        'id': '43705'
+        'id': '43705',
+        'tile_obj': {
+            'x': 3612,
+            'y': 9495,
+            'z': 0
+        }
     }
 }
 
+
 def in_main_arena():
+    print('calling in main arena')
     loc = general_utils.get_world_location(port)
     if loc and 'x' in loc and 3597 <= loc['x'] <= 3633 and 'y' in loc and 9484 <= loc['y'] <= 9519:
         return True
@@ -104,9 +146,11 @@ def in_main_arena():
         return False
 
 
-def run_to_large_remains():
+def run_to_large_remains(status_obj):
+    print('calling run to large remains')
     beginning = general_utils.get_widget('746,23')
-    if beginning and 'spriteID' in beginning and beginning['spriteID'] == 4369:
+    if beginning and 'spriteID' in beginning and beginning['spriteID'] == 4369 and \
+            general_utils.get_target_obj(port) != 43724:
         loc = general_utils.get_world_location(port)
         if 'x' in loc and loc['x'] <= 3633:
             # need my if clause here, search if guardian is asleep?
@@ -115,40 +159,50 @@ def run_to_large_remains():
                 general_utils.move_and_click(obstacle['x'], obstacle['y'], 3, 3)
                 general_utils.sleep_one_tick()
                 general_utils.wait_until_stationary(port)
+                return {**status_obj, '43724': datetime.datetime.now()}
             else:
-                general_utils.run_towards_square_v2('3626,9500,0', port)
+                general_utils.run_towards_square_v2({'x': 3626, 'y': 9500, 'z': 0}, port)
+    return status_obj
 
 
-def mine_large_remains():
+def mine_large_remains(status_obj):
+    print('calling mine large remains')
     loc = general_utils.get_world_location(port)
     inv = general_utils.get_inv(port)
     guardian_frags = general_utils.is_item_in_inventory_v2(inv, 26878)
     if 'x' in loc and loc['x'] >= 3637 and \
             (not guardian_frags or guardian_frags and guardian_frags['quantity'] < 180) \
-            and not general_utils.is_mining(port):
+            and not general_utils.is_mining(port): # and general_utils.get_target_obj(port) != 43719
         rock = general_utils.get_game_object('3640,9498,0', '43719', port)
         if rock:
             general_utils.move_and_click(rock['x'], rock['y'], 3, 3)
+            return {**status_obj, '43719': datetime.datetime.now()}
+    return status_obj
 
 
-def leave_large_remains_area():
+def leave_large_remains_area(status_obj):
+    print('calling leave large remains')
     loc = general_utils.get_world_location(port)
     inv = general_utils.get_inv(port)
     guardian_frags = general_utils.is_item_in_inventory_v2(inv, 26878)
     beginning = general_utils.get_widget('746,23')
     if 'x' in loc and loc['x'] >= 3637 and \
             guardian_frags and guardian_frags['quantity'] > 180 \
-            and beginning and 'spriteID' in beginning and beginning['spriteID'] != 4369:
+            and beginning and 'spriteID' in beginning and beginning['spriteID'] != 4369 and general_utils.get_target_obj(port) != 43726:
         obstacle = general_utils.get_ground_object('3636,9503,0', '43726', port)
         if obstacle:
             general_utils.move_and_click(obstacle['x'], obstacle['y'], 3, 3)
             general_utils.sleep_one_tick()
+            return {**status_obj, '43726': datetime.datetime.now()}
+    return status_obj
 
 
-def frag_port_available():
+def frag_port_available(status_obj):
+    print('calling frag port available')
     portal_text = general_utils.get_widget('746,28', port)
     loc = general_utils.get_world_location(port)
-    if portal_text and loc and 'x' in loc and 3597 <= loc['x'] <= 3633:
+    inv = general_utils.get_inv(port)
+    if portal_text and loc and 'x' in loc and 3597 <= loc['x'] <= 3633 and len(inv) < 28 and general_utils.get_target_obj(port) != 43729:
         text_parts = portal_text['text'].split(' - ')
         if len(text_parts) >= 2 and text_parts[1] != '0:00':
             print('b', text_parts[0])
@@ -158,67 +212,262 @@ def frag_port_available():
                 general_utils.move_and_click(orb['43729']['x'], orb['43729']['y'], 1, 1)
                 general_utils.sleep_one_tick()
                 general_utils.wait_until_stationary(port)
+                return {**status_obj, '43729': datetime.datetime.now()}
+    return status_obj
 
 
-def mine_huge_remains():
+def mine_huge_remains(status_obj):
+    print('calling mine huge remains')
     loc = general_utils.get_world_location(port)
     inv = general_utils.get_inv(port)
-    if loc and 'x' in loc and loc['x'] <= 3594 and len(inv) < 28 and not general_utils.is_mining(port):
+    if loc and 'x' in loc and loc['x'] <= 3594 and len(inv) < 28 and not general_utils.is_mining(port) and general_utils.get_target_obj(port) != 43720:
         remains = general_utils.get_surrounding_game_objects(8, ['43720'], port)
         if remains and '43720' in remains:
             general_utils.move_and_click(remains['43720']['x'], remains['43720']['y'], 3, 3)
+            return {**status_obj, '43720': datetime.datetime.now()}
+    return status_obj
 
 
-def leave_huge_remains():
+def leave_huge_remains(status_obj):
+    print('calling leave huge remains')
     loc = general_utils.get_world_location(port)
     inv = general_utils.get_inv(port)
-    if loc and 'x' in loc and loc['x'] <= 3594 and len(inv) == 28:
+    if loc and 'x' in loc and loc['x'] <= 3594 and len(inv) == 28 and general_utils.get_target_obj(port) != 38044:
         remains = general_utils.get_surrounding_game_objects(8, ['38044'], port)
         if remains and '38044' in remains:
             general_utils.move_and_click(remains['38044']['x'], remains['38044']['y'], 3, 3)
+            return {**status_obj, '38044': datetime.datetime.now()}
+    return status_obj
 
 
+# may want to consider refactoring this one to use the click timeouts
 def make_essence():
-    loc = general_utils.get_world_location(port)
+    print('calling make ess')
     inv = general_utils.get_inv(port)
     guardian_frags = general_utils.is_item_in_inventory_v2(inv, 26878)
     guardian_ess = general_utils.is_item_in_inventory_v2(inv, 26879)
-    if loc and 'x' in loc and 3597 <= loc['x'] <= 3633 and guardian_frags and not guardian_ess:
+    elem_guardian_stone = general_utils.is_item_in_inventory_v2(inv, 26881)
+    if in_main_arena() and guardian_frags and not guardian_ess and not elem_guardian_stone:
         work_table = general_utils.get_surrounding_game_objects(10, ['43754'], port)
         if not bool(work_table):
-
             general_utils.run_towards_square_v2({'x': 3615, 'y': 9492, 'z': 0}, port)
-            work_table = general_utils.get_surrounding_game_objects(10, ['43754'], port)
-        general_utils.move_and_click(work_table['43754']['x'], work_table['43754']['y'], 3, 3)
-        if int(general_utils.get_target_obj(port)) == 43754:
-            start_time = datetime.datetime.now()
-            while True:
-                curr_inv = general_utils.get_inv(port)
-                if len(curr_inv) == 28 or \
-                        not general_utils.is_item_in_inventory_v2(inv, 26878) or \
-                        (datetime.datetime.now() - start_time).total_seconds() > 15:
-                    break
+        work_table = general_utils.get_surrounding_game_objects(10, ['43754'], port)
+        if work_table and '43754' in work_table:
+            general_utils.move_and_click(work_table['43754']['x'], work_table['43754']['y'], 3, 3)
+            if int(general_utils.get_target_obj(port)) == 43754:
+                start_time = datetime.datetime.now()
+                while True:
+                    curr_inv = general_utils.get_inv(port)
+                    guardian_frags = general_utils.is_item_in_inventory_v2(curr_inv, 26878)
+                    if len(curr_inv) == 28 or \
+                            (datetime.datetime.now() - start_time).total_seconds() > 20 or \
+                            not guardian_frags:
+                        break
 
 
-def enter_active_rift():
+def enter_active_rift(status_obj):
+    print('calling enter active rift')
     inv = general_utils.get_inv(port)
     guardian_ess = general_utils.is_item_in_inventory_v2(inv, 26879)
     if in_main_arena() and guardian_ess:
-        active_catalytic_rift = general_utils.get_widget('746,23')
+        # will do catalytic rifts later bc i cant enter most of them
+        '''active_catalytic_rift = general_utils.get_widget('746,23')
         if active_catalytic_rift and 'spriteID' in active_catalytic_rift:
-            rift_to_enter = sprite_to_rift_obj_dict[str(active_catalytic_rift['spriteID'])]
-            print('ll', rift_to_enter)
+            rift_to_enter = sprite_to_rift_obj_dict[str(active_catalytic_rift['spriteID'])]'''
+        active_elem_rift = general_utils.get_widget('746,20')
+        if active_elem_rift and 'spriteID' in active_elem_rift and \
+                str(active_elem_rift['spriteID']) in sprite_to_rift_obj_dict and \
+                general_utils.get_target_obj(port) != sprite_to_rift_obj_dict[str(active_elem_rift['spriteID'])]['id']:
+            rift_to_enter = sprite_to_rift_obj_dict[str(active_elem_rift['spriteID'])]
+            rift = general_utils.get_game_object(rift_to_enter['tile'], rift_to_enter['id'])
+            print('rr', rift)
+            if rift:
+                general_utils.move_and_click(rift['x'], rift['y'], 3, 4)
+                return {**status_obj, rift_to_enter['id']: datetime.datetime.now()}
+            else:
+                general_utils.run_towards_square_v2(rift_to_enter['tile_obj'], port)
+    return status_obj
 
-general_utils.random_sleep(1, 2)
-while True:
-    run_to_large_remains()
-    mine_large_remains()
-    leave_large_remains_area()
-    frag_port_available()
-    mine_huge_remains()
-    leave_huge_remains()
-    make_essence()
-# main game cooards: x: 3597 - 3633
-# main game cooards: y - 9484 - 9519
-# 26879 guardian essence
-# elemental guardian stone 26881
+
+def in_air_altar():
+    loc = general_utils.get_world_location(port)
+    if 'x' in loc and 2835 <= loc['x'] <= 2851:
+        return True
+    else:
+        return False
+
+
+def in_fire_altar():
+    loc = general_utils.get_world_location(port)
+    if 'x' in loc and 2560 <= loc['x'] <= 2605:
+        return True
+    else:
+        return False
+
+
+def in_earth_altar():
+    loc = general_utils.get_world_location(port)
+    if 'x' in loc and 2628 <= loc['x'] <= 2680:
+        return True
+    else:
+        return False
+
+
+def in_water_altar():
+    loc = general_utils.get_world_location(port)
+    if 'x' in loc and 2707 <= loc['x'] <= 2732:
+        return True
+    else:
+        return False
+
+
+def make_waters(status_obj):
+    inv = general_utils.get_inv(port)
+    guardian_ess = general_utils.is_item_in_inventory_v2(inv, 26879)
+    if in_water_altar() and guardian_ess and general_utils.get_target_obj(port) != 34762:
+        altar = general_utils.get_game_object('2716,4836,0', '34762', port)
+        if altar:
+            general_utils.move_and_click(altar['x'], altar['y'], 3, 3)
+            return {**status_obj, '34762': datetime.datetime.now()}
+        else:
+            general_utils.run_towards_square_v2({'x': 2716, 'y': 4836, 'z': 0}, port)
+    return status_obj
+
+
+def make_earths(status_obj):
+    inv = general_utils.get_inv(port)
+    guardian_ess = general_utils.is_item_in_inventory_v2(inv, 26879)
+    if in_earth_altar() and guardian_ess and general_utils.get_target_obj(port) != 34763:
+        altar = general_utils.get_game_object('2658,4841,0', '34763', port)
+        if altar:
+            general_utils.move_and_click(altar['x'], altar['y'], 3, 3)
+            return {**status_obj, '34763': datetime.datetime.now()}
+        else:
+            general_utils.run_towards_square_v2({'x': 2658, 'y': 4841, 'z': 0}, port)
+    return status_obj
+
+
+def make_airs(status_obj):
+    inv = general_utils.get_inv(port)
+    guardian_ess = general_utils.is_item_in_inventory_v2(inv, 26879)
+    if in_air_altar() and guardian_ess and general_utils.get_target_obj(port) != 34760:
+        altar = general_utils.get_game_object('2844,4834,0', '34760', port)
+        if altar:
+            general_utils.move_and_click(altar['x'], altar['y'], 3, 3)
+            return {**status_obj, '34760': datetime.datetime.now()}
+        else:
+            general_utils.run_towards_square_v2({'x': 2844, 'y': 4834, 'z': 0}, port)
+    return status_obj
+
+
+def make_fires(status_obj):
+    inv = general_utils.get_inv(port)
+    guardian_ess = general_utils.is_item_in_inventory_v2(inv, 26879)
+    if in_fire_altar() and guardian_ess and general_utils.get_target_obj(port) != 34764:
+        altar = general_utils.get_game_object('2585,4838,0', '34764', port)
+        if altar:
+            general_utils.move_and_click(altar['x'], altar['y'], 3, 3)
+            return {**status_obj, '34764': datetime.datetime.now()}
+        else:
+            general_utils.run_towards_square_v2({'x': 2585, 'y': 4838, 'z': 0}, port)
+    return status_obj
+
+
+def leave_fire_altar(status_obj):
+    inv = general_utils.get_inv(port)
+    guardian_ess = general_utils.is_item_in_inventory_v2(inv, 26879)
+    if in_fire_altar() and not guardian_ess and general_utils.get_target_obj(port) != 34752:
+        exit = general_utils.get_game_object('2574,4850,0', '34752', port)
+        if exit:
+            general_utils.move_and_click(exit['x'], exit['y'], 3, 3)
+            return {**status_obj, '34752': datetime.datetime.now()}
+        else:
+            general_utils.run_towards_square_v2({'x': 2574, 'y': 4850, 'z': 0}, port)
+    return status_obj
+
+
+def leave_water_altar(status_obj):
+    inv = general_utils.get_inv(port)
+    guardian_ess = general_utils.is_item_in_inventory_v2(inv, 26879)
+    if in_water_altar() and not guardian_ess and general_utils.get_target_obj(port) != 34750:
+        exit = general_utils.get_game_object('2727,4832,0', '34750', port)
+        if exit:
+            general_utils.move_and_click(exit['x'], exit['y'], 3, 3)
+            return {**status_obj, '34750': datetime.datetime.now()}
+        else:
+            general_utils.run_towards_square_v2({'x': 2727, 'y': 4832, 'z': 0}, port)
+    return status_obj
+
+
+def leave_air_altar(status_obj):
+    inv = general_utils.get_inv(port)
+    guardian_ess = general_utils.is_item_in_inventory_v2(inv, 26879)
+    if in_air_altar() and not guardian_ess and general_utils.get_target_obj(port) != 34748:
+        exit = general_utils.get_game_object('2841,4828,0', '34748', port)
+        if exit:
+            general_utils.move_and_click(exit['x'], exit['y'], 3, 3)
+            return {**status_obj, '34748': datetime.datetime.now()}
+        else:
+            general_utils.run_towards_square_v2({'x': 2841, 'y': 4828, 'z': 0}, port)
+    return status_obj
+
+
+def leave_earth_altar(status_obj):
+    inv = general_utils.get_inv(port)
+    guardian_ess = general_utils.is_item_in_inventory_v2(inv, 26879)
+    if in_earth_altar() and not guardian_ess  and general_utils.get_target_obj(port) != 34751:
+        exit = general_utils.get_game_object('2655,4829,0', '34751', port)
+        if exit:
+            general_utils.move_and_click(exit['x'], exit['y'], 3, 3)
+            return {**status_obj, '34751': datetime.datetime.now()}
+        else:
+            general_utils.run_towards_square_v2({'x': 2655, 'y': 4829, 'z': 0}, port)
+    return status_obj
+
+
+def charge_guardian(status_obj):
+    inv = general_utils.get_inv(port)
+    guardian_ess = general_utils.is_item_in_inventory_v2(inv, 26879)
+    elem_guardian_stone = general_utils.is_item_in_inventory_v2(inv, 26881)
+    if in_main_arena() and not guardian_ess and elem_guardian_stone and general_utils.get_target_npc(port) != 11403:
+        guardian = general_utils.get_npcs_by_id('11403', port)
+        if len(guardian) > 0:
+            general_utils.move_and_click(guardian[0]['x'], guardian[0]['y'], 3, 3)
+            return {**status_obj, '11403': datetime.datetime.now()}
+        else:
+            general_utils.run_towards_square_v2({'x': 3615, 'y': 9503, 'z': 0}, port)
+    return status_obj
+
+
+def main():
+    general_utils.random_sleep(1, 2)
+    obj_clicks = {
+
+    }
+    npc_clicks = {
+
+    }
+    while True:
+        obj_clicks = run_to_large_remains(obj_clicks)
+        obj_clicks = mine_large_remains(obj_clicks)
+        obj_clicks = leave_large_remains_area(obj_clicks)
+        obj_clicks = frag_port_available(obj_clicks)
+        obj_clicks = mine_huge_remains(obj_clicks)
+        obj_clicks = leave_huge_remains(obj_clicks)
+        make_essence()
+        npc_clicks = charge_guardian(npc_clicks)
+        obj_clicks = enter_active_rift(obj_clicks)
+        obj_clicks = make_airs(obj_clicks)
+        obj_clicks = leave_air_altar(obj_clicks)
+        obj_clicks = make_fires(obj_clicks)
+        obj_clicks = leave_fire_altar(obj_clicks)
+        obj_clicks = make_earths(obj_clicks)
+        obj_clicks = leave_earth_altar(obj_clicks)
+        obj_clicks = make_waters(obj_clicks)
+        obj_clicks = leave_water_altar(obj_clicks)
+# anim id 9365 whole time at carfting table fro ess
+# refactor the make ess function based on this
+# getting trapped in areas, need to make a click time out
+# also need to deposit runes before i make more ess to free inv slots
+main()
+#print(general_utils.get_widget('746,23'))

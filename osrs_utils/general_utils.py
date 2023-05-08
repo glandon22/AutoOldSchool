@@ -1022,7 +1022,7 @@ def run_to_loc_v2(steps, port='56799'):
                 move_and_click(data['tiles'][formatted_step]['x'], data['tiles'][formatted_step]['y'], 3, 3)
                 break
             elif (datetime.datetime.now() - start_time).total_seconds() > 5:
-                break
+                return
         sleep_one_tick()
     wait_until_stationary(port)
 
@@ -1298,6 +1298,14 @@ def spam_click(tile, seconds, port='56799'):
                     break
                 random_sleep(0.3, 0.4)
 
+
 def fast_move_and_click(x, y, w, h, button='left'):
     bezier_movement(x - w, y - h, x + w, y + h)
     pyautogui.click()
+
+
+def set_yaw(val, port):
+    q = {
+        'setYaw': str(val)
+    }
+    query_game_data(q, port)
