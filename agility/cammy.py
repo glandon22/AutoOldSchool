@@ -274,6 +274,17 @@ def drink_stam():
             general_utils.move_and_click(stam['x'], stam['y'], 3, 3)
             general_utils.random_sleep(1, 1.1)
 
+
+def drink_wine():
+    hp = general_utils.get_skill_data('hitpoints', port)
+    if 'boostedLevel' in hp and hp['boostedLevel'] < 15:
+        inv = general_utils.get_inv(port)
+        wine = general_utils.is_item_in_inventory_v2(inv, '1993')
+        if not wine:
+            exit('out of wine')
+        general_utils.move_and_click(wine['x'], wine['y'], 3, 3)
+
+
 def main():
     last_click = {
         'step': 0,
@@ -281,9 +292,10 @@ def main():
     }
     start_time = datetime.datetime.now()
     while True:
-        start_time = general_utils.break_manager(start_time, 43, 48, 423, 551, 'pass_70', False)
+        start_time = general_utils.break_manager(start_time, 43, 48, 423, 551, 'julenth', False)
         general_utils.wait_until_stationary(port)
         drink_stam()
+        drink_wine()
         last_click = start_course(last_click)
         last_click = platform_1(last_click)
         last_click = platform_2(last_click)

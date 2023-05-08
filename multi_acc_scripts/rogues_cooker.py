@@ -10,7 +10,7 @@ from osrs_utils import general_utils
 acc_configs = [
     {
         'port': '56799',
-        'password': 'pass_70',
+        'password': 'julenth',
         'post_login_steps': None
     }
 ]

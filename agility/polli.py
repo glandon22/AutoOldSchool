@@ -26,6 +26,7 @@ def start_course(lc):
     loc = general_utils.get_world_location(port)
     if 'z' in loc and loc['z'] == 0 and click_allowed(lc, 3, 1):
         general_utils.sleep_one_tick()
+        general_utils.sleep_one_tick()
         obstacle = general_utils.get_game_object('3351,2962,0', '14935', port)
         if bool(obstacle):
             general_utils.move_and_click(obstacle['x'], obstacle['y'], 3, 3)

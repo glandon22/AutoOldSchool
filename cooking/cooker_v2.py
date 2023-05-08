@@ -41,7 +41,6 @@ def bank(port):
     npcs = general_utils.query_game_data(q, port)
     if 'npcs' in npcs:
         for npc in npcs['npcs']:
-            print('l',npc)
             if npc['id'] == 3194:
                 general_utils.move_and_click(npc['x'], npc['y'], 3, 4)
                 general_utils.wait_for_bank_interface(port)
@@ -59,6 +58,7 @@ def bank(port):
                     return True
                 keyboard.press(Key.esc)
                 keyboard.release(Key.esc)
+                exit('no more fish to cook')
     return False
 
 
