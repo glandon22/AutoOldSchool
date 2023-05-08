@@ -137,6 +137,18 @@ sprite_to_rift_obj_dict = {
 }
 
 
+def game_active():
+    elem = general_utils.get_widget('746,23')
+    return bool(elem)
+
+
+def is_pregame():
+    beginning = general_utils.get_widget('746,23')
+    if beginning and 'spriteID' in beginning and beginning['spriteID'] == 4369:
+        return True
+    return False
+
+
 def in_main_arena():
     print('calling in main arena')
     loc = general_utils.get_world_location(port)
@@ -146,22 +158,30 @@ def in_main_arena():
         return False
 
 
+def take_uncharged_cells(status_obj):
+    inv = general_utils.get_inv(port)
+    uncharged_cell = general_utils.is_item_in_inventory_v2(inv, 26882)
+    if in_main_arena() and not game_active() and not uncharged_cell:
+        table = general_utils.get_game_object('3618,9488,0', '43732', port)
+        if table:
+            general_utils.right_click_menu_select(table, None, port, 'Uncharged cells', 'Take-10')
+            return {**status_obj, '43732': datetime.datetime.now()}
+        else:
+            general_utils.run_towards_square_v2({'x': 3618, 'y': 9488, 'z': 0}, port)
+    return status_obj
+
+
 def run_to_large_remains(status_obj):
     print('calling run to large remains')
-    beginning = general_utils.get_widget('746,23')
-    if beginning and 'spriteID' in beginning and beginning['spriteID'] == 4369 and \
-            general_utils.get_target_obj(port) != 43724:
-        loc = general_utils.get_world_location(port)
-        if 'x' in loc and loc['x'] <= 3633:
-            # need my if clause here, search if guardian is asleep?
-            obstacle = general_utils.get_ground_object('3634,9503,0', '43724', port)
-            if bool(obstacle):
-                general_utils.move_and_click(obstacle['x'], obstacle['y'], 3, 3)
-                general_utils.sleep_one_tick()
-                general_utils.wait_until_stationary(port)
-                return {**status_obj, '43724': datetime.datetime.now()}
-            else:
-                general_utils.run_towards_square_v2({'x': 3626, 'y': 9500, 'z': 0}, port)
+    inv = general_utils.get_inv(port)
+    uncharged_cell = general_utils.is_item_in_inventory_v2(inv, 26882)
+    if (not game_active() or is_pregame()) and general_utils.get_target_obj(port) != 43724 and in_main_arena() and uncharged_cell:
+        obstacle = general_utils.get_ground_object('3634,9503,0', '43724', port)
+        if bool(obstacle):
+            general_utils.move_and_click(obstacle['x'], obstacle['y'], 3, 3)
+            return {**status_obj, '43724': datetime.datetime.now()}
+        else:
+            general_utils.run_towards_square_v2({'x': 3626, 'y': 9500, 'z': 0}, port)
     return status_obj
 
 
@@ -172,7 +192,7 @@ def mine_large_remains(status_obj):
     guardian_frags = general_utils.is_item_in_inventory_v2(inv, 26878)
     if 'x' in loc and loc['x'] >= 3637 and \
             (not guardian_frags or guardian_frags and guardian_frags['quantity'] < 180) \
-            and not general_utils.is_mining(port): # and general_utils.get_target_obj(port) != 43719
+            and not general_utils.is_mining(port) and game_active(): # and general_utils.get_target_obj(port) != 43719
         rock = general_utils.get_game_object('3640,9498,0', '43719', port)
         if rock:
             general_utils.move_and_click(rock['x'], rock['y'], 3, 3)
@@ -220,7 +240,7 @@ def mine_huge_remains(status_obj):
     print('calling mine huge remains')
     loc = general_utils.get_world_location(port)
     inv = general_utils.get_inv(port)
-    if loc and 'x' in loc and loc['x'] <= 3594 and len(inv) < 28 and not general_utils.is_mining(port) and general_utils.get_target_obj(port) != 43720:
+    if loc and 'x' in loc and loc['x'] <= 3594 and len(inv) < 28 and not general_utils.is_mining(port) and general_utils.get_target_obj(port) != 43720 and game_active():
         remains = general_utils.get_surrounding_game_objects(8, ['43720'], port)
         if remains and '43720' in remains:
             general_utils.move_and_click(remains['43720']['x'], remains['43720']['y'], 3, 3)
@@ -232,15 +252,14 @@ def leave_huge_remains(status_obj):
     print('calling leave huge remains')
     loc = general_utils.get_world_location(port)
     inv = general_utils.get_inv(port)
-    if loc and 'x' in loc and loc['x'] <= 3594 and len(inv) == 28 and general_utils.get_target_obj(port) != 38044:
-        remains = general_utils.get_surrounding_game_objects(8, ['38044'], port)
-        if remains and '38044' in remains:
-            general_utils.move_and_click(remains['38044']['x'], remains['38044']['y'], 3, 3)
+    if loc and 'x' in loc and loc['x'] <= 3594 and (len(inv) == 28 or not game_active()) and general_utils.get_target_obj(port) != 38044:
+        remains = general_utils.get_game_object('3593,9503,0', '38044', port)
+        if remains:
+            general_utils.move_and_click(remains['x'], remains['y'], 3, 3)
             return {**status_obj, '38044': datetime.datetime.now()}
     return status_obj
 
-
-# may want to consider refactoring this one to use the click timeouts
+'''# may want to consider refactoring this one to use the click timeouts
 def make_essence():
     print('calling make ess')
     inv = general_utils.get_inv(port)
@@ -262,14 +281,40 @@ def make_essence():
                     if len(curr_inv) == 28 or \
                             (datetime.datetime.now() - start_time).total_seconds() > 20 or \
                             not guardian_frags:
-                        break
+                        break'''
+
+
+def make_essencev2(status_obj):
+    inv = general_utils.get_inv(port)
+    guardian_frags = general_utils.is_item_in_inventory_v2(inv, 26878)
+    guardian_ess = general_utils.is_item_in_inventory_v2(inv, 26879)
+    elem_guardian_stone = general_utils.is_item_in_inventory_v2(inv, 26881)
+    if in_main_arena() and guardian_frags and not guardian_ess and not elem_guardian_stone and general_utils.get_player_animation(port) != 9365:
+        if general_utils.are_items_in_inventory_v2(inv, [554, 555, 556, 557]): #  and general_utils.get_target_obj(port) != 43696
+            print('have runes')
+            rune_deposit = general_utils.get_game_object('3609,9487,0', '43696', port)
+            if rune_deposit:
+                print('found depo')
+                general_utils.move_and_click(rune_deposit['x'], rune_deposit['y'], 3, 3)
+                return {**status_obj, '43696': datetime.datetime.now()}
+            else:
+                general_utils.run_towards_square_v2({'x': 3609, 'y': 9487, 'z': 0}, port)
+        else:
+            workbench = general_utils.get_game_object('3612,9487,0', '43754', port)
+            if workbench:
+                general_utils.move_and_click(workbench['x'], workbench['y'], 3, 3)
+                return {**status_obj, '43754': datetime.datetime.now()}
+            else:
+                general_utils.run_towards_square_v2({'x': 3612, 'y': 9487, 'z': 0}, port)
+    return status_obj
 
 
 def enter_active_rift(status_obj):
     print('calling enter active rift')
     inv = general_utils.get_inv(port)
     guardian_ess = general_utils.is_item_in_inventory_v2(inv, 26879)
-    if in_main_arena() and guardian_ess:
+    elem_guardian_stone = general_utils.is_item_in_inventory_v2(inv, 26881)
+    if in_main_arena() and guardian_ess and general_utils.get_player_animation(port) != 9365 and not elem_guardian_stone:
         # will do catalytic rifts later bc i cant enter most of them
         '''active_catalytic_rift = general_utils.get_widget('746,23')
         if active_catalytic_rift and 'spriteID' in active_catalytic_rift:
@@ -277,10 +322,12 @@ def enter_active_rift(status_obj):
         active_elem_rift = general_utils.get_widget('746,20')
         if active_elem_rift and 'spriteID' in active_elem_rift and \
                 str(active_elem_rift['spriteID']) in sprite_to_rift_obj_dict and \
-                general_utils.get_target_obj(port) != sprite_to_rift_obj_dict[str(active_elem_rift['spriteID'])]['id']:
+                str(general_utils.get_target_obj(port)) != sprite_to_rift_obj_dict[str(active_elem_rift['spriteID'])]['id']:
             rift_to_enter = sprite_to_rift_obj_dict[str(active_elem_rift['spriteID'])]
             rift = general_utils.get_game_object(rift_to_enter['tile'], rift_to_enter['id'])
-            print('rr', rift)
+            print('rr', sprite_to_rift_obj_dict[str(active_elem_rift['spriteID'])]['id'])
+            print('11', sprite_to_rift_obj_dict[str(active_elem_rift['spriteID'])])
+            print('22', str(active_elem_rift['spriteID']))
             if rift:
                 general_utils.move_and_click(rift['x'], rift['y'], 3, 4)
                 return {**status_obj, rift_to_enter['id']: datetime.datetime.now()}
@@ -427,9 +474,8 @@ def leave_earth_altar(status_obj):
 
 def charge_guardian(status_obj):
     inv = general_utils.get_inv(port)
-    guardian_ess = general_utils.is_item_in_inventory_v2(inv, 26879)
     elem_guardian_stone = general_utils.is_item_in_inventory_v2(inv, 26881)
-    if in_main_arena() and not guardian_ess and elem_guardian_stone and general_utils.get_target_npc(port) != 11403:
+    if in_main_arena() and elem_guardian_stone and general_utils.get_target_npc(port) != 11403:
         guardian = general_utils.get_npcs_by_id('11403', port)
         if len(guardian) > 0:
             general_utils.move_and_click(guardian[0]['x'], guardian[0]['y'], 3, 3)
@@ -449,12 +495,13 @@ def main():
     }
     while True:
         obj_clicks = run_to_large_remains(obj_clicks)
+        obj_clicks = take_uncharged_cells(obj_clicks)
         obj_clicks = mine_large_remains(obj_clicks)
         obj_clicks = leave_large_remains_area(obj_clicks)
         obj_clicks = frag_port_available(obj_clicks)
         obj_clicks = mine_huge_remains(obj_clicks)
         obj_clicks = leave_huge_remains(obj_clicks)
-        make_essence()
+        obj_clicks = make_essencev2(obj_clicks)
         npc_clicks = charge_guardian(npc_clicks)
         obj_clicks = enter_active_rift(obj_clicks)
         obj_clicks = make_airs(obj_clicks)
@@ -470,4 +517,7 @@ def main():
 # getting trapped in areas, need to make a click time out
 # also need to deposit runes before i make more ess to free inv slots
 main()
-#print(general_utils.get_widget('746,23'))
+# overpowered orb - 26886
+# strong orb - 26878
+# med orb - 26884
+# weak cell - 26883
