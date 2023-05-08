@@ -74,8 +74,11 @@ def bezier_movement(x_min, y_min, x_max, y_max):
     duration = 0.1
     timeout = duration / len(points[0])
     point_list = zip(*(i.astype(int) for i in points))
-
     for point in point_list:
+        print(point[0])
+        if point[0] > 1920 or point[0] < 0 or point[1] < 20 or point[1] > 1040:
+            print('point: {} out of bounds, rejecting movement request.'.format(point))
+            return False
         pyautogui.moveTo(*point)
         time.sleep(timeout)
     return [x2, y2]
@@ -162,7 +165,7 @@ def wait_until_stationary(port='56799'):
     while True:
         data = query_game_data(POSE_ANIMATION, port)
         # i am not moving
-        if 'poseAnimation' in data and (data['poseAnimation'] == 808 or data['poseAnimation'] == 813):
+        if 'poseAnimation' in data and (data['poseAnimation'] == 808 or data['poseAnimation'] == 813 or data['poseAnimation'] == 4591):
             break
         else:
             random_sleep(0.1, 0.2)
@@ -220,8 +223,14 @@ def get_player_info(port=1488):
 
 
 def move_and_click(x, y, w, h, button='left'):
-    bezier_movement(x - w, y - h, x + w, y + h)
+    movement = bezier_movement(x - w, y - h, x + w, y + h)
     random_sleep(0.15, 0.25)
+    curr_pos = pyautogui.position()
+    print('pos', curr_pos, curr_pos[1])
+    # DO NOT CLICK ON THE TASK BAR
+    if not movement:
+        print('movement was unsuccessful, target was off screen. Rejecting click.')
+        return
     pyautogui.click() if button == 'left' else pyautogui.click(button='right')
     random_sleep(0.15, 0.25)
 
@@ -609,8 +618,8 @@ def query_game_data(q, port='56799'):
         try:
             r = session.get(url='http://localhost:{}/osrs'.format(port), json=q)
             return r.json()
-        except:
-            print('Got an error trying to query the db.')
+        except Exception as e:
+            print('Got an error trying to query the db: ', e)
 
 
 def sleep_one_tick():
@@ -764,6 +773,11 @@ def find_item_in_bank(item_to_find, port='56799'):
 
 
 def get_world_location(port='56799'):
+    """
+
+    :param port:
+    :return: {'x': 2638, 'y': 2653, 'z': 0}
+    """
     q = {
         'playerWorldPoint': True
     }
@@ -1107,9 +1121,10 @@ def get_npc_by_id(npc_id, port):
                 return npc
     return False
 
+
 def get_npcs_by_id(npc_id, port):
     q = {
-        'npcsID': [npc_id]
+        'npcsID': [x.strip() for x in npc_id.split(',')]
     }
     npcs = query_game_data(q, port)
     if 'npcs' in npcs:
@@ -1309,3 +1324,14 @@ def set_yaw(val, port):
         'setYaw': str(val)
     }
     query_game_data(q, port)
+
+
+def get_interacting(port):
+    q = {
+        'interactingWith': True,
+    }
+    data = query_game_data(q, port)
+    if 'interactingWith' in data:
+        return data['interactingWith']
+    else:
+        return False
