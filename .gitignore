@@ -8,3 +8,4 @@ config.py
 /quests/x_marks_the_spot.py
 *yolo*
 *misc*
+*__pycache__*
