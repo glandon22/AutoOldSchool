@@ -57,7 +57,8 @@ def main():
             }
             data = general_utils.query_game_data(q)
             closest = general_utils.find_an_npc(data['npcs'], 3)
-            general_utils.move_and_click(closest['x'], closest['y'], 2, 2)
-            general_utils.random_sleep(3, 4)
+            if closest:
+                general_utils.move_and_click(closest['x'], closest['y'], 2, 2)
+                general_utils.random_sleep(3, 4)
 
 main()
