@@ -411,7 +411,10 @@ def find_an_npc(npcs, min_dist):
                 "y": math.floor(npc["y"]),
                 "id": npc["id"]
             }
-    return closest
+    if closest['x'] is None:
+        return False
+    else:
+        return closest
 
 
 def find_closest_target(targs):
@@ -423,11 +426,7 @@ def find_closest_target(targs):
     }
     for targ in targs:
         if int(targ["dist"]) < int(closest["dist"]):
-            closest = {
-                "dist": targ["dist"],
-                "x": math.floor(targ["x"]),
-                "y": math.floor(targ["y"]),
-            }
+            closest = targ
     return closest
 
 
