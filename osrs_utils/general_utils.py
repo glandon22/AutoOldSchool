@@ -1334,3 +1334,8 @@ def get_interacting(port):
         return data['interactingWith']
     else:
         return False
+
+def press_key(key):
+    if key == 'esc':
+        keyboard.press(Key.esc)
+        keyboard.release(Key.esc)
