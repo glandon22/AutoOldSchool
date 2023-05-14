@@ -1,6 +1,6 @@
 import datetime
 
-from osrs_utils import general_utils
+from autoscape import general_utils
 port = '56799'
 objs = [
     '28498',

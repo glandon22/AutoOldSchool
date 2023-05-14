@@ -1,6 +1,6 @@
 import datetime
 
-from osrs_utils import general_utils
+from autoscape import general_utils
 tea = 1978
 port = '56799'
 def main():

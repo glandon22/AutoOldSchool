@@ -1,6 +1,6 @@
 import datetime
 
-from osrs_utils import general_utils
+from autoscape import general_utils
 import base64
 import keyboard
 port = '56799'

@@ -5,7 +5,7 @@
 # repeat
 import datetime
 import time
-from osrs_utils import general_utils
+import autoscape
 import math
 
 fish_to_catch_config = {
@@ -74,15 +74,15 @@ def find_spot(fish_to_catch, port):
     q = {
         'npcsID': fish_spot_ids[fish_to_catch]
     }
-    data = general_utils.query_game_data(q, port)
+    data = autoscape.general_utils.query_game_data(q, port)
     if 'npcs' in data:
-        closest = general_utils.find_closest_target(data['npcs'])
-        general_utils.move_and_click(closest['x'], closest['y'], 8, 8)
-        general_utils.random_sleep(0.5, 0.8)
-        general_utils.click_off_screen(click=False)
+        closest = autoscape.general_utils.find_closest_target(data['npcs'])
+        autoscape.general_utils.move_and_click(closest['x'], closest['y'], 8, 8)
+        autoscape.general_utils.random_sleep(0.5, 0.8)
+        autoscape.general_utils.click_off_screen(click=False)
     else:
         print('did not find any fishing spots.')
-        general_utils.random_sleep(2, 3)
+        autoscape.general_utils.random_sleep(2, 3)
 
 
 def catch_fish(fish_num, port):
@@ -102,18 +102,18 @@ def catch_fish(fish_num, port):
         'inv': True,
         'poseAnimation': True
     }
-    data = general_utils.query_game_data(q, port)
+    data = autoscape.general_utils.query_game_data(q, port)
     if data["isFishing"]:
         return print('Currently fishing.')
     elif len(data["inv"]) == 28:
         # salmon + trout = 335, 331
         # shrimp anchovie 317, 321
         # leaping trout 11328
-        general_utils.power_drop(data["inv"], [], fish_to_drop_ids[fish_to_catch])
+        autoscape.inv.power_drop(data["inv"], [], fish_to_drop_ids[fish_to_catch])
         return print('power dropped inv')
     elif not data["isFishing"] and data['poseAnimation'] == 808:
         print('not fishing')
         # wait a second or two so that I dont click the spot right before it disappears
-        general_utils.random_sleep(1.2, 1.5)
+        autoscape.general_utils.random_sleep(1.2, 1.5)
         find_spot(fish_to_catch, port)
-        general_utils.random_sleep(1.2, 1.5)
+        autoscape.general_utils.random_sleep(1.2, 1.5)

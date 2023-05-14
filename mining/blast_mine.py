@@ -1,7 +1,7 @@
 import datetime
 import random
 from pynput.keyboard import Key, Controller
-from osrs_utils import general_utils
+from autoscape import general_utils
 
 # 13573 dynamite
 # does not handle leveling yet

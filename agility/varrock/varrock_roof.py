@@ -2,7 +2,7 @@ import datetime
 
 import keyboard
 
-from osrs_utils import general_utils
+from autoscape import general_utils
 import varrock_vars as mog_tiles
 
 # i think leveling up freezes me, may need to handle that

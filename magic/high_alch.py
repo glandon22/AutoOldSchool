@@ -13,7 +13,7 @@ import random
 
 import pyautogui
 
-from osrs_utils import general_utils
+from autoscape import general_utils
 
 def main():
     prev_screen = 'spell book'

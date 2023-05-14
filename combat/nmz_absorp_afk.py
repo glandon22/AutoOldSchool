@@ -2,7 +2,7 @@ import datetime
 
 import keyboard
 
-from osrs_utils import general_utils
+from autoscape import general_utils
 
 minimum_eat_health = 35
 absorption_pots = [11734, 11735, 11736, 11737]

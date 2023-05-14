@@ -14,7 +14,7 @@ import datetime
 
 # portal you can pass thru to start game 43700
 
-from osrs_utils import general_utils
+from autoscape import general_utils
 
 port = '56799'
 frag_portal_dict = {

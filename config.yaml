@@ -1,0 +1,17 @@
+high_intensity_script:
+  max_rest: 10
+  max_session: 48
+  min_rest: 7
+  min_session: 42
+low_intensity_script:
+  max_rest: 10
+  max_session: 59
+  min_rest: 7
+  min_session: 53
+password: pass_70
+port: '56799'
+timings:
+  break_end: null
+  break_start: null
+  on_break: false
+  script_start: null

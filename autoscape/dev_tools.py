@@ -1,7 +1,7 @@
-import pyautogui
 import time
 import pyautogui
 import pyscreenshot
+import yaml
 
 inv_coords_old = [
     [2317, 2343, 1030, 1056], [2371, 2395, 1034, 1058], [2424, 2448, 1034, 1060], [2476, 2500, 1036, 1058],
@@ -81,3 +81,44 @@ def capture_under_mouse(name):
 def capture_empty_bag():
     for slot in range(len(inv_coords)):
         pyscreenshot.grab((inv_coords[slot][0], inv_coords[slot][2], inv_coords[slot][1], inv_coords[slot][3])).save('..\\screens\\empty_bag\\slot' + str(slot) + '.png')
+
+
+def config_loader():
+    config = {
+        'port': '56799',
+        'password': 'pass_70',
+        'timings': {
+            'script_start': None,
+            'break_start': None,
+            'break_end': None,
+            'on_break': False
+        },
+        'high_intensity_script': {
+            'max_session': 48,
+            'min_session': 42,
+            'max_rest': 10,
+            'min_rest': 7
+        },
+        'low_intensity_script': {
+            'max_session': 59,
+            'min_session': 53,
+            'max_rest': 10,
+            'min_rest': 7
+        }
+    }
+
+    yaml_output = yaml.dump(config, sort_keys=True)
+
+    print(yaml_output)
+
+
+def load_yaml():
+    with open("../config.yaml", "r") as stream:
+        try:
+            return yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print('Failed to load configuration.')
+            print(exc)
+            return
+
+config_loader()

@@ -41,7 +41,7 @@
 Script must be started with a Hammer and Tinder box in inventory
 """
 
-from osrs_utils import general_utils
+from autoscape import general_utils
 import datetime
 import random
 import time

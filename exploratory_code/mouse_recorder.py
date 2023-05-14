@@ -1,6 +1,6 @@
 import random
 import time
-from osrs_utils import general_utils
+from autoscape import general_utils
 import pyautogui
 import cv2
 import pyscreenshot
@@ -185,10 +185,10 @@ def advanced_bezier(point, w, h):
         general_utils.random_sleep(.0003, .0004)
 
 def testing():
-    import osrs_utils
+    import autoscape
     for i in range(28):
-        slot = osrs_utils.show_inv_coords(i)
-        osrs_utils.bezier_movement(slot[0],slot[1],slot[2],slot[3])
+        slot = autoscape.show_inv_coords(i)
+        autoscape.bezier_movement(slot[0], slot[1], slot[2], slot[3])
         time.sleep(1)
 
 testing()

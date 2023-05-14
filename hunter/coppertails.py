@@ -1,4 +1,4 @@
-from osrs_utils import general_utils
+from autoscape import general_utils
 # broken snare to be picked up 9344
 # placed snare waiting for bird 9345
 # caught bird 9379

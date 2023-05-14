@@ -1,6 +1,6 @@
 # tin 438 tin rock 11361 17 xp
 # iron ore 440 rock 11364 35 xp
-from osrs_utils import general_utils
+from autoscape import general_utils
 import datetime
 import time
 import random

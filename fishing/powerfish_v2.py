@@ -5,7 +5,7 @@
 # repeat
 import datetime
 import time
-from osrs_utils import general_utils
+from autoscape import general_utils
 import math
 
 fish_to_catch_config = {

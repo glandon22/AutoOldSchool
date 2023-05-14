@@ -3,7 +3,7 @@
 # right tile to be in is 3212, 3429, 0
 import pyautogui
 
-from osrs_utils import general_utils
+from autoscape import general_utils
 import keyboard
 import math
 #bank

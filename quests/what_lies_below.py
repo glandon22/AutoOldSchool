@@ -4,7 +4,7 @@ import datetime
 import keyboard
 import pyautogui
 
-from osrs_utils import general_utils
+from autoscape import general_utils
 
 def first_dialogue():
     while True:

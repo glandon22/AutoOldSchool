@@ -20,7 +20,7 @@ q = {
 # home tele 8013
 import keyboard
 
-from osrs_utils import general_utils
+from autoscape import general_utils
 port = '56799'
 
 def click_home_tab():

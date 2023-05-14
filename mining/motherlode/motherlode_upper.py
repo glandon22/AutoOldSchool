@@ -4,7 +4,7 @@ import keyboard
 import pyautogui
 
 import queries
-from osrs_utils import general_utils
+from autoscape import general_utils
 
 ores = [
     453,  # coal

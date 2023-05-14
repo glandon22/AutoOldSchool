@@ -1,6 +1,6 @@
 import datetime
 
-from osrs_utils import general_utils
+from autoscape import general_utils
 
 port = '56799'
 course_start = {
@@ -194,4 +194,4 @@ def main():
         last_click = platform_5(last_click)
         last_click = platform_6(last_click)
 
-main()
+print(general_utils.break_manager_v2({'intensity': 'high'}))

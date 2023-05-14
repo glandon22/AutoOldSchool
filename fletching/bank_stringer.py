@@ -2,7 +2,7 @@ import datetime
 import random
 import time
 
-from osrs_utils import general_utils
+from autoscape import general_utils
 import math
 import keyboard
 

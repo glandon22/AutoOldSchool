@@ -3,7 +3,7 @@ import datetime
 import keyboard
 
 from fishing import catch_fish
-from osrs_utils import general_utils
+from autoscape import general_utils
 
 acc_configs = [
     {

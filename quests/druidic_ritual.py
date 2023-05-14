@@ -5,7 +5,7 @@ import keyboard
 import pyautogui
 import pyscreenshot
 
-from osrs_utils import general_utils
+from autoscape import general_utils
 required_items = [2132, 2134, 2136, 2138, 3853]
 
 def main():

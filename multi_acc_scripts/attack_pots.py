@@ -3,7 +3,7 @@ import datetime
 import keyboard
 
 from herblore import make_pots
-from osrs_utils import general_utils
+from autoscape import general_utils
 
 '''
 {

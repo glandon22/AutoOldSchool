@@ -3,7 +3,7 @@ import pyautogui
 from PIL import ImageGrab
 import cv2
 import time
-from osrs_utils import general_utils
+from autoscape import general_utils
 
 
 def find_highlighted_item_on_ground_draw(image):

@@ -1,6 +1,6 @@
 import datetime
 
-from osrs_utils import general_utils
+from autoscape import general_utils
 # anchor
 # 2660,2608,0
 # ladder 2666,2585,0

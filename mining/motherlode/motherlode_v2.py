@@ -19,7 +19,7 @@ import pyautogui
 from pynput.keyboard import Key, Controller
 
 keyboard = Controller()
-from osrs_utils import general_utils
+from autoscape import general_utils
 import queries
 
 ores = [

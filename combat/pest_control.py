@@ -1,4 +1,4 @@
-from osrs_utils import general_utils
+from autoscape import general_utils
 
 # square on dock: 2638,2653,0
 

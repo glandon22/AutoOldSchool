@@ -2,7 +2,7 @@ import numpy as np
 from PIL import ImageGrab
 import cv2
 import time
-from osrs_utils import general_utils
+from autoscape import general_utils
 mini_map_north_click = [2440, 2458, 42, 54]
 # click north every couple seconds until i see the cyan blobs
 # click a cyan blob

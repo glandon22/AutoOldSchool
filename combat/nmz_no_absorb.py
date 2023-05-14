@@ -2,7 +2,7 @@ import datetime
 
 import keyboard
 
-from osrs_utils import general_utils
+from autoscape import general_utils
 
 minimum_eat_health = 35
 food_to_eat = [7946, 379, 361]

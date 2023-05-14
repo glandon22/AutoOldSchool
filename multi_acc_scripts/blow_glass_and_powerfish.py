@@ -4,7 +4,7 @@ import keyboard
 
 from crafting import blow_glass, complete_inv_on_login
 from fishing import catch_fish
-from osrs_utils import general_utils
+from autoscape import general_utils
 
 acc_configs = [
     {

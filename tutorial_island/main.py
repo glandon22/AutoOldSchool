@@ -3,7 +3,7 @@ import time
 
 import numpy as np
 import pyscreenshot
-from osrs_utils import general_utils
+from autoscape import general_utils
 import keyboard
 import pyautogui
 

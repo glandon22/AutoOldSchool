@@ -1,4 +1,4 @@
-from osrs_utils import general_utils
+from autoscape import general_utils
 wc_animations = [
     879,877,875,873,871,869,867,8303,2846,24,2117,7264,8324,8778
 ]

@@ -2,7 +2,7 @@ import datetime
 
 import keyboard
 
-from osrs_utils import general_utils
+from autoscape import general_utils
 
 port = '56799'
 widget = '312,29'

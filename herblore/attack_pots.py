@@ -1,10 +1,10 @@
-from osrs_utils import general_utils
+from autoscape import general_utils
 
 # guam 91
 # newt 221
 
 import datetime
-from osrs_utils import general_utils
+from autoscape import general_utils
 import keyboard
 # 91 guam unf
 # 227 vial water
