@@ -19,7 +19,7 @@ mouseeventf_absolute = 0x8000
 mouseeventf_leftdown = 0x0002
 mouseeventf_leftup = 0x0004
 mouseeventf_leftclick = mouseeventf_leftdown + mouseeventf_leftup
-
+config = load_yaml()
 # Establish session with my backend server, this cuts latency after the first call from 2 seconds to 1 ms
 session = requests.Session()
 establish_conn = {
