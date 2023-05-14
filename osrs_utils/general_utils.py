@@ -13,6 +13,7 @@ from secret_keepr import get_config
 import requests
 from pynput.keyboard import Key, Controller
 import platform
+from .dev_tools import load_yaml
 
 keyboard = Controller()
 mouseeventf_absolute = 0x8000
