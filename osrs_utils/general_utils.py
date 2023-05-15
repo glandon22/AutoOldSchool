@@ -13,13 +13,14 @@ from secret_keepr import get_config
 import requests
 from pynput.keyboard import Key, Controller
 import platform
+from .dev_tools import load_yaml
 
 keyboard = Controller()
 mouseeventf_absolute = 0x8000
 mouseeventf_leftdown = 0x0002
 mouseeventf_leftup = 0x0004
 mouseeventf_leftclick = mouseeventf_leftdown + mouseeventf_leftup
-
+config = load_yaml()
 # Establish session with my backend server, this cuts latency after the first call from 2 seconds to 1 ms
 session = requests.Session()
 establish_conn = {
@@ -1339,3 +1340,44 @@ def press_key(key):
     if key == 'esc':
         keyboard.press(Key.esc)
         keyboard.release(Key.esc)
+
+def set_timings(timings, current_time):
+    config['timings']['script_start'] = current_time
+    config['timings']['break_start'] = current_time + datetime.timedelta(
+        minutes=random.randint(timings['min_session'], timings['max_session'])
+    )
+    config['timings']['break_end'] = config['timings']['break_start'] + datetime.timedelta(
+        minutes=random.randint(timings['min_rest'], timings['max_rest'])
+    )
+
+
+def break_manager_v2(script_config):
+    """
+    :param script_config: Object
+    {
+        'intensity': 'high' | 'low',
+        'logout': function(), -- Steps to run before logging out for break
+        'login': function(), -- Steps to run after logging back in
+    }
+    """
+    current_time = datetime.datetime.now()
+    timings = config['{}_intensity_script'.format(script_config['intensity'])]
+    # Initialize timings on script start
+    if not config['timings']['script_start']:
+        set_timings(timings, current_time)
+    # Begin break period
+    if current_time > config['timings']['break_start'] and not config['timings']['on_break']:
+        if script_config.logout:
+            script_config.logout()
+        logout()
+        config['timings']['on_break'] = True
+    elif config['timings']['break_start'] < current_time < config['timings']['break_end'] \
+            and config['timings']['on_break']:
+        move_and_click(500, 500, 5, 5)
+        random_sleep(10, 15)
+    elif current_time > config['timings']['break_end'] \
+            and config['timings']['on_break']:
+        login(get_config(config.password))
+        if script_config.login:
+            script_config.login()
+        set_timings(timings, current_time)
