@@ -67,8 +67,18 @@ def steal_knight():
     clicks = random.randint(1, 5)
     # accidentally clicked bank, close interface
     bank_interface = general_utils.get_bank_data()
+    inv = general_utils.get_inv()
     if len(bank_interface) > 0:
         general_utils.press_key('esc')
+    # I can't pickpocket because my bag is full of wine and jugs
+    if len(inv) == 28 and not general_utils.is_item_in_inventory_v2(inv, 22531):
+        jug = general_utils.is_item_in_inventory_v2(inv, 1935)
+        if jug:
+            general_utils.right_click_menu_select(jug, False, '56799', 'Jug', 'Drop')
+        else:
+            wine = general_utils.is_item_in_inventory_v2(inv, 1993)
+            if wine:
+                general_utils.right_click_menu_select(wine, False, '56799', 'Jug of wine', 'Drop')
     for i in range(clicks):
         print('getting knight loc.')
         knight = general_utils.get_npcs_by_id('3297,11936', '56799')
