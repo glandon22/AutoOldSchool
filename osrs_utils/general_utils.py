@@ -887,6 +887,25 @@ def get_surrounding_ground_items(dist, items, port='56799'):
         return data['groundItems']
 
 
+def get_ground_items(tile, item, port='56799'):
+    """
+
+    :param tile: '3407,3091,0'
+    :param item: 954
+    :param port:
+    :return: {'954': [{'x': 816, 'y': 533, 'dist': 0, 'id': 954}]}
+    """
+    q = {
+        'groundItems': [{
+            'tile': tile,
+            'object': str(item)
+        }]
+    }
+    data = query_game_data(q, port)
+    if 'groundItems' in data:
+        return data['groundItems']
+
+
 # t bow 20997
 def get_surrounding_game_objects(dist, items, port='56799'):
     """
