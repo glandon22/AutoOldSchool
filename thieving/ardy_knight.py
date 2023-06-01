@@ -38,15 +38,15 @@ def get_more_wine():
                     if empty_jugs:
                         general_utils.right_click_menu_select(empty_jugs, False, '56799', 'Jug', 'Deposit-All')
                         general_utils.sleep_one_tick()
-                        general_utils.right_click_menu_select(wine, False, '56799', 'Jug of wine', 'Withdraw-All')
-                        general_utils.sleep_one_tick()
-                        new_inv = general_utils.get_inv()
-                        sacks = general_utils.is_item_in_inventory_v2(new_inv, 22531)
-                        if not sacks:
-                            wine_in_inv = general_utils.is_item_in_inventory_v2(new_inv, 1993)
-                            if wine_in_inv:
-                                general_utils.right_click_menu_select(wine_in_inv, False, '56799', 'Jug of wine', 'Deposit-1')
-                        general_utils.press_key('esc')
+                    general_utils.right_click_menu_select(wine, False, '56799', 'Jug of wine', 'Withdraw-All')
+                    general_utils.sleep_one_tick()
+                    new_inv = general_utils.get_inv()
+                    sacks = general_utils.is_item_in_inventory_v2(new_inv, 22531)
+                    if not sacks:
+                        wine_in_inv = general_utils.is_item_in_inventory_v2(new_inv, 1993)
+                        if wine_in_inv:
+                            general_utils.right_click_menu_select(wine_in_inv, False, '56799', 'Jug of wine', 'Deposit-1')
+                    general_utils.press_key('esc')
 
 
 def climb_down_ladder():
@@ -92,7 +92,7 @@ def main():
     start_time = datetime.datetime.now()
     curr_world = 0
     while True:
-        start_time = general_utils.break_manager(start_time, 43, 48, 423, 551, 'julenth', False)
+        start_time = general_utils.break_manager(start_time, 43, 48, 423, 551, 'pass_70', False)
         if paused:
             continue
 
