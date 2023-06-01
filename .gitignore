@@ -9,3 +9,4 @@ config.py
 *yolo*
 *misc*
 *__pycache__*
+*.pyc
