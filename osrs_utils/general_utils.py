@@ -76,6 +76,7 @@ def bezier_movement(x_min, y_min, x_max, y_max):
     timeout = duration / len(points[0])
     point_list = zip(*(i.astype(int) for i in points))
     for point in point_list:
+        print(point[0])
         if point[0] > 1920 or point[0] < 0 or point[1] < 20 or point[1] > 1040:
             print('point: {} out of bounds, rejecting movement request.'.format(point))
             return False
@@ -97,7 +98,7 @@ def calc_img_diff(im1, im2, acceptable_diff):
 
 def random_sleep(min_time, max_time):
     duration = round(random.uniform(min_time, max_time), 6)
-    #print('Sleeping for ', duration)
+    print('Sleeping for ', duration)
     time.sleep(duration)
 
 
@@ -226,6 +227,7 @@ def move_and_click(x, y, w, h, button='left'):
     movement = bezier_movement(x - w, y - h, x + w, y + h)
     random_sleep(0.15, 0.25)
     curr_pos = pyautogui.position()
+    print('pos', curr_pos, curr_pos[1])
     # DO NOT CLICK ON THE TASK BAR
     if not movement:
         print('movement was unsuccessful, target was off screen. Rejecting click.')
@@ -464,8 +466,7 @@ def logout(port='56799'):
         random_sleep(0.3, 0.4)
 
 
-# If I log in to an instanced area, like at Tithe Farm, no CTP screen is displayed
-def login(password, port='56799', click_to_play=True):
+def login(password, port='56799'):
     existing_user_paths = {
         'Linux': '../screens/existing_user.png',
         'Windows': 'C:\\Users\\gland\\osrs_yolov3\\screens\\existing_user.png'
@@ -510,9 +511,7 @@ def login(password, port='56799', click_to_play=True):
         'x': 0,
         'y': 0
     }
-    if not click_to_play:
-        random_sleep(30, 31)
-        return
+
     while True:
         q = {
             'widget': '378,72'
@@ -545,7 +544,7 @@ def dump_items_in_bank():
             break
 
 
-def break_manager(start_time, min_session, max_session, min_rest, max_rest, password, post_login_steps=None, port='56799', pre_logout_steps=None, click_to_play=True):
+def break_manager(start_time, min_session, max_session, min_rest, max_rest, password, post_login_steps=None, port='56799', pre_logout_steps=None):
     take_break = break_every_hour(random.randint(min_session, max_session), start_time)
     if take_break:
         print('Taking extended break, signing off.')
@@ -562,8 +561,8 @@ def break_manager(start_time, min_session, max_session, min_rest, max_rest, pass
                 max_rest
             )
             time.sleep(30)
-            click_off_screen()
-        login(password, port, click_to_play)
+            click_off_screen(500, 510, 500, 510)
+        login(password, port)
         random_sleep(0.4, 0.5)
         if post_login_steps:
             post_login_steps()
@@ -801,17 +800,21 @@ def get_bank_data(port='56799'):
 def get_skill_data(skill, port='56799'):
     """
 
-    :param skill:
+    :param skill: 'hitpoints' or ['prayer', 'strength']
     :return:
     {'level': 98, 'xp': 12164703, 'boostedLevel': 98}
     """
+    q = {}
+    if type(skill) is list:
+        q['skills'] = skill
+    else:
+        q['skills'] = [skill]
     while True:
-        q = {
-            'skills': [skill]
-        }
         skill_data = query_game_data(q, port)
-        if 'skills' in skill_data and skill in skill_data['skills']:
+        if 'skills' in skill_data and type(skill) is not list and skill in skill_data['skills']:
             return skill_data['skills'][skill]
+        else:
+            return skill_data['skills']
 
 
 def generate_surrounding_tiles(dist, port='56799'):
@@ -932,7 +935,6 @@ def get_surrounding_game_objects(dist, items, port='56799'):
     data = query_game_data(q, port)
     if 'gameObjects' in data:
         return data['gameObjects']
-
 
 # t bow 20997
 def get_game_objects_in_coords(x_min, x_max, y_min, y_max, z, items, port='56799'):
@@ -1064,7 +1066,7 @@ def run_to_loc_v2(steps, port='56799'):
 
 def right_click_menu_select(item, entry, port='56799', entry_string=None, entry_action=None):
     move_and_click(item['x'], item['y'], 3, 3, 'right')
-    random_sleep(0.4, 0.5)
+    random_sleep(0.2, 0.3)
     q = {
         'getMenuEntries': True
     }
@@ -1074,12 +1076,13 @@ def right_click_menu_select(item, entry, port='56799', entry_string=None, entry_
         if entry:
             additional_pixels = 20 + (entry - 1) * 15 + 3
             move_and_click(curr_pos[0], curr_pos[1] + additional_pixels, 7, 1)
-        elif entry_string and entry_action:
+        elif entry_action:
             for i in range(len(data['menuEntries']['items'])):
-                if entry_string in data['menuEntries']['items'][i] and entry_action in data['menuEntries']['items'][i]:
+                if entry_action in data['menuEntries']['items'][i]:
                     additional_pixels = (len(data['menuEntries']['items']) - 1 - i) * 15 + 25
                     move_and_click(curr_pos[0], curr_pos[1] + additional_pixels, 7, 1)
-                    random_sleep(0.5, 0.6)
+                    #random_sleep(0.5, 0.6)
+                    return
 
 
 def get_player_animation(port='56799'):
@@ -1317,7 +1320,6 @@ def is_mining(port='56799'):
         return data['isMining']
     return False
 
-
 def spam_click(tile, seconds, port='56799'):
     start_time = datetime.datetime.now()
     while True:
@@ -1334,17 +1336,6 @@ def spam_click(tile, seconds, port='56799'):
                     fast_move_and_click(data['tiles'][formatted_step]['x'], data['tiles'][formatted_step]['y'], 3, 3)
                     break
                 random_sleep(0.3, 0.4)
-
-
-def spam_click_coords(coords, seconds):
-    start_time = datetime.datetime.now()
-    while True:
-        if (datetime.datetime.now() - start_time).total_seconds() > seconds:
-            break
-        else:
-            while True:
-                fast_move_and_click(coords['x'], coords['y'], 3, 3)
-                break
 
 
 def fast_move_and_click(x, y, w, h, button='left'):
@@ -1414,3 +1405,49 @@ def break_manager_v2(script_config):
         if script_config.login:
             script_config.login()
         set_timings(timings, current_time)
+
+
+def get_projectiles():
+    """
+
+    :return: Array of ints: [1477]
+    """
+    q = {
+        'projectiles': True
+    }
+
+    res = query_game_data(q)
+    if 'projectiles' in res:
+        return res['projectiles']
+    else:
+        return False
+
+
+def toggle_run(desired_state, port):
+    """
+    :param desired_state: string : 'on' : 'off'
+    :param port:
+    :return: void
+    """
+    desired_state = {'on': 1065, 'off': 1064}[desired_state]
+    while True:
+        run_orb = get_widget('160,29', port)
+        if run_orb:
+            if run_orb['spriteID'] != desired_state:
+                fast_move_and_click(run_orb['x'], run_orb['y'], 3, 3)
+            return
+
+
+def toggle_prayer(desired_state, port):
+    """
+    :param desired_state: string : 'on' : 'off'
+    :param port:
+    :return: void
+    """
+    desired_state = {'on': 1066, 'off': 1063}[desired_state]
+    while True:
+        prayer_orb = get_widget('160,21', port)
+        if prayer_orb:
+            if prayer_orb['spriteID'] != desired_state:
+                fast_move_and_click(prayer_orb['x'], prayer_orb['y'], 3, 3)
+            return
