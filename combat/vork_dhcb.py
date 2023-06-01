@@ -1,8 +1,11 @@
 import datetime
+
+from pynput.keyboard import Key
+
 from osrs_utils import general_utils
 
 port = '56799'
-
+waterbirth_portal_id = '29342'
 attack_square_left = {
     'x': -2,
     'y': 1
@@ -17,6 +20,8 @@ attack_square_right = {
     'x': 2,
     'y': 1
 }
+
+karambwan_id = 3144
 
 ring_of_dueling_ids = [
     2552,
@@ -57,13 +62,36 @@ extended_super_anti_ids = [
     22218
 ]
 
-manta_ray_id = 391
-
+law_rune_id = 563
+dust_rune_id = 4696
+chaos_rune_id = 562
 varrock_tele_tab = 8007
-
+ruby_dragon_bolt_e = 21944
 slay_staff_id = 4170
 dhcb_id = 21012
 diamond_dragon_bolts_e_id = 21946
+
+required_multi_items = [
+    anti_venom_pots[:3],
+    divine_ranging_ids[:3],
+    super_restore_ids[:3],
+    extended_super_anti_ids[:3],
+    ring_of_dueling_ids
+]
+
+required_items = [
+    {'id': anti_venom_pots[:3], 'all': False},
+    {'id': divine_ranging_ids[:3], 'all': False},
+    {'id': super_restore_ids[:3], 'all': False},
+    {'id': extended_super_anti_ids[:3], 'all': False},
+    {'id': ring_of_dueling_ids, 'all': False},
+    {'id': law_rune_id, 'all': True},
+    {'id': chaos_rune_id, 'all': True},
+    {'id': dust_rune_id, 'all': True},
+    {'id': ruby_dragon_bolt_e, 'all': True},
+    {'id': slay_staff_id, 'all': False},
+    {'id': karambwan_id, 'all': True}
+]
 
 def anchor():
     loc = general_utils.get_world_location(port)
@@ -142,7 +170,7 @@ def emergency_tele_out(inv):
 
 
 def eat_manta(inv):
-    manta = general_utils.is_item_in_inventory_v2(inv, manta_ray_id)
+    manta = general_utils.is_item_in_inventory_v2(inv, karambwan_id)
     if manta:
         general_utils.fast_move_and_click(manta['x'], manta['y'], 3, 3)
     else:
@@ -193,55 +221,6 @@ def should_drink_super_restore(pd):
         return False
 
 
-def avoid_acid_pools_v5(anchor_tile, inv, orb):
-    # dont end this function until acid pools have landed - then gone away!
-    acid_pools_seen = False
-    # Step back to the anchor tile to ensure that i am going left to right on the safe tiles
-    general_utils.spam_click('{},{},0'.format(anchor_tile['x'], anchor_tile['y']), 0.6, port)
-    # consider not using the fast click function here if i have enough time
-    general_utils.fast_move_and_click(orb['x'], orb['y'], 2, 2)
-    general_utils.toggle_run('off', port)
-    last_click = datetime.datetime.now() - datetime.timedelta(seconds=50)
-    direction = 0
-    while True:
-        if (datetime.datetime.now() - last_click).total_seconds() > .85:
-            if direction == 1:
-                general_utils.spam_click('{},{},0'.format(anchor_tile['x'] + 3, anchor_tile['y']), 0.25, port)
-                last_click = datetime.datetime.now()
-                direction = 0
-            else:
-                general_utils.spam_click('{},{},0'.format(anchor_tile['x'] - 3, anchor_tile['y']), 0.25, port)
-                last_click = datetime.datetime.now()
-                direction = 1
-
-        acid_pools = general_utils.get_surrounding_game_objects(6, ['32000'], port)
-        if not acid_pools and acid_pools_seen:
-            break
-        elif acid_pools:
-            acid_pools_seen = True
-        prayer_data = general_utils.get_skill_data('prayer', port)
-        if prayer_data and should_drink_super_restore(prayer_data):
-            inv = general_utils.get_inv(port)
-            super_restore = general_utils.are_items_in_inventory_v2(inv, super_restore_ids)
-            # just topping up, may not be necessary to tele out yet
-            if not super_restore:
-                continue
-            general_utils.fast_move_and_click(super_restore['x'], super_restore['y'], 3, 3)
-        hp_data = general_utils.get_skill_data('hitpoints', port)
-        if hp_data and hp_data['level'] - hp_data['boostedLevel'] >= 21:
-            inv = general_utils.get_inv(port)
-            manta_ray = general_utils.is_item_in_inventory_v2(inv, manta_ray_id)
-            # just topping up, may not be necessary to tele out yet
-            if not manta_ray:
-                continue
-            general_utils.fast_move_and_click(manta_ray['x'], manta_ray['y'], 3, 3)
-        general_utils.toggle_run('off', port)
-        general_utils.toggle_prayer('off', port)
-    general_utils.toggle_run('on', port)
-    # go back to the middle attack square after the acid pools spec atk
-    general_utils.spam_click('{},{},0'.format(anchor_tile['x'], anchor_tile['y'] + 1), 1, port)
-
-
 def avoid_acid_pools_v6(anchor_tile, inv, orb):
     # dont end this function until acid pools have landed - then gone away!
     acid_pools_seen = False
@@ -283,7 +262,7 @@ def avoid_acid_pools_v6(anchor_tile, inv, orb):
         hp_data = general_utils.get_skill_data('hitpoints', port)
         if hp_data and hp_data['level'] - hp_data['boostedLevel'] >= 21:
             inv = general_utils.get_inv(port)
-            manta_ray = general_utils.is_item_in_inventory_v2(inv, manta_ray_id)
+            manta_ray = general_utils.is_item_in_inventory_v2(inv, karambwan_id)
             # just topping up, may not be necessary to tele out yet
             if not manta_ray:
                 continue
@@ -298,27 +277,42 @@ def avoid_acid_pools_v6(anchor_tile, inv, orb):
 
 
 def tele_to_ferox():
-    inv = general_utils.get_inv()
-    duelings = general_utils.is_item_in_inventory_v2(inv, ring_of_dueling_ids)
-    if not duelings:
-        return print('no more rings of dueling')
-    general_utils.right_click_menu_select(duelings, None, port, 'Ring', 'Ferox')
-    general_utils.sleep_one_tick()
-    general_utils.keyboard.type('3')
+    while True:
+        inv = general_utils.get_inv()
+        duelings = general_utils.are_items_in_inventory_v2(inv, ring_of_dueling_ids)
+        if not duelings:
+            return print('no more rings of dueling')
+        general_utils.right_click_menu_select(duelings, None, port, 'Ring', 'Rub')
+        general_utils.sleep_one_tick()
+        general_utils.keyboard.type('3')
+        start_time = datetime.datetime.now()
+        while True:
+            loc = general_utils.get_world_location()
+            if (datetime.datetime.now() - start_time).total_seconds() > 30:
+                break
+            elif loc and 3147 <= loc['x'] <= 3154 and 3630 <= loc['y'] <= 3638:
+                return
+
+
+def drink_from_pool_of_refreshment():
+    while True:
+        pool = general_utils.get_game_object('3129,3634,0', '39651', port)
+        if not pool:
+            general_utils.run_towards_square_v2('3137,3628,0', port)
+            continue
+        general_utils.move_and_click(pool['x'], pool['y'], 3, 3)
+        start_time = datetime.datetime.now()
+        while True:
+            if (datetime.datetime.now() - start_time).total_seconds() > 15:
+                break
+            stats = general_utils.get_skill_data(['prayer', 'hitpoints'])
+            if stats \
+                and stats['hitpoints']['boostedLevel'] == stats['hitpoints']['level'] \
+                and stats['prayer']['boostedLevel'] == stats['prayer']['level']:
+                return
+
 
 def vork_handler_v2():
-    # TODO:
-    # im thinking ill just bring karambwans instead, w my current stats set the script to get two kills
-    # while looting, if i run out of space just eat karambwans to pick up the loot
-    # tele to ferox, drink from pool
-    # bank in ferox
-    # dump everything
-    # re grab all the things i need
-    # house tele
-    # waterbirth island portal (need to build this in my house)
-    # ferry to frem
-    # frem to ungael
-    # repeat
     global last_super_anti_dose
     global last_divine_range_dose
     anchor_tile = start_trip()
@@ -420,5 +414,136 @@ def vork_handler_v2():
         if vork and vork[0]['health'] == 0:
             return True
 
-general_utils.random_sleep(1,2)
+
+def withdraw_item(item):
+    bank = general_utils.get_bank_data()
+    if type(item['id']) is list:
+        item_loc = general_utils.are_items_in_inventory_v2(bank, item['id'])
+        if not item_loc:
+            exit('unable to find {}.'.format(item['id']))
+        if item['all']:
+            general_utils.right_click_menu_select(item_loc, False, port, '', 'Withdraw-All')
+        else:
+            general_utils.move_and_click(item_loc['x'], item_loc['y'], 3, 3)
+    else:
+        item_loc = general_utils.is_item_in_inventory_v2(bank, item['id'])
+        if not item_loc:
+            exit('unable to find {}.'.format(item['id']))
+        if item['all']:
+            general_utils.right_click_menu_select(item_loc, False, port, '', 'Withdraw-All')
+        else:
+            general_utils.move_and_click(item_loc['x'], item_loc['y'], 3, 3)
+
+
+def bank_at_ferox():
+    while True:
+        chest = general_utils.get_game_object('3130,3632,0', '26711', port)
+        if not chest:
+            continue
+        general_utils.move_and_click(chest['x'], chest['y'], 3, 3)
+        start_time = datetime.datetime.now()
+        while True:
+            bank_tabs = general_utils.get_widget('12,11', port)
+            if bank_tabs:
+                general_utils.sleep_one_tick()
+                general_utils.bank_dump_inv(port)
+                # sometimes if the bank interface is just about to open, its position is wrong. so let the interace
+                # fully open before doing any action
+                bank_tabs = general_utils.get_widget('12,11', port)
+                # click the third tab
+                general_utils.move_and_click(bank_tabs['x'] - 100, bank_tabs['y'], 3, 3)
+                general_utils.sleep_one_tick()
+                for item in required_items:
+                    withdraw_item(item)
+                general_utils.keyboard.press(Key.esc)
+                general_utils.keyboard.release(Key.esc)
+                return
+            elif (datetime.datetime.now() - start_time).total_seconds() > 10:
+                break
+
+
+def tele_home():
+    while True:
+        general_utils.keyboard.press(Key.f6)
+        general_utils.keyboard.release(Key.f6)
+        general_utils.random_sleep(0.2, 0.3)
+        home_tele_button = general_utils.get_widget('218,29', port)
+        if home_tele_button:
+            general_utils.move_and_click(home_tele_button['x'], home_tele_button['y'], 3, 3)
+            start_time = datetime.datetime.now()
+            while True:
+                loc = general_utils.get_world_location(port)
+                if loc and loc['x'] > 4000:
+                    general_utils.random_sleep(2, 2.3)
+                    general_utils.keyboard.press(Key.esc)
+                    general_utils.keyboard.release(Key.esc)
+                    return
+                elif (datetime.datetime.now() - start_time).total_seconds() > 15:
+                    break
+
+
+def enter_waterbirth_portal():
+    while True:
+        portal = general_utils.get_surrounding_game_objects(15, [waterbirth_portal_id], port)
+        if portal and waterbirth_portal_id in portal:
+            general_utils.move_and_click(portal[waterbirth_portal_id]['x'], portal[waterbirth_portal_id]['y'], 3, 3)
+            start_time = datetime.datetime.now()
+            while True:
+                loc = general_utils.get_world_location(port)
+                if loc and loc['x'] < 3000:
+                    return
+                elif (datetime.datetime.now() - start_time).total_seconds() > 15:
+                    break
+
+
+def travel_to_rellekka():
+    while True:
+        jarvald = general_utils.get_npc_by_id('10407', port)
+        if jarvald:
+            general_utils.move_and_click(jarvald['x'], jarvald['y'], 3, 3)
+            start_time = datetime.datetime.now()
+            while True:
+                loc = general_utils.get_world_location(port)
+                if loc and loc['y'] < 3700:
+                    return
+                elif (datetime.datetime.now() - start_time).total_seconds() > 9:
+                    break
+
+
+def take_boat_to_ungael():
+    while True:
+        general_utils.run_towards_square_v2({'x': 2641, 'y': 3695, 'z': 0}, port)
+        # 10405 torfinn
+        torfinn = general_utils.get_npc_by_id('10405', port)
+        if torfinn:
+            general_utils.move_and_click(torfinn['x'], torfinn['y'], 3, 3)
+            start_time = datetime.datetime.now()
+            while True:
+                loc = general_utils.get_world_location(port)
+                if loc and loc['y'] > 4000:
+                    return
+                elif (datetime.datetime.now() - start_time).total_seconds() > 9:
+                    break
+
+
+def enter_vorks_layer():
+    while True:
+        general_utils.run_towards_square_v2({'x': 2272, 'y': 4047, 'z': 0}, port)
+        ice = general_utils.get_game_object('2272,4053,0', '31990', port)
+        if ice:
+            general_utils.move_and_click(ice['x'], ice['y'], 3, 3)
+            start_time = datetime.datetime.now()
+            while True:
+                loc = general_utils.get_world_location(port)
+                if loc and loc['x'] > 5000:
+                    return
+                elif (datetime.datetime.now() - start_time).total_seconds() > 9:
+                    break
+
+'''general_utils.random_sleep(1, 2)
+tele_home()
+enter_waterbirth_portal()
+travel_to_rellekka()
+take_boat_to_ungael()
+enter_vorks_layer()'''
 vork_handler_v2()
