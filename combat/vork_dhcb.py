@@ -82,6 +82,8 @@ required_multi_items = [
 required_items = [
     {'id': anti_venom_pots[:3], 'all': False},
     {'id': divine_ranging_ids[:3], 'all': False},
+    # Get two super restores
+    {'id': super_restore_ids[:3], 'all': False},
     {'id': super_restore_ids[:3], 'all': False},
     {'id': extended_super_anti_ids[:3], 'all': False},
     {'id': ring_of_dueling_ids, 'all': False},
@@ -130,6 +132,15 @@ def start_trip():
         emergency_tele_out(inv)
     general_utils.fast_move_and_click(super_anti['x'], super_anti['y'], 3, 3)
     return anchor_tile
+
+
+def begin_vork_fight(anchor_tile):
+    wake_vork()
+    general_utils.run_to_loc_v2(
+        ['{},{},0'.format(
+            anchor_tile['x'] + attack_square_mid['x'], anchor_tile['y'] + attack_square_mid['y']
+        )],
+        port)
 
 
 def move_tiles_to_avoid_fireball_v2(anchor_tile):
@@ -312,13 +323,7 @@ def drink_from_pool_of_refreshment():
                 return
 
 
-def vork_handler_v2():
-    global last_super_anti_dose
-    global last_divine_range_dose
-    anchor_tile = start_trip()
-    # need to do the logic to re dose still
-    last_super_anti_dose = datetime.datetime.now()
-    last_divine_range_dose = datetime.datetime.now()
+def kill_vork(anchor_tile, last_super_anti_dose, last_divine_range_dose):
     while True:
         q = {
             'npcsID': ['8061', '8063'],
@@ -387,7 +392,8 @@ def vork_handler_v2():
         if not interacting and vork:
             if vork[0]['health'] == 0:
                 print('killed vork')
-                return
+                general_utils.toggle_prayer('off', port)
+                return {'anti': last_super_anti_dose, 'divine': last_divine_range_dose}
             general_utils.move_and_click(vork[0]['x'], vork[0]['y'], 3, 3)
             continue
         if (datetime.datetime.now() - last_super_anti_dose).total_seconds() > 355:
@@ -397,7 +403,7 @@ def vork_handler_v2():
             general_utils.fast_move_and_click(super_anti_fire['x'], super_anti_fire['y'], 3, 3)
             last_super_anti_dose = datetime.datetime.now()
             continue
-        if (datetime.datetime.now() - last_super_anti_dose).total_seconds() > 295:
+        if (datetime.datetime.now() - last_divine_range_dose).total_seconds() > 295:
             divine_range = general_utils.are_items_in_inventory_v2(inv, divine_ranging_ids)
             if not divine_range:
                 print('OUT OF RANGING POTS!')
@@ -409,11 +415,29 @@ def vork_handler_v2():
             if bolt_switch:
                 general_utils.fast_move_and_click(bolt_switch['x'], bolt_switch['y'], 3, 3)
                 # have to sleep for a tick otherwise it just keeps switching back and forth
-                general_utils.sleep_one_tick()
+                general_utils.random_sleep(0.8, 0.9)
             continue
         if vork and vork[0]['health'] == 0:
-            return True
+            general_utils.toggle_prayer('off', port)
+            return {'anti': last_super_anti_dose, 'divine': last_divine_range_dose}
 
+
+def vork_handler_v2():
+    anchor_tile = start_trip()
+    last_super_anti_dose = datetime.datetime.now()
+    last_divine_range_dose = datetime.datetime.now()
+    for i in range(2):
+        # first vork fight i drink pots, afterward just need to wake him up
+        if i > 0:
+            begin_vork_fight(anchor_tile)
+        doses = kill_vork(anchor_tile, last_super_anti_dose, last_divine_range_dose)
+        last_super_anti_dose = doses['anti']
+        last_divine_range_dose = doses['divine']
+        # switch back to ruby dragon bolts here TODO@@
+        general_utils.random_sleep(2, 3)
+    # turn off prayer
+    # kill him again
+    # loot the shit
 
 def withdraw_item(item):
     bank = general_utils.get_bank_data()
