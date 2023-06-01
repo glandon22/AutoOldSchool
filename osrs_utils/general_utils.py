@@ -76,7 +76,6 @@ def bezier_movement(x_min, y_min, x_max, y_max):
     timeout = duration / len(points[0])
     point_list = zip(*(i.astype(int) for i in points))
     for point in point_list:
-        print(point[0])
         if point[0] > 1920 or point[0] < 0 or point[1] < 20 or point[1] > 1040:
             print('point: {} out of bounds, rejecting movement request.'.format(point))
             return False
@@ -98,7 +97,7 @@ def calc_img_diff(im1, im2, acceptable_diff):
 
 def random_sleep(min_time, max_time):
     duration = round(random.uniform(min_time, max_time), 6)
-    print('Sleeping for ', duration)
+    #print('Sleeping for ', duration)
     time.sleep(duration)
 
 
@@ -227,7 +226,6 @@ def move_and_click(x, y, w, h, button='left'):
     movement = bezier_movement(x - w, y - h, x + w, y + h)
     random_sleep(0.15, 0.25)
     curr_pos = pyautogui.position()
-    print('pos', curr_pos, curr_pos[1])
     # DO NOT CLICK ON THE TASK BAR
     if not movement:
         print('movement was unsuccessful, target was off screen. Rejecting click.')
@@ -466,7 +464,8 @@ def logout(port='56799'):
         random_sleep(0.3, 0.4)
 
 
-def login(password, port='56799'):
+# If I log in to an instanced area, like at Tithe Farm, no CTP screen is displayed
+def login(password, port='56799', click_to_play=True):
     existing_user_paths = {
         'Linux': '../screens/existing_user.png',
         'Windows': 'C:\\Users\\gland\\osrs_yolov3\\screens\\existing_user.png'
@@ -511,7 +510,9 @@ def login(password, port='56799'):
         'x': 0,
         'y': 0
     }
-
+    if not click_to_play:
+        random_sleep(30, 31)
+        return
     while True:
         q = {
             'widget': '378,72'
@@ -544,7 +545,7 @@ def dump_items_in_bank():
             break
 
 
-def break_manager(start_time, min_session, max_session, min_rest, max_rest, password, post_login_steps=None, port='56799', pre_logout_steps=None):
+def break_manager(start_time, min_session, max_session, min_rest, max_rest, password, post_login_steps=None, port='56799', pre_logout_steps=None, click_to_play=True):
     take_break = break_every_hour(random.randint(min_session, max_session), start_time)
     if take_break:
         print('Taking extended break, signing off.')
@@ -562,7 +563,7 @@ def break_manager(start_time, min_session, max_session, min_rest, max_rest, pass
             )
             time.sleep(30)
             click_off_screen()
-        login(password, port)
+        login(password, port, click_to_play)
         random_sleep(0.4, 0.5)
         if post_login_steps:
             post_login_steps()
@@ -931,6 +932,7 @@ def get_surrounding_game_objects(dist, items, port='56799'):
     data = query_game_data(q, port)
     if 'gameObjects' in data:
         return data['gameObjects']
+
 
 # t bow 20997
 def get_game_objects_in_coords(x_min, x_max, y_min, y_max, z, items, port='56799'):
@@ -1315,6 +1317,7 @@ def is_mining(port='56799'):
         return data['isMining']
     return False
 
+
 def spam_click(tile, seconds, port='56799'):
     start_time = datetime.datetime.now()
     while True:
@@ -1331,6 +1334,17 @@ def spam_click(tile, seconds, port='56799'):
                     fast_move_and_click(data['tiles'][formatted_step]['x'], data['tiles'][formatted_step]['y'], 3, 3)
                     break
                 random_sleep(0.3, 0.4)
+
+
+def spam_click_coords(coords, seconds):
+    start_time = datetime.datetime.now()
+    while True:
+        if (datetime.datetime.now() - start_time).total_seconds() > seconds:
+            break
+        else:
+            while True:
+                fast_move_and_click(coords['x'], coords['y'], 3, 3)
+                break
 
 
 def fast_move_and_click(x, y, w, h, button='left'):
