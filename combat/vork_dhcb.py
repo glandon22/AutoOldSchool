@@ -71,29 +71,23 @@ slay_staff_id = 4170
 dhcb_id = 21012
 diamond_dragon_bolts_e_id = 21946
 
-required_multi_items = [
-    anti_venom_pots[:3],
-    divine_ranging_ids[:3],
-    super_restore_ids[:3],
-    extended_super_anti_ids[:3],
-    ring_of_dueling_ids
-]
-
 required_items = [
     {'id': anti_venom_pots[:3], 'all': False},
     {'id': divine_ranging_ids[:3], 'all': False},
     # Get two super restores
-    {'id': super_restore_ids[:3], 'all': False},
-    {'id': super_restore_ids[:3], 'all': False},
+    {'id': super_restore_ids[:2], 'all': False},
+    {'id': super_restore_ids[:2], 'all': False},
     {'id': extended_super_anti_ids[:3], 'all': False},
     {'id': ring_of_dueling_ids, 'all': False},
     {'id': law_rune_id, 'all': True},
     {'id': chaos_rune_id, 'all': True},
     {'id': dust_rune_id, 'all': True},
     {'id': ruby_dragon_bolt_e, 'all': True},
+    {'id': diamond_dragon_bolts_e_id, 'all': True},
     {'id': slay_staff_id, 'all': False},
     {'id': karambwan_id, 'all': True}
 ]
+
 
 def anchor():
     loc = general_utils.get_world_location(port)
@@ -129,7 +123,7 @@ def start_trip():
         port)
     super_anti = general_utils.are_items_in_inventory_v2(inv, extended_super_anti_ids)
     if not super_anti:
-        emergency_tele_out(inv)
+        tele_home()
     general_utils.fast_move_and_click(super_anti['x'], super_anti['y'], 3, 3)
     return anchor_tile
 
@@ -172,12 +166,7 @@ def drink_anti_venom(inv):
     if ven_pots:
         general_utils.fast_move_and_click(ven_pots['x'], ven_pots['y'], 3, 3)
     else:
-        emergency_tele_out(inv)
-
-
-def emergency_tele_out(inv):
-    v_tab = general_utils.is_item_in_inventory_v2(inv, varrock_tele_tab)
-    general_utils.fast_move_and_click(v_tab['x'], v_tab['y'], 3, 3)
+        tele_home()
 
 
 def eat_manta(inv):
@@ -185,7 +174,7 @@ def eat_manta(inv):
     if manta:
         general_utils.fast_move_and_click(manta['x'], manta['y'], 3, 3)
     else:
-        emergency_tele_out(inv)
+        tele_home()
 
 
 # once the spawn is dead, i need to wait until it disappears otherwise this function is triggered again and breaks
@@ -193,7 +182,7 @@ def kill_spawn(inv, orb):
     general_utils.toggle_prayer('off', port)
     slay_staff = general_utils.is_item_in_inventory_v2(inv, slay_staff_id)
     if not slay_staff:
-        emergency_tele_out(inv)
+        tele_home()
     print('found slay staff', slay_staff)
     general_utils.fast_move_and_click(slay_staff['x'], slay_staff['y'], 3, 3)
     # Wait to see the spawn once otherwise i could potentially exit loop while the spawn is sent out without killing
@@ -203,6 +192,9 @@ def kill_spawn(inv, orb):
         if spawn or (datetime.datetime.now() - start_time).total_seconds() > 10:
             print('found the spawn!', spawn)
             break
+        general_utils.toggle_prayer('off', port)
+        food_handler(False, None)
+        super_restore_handler(False, None)
     while True:
         spawn = general_utils.get_npc_by_id('8063', port)
         print('spawn to kill: ', spawn)
@@ -230,6 +222,29 @@ def should_drink_super_restore(pd):
         return True
     else:
         return False
+
+
+def super_restore_handler(required, emergency_handler):
+    prayer_data = general_utils.get_skill_data('prayer', port)
+    if prayer_data and should_drink_super_restore(prayer_data):
+        inv = general_utils.get_inv(port)
+        super_restore = general_utils.are_items_in_inventory_v2(inv, super_restore_ids)
+        if not super_restore and required:
+            emergency_handler()
+        elif super_restore:
+            general_utils.fast_move_and_click(super_restore['x'], super_restore['y'], 3, 3)
+
+
+def food_handler(required, emergency_handler):
+    hp_data = general_utils.get_skill_data('hitpoints', port)
+    if hp_data and hp_data['level'] - hp_data['boostedLevel'] >= 21:
+        inv = general_utils.get_inv(port)
+        food = general_utils.is_item_in_inventory_v2(inv, karambwan_id)
+        # just topping up, may not be necessary to tele out yet
+        if not food and required:
+            emergency_handler()
+        elif food:
+            general_utils.fast_move_and_click(food['x'], food['y'], 3, 3)
 
 
 def avoid_acid_pools_v6(anchor_tile, inv, orb):
@@ -262,22 +277,8 @@ def avoid_acid_pools_v6(anchor_tile, inv, orb):
             break
         elif acid_pools:
             acid_pools_seen = True
-        prayer_data = general_utils.get_skill_data('prayer', port)
-        if prayer_data and should_drink_super_restore(prayer_data):
-            inv = general_utils.get_inv(port)
-            super_restore = general_utils.are_items_in_inventory_v2(inv, super_restore_ids)
-            # just topping up, may not be necessary to tele out yet
-            if not super_restore:
-                continue
-            general_utils.fast_move_and_click(super_restore['x'], super_restore['y'], 3, 3)
-        hp_data = general_utils.get_skill_data('hitpoints', port)
-        if hp_data and hp_data['level'] - hp_data['boostedLevel'] >= 21:
-            inv = general_utils.get_inv(port)
-            manta_ray = general_utils.is_item_in_inventory_v2(inv, karambwan_id)
-            # just topping up, may not be necessary to tele out yet
-            if not manta_ray:
-                continue
-            general_utils.fast_move_and_click(manta_ray['x'], manta_ray['y'], 3, 3)
+        super_restore_handler(False, None)
+        food_handler(False, None)
         general_utils.toggle_run('off', port)
         general_utils.toggle_prayer('off', port)
         if (datetime.datetime.now() - spec_att_start_time).total_seconds() > 60:
@@ -320,10 +321,17 @@ def drink_from_pool_of_refreshment():
             if stats \
                 and stats['hitpoints']['boostedLevel'] == stats['hitpoints']['level'] \
                 and stats['prayer']['boostedLevel'] == stats['prayer']['level']:
+                general_utils.toggle_prayer_slow('off', port)
+                general_utils.sleep_one_tick()
+                general_utils.sleep_one_tick()
                 return
 
 
 def kill_vork(anchor_tile, last_super_anti_dose, last_divine_range_dose):
+    # Store a variable to indicate if vorkath has gotten below 1/3 health
+    # I use this in the instance that I kill vorkath right as the ice spawn
+    # is thrown out to be able to break from the loop
+    vork_low_health = False
     while True:
         q = {
             'npcsID': ['8061', '8063'],
@@ -375,8 +383,8 @@ def kill_vork(anchor_tile, last_super_anti_dose, last_divine_range_dose):
             super_restore = general_utils.are_items_in_inventory_v2(inv, super_restore_ids)
             # I am low on prayer with no restores - bail
             if not super_restore:
-                emergency_tele_out(inv)
-                return print('RAN OUT OF SUPER RESTORES')
+                tele_home()
+                return print('RAN OUT OF SUPER RESTORES: {}'.format(inv))
             general_utils.fast_move_and_click(super_restore['x'], super_restore['y'], 3, 3)
             general_utils.sleep_one_tick()
         # prayer disabled
@@ -399,7 +407,7 @@ def kill_vork(anchor_tile, last_super_anti_dose, last_divine_range_dose):
         if (datetime.datetime.now() - last_super_anti_dose).total_seconds() > 355:
             super_anti_fire = general_utils.are_items_in_inventory_v2(inv, extended_super_anti_ids)
             if not super_anti_fire:
-                emergency_tele_out(inv)
+                tele_home()
             general_utils.fast_move_and_click(super_anti_fire['x'], super_anti_fire['y'], 3, 3)
             last_super_anti_dose = datetime.datetime.now()
             continue
@@ -417,9 +425,50 @@ def kill_vork(anchor_tile, last_super_anti_dose, last_divine_range_dose):
                 # have to sleep for a tick otherwise it just keeps switching back and forth
                 general_utils.random_sleep(0.8, 0.9)
             continue
-        if vork and vork[0]['health'] == 0:
+        if (vork and vork[0]['health'] == 0) or (not vork and vork_low_health):
             general_utils.toggle_prayer('off', port)
             return {'anti': last_super_anti_dose, 'divine': last_divine_range_dose}
+
+
+def pickup_loot():
+    while True:
+        loot = general_utils.get_surrounding_ground_items_any_ids(15, port)
+        if loot:
+            parsed_loot = []
+            for _, value in loot.items():
+                parsed_loot += value
+            if len(parsed_loot) > 0:
+                inv = general_utils.get_inv()
+                if len(inv) == 28:
+                    kara = general_utils.is_item_in_inventory_v2(inv, karambwan_id)
+                    # inventory is full and i dont have anymore karambawns to eat, tele out
+                    if not kara:
+                        print('Inventory full, leaving the following loot on the ground: {}'.format(parsed_loot))
+                        return
+                    general_utils.move_and_click(kara['x'], kara['y'], 3, 3)
+                    general_utils.random_sleep(1, 2)
+                curr_inv = general_utils.get_inv()
+                print(parsed_loot)
+                general_utils.move_and_click(parsed_loot[0]['x'], parsed_loot[0]['y'], 3, 3)
+                start_time = datetime.datetime.now()
+                while True:
+                    inv = general_utils.get_inv()
+                    if curr_inv != inv or (datetime.datetime.now() - start_time).total_seconds() > 7:
+                        general_utils.sleep_one_tick()
+                        break
+            else:
+                return
+        else:
+            return
+
+
+def have_supplies_for_kill():
+    inv = general_utils.get_inv()
+    food_count = general_utils.get_item_quantity_in_inv(inv, karambwan_id)
+    if food_count < 8:
+        print('did not have enough food for fight: {}'.format(inv))
+        return False
+    return True
 
 
 def vork_handler_v2():
@@ -427,17 +476,22 @@ def vork_handler_v2():
     last_super_anti_dose = datetime.datetime.now()
     last_divine_range_dose = datetime.datetime.now()
     for i in range(2):
+        # ensure i have enough food otherwise dont start fight
+        if not have_supplies_for_kill():
+            return
         # first vork fight i drink pots, afterward just need to wake him up
         if i > 0:
             begin_vork_fight(anchor_tile)
         doses = kill_vork(anchor_tile, last_super_anti_dose, last_divine_range_dose)
         last_super_anti_dose = doses['anti']
         last_divine_range_dose = doses['divine']
-        # switch back to ruby dragon bolts here TODO@@
+        inv = general_utils.get_inv()
+        bolt_switch = general_utils.is_item_in_inventory_v2(inv, ruby_dragon_bolt_e)
+        if bolt_switch:
+            general_utils.fast_move_and_click(bolt_switch['x'], bolt_switch['y'], 3, 3)
+        general_utils.toggle_prayer_slow('off', port)
         general_utils.random_sleep(2, 3)
-    # turn off prayer
-    # kill him again
-    # loot the shit
+
 
 def withdraw_item(item):
     bank = general_utils.get_bank_data()
@@ -481,6 +535,11 @@ def bank_at_ferox():
                     withdraw_item(item)
                 general_utils.keyboard.press(Key.esc)
                 general_utils.keyboard.release(Key.esc)
+                general_utils.sleep_one_tick()
+                inv = general_utils.get_inv()
+                bolt_switch = general_utils.is_item_in_inventory_v2(inv, ruby_dragon_bolt_e)
+                if bolt_switch:
+                    general_utils.fast_move_and_click(bolt_switch['x'], bolt_switch['y'], 3, 3)
                 return
             elif (datetime.datetime.now() - start_time).total_seconds() > 10:
                 break
@@ -520,6 +579,8 @@ def enter_waterbirth_portal():
                     break
 
 
+# might consider making exit condition that the tile i want to walk to has x and y coords on screen w a get tile call
+# not sure if that would work but worth investigation
 def travel_to_rellekka():
     while True:
         jarvald = general_utils.get_npc_by_id('10407', port)
@@ -529,6 +590,7 @@ def travel_to_rellekka():
             while True:
                 loc = general_utils.get_world_location(port)
                 if loc and loc['y'] < 3700:
+                    general_utils.random_sleep(4, 4.1)
                     return
                 elif (datetime.datetime.now() - start_time).total_seconds() > 9:
                     break
@@ -545,6 +607,7 @@ def take_boat_to_ungael():
             while True:
                 loc = general_utils.get_world_location(port)
                 if loc and loc['y'] > 4000:
+                    general_utils.random_sleep(1.5, 2)
                     return
                 elif (datetime.datetime.now() - start_time).total_seconds() > 9:
                     break
@@ -552,7 +615,7 @@ def take_boat_to_ungael():
 
 def enter_vorks_layer():
     while True:
-        general_utils.run_towards_square_v2({'x': 2272, 'y': 4047, 'z': 0}, port)
+        general_utils.run_towards_square_v2({'x': 2272, 'y': 4053, 'z': 0}, port)
         ice = general_utils.get_game_object('2272,4053,0', '31990', port)
         if ice:
             general_utils.move_and_click(ice['x'], ice['y'], 3, 3)
@@ -560,14 +623,32 @@ def enter_vorks_layer():
             while True:
                 loc = general_utils.get_world_location(port)
                 if loc and loc['x'] > 5000:
+                    general_utils.random_sleep(1.5, 2)
                     return
                 elif (datetime.datetime.now() - start_time).total_seconds() > 9:
                     break
+        # may have clicked the ice patch already
+        else:
+            loc = general_utils.get_world_location(port)
+            if loc and loc['x'] > 5000:
+                general_utils.random_sleep(1.5, 2)
+                return
 
-'''general_utils.random_sleep(1, 2)
-tele_home()
-enter_waterbirth_portal()
-travel_to_rellekka()
-take_boat_to_ungael()
-enter_vorks_layer()'''
-vork_handler_v2()
+
+# start at ferox w gear on
+def vork_loop():
+    start_time = datetime.datetime.now()
+    while True:
+        start_time = general_utils.break_manager(start_time, 51, 54, 423, 551, 'pass_70', False)
+        bank_at_ferox()
+        tele_home()
+        enter_waterbirth_portal()
+        travel_to_rellekka()
+        take_boat_to_ungael()
+        enter_vorks_layer()
+        vork_handler_v2()
+        pickup_loot()
+        tele_to_ferox()
+        drink_from_pool_of_refreshment()
+
+vork_loop()
