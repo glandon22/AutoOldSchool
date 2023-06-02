@@ -891,6 +891,22 @@ def get_surrounding_ground_items(dist, items, port='56799'):
         return data['groundItems']
 
 
+# t bow 20997
+def get_surrounding_ground_items_any_ids(dist, port='56799'):
+    tiles = generate_surrounding_tiles(dist)
+    q = {
+        'allGroundItems': []
+    }
+    for tile in tiles:
+        q['allGroundItems'].append({
+            'tile': tile,
+            'object': '20997'
+        })
+    data = query_game_data(q, port)
+    if 'allGroundItems' in data:
+        return data['allGroundItems']
+
+
 def get_ground_items(tile, item, port='56799'):
     """
 
@@ -1450,4 +1466,19 @@ def toggle_prayer(desired_state, port):
         if prayer_orb:
             if prayer_orb['spriteID'] != desired_state:
                 fast_move_and_click(prayer_orb['x'], prayer_orb['y'], 3, 3)
+            return
+
+
+def toggle_prayer_slow(desired_state, port):
+    """
+    :param desired_state: string : 'on' : 'off'
+    :param port:
+    :return: void
+    """
+    desired_state = {'on': 1066, 'off': 1063}[desired_state]
+    while True:
+        prayer_orb = get_widget('160,21', port)
+        if prayer_orb:
+            if prayer_orb['spriteID'] != desired_state:
+                move_and_click(prayer_orb['x'], prayer_orb['y'], 3, 3)
             return
