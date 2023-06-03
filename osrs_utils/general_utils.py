@@ -76,7 +76,6 @@ def bezier_movement(x_min, y_min, x_max, y_max):
     timeout = duration / len(points[0])
     point_list = zip(*(i.astype(int) for i in points))
     for point in point_list:
-        print(point[0])
         if point[0] > 1920 or point[0] < 0 or point[1] < 20 or point[1] > 1040:
             print('point: {} out of bounds, rejecting movement request.'.format(point))
             return False

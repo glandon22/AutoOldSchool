@@ -92,7 +92,7 @@ def main():
     start_time = datetime.datetime.now()
     curr_world = 0
     while True:
-        start_time = general_utils.break_manager(start_time, 43, 48, 423, 551, 'pass_70', False)
+        start_time = general_utils.break_manager(start_time, 43, 48, 423, 551, 'julenth', False)
         if paused:
             continue
 

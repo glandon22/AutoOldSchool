@@ -72,10 +72,12 @@ dhcb_id = 21012
 diamond_dragon_bolts_e_id = 21946
 
 required_items = [
+    {'id': super_restore_ids[:2], 'all': False},
     {'id': anti_venom_pots[:3], 'all': False},
     {'id': divine_ranging_ids[:3], 'all': False},
     # Get two super restores
-    {'id': super_restore_ids[:2], 'all': False},
+    # Note: It's hacky, but if there is 1 4 dose super restore left it will click it twice if they are back to back,
+    # so breaking it up to ensure i have two restores. Can probably find a more elegant solution.
     {'id': super_restore_ids[:2], 'all': False},
     {'id': extended_super_anti_ids[:3], 'all': False},
     {'id': ring_of_dueling_ids, 'all': False},
@@ -152,6 +154,22 @@ def move_tiles_to_avoid_fireball_v2(anchor_tile):
                 anchor_tile['x'], anchor_tile['y'] + 1
             )],
             port)
+    vork = general_utils.get_npc_by_id('8061', port)
+    if vork:
+        general_utils.move_and_click(vork['x'], vork['y'], 3, 3)
+    while True:
+        fireball = general_utils.get_projectiles()
+        if 1481 not in fireball:
+            return
+
+
+def move_tiles_to_avoid_fireball_v3(anchor_tile, loc):
+    # make sure i am going to a sq that is at least two tiles away!!!
+    for sq in [attack_square_mid, attack_square_right, attack_square_left]:
+        dist = general_utils.point_dist(loc['x'], loc['y'], anchor_tile['x'] + sq['x'], anchor_tile['y'] + sq['y'])
+        if dist >= 2:
+            general_utils.spam_click('{},{},0'.format(anchor_tile['x'] + sq['x'], anchor_tile['y'] + sq['y']), 1, port)
+            break
     vork = general_utils.get_npc_by_id('8061', port)
     if vork:
         general_utils.move_and_click(vork['x'], vork['y'], 3, 3)
@@ -341,7 +359,8 @@ def kill_vork(anchor_tile, last_super_anti_dose, last_divine_range_dose):
             'widget': '160,21',
             'inv': True,
             'skills': ['hitpoints', 'prayer'],
-            'gameObjects': []
+            'gameObjects': [],
+            'playerWorldPoint': True
         }
 
         tiles = general_utils.generate_surrounding_tiles(5, port)
@@ -366,8 +385,11 @@ def kill_vork(anchor_tile, last_super_anti_dose, last_divine_range_dose):
         prayer_skill_data = 'skills' in data and 'prayer' in data['skills'] and data['skills']['prayer']
         acid_pools = 'gameObjects' in data and data['gameObjects']
         health_orb = general_utils.get_widget('160,10', port)
+        world_point = data['playerWorldPoint']
+
         if 1481 in projectiles:
-            move_tiles_to_avoid_fireball_v2(anchor_tile)
+            # v3 is still very experimental
+            move_tiles_to_avoid_fireball_v3(anchor_tile, world_point)
             continue
         if 395 in projectiles or len(zombie_spawn) > 0:
             kill_spawn(inv, prayer_orb)
@@ -419,6 +441,7 @@ def kill_vork(anchor_tile, last_super_anti_dose, last_divine_range_dose):
             last_divine_range_dose = datetime.datetime.now()
             continue
         if vork and vork[0]['health'] / vork[0]['scale'] < .33:
+            vork_low_health = True
             bolt_switch = general_utils.is_item_in_inventory_v2(inv, diamond_dragon_bolts_e_id)
             if bolt_switch:
                 general_utils.fast_move_and_click(bolt_switch['x'], bolt_switch['y'], 3, 3)
