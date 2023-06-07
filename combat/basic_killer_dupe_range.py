@@ -38,7 +38,7 @@ def main():
                 return print('out of food')
             general_utils.move_and_click(food[0], food[1], 4, 4)
             general_utils.random_sleep(1, 1.1)
-        elif (datetime.datetime.now() - pot_time).total_seconds() > 600 and 'inv' in data:
+        elif (datetime.datetime.now() - pot_time).total_seconds() > 600 and 'inv' in data and 'interactingWith' not in data:
             print('Potting up.')
             super_combat = general_utils.are_items_in_inventory_v2(data['inv'], [169, 171, 173, 2444])
             if not super_combat:
