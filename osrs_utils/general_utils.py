@@ -34,6 +34,9 @@ def point_dist(x1, y1, x2, y2):
 
 
 def bezier_movement(x_min, y_min, x_max, y_max):
+    if platform.system() == 'Darwin':
+        y_min += 37
+        y_max += 37
     # Any duration less than this is rounded to 0.0 to instantly move the mouse.
     pyautogui.MINIMUM_DURATION = 0  # Default: 0.1
     # Minimal number of seconds to sleep between mouse moves.
@@ -111,31 +114,6 @@ def rough_img_compare(img, confidence, region):
                 return False
         except Exception as e:
             print('error calling screenshot, retrying.', e)
-
-
-'''def hop_worlds():
-    kb.send('alt + shift + x')
-    random_sleep(3.3, 3.9)
-    if calc_img_diff(pyscreenshot.grab([22, 1212, 590, 1337]), Image.open('..\\screens\\w319.png'), 3) == 'same':
-        print('hopping to world 319')
-        kb.send('space')
-        random_sleep(0.7, 0.9)
-        kb.send('2')
-    post_hop = Image.open('..\\screens\\post_hop.png')
-    cycles_waiting = 0
-    while True:
-        if rough_img_compare(post_hop, .8, (2270, 971, 2546, 1382)):
-            break
-        elif cycles_waiting > 1000:
-            return 'failed to hop worlds'
-        else:
-            cycles_waiting += 1
-        random_sleep(0.2, 0.5)
-    print('hitting esc')
-    kb.send('esc')
-    random_sleep(0.2, 0.4)
-    return 'success'
-'''
 
 
 def solve_bank_pin():
@@ -465,46 +443,90 @@ def logout(port='56799'):
         random_sleep(0.3, 0.4)
 
 
-def login(password, port='56799'):
-    existing_user_paths = {
-        'Linux': '../screens/existing_user.png',
-        'Windows': 'C:\\Users\\gland\\osrs_yolov3\\screens\\existing_user.png'
+def login_v2(password, port):
+    keyboard.press(Key.enter)
+    keyboard.release(Key.enter)
+    sleep_one_tick()
+    p = get_config(password)
+    keyboard.type(p)
+    sleep_one_tick()
+    keyboard.press(Key.enter)
+    keyboard.release(Key.enter)
+    coords = {
+        'x': 0,
+        'y': 0
     }
-    login_paths = {
-        'Linux': '../screens/login.png',
-        'Windows': 'C:\\Users\\gland\\osrs_yolov3\\screens\\login_button.png'
-    }
-    existing_user = rough_img_compare(existing_user_paths[platform.system()], 0.8,
-                                      (0, 0, 1920, 1080))
+
     while True:
+        q = {
+            'widget': '378,72'
+        }
+        widget = query_game_data(q, port)
+        if 'widget' in widget:
+            ctp = widget['widget']
+            # once the click to play button is loaded, it takes a couple seconds to get accurate coords
+            # due to some underlying game mechanics (i guess)
+            if ctp['x'] == coords['x'] and ctp['y'] == coords['y']:
+                move_and_click(ctp['x'], ctp['y'], 15, 15)
+                break
+            else:
+                coords['x'] = ctp['x']
+                coords['y'] = ctp['y']
+        random_sleep(0.6, 0.7)
+
+def mac_login(password):
+    move_and_click(830, 350, 3, 3)
+    random_sleep(1, 1.1)
+    move_and_click(675, 380, 3, 3)
+    type_something(get_config(password))
+    random_sleep(1, 1.1)
+    keyboard.press(Key.enter)
+    keyboard.release(Key.enter)
+
+
+def login(password, port='56799'):
+    if platform.system() == 'Darwin':
+        mac_login(password)
+    else:
+        existing_user_paths = {
+            'Linux': '../screens/existing_user.png',
+            'Windows': 'C:\\Users\\gland\\osrs_yolov3\\screens\\existing_user.png'
+        }
+        login_paths = {
+            'Linux': '../screens/login.png',
+            'Windows': 'C:\\Users\\gland\\osrs_yolov3\\screens\\login_button.png'
+        }
         existing_user = rough_img_compare(existing_user_paths[platform.system()], 0.8,
                                           (0, 0, 1920, 1080))
-        if existing_user:
-            break
-        time.sleep(1)
-    move_and_click(
-        existing_user[0] + math.floor(existing_user[2] / 4),
-        existing_user[1] + math.floor(existing_user[3] / 4),
-        math.floor(existing_user[2] / 4),
-        math.floor(existing_user[3] / 4)
-    )
-    random_sleep(1, 2)
-    type_something(get_config(password))
-    random_sleep(0.2, 0.4)
-    login_button = rough_img_compare(login_paths[platform.system()], 0.8,
-                                     (0, 0, 1920, 1080))
-    while True:
+        while True:
+            existing_user = rough_img_compare(existing_user_paths[platform.system()], 0.8,
+                                              (0, 0, 1920, 1080))
+            if existing_user:
+                break
+            time.sleep(1)
+        move_and_click(
+            existing_user[0] + math.floor(existing_user[2] / 4),
+            existing_user[1] + math.floor(existing_user[3] / 4),
+            math.floor(existing_user[2] / 4),
+            math.floor(existing_user[3] / 4)
+        )
+        random_sleep(1, 2)
+        type_something(get_config(password))
+        random_sleep(0.2, 0.4)
         login_button = rough_img_compare(login_paths[platform.system()], 0.8,
                                          (0, 0, 1920, 1080))
-        if login_button:
-            break
-        time.sleep(1)
-    move_and_click(
-        login_button[0] + math.floor(login_button[2] / 4),
-        login_button[1] + math.floor(login_button[3] / 4),
-        math.floor(login_button[2] / 4),
-        math.floor(login_button[3] / 4)
-    )
+        while True:
+            login_button = rough_img_compare(login_paths[platform.system()], 0.8,
+                                             (0, 0, 1920, 1080))
+            if login_button:
+                break
+            time.sleep(1)
+        move_and_click(
+            login_button[0] + math.floor(login_button[2] / 4),
+            login_button[1] + math.floor(login_button[3] / 4),
+            math.floor(login_button[2] / 4),
+            math.floor(login_button[3] / 4)
+        )
 
     coords = {
         'x': 0,
@@ -561,7 +583,7 @@ def break_manager(start_time, min_session, max_session, min_rest, max_rest, pass
             )
             time.sleep(30)
             click_off_screen(500, 510, 500, 510)
-        login(password, port)
+        login_v2(password, port)
         random_sleep(0.4, 0.5)
         if post_login_steps:
             post_login_steps()
