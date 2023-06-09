@@ -1,4 +1,5 @@
-from osrs_utils import general_utils
+
+import osrs
 wc_animations = [
     879,877,875,873,871,869,867,8303,2846,24,2117,7264,8324,8778
 ]
@@ -12,16 +13,16 @@ expected_tree = '40758'
 
 def main():
     while True:
-        data = general_utils.get_player_info(6464)
+        data = osrs.server.get_player_info(6464)
         #if im still chopping, continue
         if data['animation'] in wc_animations:
             print('still chopping')
             continue
         elif len(data['inv']) == 28:
             print('bag is full')
-            general_utils.power_drop(data['inv'], [], [expected_logs])
+            osrs.inv.power_drop(data['inv'], [], [expected_logs])
             continue
-        data = general_utils.get_player_info(6464)
+        data = osrs.server.get_player_info(6464)
         if len(data['gameObjects']):
             print('found trees to blast')
             closest = {
@@ -35,18 +36,18 @@ def main():
                     break
                 elif closest['dist'] > tree['dist']:
                     closest = tree
-            general_utils.move_and_click(closest['x'], closest['y'], 1, 1)
-            general_utils.random_sleep(0.3, 0.4)
-            general_utils.click_off_screen()
+            osrs.move.move_and_click(closest['x'], closest['y'], 1, 1)
+            osrs.clock.random_sleep(0.3, 0.4)
+            osrs.move.click_off_screen()
             # once i click tree, wait to cycle again until i start chopping it
             cycles = 0
             while True:
                 print('waiting to chop tree: ', cycles )
-                data = general_utils.get_player_info(6464)
+                data = osrs.server.get_player_info(6464)
                 if data['animation'] in wc_animations or cycles > 60:
                     break
                 cycles += 1
-            general_utils.random_sleep(1.2, 2.3)
+            osrs.clock.random_sleep(1.2, 2.3)
 
 
 

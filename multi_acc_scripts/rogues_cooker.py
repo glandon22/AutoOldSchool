@@ -1,6 +1,7 @@
 import datetime
 from cooking import cook_handler
-from osrs_utils import general_utils
+
+import osrs
 '''
 {
     'port': '56800',
@@ -18,16 +19,16 @@ acc_configs = [
 
 def main():
     start_time = datetime.datetime.now()
-    general_utils.random_sleep(10, 15)
+    osrs.clock.random_sleep(10, 15)
     while True:
-        start_time = general_utils.multi_break_manager(start_time, 53, 58, 423, 551, acc_configs)
+        start_time = osrs.game.multi_break_manager(start_time, 53, 58, 423, 551, acc_configs)
         cook_handler(acc_configs[0]['port'])
-        general_utils.random_sleep(0.5, 0.6)
+        osrs.clock.random_sleep(0.5, 0.6)
         '''keyboard.send('alt + tab')
-        general_utils.random_sleep(0.5, 0.6)
+        osrs.clock.random_sleep(0.5, 0.6)
         cook_handler(acc_configs[1]['port'])
-        general_utils.random_sleep(0.5, 0.6)
+        osrs.clock.random_sleep(0.5, 0.6)
         keyboard.send('alt + tab')
-        general_utils.random_sleep(0.5, 0.6)'''
+        osrs.clock.random_sleep(0.5, 0.6)'''
 
 main()

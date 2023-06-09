@@ -1,6 +1,7 @@
 import datetime
 
-from osrs_utils import general_utils
+
+import osrs
 fruits = [
     1955,
     1963,
@@ -19,14 +20,14 @@ port = '56799'
 def main():
     start_time = datetime.datetime.now()
     while True:
-        start_time = general_utils.break_manager(start_time, 53, 58, 423, 551, 'julenth', False)
-        inv = general_utils.get_inv(port)
-        fruit_inv = general_utils.are_items_in_inventory_v2(inv, fruits)
+        start_time = osrs.game.break_manager(start_time, 53, 58, 423, 551, 'julenth', False)
+        inv = osrs.inv.get_inv(port)
+        fruit_inv = osrs.inv.are_items_in_inventory_v2(inv, fruits)
         if fruit_inv:
-            general_utils.power_drop(inv, [], fruits)
-        stall = general_utils.get_game_object('1801,3608,0', '28823', port)
+            osrs.inv.power_drop(inv, [], fruits)
+        stall = osrs.server.get_game_object('1801,3608,0', '28823', port)
         if stall:
-            general_utils.move_and_click(stall['x'], stall['y'], 9, 9)
-            general_utils.random_sleep(1.0, 1.4)
+            osrs.move.move_and_click(stall['x'], stall['y'], 9, 9)
+            osrs.clock.random_sleep(1.0, 1.4)
 
 main()

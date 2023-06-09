@@ -1,6 +1,7 @@
 import datetime
 
-from osrs_utils import general_utils
+
+import osrs
 port = '56799'
 objs = [
     '28498',
@@ -11,17 +12,17 @@ objs = [
 sulf = 13571
 def click_sulfur():
     for obj in objs:
-        exists = general_utils.get_game_object('1424,3873,0', obj, port)
+        exists = osrs.server.get_game_object('1424,3873,0', obj, port)
         if exists:
-            general_utils.move_and_click(exists['x'], exists['y'], 3, 3)
+            osrs.move.move_and_click(exists['x'], exists['y'], 3, 3)
             return True
 
 
 def main():
-    prev_inv = general_utils.get_inv(port)
+    prev_inv = osrs.inv.get_inv(port)
     last_change = datetime.datetime.now()
     while True:
-        inv = general_utils.get_inv(port)
+        inv = osrs.inv.get_inv(port)
         if inv != prev_inv:
             prev_inv = inv
             last_change = datetime.datetime.now()
@@ -31,9 +32,9 @@ def main():
                 prev_inv = inv
                 last_change = datetime.datetime.now()
             else:
-                general_utils.power_drop(inv, [], [sulf])
+                osrs.inv.power_drop(inv, [], [sulf])
         elif len(inv) == 28:
-            general_utils.power_drop(inv, [], [sulf])
+            osrs.inv.power_drop(inv, [], [sulf])
 
 
 main()

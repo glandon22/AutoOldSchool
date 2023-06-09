@@ -41,7 +41,8 @@
 Script must be started with a Hammer and Tinder box in inventory
 """
 
-from osrs_utils import general_utils
+
+import osrs
 import datetime
 import random
 import time
@@ -52,17 +53,17 @@ status = 'init'
 
 def bank():
     global status
-    data = general_utils.get_player_info(4200)
+    data = osrs.server.get_player_info(4200)
     if not data['tiles']['bank']:
         print('did not find bank tile on init.')
     bank_chest = data['tiles']['bank']
     print('Walking to bank chest.')
-    general_utils.move_and_click(bank_chest["x"], bank_chest["y"], 5, 6)
-    general_utils.click_off_screen(click=False)
+    osrs.move.move_and_click(bank_chest["x"], bank_chest["y"], 5, 6)
+    osrs.move.click_off_screen(click=False)
     # wait for bank interface to appear
     print('waiting for bank interface.')
     while True:
-        loc = general_utils.rough_img_compare('..\\screens\\bank_interface.png', .9, (0, 0, 1920, 1080))
+        loc = osrs.util.rough_img_compare('..\\screens\\bank_interface.png', .9, (0, 0, 1920, 1080))
         if loc:
             break
     print('bank interface opened, dumping jugs and loot crates.')
@@ -73,15 +74,15 @@ def bank():
         elif item['id'] in [2347, 590]:
             continue
         else:
-            general_utils.move_and_click(item["x"], item["y"], 5, 6)
+            osrs.move.move_and_click(item["x"], item["y"], 5, 6)
     # dump everything but hammer, tinderbox, and jugs of wine
     # keep track of jugs of wine in inventory, want to have five total after banking
-    data = general_utils.get_player_info(4200)
+    data = osrs.server.get_player_info(4200)
     print('withdrawing wines.')
     for item in data['bankStuff']:
         if item['id'] == 1993:
             for x in range(5 - wine_count):
-                general_utils.move_and_click(item["x"], item["y"], 5, 6)
+                osrs.move.move_and_click(item["x"], item["y"], 5, 6)
     keyboard.send('esc')
     print('finished banking.')
 
@@ -95,10 +96,10 @@ def walk_to_game():
     '''
     @@TODO: this needs to be refactored to use the square "i1"
     '''
-    general_utils.move_and_click(200, 930, 100, 50)
-    general_utils.click_off_screen(click=False)
+    osrs.move.move_and_click(200, 930, 100, 50)
+    osrs.move.click_off_screen(click=False)
     while True:
-        data = general_utils.get_player_info(4200)
+        data = osrs.server.get_player_info(4200)
         print('saved_coords', saved_coords)
         if 'dinhs' in data['tiles'] and 'gameObjects' in data['tiles']['dinhs'] and '29322' in data['tiles']['dinhs']['gameObjects']:
             print('have dinhs game object', data['tiles']['dinhs'])
@@ -116,20 +117,20 @@ def walk_to_game():
                         'x': dinhs_door['x'],
                         'y': dinhs_door['y']
                     }
-    general_utils.move_and_click(saved_coords["x"], saved_coords["y"], 5, 6)
-    general_utils.random_sleep(2.5, 3)
+    osrs.move.move_and_click(saved_coords["x"], saved_coords["y"], 5, 6)
+    osrs.clock.random_sleep(2.5, 3)
 
 
 def go_to_arena_sq():
     print('i2')
     while True:
-        data = general_utils.get_player_info(4200)
+        data = osrs.server.get_player_info(4200)
         print(data)
         if 'i2' in data['tiles']:
             print('breaking')
             intermediate_sq = data['tiles']['i2']
-            general_utils.move_and_click(intermediate_sq['x'], intermediate_sq['y'], 25, 25)
-            general_utils.random_sleep(0.5, 0.6)
+            osrs.move.move_and_click(intermediate_sq['x'], intermediate_sq['y'], 25, 25)
+            osrs.clock.random_sleep(0.5, 0.6)
             break
 
 
@@ -139,7 +140,7 @@ def go_to_cutting_square():
         'y': 0
     }
     while True:
-        data = general_utils.get_player_info(4200)
+        data = osrs.server.get_player_info(4200)
         if 'safe' in data['tiles']:
             safe_square = data['tiles']['safe']
             if 'x' in safe_square and 'y' in safe_square:
@@ -154,13 +155,13 @@ def go_to_cutting_square():
                         'x': safe_square['x'],
                         'y': safe_square['y']
                     }
-    general_utils.move_and_click(saved_coords["x"], saved_coords["y"], 5, 6)
+    osrs.move.move_and_click(saved_coords["x"], saved_coords["y"], 5, 6)
     saved_coords = {
         'x': 0,
         'y': 0
     }
     while True:
-        data = general_utils.get_player_info(4200)
+        data = osrs.server.get_player_info(4200)
         if 'bruma' in data['tiles'] and 'gameObjects' in data['tiles']['bruma'] and '29311' in data['tiles']['bruma'][
             'gameObjects']:
             bruma_roots = data['tiles']['bruma']['gameObjects']['29311']
@@ -176,12 +177,12 @@ def go_to_cutting_square():
                         'x': bruma_roots['x'],
                         'y': bruma_roots['y']
                     }
-    general_utils.move_and_click(saved_coords["x"], saved_coords["y"], 5, 6)
+    osrs.move.move_and_click(saved_coords["x"], saved_coords["y"], 5, 6)
 
 
 def determine_game_state():
     global status
-    data = general_utils.get_player_info(4200)
+    data = osrs.server.get_player_info(4200)
     # timer is zero,
     if 'wtTimer' in data and data['wtTimer'] == 0:
         print('here')
@@ -200,23 +201,23 @@ def determine_game_state():
 def wait_for_game():
     global status
     while True:
-        data = general_utils.get_player_info(4200)
+        data = osrs.server.get_player_info(4200)
         if 'wtTimer' in data and data['wtTimer'] != 0:
             break
-        general_utils.click_off_screen(click=False)
+        osrs.move.click_off_screen(click=False)
 
 
 def start_new_game():
     global status
-    data = general_utils.get_player_info(4200)
+    data = osrs.server.get_player_info(4200)
     intermed_sq = data['tiles']['i2']
-    general_utils.move_and_click(intermed_sq['x'], intermed_sq['y'], 10, 10)
+    osrs.move.move_and_click(intermed_sq['x'], intermed_sq['y'], 10, 10)
     saved_coords = {
         'x': 0,
         'y': 0
     }
     while True:
-        data = general_utils.get_player_info(4200)
+        data = osrs.server.get_player_info(4200)
         if 'brazier' in data['tiles'] and 'gameObjects' in data['tiles']['brazier'] and '29312' in \
                 data['tiles']['brazier']['gameObjects']:
             brazier = data['tiles']['brazier']['gameObjects']['29312']
@@ -230,13 +231,13 @@ def start_new_game():
                         'y': brazier['y']
                     }
     # click and run to brazier
-    general_utils.move_and_click(saved_coords["x"], saved_coords["y"], 5, 6)
+    osrs.move.move_and_click(saved_coords["x"], saved_coords["y"], 5, 6)
     while True:
-        data = general_utils.get_player_info(4200)
+        data = osrs.server.get_player_info(4200)
         if 'wtTimer' in data and data['wtTimer'] < 5:
             prev_fmxp = data['fmXp']
             while True:
-                data = general_utils.get_player_info(4200)
+                data = osrs.server.get_player_info(4200)
                 #successfully lit brazier
                 if data['fmXp'] != prev_fmxp:
                     break
@@ -245,7 +246,7 @@ def start_new_game():
                 #click the brazier
                 else:
                     brazier = data['tiles']['brazier']['gameObjects']['29312']
-                    general_utils.move_and_click(brazier["x"], brazier["y"], 5, 6)
+                    osrs.move.move_and_click(brazier["x"], brazier["y"], 5, 6)
             break
 
 

@@ -1,4 +1,5 @@
-from osrs_utils import general_utils
+
+import osrs
 
 
 def step1():
@@ -11,19 +12,19 @@ def step1():
                 }
             ]
         }
-        data = general_utils.query_game_data(q)
+        data = osrs.server.query_game_data(q)
         if '23145' in data['groundObjects']:
-            general_utils.move_and_click(data['groundObjects']['23145']['x'], data['groundObjects']['23145']['y'], 2, 3)
-            general_utils.random_sleep(1, 1.1)
+            osrs.move.move_and_click(data['groundObjects']['23145']['x'], data['groundObjects']['23145']['y'], 2, 3)
+            osrs.clock.random_sleep(1, 1.1)
             break
     while True:
         q = {
             'playerWorldPoint': True,
         }
-        data = general_utils.query_game_data(q)
+        data = osrs.server.query_game_data(q)
         if 'playerWorldPoint' in data and data['playerWorldPoint']['x'] == 2474 and data['playerWorldPoint']['y'] == 3429:
-            general_utils.wait_until_stationary()
-            general_utils.random_sleep(0.5, 0.6)
+            osrs.move.wait_until_stationary()
+            osrs.clock.random_sleep(0.5, 0.6)
             break
 
 
@@ -37,22 +38,22 @@ def step2():
                     }
                 ]
             }
-        data = general_utils.query_game_data(q)
+        data = osrs.server.query_game_data(q)
         if '23134' in data['gameObjects']:
-            general_utils.move_and_click(data['gameObjects']['23134']['x'], data['gameObjects']['23134']['y'], 2, 3)
-            general_utils.random_sleep(0.5, 0.6)
-            general_utils.wait_until_stationary()
+            osrs.move.move_and_click(data['gameObjects']['23134']['x'], data['gameObjects']['23134']['y'], 2, 3)
+            osrs.clock.random_sleep(0.5, 0.6)
+            osrs.move.wait_until_stationary()
             break
     while True:
         q = {
             'playerWorldPoint': True,
         }
-        data = general_utils.query_game_data(q)
+        data = osrs.server.query_game_data(q)
         if 'playerWorldPoint' in data and data['playerWorldPoint']['x'] == 2473 and data['playerWorldPoint']['y'] == 3423:
-            general_utils.wait_until_stationary()
-            general_utils.random_sleep(0.5, 0.6)
+            osrs.move.wait_until_stationary()
+            osrs.clock.random_sleep(0.5, 0.6)
             break
-    general_utils.random_sleep(1, 1.1)
+    osrs.clock.random_sleep(1, 1.1)
 
 def step3():
     while True:
@@ -64,20 +65,20 @@ def step3():
                     }
                 ]
             }
-        data = general_utils.query_game_data(q)
+        data = osrs.server.query_game_data(q)
         if '23559' in data['gameObjects']:
-            general_utils.move_and_click(data['gameObjects']['23559']['x'], data['gameObjects']['23559']['y'], 2, 3)
-            general_utils.random_sleep(0.5, 0.6)
-            general_utils.wait_until_stationary()
+            osrs.move.move_and_click(data['gameObjects']['23559']['x'], data['gameObjects']['23559']['y'], 2, 3)
+            osrs.clock.random_sleep(0.5, 0.6)
+            osrs.move.wait_until_stationary()
             break
     while True:
         q = {
             'playerWorldPoint': True,
         }
-        data = general_utils.query_game_data(q)
+        data = osrs.server.query_game_data(q)
         if 'playerWorldPoint' in data and data['playerWorldPoint']['x'] == 2473 and data['playerWorldPoint']['y'] == 3420:
-            general_utils.wait_until_stationary()
-            general_utils.random_sleep(0.5, 0.6)
+            osrs.move.wait_until_stationary()
+            osrs.clock.random_sleep(0.5, 0.6)
             break
 
 def step4():
@@ -90,20 +91,20 @@ def step4():
                 }
             ]
         }
-        data = general_utils.query_game_data(q)
+        data = osrs.server.query_game_data(q)
         if '23557' in data['groundObjects']:
-            general_utils.move_and_click(data['groundObjects']['23557']['x'], data['groundObjects']['23557']['y'], 2, 3)
-            general_utils.random_sleep(0.5, 0.6)
-            general_utils.wait_until_stationary()
+            osrs.move.move_and_click(data['groundObjects']['23557']['x'], data['groundObjects']['23557']['y'], 2, 3)
+            osrs.clock.random_sleep(0.5, 0.6)
+            osrs.move.wait_until_stationary()
             break
     while True:
         q = {
             'playerWorldPoint': True,
         }
-        data = general_utils.query_game_data(q)
+        data = osrs.server.query_game_data(q)
         if 'playerWorldPoint' in data and data['playerWorldPoint']['x'] == 2483 and data['playerWorldPoint']['y'] == 3420:
-            general_utils.wait_until_stationary()
-            general_utils.random_sleep(0.5, 0.6)
+            osrs.move.wait_until_stationary()
+            osrs.clock.random_sleep(0.5, 0.6)
             break
 
 
@@ -118,20 +119,20 @@ def step5():
                     }
                 ]
             }
-        data = general_utils.query_game_data(q)
+        data = osrs.server.query_game_data(q)
         if '23560' in data['gameObjects']:
-            general_utils.move_and_click(data['gameObjects']['23560']['x'], data['gameObjects']['23560']['y'], 2, 3)
-            general_utils.random_sleep(0.5, 0.6)
-            general_utils.wait_until_stationary()
+            osrs.move.move_and_click(data['gameObjects']['23560']['x'], data['gameObjects']['23560']['y'], 2, 3)
+            osrs.clock.random_sleep(0.5, 0.6)
+            osrs.move.wait_until_stationary()
             break
     while True:
         q = {
             'playerWorldPoint': True,
         }
-        data = general_utils.query_game_data(q)
+        data = osrs.server.query_game_data(q)
         if 'playerWorldPoint' in data and data['playerWorldPoint']['x'] == 2487 and data['playerWorldPoint']['y'] == 3420:
-            general_utils.wait_until_stationary()
-            general_utils.random_sleep(0.5, 0.6)
+            osrs.move.wait_until_stationary()
+            osrs.clock.random_sleep(0.5, 0.6)
             break
 
 def step6():
@@ -145,20 +146,20 @@ def step6():
                     }
                 ]
             }
-        data = general_utils.query_game_data(q)
+        data = osrs.server.query_game_data(q)
         if '23135' in data['gameObjects']:
-            general_utils.move_and_click(data['gameObjects']['23135']['x'], data['gameObjects']['23135']['y'], 2, 3)
-            general_utils.random_sleep(0.5, 0.6)
-            general_utils.wait_until_stationary()
+            osrs.move.move_and_click(data['gameObjects']['23135']['x'], data['gameObjects']['23135']['y'], 2, 3)
+            osrs.clock.random_sleep(0.5, 0.6)
+            osrs.move.wait_until_stationary()
             break
     while True:
         q = {
             'playerWorldPoint': True,
         }
-        data = general_utils.query_game_data(q)
+        data = osrs.server.query_game_data(q)
         if 'playerWorldPoint' in data and data['playerWorldPoint']['y'] > 3425:
-            general_utils.wait_until_stationary()
-            general_utils.random_sleep(0.5, 0.6)
+            osrs.move.wait_until_stationary()
+            osrs.clock.random_sleep(0.5, 0.6)
             break
 
 def step7():
@@ -172,20 +173,20 @@ def step7():
                     }
                 ]
             }
-        data = general_utils.query_game_data(q)
+        data = osrs.server.query_game_data(q)
         if '23139' in data['gameObjects']:
-            general_utils.move_and_click(data['gameObjects']['23139']['x'], data['gameObjects']['23139']['y'], 2, 3)
-            general_utils.random_sleep(0.5, 0.6)
-            general_utils.wait_until_stationary()
+            osrs.move.move_and_click(data['gameObjects']['23139']['x'], data['gameObjects']['23139']['y'], 2, 3)
+            osrs.clock.random_sleep(0.5, 0.6)
+            osrs.move.wait_until_stationary()
             break
     while True:
         q = {
             'playerWorldPoint': True,
         }
-        data = general_utils.query_game_data(q)
+        data = osrs.server.query_game_data(q)
         if 'playerWorldPoint' in data and data['playerWorldPoint']['y'] > 3436:
-            general_utils.wait_until_stationary()
-            general_utils.random_sleep(0.5, 0.6)
+            osrs.move.wait_until_stationary()
+            osrs.clock.random_sleep(0.5, 0.6)
             break
 
 
@@ -204,7 +205,7 @@ def main():
         step5()
         print('Step 6')
         step6()
-        general_utils.random_sleep(2, 2.2)
+        osrs.clock.random_sleep(2, 2.2)
         print('Step 7')
         step7()
 

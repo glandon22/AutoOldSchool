@@ -1,6 +1,7 @@
 import datetime
 
-from osrs_utils import general_utils
+
+import osrs
 
 port = 56799
 EMPTY_PLOT = '27383'
@@ -80,38 +81,38 @@ plot_offsets_from_anchor = [
 
 def fill_watering_cans():
     while True:
-        inv = general_utils.get_inv(port)
-        not_full_can = general_utils.are_items_in_inventory_v2(inv, [5331, 5333, 5334, 5335, 5336, 5337, 5338, 5339])
+        inv = osrs.inv.get_inv(port)
+        not_full_can = osrs.inv.are_items_in_inventory_v2(inv, [5331, 5333, 5334, 5335, 5336, 5337, 5338, 5339])
         if not_full_can:
-            general_utils.move_and_click(not_full_can['x'], not_full_can['y'], 3, 3)
-            water = general_utils.get_surrounding_game_objects(10, ['5598'], port)
+            osrs.move.move_and_click(not_full_can['x'], not_full_can['y'], 3, 3)
+            water = osrs.server.get_surrounding_game_objects(10, ['5598'], port)
             if '5598' in water:
-                general_utils.move_and_click(water['5598']['x'], water['5598']['y'], 2, 2)
-                general_utils.random_sleep(0.6, 0.7)
+                osrs.move.move_and_click(water['5598']['x'], water['5598']['y'], 2, 2)
+                osrs.clock.random_sleep(0.6, 0.7)
         else:
             break
 
 
 def determine_anchor_tile():
     while True:
-        water = general_utils.get_surrounding_game_objects(25, ['5598'], port)
+        water = osrs.server.get_surrounding_game_objects(25, ['5598'], port)
         if '5598' in water:
             return water['5598']
 
 
 def place_seed(seed, plot):
-    general_utils.move_and_click(seed['x'], seed['y'], 3, 3)
-    general_utils.move_and_click(plot['x'], plot['y'], 3, 3)
+    osrs.move.move_and_click(seed['x'], seed['y'], 3, 3)
+    osrs.move.move_and_click(plot['x'], plot['y'], 3, 3)
 
 
 def plant_seeds(anchor):
     for plot in plot_offsets_from_anchor:
-        inv = general_utils.get_inv(port)
-        seed = general_utils.is_item_in_inventory_v2(inv, '13423')
+        inv = osrs.inv.get_inv(port)
+        seed = osrs.inv.is_item_in_inventory_v2(inv, '13423')
         if not seed:
             print('OUT OF SEEDS')
             exit(1)
-        plot = general_utils.get_game_object(
+        plot = osrs.server.get_game_object(
             '{},{},0'.format(anchor['x_coord'] + plot['x'], anchor['y_coord'] + plot['y']),
             EMPTY_PLOT,
             port
@@ -122,14 +123,14 @@ def plant_seeds(anchor):
             while True:
                 if (datetime.datetime.now() - start_time).total_seconds() > 4:
                     print('timeout')
-                    plot = general_utils.get_game_object(
+                    plot = osrs.server.get_game_object(
                         '{},{},0'.format(anchor['x_coord'] + plot['x'], anchor['y_coord'] + plot['y']),
                         EMPTY_PLOT,
                         port
                     )
                     place_seed(seed, plot)
 
-                planted = general_utils.get_game_object(
+                planted = osrs.server.get_game_object(
                     '{},{},0'.format(anchor['x_coord'] + plot['x'], anchor['y_coord'] + plot['y']),
                     EMPTY_PLOT,
                     port
@@ -143,7 +144,7 @@ def plant_seeds(anchor):
 def main():
     anchor = determine_anchor_tile()
     fill_watering_cans()
-    general_utils.run_towards_square_v2(
+    osrs.move.run_towards_square_v2(
         {'x': anchor['x_coord'] + start_point_diff['x'], 'y': anchor['y_coord'] + start_point_diff['y'], 'z': 0},
         port
     )
@@ -151,7 +152,7 @@ def main():
 
 anchor = determine_anchor_tile()
 for plot in plot_offsets_from_anchor:
-    plot = general_utils.get_game_object(
+    plot = osrs.server.get_game_object(
         '{},{},0'.format(anchor['x_coord'] + plot['x'], anchor['y_coord'] + plot['y']),
         EMPTY_PLOT,
         port

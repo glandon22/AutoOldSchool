@@ -1,6 +1,8 @@
-from osrs_utils import general_utils
+
+import osrs
 import math
 import keyboard
+import osrs
 
 def determine_log(lvl):
     if lvl < 20:
@@ -35,10 +37,10 @@ def determine_button(lvl):
         return None
 
 def main():
-    general_utils.random_sleep(5, 6)
+    osrs.clock.random_sleep(5, 6)
     while True:
-        general_utils.antiban_rest()
-        data = general_utils.get_player_info(8814)
+        osrs.clock.antiban_rest()
+        data = osrs.server.get_player_info(8814)
         fletching_level = data['fletchingLevel']
         log_to_withdraw = determine_log(fletching_level)
         if len(data["npcs"]) != 0:
@@ -54,47 +56,47 @@ def main():
                         "x": npc["x"],
                         "y": npc["y"]
                     }
-            general_utils.move_and_click(math.floor(closest_npc["x"]),math.floor( closest_npc["y"]), 5, 6)
+            osrs.move.move_and_click(math.floor(closest_npc["x"]),math.floor( closest_npc["y"]), 5, 6)
 
         while True:
-            loc = general_utils.rough_img_compare('..\\screens\\bank_interface.png', .9, (0, 0, 1920, 1080))
+            loc = osrs.util.rough_img_compare('..\\screens\\bank_interface.png', .9, (0, 0, 1920, 1080))
             if loc:
                 break
-        data = general_utils.get_player_info(8814)
+        data = osrs.server.get_player_info(8814)
         # dump everything other than my knife
         if len(data['inv']) != 1:
             items_not_to_click = [946, log_to_withdraw]
             for item in data['inv']:
                 if item['id'] not in items_not_to_click:
                     items_not_to_click.append(item['id'])
-                    general_utils.move_and_click(item['x'], item['y'], 5, 5)
+                    osrs.move.move_and_click(item['x'], item['y'], 5, 5)
         found_log = False
         if data["bank"]:
             for item in data["bank"]:
                 if item["id"] == log_to_withdraw:
                     found_log = True
-                    general_utils.move_and_click(item["x"], item["y"], 8, 8)
+                    osrs.move.move_and_click(item["x"], item["y"], 8, 8)
             if not found_log:
                 print('didnt find log')
                 return
             keyboard.send('esc')
-            general_utils.random_sleep(0.9, 1.1)
-        data = general_utils.get_player_info(8814)
-        general_utils.antiban_rest()
+            osrs.clock.random_sleep(0.9, 1.1)
+        data = osrs.server.get_player_info(8814)
+        osrs.clock.antiban_rest()
         for item in data["inv"]:
             if item["id"] == 946:  # knife
-                general_utils.move_and_click(item["x"], item["y"], 8, 8)
+                osrs.move.move_and_click(item["x"], item["y"], 8, 8)
                 break
         for item in data["inv"]:
             if item["id"] == log_to_withdraw:
-                general_utils.move_and_click(item["x"], item["y"], 8, 8)
+                osrs.move.move_and_click(item["x"], item["y"], 8, 8)
                 break
-        general_utils.random_sleep(.9, 1.2)
+        osrs.clock.random_sleep(.9, 1.2)
         keyboard.send(determine_button(fletching_level))
-        general_utils.random_sleep(0.3, 0.4)
-        general_utils.click_off_screen()
+        osrs.clock.random_sleep(0.3, 0.4)
+        osrs.move.click_off_screen()
         while True:
-            data = general_utils.get_player_info(8814)
+            data = osrs.server.get_player_info(8814)
             found = False
             for item in data["inv"]:
                 if item["id"] == log_to_withdraw:

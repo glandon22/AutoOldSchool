@@ -1,9 +1,10 @@
 import datetime
-
+import osrs
 import keyboard
 
 from herblore import make_pots
-from osrs_utils import general_utils
+
+import osrs
 
 '''
 {
@@ -29,9 +30,9 @@ acc_configs = [
 
 def main():
     start_time = datetime.datetime.now()
-    #general_utils.random_sleep(10, 15)
+    #osrs.clock.random_sleep(10, 15)
     while True:
-        start_time = general_utils.multi_break_manager(start_time, 53, 58, 423, 551, acc_configs)
+        start_time = osrs.game.multi_break_manager(start_time, 53, 58, 423, 551, acc_configs)
         make_pots(acc_configs[0]['port'])
 
 main()

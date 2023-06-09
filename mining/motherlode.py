@@ -8,7 +8,8 @@ query for game objects
 
 '''
 import keyboard
-from osrs_utils import general_utils
+
+import osrs
 
 ores = [
     453,  # coal
@@ -24,9 +25,9 @@ def click_i1():
         'tiles': ['3748,5655,0']
     }
     while True:
-        data = general_utils.query_game_data(q)
+        data = osrs.server.query_game_data(q)
         if 'tiles' in data and '374856550' in data['tiles']:
-            general_utils.move_and_click(data['tiles']['374856550']['x'], data['tiles']['374856550']['y'], 7, 7)
+            osrs.move.move_and_click(data['tiles']['374856550']['x'], data['tiles']['374856550']['y'], 7, 7)
             break
 
 
@@ -35,11 +36,11 @@ def walk_to_i2_sq():
         'tiles': ['3737,5652,0']
     }
     while True:
-        data = general_utils.query_game_data(q)
+        data = osrs.server.query_game_data(q)
         # since i am so zoomed out, things at the top of the screen arent fully loaded and may not be clickable
         # so, i wait until the square gets closer to assure that it is loaded
         if 'tiles' in data and '373756520' in data['tiles'] and data['tiles']['373756520']['y'] > 150:
-            general_utils.move_and_click(data['tiles']['373756520']['x'], data['tiles']['373756520']['y'], 7, 7)
+            osrs.move.move_and_click(data['tiles']['373756520']['x'], data['tiles']['373756520']['y'], 7, 7)
             break
 
 
@@ -47,9 +48,9 @@ def navigate_rockfall():
     q = {
         'tiles': ['3727,5652,0']
     }
-    data = general_utils.query_game_data(q)
+    data = osrs.server.query_game_data(q)
     rft = data['tiles']['372756520']
-    general_utils.move_and_click(rft['x'], rft['y'], 10, 10)
+    osrs.move.move_and_click(rft['x'], rft['y'], 10, 10)
     # once rockfall is cleared, click on i2 square
     while True:
         q = {
@@ -61,14 +62,14 @@ def navigate_rockfall():
                 '26680'  # rock fall object
             ]
         }
-        data = general_utils.query_game_data(q)
+        data = osrs.server.query_game_data(q)
         if '26680' not in data['gameObjects']:
             if '373756520' in data['tiles']:
-                general_utils.move_and_click(data['tiles']['373756520']['x'], data['tiles']['373756520']['y'], 6, 6)
+                osrs.move.move_and_click(data['tiles']['373756520']['x'], data['tiles']['373756520']['y'], 6, 6)
                 break
             else:
                 rft = data['tiles']['372756520']
-                general_utils.move_and_click(rft['x'], rft['y'], 10, 10)
+                osrs.move.move_and_click(rft['x'], rft['y'], 10, 10)
 
 
 def pass_rockfall_to_mine_veins():
@@ -80,7 +81,7 @@ def pass_rockfall_to_mine_veins():
         'tiles': ['3737,5652,0']
     }
     while True:
-        data = general_utils.query_game_data(q)
+        data = osrs.server.query_game_data(q)
         curr_i2_coords = data['tiles']['373756520']
         if curr_i2_coords['x'] == saved_i2_coords['x']:
             break
@@ -95,9 +96,9 @@ def pass_rockfall_to_mine_veins():
             '3727,5652,0'  # rock fall tile
         ]
     }
-    data = general_utils.query_game_data(q)
+    data = osrs.server.query_game_data(q)
     rft = data['tiles']['372756520']
-    general_utils.move_and_click(rft['x'], rft['y'], 10, 10)
+    osrs.move.move_and_click(rft['x'], rft['y'], 10, 10)
     # once rockfall is cleared, click on i2 square
     while True:
         q = {
@@ -105,7 +106,7 @@ def pass_rockfall_to_mine_veins():
                 '26680'  # rock fall object
             ]
         }
-        data = general_utils.query_game_data(q)
+        data = osrs.server.query_game_data(q)
         if '26680' not in data['gameObjects']:
             # need to figure out this query, in the wall object logic of the java code i also need to check to make sure i am looking for the object passed in not just ore veins
             q = {
@@ -117,14 +118,14 @@ def pass_rockfall_to_mine_veins():
                 ]
             }
             if 'oreVeins' in data:
-                data = general_utils.get_player_info(2223)
-                closest = general_utils.find_closest_npc(data['oreVeins'])
-                general_utils.move_and_click(closest['x'], closest['y'], 6, 6)
-                general_utils.click_off_screen(click=False)
+                data = osrs.server.get_player_info(2223)
+                closest = osrs.util.find_closest_npc(data['oreVeins'])
+                osrs.move.move_and_click(closest['x'], closest['y'], 6, 6)
+                osrs.move.click_off_screen(click=False)
                 break
             else:
                 rft = data['rockfallTile']
-                general_utils.move_and_click(rft['x'], rft['y'], 10, 10)
+                osrs.move.move_and_click(rft['x'], rft['y'], 10, 10)
 
 
 def should_collect_ore(data):
@@ -140,17 +141,17 @@ def bank_and_return():
     navigate_rockfall()
     # after i2, click to i1
     click_i1()
-    general_utils.random_sleep(0.9, 1.1)
+    osrs.clock.random_sleep(0.9, 1.1)
     saved_ore_cart_coords = {
         'x': 0,
         'y': 0
     }
     # deposit pay dirt
     while True:
-        data = general_utils.get_player_info(2223)
+        data = osrs.server.get_player_info(2223)
         curr_ore_cart_coords = data['oreCart']
         if curr_ore_cart_coords['x'] == saved_ore_cart_coords['x']:
-            general_utils.move_and_click(curr_ore_cart_coords['x'], curr_ore_cart_coords['y'], 4, 4)
+            osrs.move.move_and_click(curr_ore_cart_coords['x'], curr_ore_cart_coords['y'], 4, 4)
             break
         else:
             saved_ore_cart_coords = {
@@ -160,7 +161,7 @@ def bank_and_return():
     should_collect_decision = should_collect_ore(data)
     # wait until everything is deposited
     while True:
-        data = general_utils.get_player_info(2223)
+        data = osrs.server.get_player_info(2223)
         pay_dirt_present = False
         for item in data['inv']:
             if item['id'] == 12011:
@@ -170,15 +171,15 @@ def bank_and_return():
             break
     if should_collect_decision:
         #collect ore from ore sack until empty
-        general_utils.random_sleep(0.7, 0.9)
+        osrs.clock.random_sleep(0.7, 0.9)
         while True:
             while True:
-                data = general_utils.get_player_info(2223)
+                data = osrs.server.get_player_info(2223)
                 if 'oreSack' in data:
-                    general_utils.move_and_click(data['oreSack']['x'], data['oreSack']['y'], 3, 3)
+                    osrs.move.move_and_click(data['oreSack']['x'], data['oreSack']['y'], 3, 3)
                     break
             while True:
-                data = general_utils.get_player_info(2223)
+                data = osrs.server.get_player_info(2223)
                 if 'inv' in data and len(data['inv']) != 0 and 'bank' in data:
                     have_ore = False
                     for item in data['inv']:
@@ -186,19 +187,19 @@ def bank_and_return():
                             have_ore = True
                             break
                     if have_ore:
-                        general_utils.random_sleep(0.7, 0.9)
-                        data = general_utils.get_player_info(2223)
-                        general_utils.move_and_click(data['bank']['x'],data['bank']['y'], 5, 5)
+                        osrs.clock.random_sleep(0.7, 0.9)
+                        data = osrs.server.get_player_info(2223)
+                        osrs.move.move_and_click(data['bank']['x'],data['bank']['y'], 5, 5)
                         break
-            general_utils.dump_items_in_bank()
-            data = general_utils.get_player_info(2223)
+            osrs.bank.bank_dump_inv()
+            data = osrs.server.get_player_info(2223)
             if data['oreCount'] == 0:
                 break
         click_i1()
     # walk to i2
-    general_utils.random_sleep(1.4, 1.8)
+    osrs.clock.random_sleep(1.4, 1.8)
     walk_to_i2_sq()
-    general_utils.random_sleep(1.7, 1.8)
+    osrs.clock.random_sleep(1.7, 1.8)
     # pass the rock fall
     pass_rockfall_to_mine_veins()
 
@@ -208,13 +209,13 @@ def main():
     # so i need to make sure im actually not mining
     not_mining_count = 0
     while True:
-        data = general_utils.get_player_info(2223)
+        data = osrs.server.get_player_info(2223)
         if 'inv' in data and len(data['inv']) == 28:
             bank_and_return()
         elif not_mining_count > 5:
-            closest = general_utils.find_closest_npc(data['oreVeins'])
-            general_utils.move_and_click(closest['x'], closest['y'], 6, 6)
-            general_utils.click_off_screen(click=False)
+            closest = osrs.util.find_closest_npc(data['oreVeins'])
+            osrs.move.move_and_click(closest['x'], closest['y'], 6, 6)
+            osrs.move.click_off_screen(click=False)
             not_mining_count = 0
         elif not data['isMining']:
             not_mining_count += 1

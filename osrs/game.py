@@ -1,0 +1,178 @@
+import datetime
+import random
+import time
+
+import osrs.server as server
+import osrs.clock as clock
+import secret_keepr
+import osrs.keeb as keeb
+import osrs.move as move
+import osrs.dev as dev
+
+config = dev.load_yaml()
+
+
+def login_v2(password, port='56799'):
+    keeb.keyboard.press(keeb.Key.enter)
+    keeb.keyboard.release(keeb.Key.enter)
+    clock.sleep_one_tick()
+    p = secret_keepr.get_config(password)
+    keeb.keyboard.type(p)
+    clock.sleep_one_tick()
+    keeb.keyboard.press(keeb.Key.enter)
+    keeb.keyboard.release(keeb.Key.enter)
+    coords = {
+        'x': 0,
+        'y': 0
+    }
+
+    while True:
+        q = {
+            'widget': '378,72'
+        }
+        widget = server.query_game_data(q, port)
+        if 'widget' in widget:
+            ctp = widget['widget']
+            # once the click to play button is loaded, it takes a couple seconds to get accurate coords
+            # due to some underlying game mechanics (i guess)
+            if ctp['x'] == coords['x'] and ctp['y'] == coords['y']:
+                move.move_and_click(ctp['x'], ctp['y'], 15, 15)
+                break
+            else:
+                coords['x'] = ctp['x']
+                coords['y'] = ctp['y']
+        clock.random_sleep(0.6, 0.7)
+
+
+def logout(port='56799'):
+    LOGOUT_ICON = {
+        'widget': '161,52'
+    }
+    LOGOUT_BUTTON = {
+        'widget': '182,12'
+    }
+    WORLD_SWITCHER_LOGOUT = {
+        'widget': '69,23'
+    }
+    icon = server.query_game_data(LOGOUT_ICON, port)
+    move.move_and_click(icon['widget']['x'], icon['widget']['y'], 10, 10)
+    clock.random_sleep(1, 1.4)
+    logout_button = server.query_game_data(LOGOUT_BUTTON, port)
+    if 'widget' in logout_button:
+        move.move_and_click(logout_button['widget']['x'], logout_button['widget']['y'], 10, 10)
+        clock.random_sleep(0.3, 0.4)
+    else:
+        logout_button = server.query_game_data(WORLD_SWITCHER_LOGOUT, port)
+        move.move_and_click(logout_button['widget']['x'], logout_button['widget']['y'], 10, 10)
+        clock.random_sleep(0.3, 0.4)
+
+
+def break_manager(start_time, min_session, max_session, min_rest, max_rest, password, post_login_steps=None, port='56799', pre_logout_steps=None):
+    take_break = clock.break_every_hour(random.randint(min_session, max_session), start_time)
+    if take_break:
+        print('Taking extended break, signing off.')
+        if pre_logout_steps:
+            pre_logout_steps()
+        clock.random_sleep(20, 30)
+        logout(port)
+        break_start_time = datetime.datetime.now()
+        while (datetime.datetime.now() - break_start_time).total_seconds() < random.randint(min_rest, max_rest):
+            print(
+                'Break has currently run for: ',
+                (datetime.datetime.now() - break_start_time).total_seconds(),
+                ' and can run for up to: ',
+                max_rest
+            )
+            time.sleep(30)
+            move.click_off_screen(500, 510, 500, 510)
+        login_v2(password, port)
+        clock.random_sleep(0.4, 0.5)
+        if post_login_steps:
+            post_login_steps()
+        return datetime.datetime.now()
+    return start_time
+
+
+def multi_break_manager(start_time, min_session, max_session, min_rest, max_rest, acc_configs):
+    take_break = clock.break_every_hour(random.randint(min_session, max_session), start_time)
+    if take_break:
+        print('Taking extended break, signing off. Current time: ', datetime.datetime.now())
+        clock.random_sleep(20, 30)
+        for acc in acc_configs:
+            logout(acc['port'])
+            clock.random_sleep(3, 3.1)
+            if len(acc_configs) > 1:
+                with keeb.keyboard.pressed(keeb.Key.alt):
+                    keeb.keyboard.press(keeb.Key.tab)
+                    keeb.keyboard.release(keeb.Key.tab)
+        break_start_time = datetime.datetime.now()
+        while (datetime.datetime.now() - break_start_time).total_seconds() < random.randint(min_rest, max_rest):
+            print(
+                'Break has currently run for: ',
+                (datetime.datetime.now() - break_start_time).total_seconds(),
+                ' and can run for up to: ',
+                max_rest
+            )
+            time.sleep(30)
+            move.click_off_screen(200, 250, 200, 250)
+        for acc in acc_configs:
+            login_v2(acc['password'], acc['port'])
+            if len(acc_configs) > 1:
+                with keeb.keyboard.pressed(keeb.Key.alt):
+                    keeb.keyboard.press(keeb.Key.tab)
+                    keeb.keyboard.release(keeb.Key.tab)
+            clock.random_sleep(3, 3.1)
+        clock.random_sleep(0.4, 0.5)
+        for acc in acc_configs:
+            if acc['post_login_steps']:
+                acc['post_login_steps']()
+                if len(acc_configs) > 1:
+                    with keeb.keyboard.pressed(keeb.Key.alt):
+                        keeb.keyboard.press(keeb.Key.tab)
+                        keeb.keyboard.release(keeb.Key.tab)
+                clock.random_sleep(3, 3.1)
+        return datetime.datetime.now()
+    return start_time
+
+
+def set_timings(timings, current_time):
+    config['timings']['script_start'] = current_time
+    config['timings']['break_start'] = current_time + datetime.timedelta(
+        minutes=random.randint(timings['min_session'], timings['max_session'])
+    )
+    config['timings']['break_end'] = config['timings']['break_start'] + datetime.timedelta(
+        minutes=random.randint(timings['min_rest'], timings['max_rest'])
+    )
+
+
+# experimental
+def break_manager_v2(script_config):
+    """
+    :param script_config: Object
+    {
+        'intensity': 'high' | 'low',
+        'logout': function(), -- Steps to run before logging out for break
+        'login': function(), -- Steps to run after logging back in
+    }
+    """
+    current_time = datetime.datetime.now()
+    timings = config['{}_intensity_script'.format(script_config['intensity'])]
+    # Initialize timings on script start
+    if not config['timings']['script_start']:
+        set_timings(timings, current_time)
+    # Begin break period
+    if current_time > config['timings']['break_start'] and not config['timings']['on_break']:
+        if script_config.logout:
+            script_config.logout()
+        logout()
+        config['timings']['on_break'] = True
+    elif config['timings']['break_start'] < current_time < config['timings']['break_end'] \
+            and config['timings']['on_break']:
+        move.move_and_click(500, 500, 5, 5)
+        clock.random_sleep(10, 15)
+    elif current_time > config['timings']['break_end'] \
+            and config['timings']['on_break']:
+        login_v2(secret_keepr.get_config(config.password))
+        if script_config.login:
+            script_config.login()
+        set_timings(timings, current_time)

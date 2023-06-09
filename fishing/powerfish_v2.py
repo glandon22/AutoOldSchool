@@ -5,7 +5,8 @@
 # repeat
 import datetime
 import time
-from osrs_utils import general_utils
+
+import osrs
 import math
 
 fish_to_catch_config = {
@@ -76,27 +77,27 @@ def find_spot():
     q = {
         'npcsID': fish_spot_ids[fish_to_catch]
     }
-    data = general_utils.query_game_data(q)
+    data = osrs.server.query_game_data(q)
     if 'npcs' in data:
-        closest = general_utils.find_closest_target(data['npcs'])
-        general_utils.move_and_click(closest['x'], closest['y'], 8, 8)
-        general_utils.random_sleep(0.5, 0.8)
-        general_utils.click_off_screen(click=False)
+        closest = osrs.util.find_closest_target(data['npcs'])
+        osrs.move.move_and_click(closest['x'], closest['y'], 8, 8)
+        osrs.clock.random_sleep(0.5, 0.8)
+        osrs.move.click_off_screen(click=False)
     else:
         print('did not find any fishing spots.')
-        general_utils.random_sleep(2, 3)
+        osrs.clock.random_sleep(2, 3)
 
 
 def main():
     start_time = datetime.datetime.now()
     while True:
-        start_time = general_utils.break_manager(start_time, 53, 58, 423, 551, 'pass_71', False)
+        start_time = osrs.game.break_manager(start_time, 53, 58, 423, 551, 'pass_71', False)
         q = {
             'isFishing': True,
             'inv': True,
             'poseAnimation': True
         }
-        data = general_utils.query_game_data(q)
+        data = osrs.server.query_game_data(q)
         if data["isFishing"]:
             print('Currently fishing.')
             continue
@@ -104,13 +105,13 @@ def main():
             # salmon + trout = 335, 331
             # shrimp anchovie 317, 321
             # leaping trout 11328
-            general_utils.power_drop(data["inv"], [], fish_to_drop_ids[fish_to_catch])
+            osrs.inv.power_drop(data["inv"], [], fish_to_drop_ids[fish_to_catch])
         elif not data["isFishing"] and data['poseAnimation'] == 808:
             print('not fishing')
             # wait a second or two so that I dont click the spot right before it disappears
-            general_utils.random_sleep(1.2, 1.5)
-            general_utils.antiban_rest(40, 75, 100)
+            osrs.clock.random_sleep(1.2, 1.5)
+            osrs.clock.antiban_rest(40, 75, 100)
             find_spot()
-            general_utils.random_sleep(1.2, 1.5)
+            osrs.clock.random_sleep(1.2, 1.5)
 
 main()

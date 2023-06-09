@@ -1,4 +1,5 @@
-from osrs_utils import general_utils
+
+import osrs
 
 
 port = '56800'
@@ -6,10 +7,9 @@ port = '56800'
 
 def board_ship():
     while True:
-        ladder = general_utils.get_game_object('3135,2841,0', '41305', '56800')
+        ladder = osrs.server.get_game_object('3135,2841,0', '41305', '56800')
         if ladder:
-            general_utils.move_and_click(ladder['x'], ladder['y'], 5, 5)
-            general_utils
+            osrs.move.move_and_click(ladder['x'], ladder['y'], 5, 5)
             break
 
 board_ship()

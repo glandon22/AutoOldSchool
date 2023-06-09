@@ -1,5 +1,6 @@
 import datetime
-from osrs_utils import general_utils
+
+import osrs
 from pynput.keyboard import Key, Controller
 
 keyboard = Controller()
@@ -25,34 +26,34 @@ def determine_fish(lvl):
 
 
 def cook_fish_on_fire(port):
-    fire = general_utils.get_game_object('3043,4973,1', '43475', port)
+    fire = osrs.server.get_game_object('3043,4973,1', '43475', port)
     if fire:
-        general_utils.move_and_click(fire['x'], fire['y'], 4, 5)
-    general_utils.random_sleep(.9, 1.2)
+        osrs.move.move_and_click(fire['x'], fire['y'], 4, 5)
+    osrs.clock.random_sleep(.9, 1.2)
     keyboard.press(Key.space)
     keyboard.release(Key.space)
-    general_utils.click_off_screen(300, 1400, 200, 1000, False)
+    osrs.move.click_off_screen(300, 1400, 200, 1000, False)
 
 
 def bank(port):
     q = {
         'npcsID': ['3194']
     }
-    npcs = general_utils.query_game_data(q, port)
+    npcs = osrs.server.query_game_data(q, port)
     if 'npcs' in npcs:
         for npc in npcs['npcs']:
             if npc['id'] == 3194:
-                general_utils.move_and_click(npc['x'], npc['y'], 3, 4)
-                general_utils.wait_for_bank_interface(port)
-                general_utils.bank_dump_inv(port)
-                general_utils.random_sleep(0.9, 1)
-                bank_data = general_utils.get_bank_data(port)
-                cooking_lvl = general_utils.get_skill_data('cooking', port)
+                osrs.move.move_and_click(npc['x'], npc['y'], 3, 4)
+                osrs.bank.wait_for_bank_interface(port)
+                osrs.bank.bank_dump_inv(port)
+                osrs.clock.random_sleep(0.9, 1)
+                bank_data = osrs.bank.get_bank_data(port)
+                cooking_lvl = osrs.server.get_skill_data('cooking', port)
                 fish = determine_fish(cooking_lvl['level'])
-                fish_loc = general_utils.is_item_in_inventory_v2(bank_data, fish)
+                fish_loc = osrs.inv.is_item_in_inventory_v2(bank_data, fish)
                 if fish_loc:
-                    general_utils.move_and_click(fish_loc['x'], fish_loc['y'], 4, 4)
-                    general_utils.random_sleep(0.5, 0.6)
+                    osrs.move.move_and_click(fish_loc['x'], fish_loc['y'], 4, 4)
+                    osrs.clock.random_sleep(0.5, 0.6)
                     keyboard.press(Key.esc)
                     keyboard.release(Key.esc)
                     return True
@@ -66,13 +67,13 @@ def cook_handler(port):
     animation_timeout = datetime.datetime.now()
     cooking = False
     while (datetime.datetime.now() - animation_timeout).total_seconds() < 2 and not cooking:
-        animation = general_utils.get_player_animation(port)
+        animation = osrs.server.get_player_animation(port)
         if animation in cooking_animations:
             cooking = True
     if cooking:
         return print('Currently cooking.')
-    inv = general_utils.get_inv(port)
-    more_fish = general_utils.are_items_in_inventory_v2(inv, possible_raw_fish)
+    inv = osrs.inv.get_inv(port)
+    more_fish = osrs.inv.are_items_in_inventory_v2(inv, possible_raw_fish)
     if not more_fish:
         bank(port)
     return cook_fish_on_fire(port)
