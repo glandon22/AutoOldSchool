@@ -44,6 +44,40 @@ def login_v2(password, port='56799'):
         clock.random_sleep(0.6, 0.7)
 
 
+def login_v3():
+    keeb.keyboard.press(keeb.Key.enter)
+    keeb.keyboard.release(keeb.Key.enter)
+    print('press first enter')
+    clock.sleep_one_tick()
+    keeb.keyboard.type(config['password'])
+    print('type pass')
+    clock.sleep_one_tick()
+    keeb.keyboard.press(keeb.Key.enter)
+    keeb.keyboard.release(keeb.Key.enter)
+    print('press second enter')
+    coords = {
+        'x': 0,
+        'y': 0
+    }
+
+    while True:
+        q = {
+            'widget': '378,72'
+        }
+        widget = server.query_game_data(q, config['port'])
+        if 'widget' in widget:
+            ctp = widget['widget']
+            # once the click to play button is loaded, it takes a couple seconds to get accurate coords
+            # due to some underlying game mechanics (i guess)
+            if ctp['x'] == coords['x'] and ctp['y'] == coords['y']:
+                move.move_and_click(ctp['x'], ctp['y'], 15, 15)
+                break
+            else:
+                coords['x'] = ctp['x']
+                coords['y'] = ctp['y']
+        clock.random_sleep(0.6, 0.7)
+
+
 def logout(port='56799'):
     LOGOUT_ICON = {
         'widget': '161,52'
@@ -65,6 +99,7 @@ def logout(port='56799'):
         logout_button = server.query_game_data(WORLD_SWITCHER_LOGOUT, port)
         move.move_and_click(logout_button['widget']['x'], logout_button['widget']['y'], 10, 10)
         clock.random_sleep(0.3, 0.4)
+    print('logged out')
 
 
 def break_manager(start_time, min_session, max_session, min_rest, max_rest, password, post_login_steps=None, port='56799', pre_logout_steps=None):
@@ -160,10 +195,12 @@ def break_manager_v2(script_config):
     # Initialize timings on script start
     if not config['timings']['script_start']:
         set_timings(timings, current_time)
+        print('current config: {}'.format(config))
     # Begin break period
     if current_time > config['timings']['break_start'] and not config['timings']['on_break']:
-        if script_config.logout:
-            script_config.logout()
+        # Run pre-logout logic supplied by script
+        if script_config['logout']:
+            script_config['logout']()
         logout()
         config['timings']['on_break'] = True
     elif config['timings']['break_start'] < current_time < config['timings']['break_end'] \
@@ -172,7 +209,9 @@ def break_manager_v2(script_config):
         clock.random_sleep(10, 15)
     elif current_time > config['timings']['break_end'] \
             and config['timings']['on_break']:
-        login_v2(secret_keepr.get_config(config.password))
-        if script_config.login:
-            script_config.login()
+        login_v3()
+        # Run post-login logic supplied by script
+        if script_config['login']:
+            script_config['login']()
         set_timings(timings, current_time)
+        config['timings']['on_break'] = False

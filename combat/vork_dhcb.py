@@ -1,8 +1,11 @@
+# TODO
+'''
+need to handle killing vork right as acid barrage comes out. i just walk back and forth for 60 seconds
+loot handler is missing the final loot - have a fix need to verify its working
+randomly clicks into the ocean on arriving into relleka - need to verify i am reay to click on the dock
+'''
 import datetime
-
 from pynput.keyboard import Key
-
-import osrs
 
 import osrs
 
@@ -456,6 +459,7 @@ def kill_vork(anchor_tile, last_super_anti_dose, last_divine_range_dose):
 
 
 def pickup_loot():
+    no_loot_count = 0
     while True:
         loot = osrs.server.get_surrounding_ground_items_any_ids(15, port)
         if loot:
@@ -484,7 +488,54 @@ def pickup_loot():
             else:
                 return
         else:
+            if no_loot_count > 5:
+                return
+            # account for any potential server errors
+            else:
+                no_loot_count += 1
+
+
+def pickup_loot_v2():
+    global loot
+    global parsed_loot
+    global loot_tile_list
+    start_time = datetime.datetime.now()
+    loot = None
+    parsed_loot = []
+    loot_tile_list = set()
+    while True:
+        loot = osrs.server.get_surrounding_ground_items_any_ids(15, port)
+        # couldnt find loot in 30 seconds - bail
+        if (datetime.datetime.now() - start_time).total_seconds() > 30:
             return
+        elif loot:
+            for _, value in loot.items():
+                parsed_loot += value
+            break
+    for item in parsed_loot:
+        loot_tile_list.add('{},{},0'.format(item['x_coord'], item['y_coord']))
+    start_time = datetime.datetime.now()
+    while True:
+        # bail after 30s
+        if (datetime.datetime.now() - start_time).total_seconds() > 30:
+            return
+        for tile in loot_tile_list:
+            while True:
+                osrs.move.spam_click(tile, 0.6)
+                # check if there is additional loot on this tile
+                additional_loot = osrs.server.get_ground_items(tile, '9999999')
+                print(additional_loot)
+                if additional_loot:
+                    curr_inv = osrs.inv.get_inv()
+                    if len(curr_inv) == 28:
+                        kara = osrs.inv.is_item_in_inventory_v2(curr_inv, karambwan_id)
+                        # unable to make any more space in inv
+                        if not kara:
+                            return
+                        osrs.move.move_and_click(kara['x'], kara['y'], 3, 3)
+                else:
+                    break
+        break
 
 
 def have_supplies_for_kill():
@@ -516,6 +567,8 @@ def vork_handler_v2():
             osrs.move.fast_move_and_click(bolt_switch['x'], bolt_switch['y'], 3, 3)
         osrs.player.toggle_prayer_slow('off', port)
         osrs.clock.random_sleep(2, 3)
+    # sleep for a bit to ensure the final loot pile has dropped
+    osrs.clock.random_sleep(4, 4.1)
 
 
 def withdraw_item(item):
@@ -525,7 +578,7 @@ def withdraw_item(item):
         if not item_loc:
             exit('unable to find {}.'.format(item['id']))
         if item['all']:
-            osrs.move.right_click_menu_select(item_loc, False, port, '', 'Withdraw-All')
+            osrs.move.right_click_menu_select(item_loc, False, port, '', 'Withdraw-All-but-1')
         else:
             osrs.move.move_and_click(item_loc['x'], item_loc['y'], 3, 3)
     else:
@@ -533,7 +586,7 @@ def withdraw_item(item):
         if not item_loc:
             exit('unable to find {}.'.format(item['id']))
         if item['all']:
-            osrs.move.right_click_menu_select(item_loc, False, port, '', 'Withdraw-All')
+            osrs.move.right_click_menu_select(item_loc, False, port, '', 'Withdraw-All-but-1')
         else:
             osrs.move.move_and_click(item_loc['x'], item_loc['y'], 3, 3)
 
@@ -672,7 +725,8 @@ def vork_loop():
         take_boat_to_ungael()
         enter_vorks_layer()
         vork_handler_v2()
-        pickup_loot()
+        # might miss the second loot pile - monitor
+        pickup_loot_v2()
         tele_to_ferox()
         drink_from_pool_of_refreshment()
 

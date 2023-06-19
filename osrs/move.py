@@ -1,4 +1,5 @@
 import datetime
+import math
 import platform
 import random
 import time
@@ -10,7 +11,7 @@ from scipy import interpolate
 import osrs.dev as dev
 import osrs.server as server
 import osrs.clock as clock
-
+config = dev.load_yaml()
 
 def bezier_movement(x_min, y_min, x_max, y_max):
     if platform.system() == 'Darwin':
@@ -260,6 +261,8 @@ def spam_click(tile, seconds, port='56799'):
 
 # this doesnt work on my mac bc of the different screen resolutions...
 def right_click_menu_select(item, entry, port='56799', entry_string=None, entry_action=None):
+    if platform.system() == 'Darwin':
+        return mac_right_click_menu_select(item, entry_action)
     move_and_click(item['x'], item['y'], 3, 3, 'right')
     clock.random_sleep(0.2, 0.3)
     q = {
@@ -270,14 +273,43 @@ def right_click_menu_select(item, entry, port='56799', entry_string=None, entry_
         curr_pos = pyautogui.position()
         if entry:
             additional_pixels = 20 + (entry - 1) * 15 + 3
+            if platform.system() == 'Darwin':
+                additional_pixels = math.floor(additional_pixels / 2)
             move_and_click(curr_pos[0], curr_pos[1] + additional_pixels, 7, 1)
         elif entry_action:
             for i in range(len(data['menuEntries']['items'])):
                 if entry_action in data['menuEntries']['items'][i]:
                     additional_pixels = (len(data['menuEntries']['items']) - 1 - i) * 15 + 25
+                    if platform.system() == 'Darwin':
+                        additional_pixels = 19 + (len(data['menuEntries']['items']) - 1 - i) * 15
+                    print(additional_pixels)
                     move_and_click(curr_pos[0], curr_pos[1] + additional_pixels, 7, 1)
                     #random_sleep(0.5, 0.6)
                     return
+
+
+# this doesnt work
+def mac_right_click_menu_select(item, entry_action=None):
+    move_and_click(item['x'], item['y'], 3, 3, 'right')
+    clock.random_sleep(0.2, 0.3)
+    q = {
+        'getMenuEntries': True
+    }
+    data = server.query_game_data(q, config['port'])
+    if 'menuEntries' in data:
+        curr_pos = pyautogui.position()
+        print(curr_pos, pyautogui.position())
+        reversed_entries = list(reversed(data['menuEntries']['items']))
+        for i, item in enumerate(reversed_entries):
+            if entry_action in item:
+                # Choose Option menu part is 19px, add a few more to get into the option i want
+                additional_pixels = 19 + ((i + 1) * 15) - 44
+                print('apx', additional_pixels)
+                move_and_click(curr_pos[0], curr_pos[1] + additional_pixels, 0, 0)
+                print(pyautogui.position())
+                # random_sleep(0.5, 0.6)
+                return
+
 
 
 def move_around_center_screen(x1=800, y1=400, x2=1000, y2=600):

@@ -1,6 +1,6 @@
 import datetime
 
-
+import pyautogui
 from pynput.keyboard import Key, Controller
 import osrs
 keyboard = Controller()
@@ -18,11 +18,26 @@ attack the monster i just killed, and if all the npcs i want to kill have the sa
 ***************************************************************************************************************
 ***************************************************************************************************************
 '''
+
+
+def pre_logout():
+    while True:
+        interacting = osrs.server.get_interacting(port)
+        if not interacting:
+            osrs.clock.random_sleep(15, 18)
+            return
+
+
+script_config = {
+    'intensity': 'low',
+    'logout': pre_logout,
+    'login': None
+}
 def main():
     start_time = datetime.datetime.now()
     pot_time = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
-        start_time = osrs.game.break_manager(start_time, 53, 59, 423, 551, 'pass_70', False)
+        osrs.game.break_manager_v2(script_config)
         q = {
             'interactingWith': True,
             'npcsToKill': [monster_to_kill],
@@ -66,3 +81,5 @@ def main():
             osrs.move.wait_until_stationary(port)
 
 main()
+'''inv = osrs.inv.get_inv()
+osrs.move.mac_right_click_menu_select(inv[0], 'Drop')'''

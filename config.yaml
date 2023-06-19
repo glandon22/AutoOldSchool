@@ -8,7 +8,7 @@ low_intensity_script:
   max_session: 59
   min_rest: 7
   min_session: 53
-password: pass_70
+password: 'HTfuECgWtQG4rRjhK38F'
 port: '56799'
 timings:
   break_end: null

@@ -5,7 +5,7 @@ import time
 
 def random_sleep(min_time, max_time):
     duration = round(random.uniform(min_time, max_time), 6)
-    print('Sleeping for ', duration)
+    #print('Sleeping for ', duration)
     time.sleep(duration)
 
 
