@@ -1,8 +1,5 @@
 # TODO
 '''
-need to handle killing vork right as acid barrage comes out. i just walk back and forth for 60 seconds
-loot handler is missing the final loot - have a fix need to verify its working
-randomly clicks into the ocean on arriving into relleka - need to verify i am reay to click on the dock
 '''
 import datetime
 from pynput.keyboard import Key
@@ -270,7 +267,7 @@ def food_handler(required, emergency_handler):
             osrs.move.fast_move_and_click(food['x'], food['y'], 3, 3)
 
 
-def avoid_acid_pools_v6(anchor_tile, inv, orb):
+def avoid_acid_pools_v7(anchor_tile, inv, orb):
     # dont end this function until acid pools have landed - then gone away!
     acid_pools_seen = False
     # Step back to the anchor tile to ensure that i am going left to right on the safe tiles
@@ -296,8 +293,13 @@ def avoid_acid_pools_v6(anchor_tile, inv, orb):
                 direction = 1
 
         acid_pools = osrs.server.get_surrounding_game_objects(6, ['32000'], port)
-        if not acid_pools and acid_pools_seen:
-            break
+        if not acid_pools:
+            if acid_pools_seen:
+                break
+            # only call to check if vork is still alive to decrease latency
+            vork = osrs.server.get_npc_by_id('8061')
+            if not vork:
+                break
         elif acid_pools:
             acid_pools_seen = True
         super_restore_handler(False, None)
@@ -401,7 +403,7 @@ def kill_vork(anchor_tile, last_super_anti_dose, last_divine_range_dose):
             continue
             # vorkath is using the acid pools special attack
         if acid_pools or 1483 in projectiles:
-            avoid_acid_pools_v6(anchor_tile, inv, prayer_orb)
+            avoid_acid_pools_v7(anchor_tile, inv, prayer_orb)
             continue
         if 'boostedLevel' in hp and hp['boostedLevel'] < 50:
             eat_manta(inv)
@@ -513,6 +515,7 @@ def pickup_loot_v2():
                 parsed_loot += value
             break
     for item in parsed_loot:
+        print('lll', item)
         loot_tile_list.add('{},{},0'.format(item['x_coord'], item['y_coord']))
     start_time = datetime.datetime.now()
     while True:
@@ -675,12 +678,46 @@ def travel_to_rellekka():
 
 
 def take_boat_to_ungael():
+    q = {
+        'tiles': ['2640,3694,0']
+    }
     while True:
-        osrs.move.run_towards_square_v2({'x': 2641, 'y': 3695, 'z': 0}, port)
+        data = osrs.server.query_game_data(q)
+        if data['tiles'] and '264036940' in data['tiles']:
+            osrs.move.move_and_click(data['tiles']['264036940']['x'], data['tiles']['264036940']['y'], 3, 3)
+            break
+
+    while True:
         # 10405 torfinn
         torfinn = osrs.server.get_npc_by_id('10405', port)
         if torfinn:
             osrs.move.move_and_click(torfinn['x'], torfinn['y'], 3, 3)
+            start_time = datetime.datetime.now()
+            while True:
+                loc = osrs.server.get_world_location(port)
+                if loc and loc['y'] > 4000:
+                    osrs.clock.random_sleep(1.5, 2)
+                    return
+                elif (datetime.datetime.now() - start_time).total_seconds() > 9:
+                    break
+
+
+def take_boat_to_ungael_v2():
+    q = {
+        'tiles': ['2640,3694,0']
+    }
+
+    # wait until relleka is loaded on screen!
+    while True:
+        data = osrs.server.query_game_data(q)
+        if data['tiles'] and '264036940' in data['tiles']:
+            break
+
+    while True:
+        # 10405 torfinn
+        boat = osrs.server.get_game_object('2638,3698,0', '29917', port)
+        if boat:
+            osrs.move.move_and_click(boat['x'], boat['y'], 3, 3)
             start_time = datetime.datetime.now()
             while True:
                 loc = osrs.server.get_world_location(port)
@@ -713,21 +750,47 @@ def enter_vorks_layer():
                 return
 
 
+def enter_vorks_layer_v2():
+    while True:
+        ice = osrs.server.get_game_object('2272,4053,0', '31990', port)
+        if ice:
+            osrs.move.move_and_click(ice['x'], ice['y'], 3, 3)
+            start_time = datetime.datetime.now()
+            while True:
+                loc = osrs.server.get_world_location(port)
+                if loc and loc['x'] > 5000:
+                    osrs.clock.random_sleep(1.5, 2)
+                    return
+                elif (datetime.datetime.now() - start_time).total_seconds() > 9:
+                    break
+        # may have clicked the ice patch already
+        else:
+            loc = osrs.server.get_world_location(port)
+            if loc and loc['x'] > 5000:
+                osrs.clock.random_sleep(1.5, 2)
+                return
+
+
+script_config = {
+    'intensity': 'low'
+}
+
 # start at ferox w gear on
 def vork_loop():
     start_time = datetime.datetime.now()
     while True:
-        start_time = osrs.game.break_manager(start_time, 51, 54, 423, 551, 'pass_70', False)
+        osrs.game.break_manager_v2(script_config)
         bank_at_ferox()
         tele_home()
         enter_waterbirth_portal()
         travel_to_rellekka()
-        take_boat_to_ungael()
-        enter_vorks_layer()
+        take_boat_to_ungael_v2()
+        enter_vorks_layer_v2()
         vork_handler_v2()
         # might miss the second loot pile - monitor
         pickup_loot_v2()
         tele_to_ferox()
         drink_from_pool_of_refreshment()
+
 
 vork_loop()

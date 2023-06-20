@@ -196,6 +196,8 @@ def break_manager_v2(script_config):
     if not config['timings']['script_start']:
         set_timings(timings, current_time)
         print('current config: {}'.format(config))
+
+
     # Begin break period
     if current_time > config['timings']['break_start'] and not config['timings']['on_break']:
         # Run pre-logout logic supplied by script
@@ -215,3 +217,41 @@ def break_manager_v2(script_config):
             script_config['login']()
         set_timings(timings, current_time)
         config['timings']['on_break'] = False
+
+
+# experimental
+def break_manager_v3(script_config):
+    """
+    :param script_config: Object
+    {
+        'intensity': 'high' | 'low',
+        'logout': function(), -- Steps to run before logging out for break
+        'login': function(), -- Steps to run after logging back in
+    }
+    """
+    current_time = datetime.datetime.now()
+    timings = config['{}_intensity_script'.format(script_config['intensity'])]
+    # Initialize timings on script start
+    if not config['timings']['script_start']:
+        set_timings(timings, current_time)
+        print('current config: {}'.format(config))
+
+    # Begin break period
+    if current_time > config['timings']['break_start']:
+        # Run pre-logout logic supplied by script
+        if script_config['logout']:
+            script_config['logout']()
+        logout()
+        while True:
+            if datetime.datetime.now() < config['timings']['break_end']:
+                move.move_and_click(500, 500, 5, 5)
+                clock.random_sleep(10, 15)
+            else:
+                break
+
+        login_v3()
+
+        # Run post-login logic supplied by script
+        if script_config['login']:
+            script_config['login']()
+        set_timings(timings, current_time)

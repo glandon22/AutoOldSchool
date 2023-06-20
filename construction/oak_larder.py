@@ -100,20 +100,23 @@ def enter_home():
         if loc and 'x' in loc and loc['x'] > 4000:
             break
 
+script_config = {
+    'intensity': 'high',
+    'logout': False,
+    'login': False
+}
+
+
 def main():
-    start_time = datetime.datetime.now()
     osrs.clock.random_sleep(3, 3.1)
     while True:
-        start_time = osrs.game.break_manager(start_time, 49, 54, 432, 673, 'pass_70', False, port)
-        osrs.clock.antiban_rest(45, 100, 300)
         build_until_out()
-        osrs.clock.antiban_rest(45, 100, 300)
         leave_house()
-        osrs.clock.antiban_rest(45, 100, 300)
+        osrs.game.break_manager_v3(script_config)
         click_phials()
-        osrs.clock.antiban_rest(45, 100, 300)
         enter_home()
         osrs.clock.random_sleep(3, 5)
+
 
 osrs.clock.random_sleep(2, 3)
 main()

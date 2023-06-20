@@ -168,7 +168,7 @@ def get_npcs_by_id(npc_id, port):
     return False
 
 
-def get_npc_by_id(npc_id, port):
+def get_npc_by_id(npc_id, port='56799'):
     q = {
         'npcsID': [npc_id]
     }
