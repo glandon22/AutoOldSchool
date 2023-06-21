@@ -11,6 +11,18 @@ course_start = {
 }
 
 
+# wait a few seconds before logging out in case i am in an obstacle
+def logout():
+    osrs.clock.random_sleep(5, 6)
+
+
+script_config = {
+    'intensity': 'high',
+    'logout': logout,
+    'login': False
+}
+
+
 def click_allowed(lc, cd, step):
     print('lc', lc)
     # this is not the last clicked step
@@ -181,9 +193,8 @@ def main():
         'step': 0,
         'ts': datetime.datetime.now()
     }
-    start_time = datetime.datetime.now()
     while True:
-        start_time = osrs.game.break_manager(start_time, 43, 48, 423, 551, 'julenth', False)
+        osrs.game.break_manager_v3(script_config)
         osrs.move.wait_until_stationary(port)
         drink_stam()
         drink_wine()

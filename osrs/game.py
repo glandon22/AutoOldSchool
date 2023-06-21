@@ -97,7 +97,7 @@ def logout(port='56799'):
         clock.random_sleep(0.3, 0.4)
     else:
         logout_button = server.query_game_data(WORLD_SWITCHER_LOGOUT, port)
-        move.move_and_click(logout_button['widget']['x'], logout_button['widget']['y'], 10, 10)
+        move.move_and_click(logout_button['widget']['x'], logout_button['widget']['y'], 3, 3)
         clock.random_sleep(0.3, 0.4)
     print('logged out')
 

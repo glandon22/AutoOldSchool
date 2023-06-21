@@ -29,7 +29,7 @@ def main():
             'playerWorldPoint': True
         }
         data = osrs.server.query_game_data(q, port)
-        absorption_amt = osrs.server.get_varbit_value('3956', port)
+        absorption_amt = osrs.server.get_varbit_value('3956')
         if 'playerWorldPoint' in data and data['playerWorldPoint']['z'] < 3:
             script_start = osrs.game.break_manager(script_start, 30, 35, 320, 508, 'pass_71', False, port)
             print('Dead, re supplying.')
@@ -53,7 +53,7 @@ def main():
                         break
                     osrs.move.move_and_click(food['x'], food['y'], 4, 4)
                     osrs.clock.random_sleep(0.2, 0.3)
-                    absorption_amt = osrs.server.get_varbit_value('3956', port)
+                    absorption_amt = osrs.server.get_varbit_value('3956')
             osrs.move.click_off_screen(200, 1230, 200, 800, False)
         elif (datetime.datetime.now() - start_time).total_seconds() > 900:
             print('Potting up.')

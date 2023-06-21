@@ -96,7 +96,7 @@ def collect_bars():
     osrs.clock.random_sleep(0.5, 0.6)
     osrs.move.wait_until_stationary(port)
     while True:
-        mith_bars_in_dispenser = osrs.server.get_varbit_value('944', port)
+        mith_bars_in_dispenser = osrs.server.get_varbit_value('944')
         if mith_bars_in_dispenser == 27:
             osrs.move.run_to_loc(['1940,4963,0'], port)
             while True:

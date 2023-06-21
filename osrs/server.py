@@ -1,6 +1,8 @@
 import requests
 import osrs.util as util
+import osrs.dev as dev
 
+config = dev.load_yaml()
 session = requests.Session()
 establish_conn = {
     'helloWorld': True
@@ -55,6 +57,17 @@ def get_world_location(port='56799'):
         data = query_game_data(q, port)
         if 'playerWorldPoint' in data:
             return data['playerWorldPoint']
+
+
+def get_nearby_players():
+
+    q = {
+        'players': True
+    }
+    while True:
+        data = query_game_data(q, config['port'])
+        if 'players' in data:
+            return data['players']
 
 
 def get_ground_items_in_coords(x_min, x_max, y_min, y_max, z, items, port='56799'):
@@ -138,11 +151,11 @@ def have_leveled_up(port='56799'):
     return False
 
 
-def get_varbit_value(varbit, port):
+def get_varbit_value(varbit):
     q = {
         'varBit': varbit
     }
-    vb = query_game_data(q, port)
+    vb = query_game_data(q, config['port'])
     if 'varBit' in vb:
         return vb['varBit']
     return False

@@ -195,7 +195,7 @@ def run_towards_square(destination, port):
     run_to_loc(steps)
 
 
-def run_towards_square_v2(destination, port):
+def run_towards_square_v2(destination, port='56799'):
     """
 
     :param destination: obj {x: 2341, y: 687, z:0}
@@ -286,9 +286,26 @@ def right_click_menu_select(item, entry, port='56799', entry_string=None, entry_
                     move_and_click(curr_pos[0], curr_pos[1] + additional_pixels, 7, 1)
                     #random_sleep(0.5, 0.6)
                     return
+                return
 
 
-# this doesnt work
+def right_click_menu_select_v2(item, entry_action):
+    move_and_click(item['x'], item['y'], 3, 3, 'right')
+    clock.random_sleep(0.2, 0.3)
+    q = {
+        'getMenuEntries': True
+    }
+    data = server.query_game_data(q, config['port'])
+    if 'menuEntries' in data:
+        curr_pos = pyautogui.position()
+        reversed_entries = list(reversed(data['menuEntries']['items']))
+        for i, item in enumerate(reversed_entries):
+            if entry_action in item:
+                additional_pixels = 19 + (len(data['menuEntries']['items']) - 1 - i) * 15
+                move_and_click(curr_pos[0], curr_pos[1] + additional_pixels, 0, 0)
+                return
+
+
 def mac_right_click_menu_select(item, entry_action=None):
     move_and_click(item['x'], item['y'], 3, 3, 'right')
     clock.random_sleep(0.2, 0.3)
