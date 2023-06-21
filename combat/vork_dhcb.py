@@ -1,5 +1,8 @@
 # TODO
 '''
+emergency tele gets stuck teleing over and over again
+loot a until gone or inv full after each kill
+eat and sip restore to full after each kill (other than final kill)
 '''
 import datetime
 from pynput.keyboard import Key
@@ -395,20 +398,24 @@ def kill_vork(anchor_tile, last_super_anti_dose, last_divine_range_dose):
         world_point = data['playerWorldPoint']
 
         if 1481 in projectiles:
-            # v3 is still very experimental
+            print('fire ball incoming.')
             move_tiles_to_avoid_fireball_v3(anchor_tile, world_point)
             continue
         if 395 in projectiles or len(zombie_spawn) > 0:
+            print('zombie spawn special.')
             kill_spawn(inv, prayer_orb)
             continue
             # vorkath is using the acid pools special attack
         if acid_pools or 1483 in projectiles:
+            print('acid pools spec starting.')
             avoid_acid_pools_v7(anchor_tile, inv, prayer_orb)
             continue
         if 'boostedLevel' in hp and hp['boostedLevel'] < 50:
+            print('hp under 50 - eating')
             eat_manta(inv)
             continue
         if prayer_skill_data and prayer_skill_data['boostedLevel'] < 20:
+            print('prayer under 20 - sipping restore.')
             super_restore = osrs.inv.are_items_in_inventory_v2(inv, super_restore_ids)
             # I am low on prayer with no restores - bail
             if not super_restore:
@@ -418,12 +425,14 @@ def kill_vork(anchor_tile, last_super_anti_dose, last_divine_range_dose):
             osrs.clock.sleep_one_tick()
         # prayer disabled
         if prayer_orb and prayer_orb['spriteID'] == 1063:
+            print('re enabling prayer')
             osrs.move.fast_move_and_click(prayer_orb['x'], prayer_orb['y'], 2, 2)
             # Wait for the click to register, otherwise it just clicks over and over again
             osrs.clock.sleep_one_tick()
             continue
         # I am venomed, drink antidote
         if health_orb and health_orb['spriteID'] == 1102:
+            print('drinking anti venom')
             drink_anti_venom(inv)
             continue
         if not interacting and vork:
@@ -431,9 +440,11 @@ def kill_vork(anchor_tile, last_super_anti_dose, last_divine_range_dose):
                 print('killed vork')
                 osrs.player.toggle_prayer('off', port)
                 return {'anti': last_super_anti_dose, 'divine': last_divine_range_dose}
+            print('attacking vork')
             osrs.move.move_and_click(vork[0]['x'], vork[0]['y'], 3, 3)
             continue
         if (datetime.datetime.now() - last_super_anti_dose).total_seconds() > 355:
+            print('drinking super anti fire')
             super_anti_fire = osrs.inv.are_items_in_inventory_v2(inv, extended_super_anti_ids)
             if not super_anti_fire:
                 tele_home()
@@ -441,13 +452,15 @@ def kill_vork(anchor_tile, last_super_anti_dose, last_divine_range_dose):
             last_super_anti_dose = datetime.datetime.now()
             continue
         if (datetime.datetime.now() - last_divine_range_dose).total_seconds() > 295:
+            print('repotting divine range')
             divine_range = osrs.inv.are_items_in_inventory_v2(inv, divine_ranging_ids)
             if not divine_range:
                 print('OUT OF RANGING POTS!')
             osrs.move.fast_move_and_click(divine_range['x'], divine_range['y'], 3, 3)
             last_divine_range_dose = datetime.datetime.now()
             continue
-        if vork and vork[0]['health'] / vork[0]['scale'] < .33:
+        if vork and vork[0]['health'] / vork[0]['scale'] < .35:
+            print('vork below 30% health - switching bolts')
             vork_low_health = True
             bolt_switch = osrs.inv.is_item_in_inventory_v2(inv, diamond_dragon_bolts_e_id)
             if bolt_switch:
@@ -456,45 +469,9 @@ def kill_vork(anchor_tile, last_super_anti_dose, last_divine_range_dose):
                 osrs.clock.random_sleep(0.8, 0.9)
             continue
         if (vork and vork[0]['health'] == 0) or (not vork and vork_low_health):
+            print('killed vork')
             osrs.player.toggle_prayer('off', port)
             return {'anti': last_super_anti_dose, 'divine': last_divine_range_dose}
-
-
-def pickup_loot():
-    no_loot_count = 0
-    while True:
-        loot = osrs.server.get_surrounding_ground_items_any_ids(15, port)
-        if loot:
-            parsed_loot = []
-            for _, value in loot.items():
-                parsed_loot += value
-            if len(parsed_loot) > 0:
-                inv = osrs.inv.get_inv()
-                if len(inv) == 28:
-                    kara = osrs.inv.is_item_in_inventory_v2(inv, karambwan_id)
-                    # inventory is full and i dont have anymore karambawns to eat, tele out
-                    if not kara:
-                        print('Inventory full, leaving the following loot on the ground: {}'.format(parsed_loot))
-                        return
-                    osrs.move.move_and_click(kara['x'], kara['y'], 3, 3)
-                    osrs.clock.random_sleep(1, 2)
-                curr_inv = osrs.inv.get_inv()
-                print(parsed_loot)
-                osrs.move.move_and_click(parsed_loot[0]['x'], parsed_loot[0]['y'], 3, 3)
-                start_time = datetime.datetime.now()
-                while True:
-                    inv = osrs.inv.get_inv()
-                    if curr_inv != inv or (datetime.datetime.now() - start_time).total_seconds() > 7:
-                        osrs.clock.sleep_one_tick()
-                        break
-            else:
-                return
-        else:
-            if no_loot_count > 5:
-                return
-            # account for any potential server errors
-            else:
-                no_loot_count += 1
 
 
 def pickup_loot_v2():
@@ -627,6 +604,7 @@ def bank_at_ferox():
 
 
 def tele_home():
+    print('teleing home')
     while True:
         osrs.keeb.keyboard.press(Key.f6)
         osrs.keeb.keyboard.release(Key.f6)
@@ -644,6 +622,13 @@ def tele_home():
                     return
                 elif (datetime.datetime.now() - start_time).total_seconds() > 15:
                     break
+
+
+def am_in_house():
+    portal = osrs.server.get_surrounding_game_objects(5, ['4525'])
+    if portal and '4525' in portal:
+        return True
+    return False
 
 
 def enter_waterbirth_portal():
@@ -677,31 +662,6 @@ def travel_to_rellekka():
                     break
 
 
-def take_boat_to_ungael():
-    q = {
-        'tiles': ['2640,3694,0']
-    }
-    while True:
-        data = osrs.server.query_game_data(q)
-        if data['tiles'] and '264036940' in data['tiles']:
-            osrs.move.move_and_click(data['tiles']['264036940']['x'], data['tiles']['264036940']['y'], 3, 3)
-            break
-
-    while True:
-        # 10405 torfinn
-        torfinn = osrs.server.get_npc_by_id('10405', port)
-        if torfinn:
-            osrs.move.move_and_click(torfinn['x'], torfinn['y'], 3, 3)
-            start_time = datetime.datetime.now()
-            while True:
-                loc = osrs.server.get_world_location(port)
-                if loc and loc['y'] > 4000:
-                    osrs.clock.random_sleep(1.5, 2)
-                    return
-                elif (datetime.datetime.now() - start_time).total_seconds() > 9:
-                    break
-
-
 def take_boat_to_ungael_v2():
     q = {
         'tiles': ['2640,3694,0']
@@ -728,28 +688,6 @@ def take_boat_to_ungael_v2():
                     break
 
 
-def enter_vorks_layer():
-    while True:
-        osrs.move.run_towards_square_v2({'x': 2272, 'y': 4053, 'z': 0}, port)
-        ice = osrs.server.get_game_object('2272,4053,0', '31990', port)
-        if ice:
-            osrs.move.move_and_click(ice['x'], ice['y'], 3, 3)
-            start_time = datetime.datetime.now()
-            while True:
-                loc = osrs.server.get_world_location(port)
-                if loc and loc['x'] > 5000:
-                    osrs.clock.random_sleep(1.5, 2)
-                    return
-                elif (datetime.datetime.now() - start_time).total_seconds() > 9:
-                    break
-        # may have clicked the ice patch already
-        else:
-            loc = osrs.server.get_world_location(port)
-            if loc and loc['x'] > 5000:
-                osrs.clock.random_sleep(1.5, 2)
-                return
-
-
 def enter_vorks_layer_v2():
     while True:
         ice = osrs.server.get_game_object('2272,4053,0', '31990', port)
@@ -772,14 +710,16 @@ def enter_vorks_layer_v2():
 
 
 script_config = {
-    'intensity': 'low'
+    'intensity': 'high',
+    'logout': False,
+    'login': False
 }
+
 
 # start at ferox w gear on
 def vork_loop():
-    start_time = datetime.datetime.now()
     while True:
-        osrs.game.break_manager_v2(script_config)
+        osrs.game.break_manager_v3(script_config)
         bank_at_ferox()
         tele_home()
         enter_waterbirth_portal()
@@ -787,7 +727,6 @@ def vork_loop():
         take_boat_to_ungael_v2()
         enter_vorks_layer_v2()
         vork_handler_v2()
-        # might miss the second loot pile - monitor
         pickup_loot_v2()
         tele_to_ferox()
         drink_from_pool_of_refreshment()
