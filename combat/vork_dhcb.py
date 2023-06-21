@@ -374,7 +374,7 @@ def kill_vork(anchor_tile, last_super_anti_dose, last_divine_range_dose):
         }
 
         tiles = osrs.util.generate_surrounding_tiles(5, port)
-        items = ['32000']
+        items = ['32000', '4525']
         for tile in tiles:
             item_to_find = '20997'
             if len(items) > 0:
@@ -393,7 +393,9 @@ def kill_vork(anchor_tile, last_super_anti_dose, last_divine_range_dose):
         inv = 'inv' in data and data['inv']
         hp = 'skills' in data and 'hitpoints' in data['skills'] and data['skills']['hitpoints']
         prayer_skill_data = 'skills' in data and 'prayer' in data['skills'] and data['skills']['prayer']
-        acid_pools = 'gameObjects' in data and data['gameObjects']
+        acid_pools = 'gameObjects' in data and '32000' in data['gameObjects'] and data['gameObjects']['32000']
+        # look for this to see if i had to emergency tele out
+        house_portal = 'gameObjects' in data and '4525' in data['gameObjects'] and data['gameObjects']['4525']
         health_orb = osrs.server.get_widget('160,10', port)
         world_point = data['playerWorldPoint']
 
@@ -410,6 +412,9 @@ def kill_vork(anchor_tile, last_super_anti_dose, last_divine_range_dose):
             print('acid pools spec starting.')
             avoid_acid_pools_v7(anchor_tile, inv, prayer_orb)
             continue
+        # i teled out
+        if house_portal:
+            return {}
         if 'boostedLevel' in hp and hp['boostedLevel'] < 50:
             print('hp under 50 - eating')
             eat_manta(inv)
@@ -420,7 +425,7 @@ def kill_vork(anchor_tile, last_super_anti_dose, last_divine_range_dose):
             # I am low on prayer with no restores - bail
             if not super_restore:
                 tele_home()
-                return print('RAN OUT OF SUPER RESTORES: {}'.format(inv))
+                continue
             osrs.move.fast_move_and_click(super_restore['x'], super_restore['y'], 3, 3)
             osrs.clock.sleep_one_tick()
         # prayer disabled
@@ -539,6 +544,9 @@ def vork_handler_v2():
         if i > 0:
             begin_vork_fight(anchor_tile)
         doses = kill_vork(anchor_tile, last_super_anti_dose, last_divine_range_dose)
+        # had to emergency tele out
+        if not bool(doses):
+            return
         last_super_anti_dose = doses['anti']
         last_divine_range_dose = doses['divine']
         inv = osrs.inv.get_inv()
@@ -622,13 +630,6 @@ def tele_home():
                     return
                 elif (datetime.datetime.now() - start_time).total_seconds() > 15:
                     break
-
-
-def am_in_house():
-    portal = osrs.server.get_surrounding_game_objects(5, ['4525'])
-    if portal and '4525' in portal:
-        return True
-    return False
 
 
 def enter_waterbirth_portal():
