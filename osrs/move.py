@@ -286,7 +286,6 @@ def right_click_menu_select(item, entry, port='56799', entry_string=None, entry_
                     move_and_click(curr_pos[0], curr_pos[1] + additional_pixels, 7, 1)
                     #random_sleep(0.5, 0.6)
                     return
-                return
 
 
 def right_click_menu_select_v2(item, entry_action):
