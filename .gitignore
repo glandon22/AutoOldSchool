@@ -11,3 +11,4 @@ config.py
 *__pycache__*
 *.pyc
 *.yaml
+*.idea*
