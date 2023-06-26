@@ -68,6 +68,7 @@ extended_super_anti_ids = [
 ]
 
 law_rune_id = 563
+rune_pouch_id = 12791
 dust_rune_id = 4696
 chaos_rune_id = 562
 varrock_tele_tab = 8007
@@ -86,9 +87,7 @@ required_items = [
     {'id': super_restore_ids[:2], 'all': False},
     {'id': extended_super_anti_ids[:3], 'all': False},
     {'id': ring_of_dueling_ids, 'all': False},
-    {'id': law_rune_id, 'all': True},
-    {'id': chaos_rune_id, 'all': True},
-    {'id': dust_rune_id, 'all': True},
+    {'id': rune_pouch_id, 'all': False},
     {'id': ruby_dragon_bolt_e, 'all': True},
     {'id': diamond_dragon_bolts_e_id, 'all': True},
     {'id': slay_staff_id, 'all': False},
@@ -256,6 +255,7 @@ def super_restore_handler(required, emergency_handler):
             emergency_handler()
         elif super_restore:
             osrs.move.fast_move_and_click(super_restore['x'], super_restore['y'], 3, 3)
+            osrs.clock.random_sleep(0.2, 0.3)
 
 
 def food_handler(required, emergency_handler):
@@ -268,6 +268,7 @@ def food_handler(required, emergency_handler):
             emergency_handler()
         elif food:
             osrs.move.fast_move_and_click(food['x'], food['y'], 3, 3)
+            osrs.clock.random_sleep(0.2, 0.3)
 
 
 def avoid_acid_pools_v7(anchor_tile, inv, orb):
@@ -336,6 +337,7 @@ def tele_to_ferox():
 
 def drink_from_pool_of_refreshment():
     while True:
+        osrs.player.toggle_prayer_slow('off', port)
         pool = osrs.server.get_game_object('3129,3634,0', '39651', port)
         if not pool:
             osrs.move.run_towards_square_v2('3137,3628,0', port)
@@ -526,10 +528,51 @@ def pickup_loot_v2():
         break
 
 
+# do this in between kills just to make sure im not missing out on loot
+# if i have to emergency tele
+def quick_pickup_loot():
+    global quick_loot
+    global quick_parsed_loot
+    global quick_loot_tile_list
+    start_time = datetime.datetime.now()
+    quick_loot = None
+    quick_parsed_loot = []
+    quick_loot_tile_list = set()
+    while True:
+        quick_loot = osrs.server.get_surrounding_ground_items_any_ids(15, port)
+        # couldnt find loot in 30 seconds - bail
+        if (datetime.datetime.now() - start_time).total_seconds() > 30:
+            return
+        elif quick_loot:
+            for _, value in quick_loot.items():
+                quick_parsed_loot += value
+            break
+    for item in quick_parsed_loot:
+        quick_loot_tile_list.add('{},{},0'.format(item['x_coord'], item['y_coord']))
+    start_time = datetime.datetime.now()
+    while True:
+        # bail after 30s
+        if (datetime.datetime.now() - start_time).total_seconds() > 30:
+            return
+        for tile in quick_loot_tile_list:
+            while True:
+                # check if there is additional loot on this tile
+                additional_loot = osrs.server.get_ground_items(tile, '9999999')
+                if additional_loot:
+                    curr_inv = osrs.inv.get_inv()
+                    # inv is full or the only thing left are the dhides (unnoted)
+                    if len(curr_inv) == 28 or (len(additional_loot.keys()) == 1 and '1751' in additional_loot):
+                        return
+                    osrs.move.spam_click(tile, 0.6)
+                else:
+                    break
+        break
+
+
 def have_supplies_for_kill():
     inv = osrs.inv.get_inv()
     food_count = osrs.inv.get_item_quantity_in_inv(inv, karambwan_id)
-    if food_count < 8:
+    if food_count < 6:
         print('did not have enough food for fight: {}'.format(inv))
         return False
     return True
@@ -539,7 +582,7 @@ def vork_handler_v2():
     anchor_tile = start_trip()
     last_super_anti_dose = datetime.datetime.now()
     last_divine_range_dose = datetime.datetime.now()
-    for i in range(2):
+    for i in range(3):
         # ensure i have enough food otherwise dont start fight
         if not have_supplies_for_kill():
             return
@@ -557,7 +600,10 @@ def vork_handler_v2():
         if bolt_switch:
             osrs.move.fast_move_and_click(bolt_switch['x'], bolt_switch['y'], 3, 3)
         osrs.player.toggle_prayer_slow('off', port)
+        food_handler(False, None)
+        super_restore_handler(False, None)
         osrs.clock.random_sleep(2, 3)
+        quick_pickup_loot()
     # sleep for a bit to ensure the final loot pile has dropped
     osrs.clock.random_sleep(4, 4.1)
 
