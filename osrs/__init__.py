@@ -9,7 +9,8 @@ __all__ = [
     'inv',
     'game',
     'util',
-    'server'
+    'server',
+    'queryHelper'
 ]
 
 import osrs.dev
@@ -23,3 +24,4 @@ import osrs.inv
 import osrs.game
 import osrs.util
 import osrs.server
+import osrs.queryHelper

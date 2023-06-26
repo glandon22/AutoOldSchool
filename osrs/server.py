@@ -100,6 +100,17 @@ def get_widget(widget_string, port='56799'):
         return False
 
 
+def get_widgets(widgets, port='56799'):
+    q = {
+        'widgets': widgets
+    }
+    data = query_game_data(q, port)
+    if 'widgets' in data:
+        return data['widgets']
+    else:
+        return False
+
+
 def get_projectiles():
     """
 
@@ -171,7 +182,7 @@ def get_chat_options(port):
     return False
 
 
-def get_npcs_by_id(npc_id, port):
+def get_npcs_by_id(npc_id, port='56799'):
     q = {
         'npcsID': [x.strip() for x in npc_id.split(',')]
     }

@@ -256,7 +256,8 @@ def spam_click(tile, seconds, port='56799'):
                         75 < data['tiles'][formatted_step]['y'] < 1040:
                     fast_move_and_click(data['tiles'][formatted_step]['x'], data['tiles'][formatted_step]['y'], 3, 3)
                     break
-                clock.random_sleep(0.3, 0.4)
+                else:
+                    break
 
 
 # this doesnt work on my mac bc of the different screen resolutions...
