@@ -86,7 +86,7 @@ def logout(port='56799'):
         'widget': '182,12'
     }
     WORLD_SWITCHER_LOGOUT = {
-        'widget': '69,23'
+        'widget': '69,25'
     }
     icon = server.query_game_data(LOGOUT_ICON, port)
     move.move_and_click(icon['widget']['x'], icon['widget']['y'], 10, 10)

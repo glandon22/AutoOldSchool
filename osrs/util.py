@@ -14,12 +14,7 @@ def find_closest_npc(npcs, ignore=-1):
     }
     for npc in npcs:
         if npc['id'] != ignore and npc["dist"] < closest["dist"]:
-            closest = {
-                "dist": npc["dist"],
-                "x": math.floor(npc["x"]),
-                "y": math.floor(npc["y"]),
-                "id": npc["id"]
-            }
+            closest = npc
     return closest
 
 

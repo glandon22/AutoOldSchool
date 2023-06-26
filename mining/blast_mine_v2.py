@@ -210,7 +210,7 @@ def blast_ore():
 def collect_ore():
     for ore in ore_varbits:
         ore_count = osrs.server.get_varbit_value(ore)
-        if ore_count and int(ore_count) > 450:
+        if ore_count and int(ore_count) >= 450:
             # move my viewpoint up so i can see tiles to move to
             osrs.keeb.keyboard.press(Key.up)
             osrs.clock.random_sleep(2, 3)
@@ -244,8 +244,10 @@ def collect_ore():
                 for noted_ore in noted_ores_id:
                     found_ore = osrs.inv.is_item_in_inventory_v2(inv, noted_ore)
                     if found_ore:
-                        osrs.move.right_click_menu_select(found_ore, None, '56799', )
+                        osrs.move.right_click_menu_select(found_ore, None, '56799', '', 'Deposit-All')
 
+            osrs.keeb.keyboard.press(Key.esc)
+            osrs.keeb.keyboard.press(Key.esc)
             osrs.keeb.keyboard.press(Key.down)
             osrs.clock.random_sleep(2, 3)
             osrs.keeb.keyboard.release(Key.down)
@@ -268,6 +270,3 @@ def main():
 
 
 main()
-'''inv = osrs.inv.get_inv()
-t = osrs.inv.is_item_in_inventory_v2(inv, '448')
-osrs.move.right_click_menu_select_v2(t, 'Drop')'''

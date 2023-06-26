@@ -10,3 +10,6 @@ config.py
 *misc*
 *__pycache__*
 *.pyc
+*.yaml
+*.idea*
+*.xml
