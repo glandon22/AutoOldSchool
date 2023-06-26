@@ -102,8 +102,12 @@ def steal_knight():
                 print('clicking knight: {}'.format(closest))
                 osrs.move.move_and_click(closest['x'], closest['y'], 4, 4)
     if knight_found == 0:
-        print('knight not found after clicks: {}'.format(clicks))
-        return hop_worlds()
+        # Sometimes I can climb the ladder, not see the knight and start hopping. So make sure I am on the
+        # ground floor before hopping
+        loc = osrs.server.get_world_location()
+        if loc and 'z' in loc and loc['z'] > 0:
+            print('knight not found after clicks: {}'.format(clicks))
+            return hop_worlds()
 
 
 def main():
