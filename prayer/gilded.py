@@ -12,7 +12,7 @@ bones = '536'
 noted_bones = '537'
 min_planks = 8
 phials = '1614'
-player_house = 'im really hi'
+player_house = 'rezold'
 
 
 def offer():
@@ -33,12 +33,33 @@ def offer():
             break
 
 
-def build_until_out():
+def offer_until_out():
     while True:
         inv = osrs.inv.get_inv(port)
         bone_count = osrs.inv.get_item_quantity_in_inv(inv, bones)
         if bone_count > 0:
             offer()
+        else:
+            break
+
+
+def offer_until_out_v2():
+    while True:
+        inv = osrs.inv.get_inv(port)
+        bone_count = osrs.inv.get_item_quantity_in_inv(inv, bones)
+        if bone_count > 0:
+            altar_obj = osrs.server.get_surrounding_game_objects(15, [altar], port)
+            if altar in altar_obj and 'dist' in altar_obj[altar]:
+                if altar_obj[altar]['dist'] > 1:
+                    osrs.move.move_and_click(altar_obj[altar]['x'], altar_obj[altar]['y'], 4, 4)
+                    osrs.clock.random_sleep(1, 2)
+                else:
+                    for item in inv:
+                        if item['id'] == int(bones):
+                            altar_obj = osrs.server.get_surrounding_game_objects(15, [altar], port)
+                            osrs.move.move_and_click(item['x'], item['y'], 2, 3)
+                            osrs.move.move_and_click(altar_obj[altar]['x'], altar_obj[altar]['y'], 3, 3)
+                    osrs.clock.random_sleep(1, 2)
         else:
             break
 
@@ -93,20 +114,15 @@ def enter_home():
         if loc and 'x' in loc and loc['x'] > 4000:
             break
 
+
 def main():
     start_time = datetime.datetime.now()
     osrs.clock.random_sleep(3, 3.1)
     while True:
-        start_time = osrs.game.break_manager(start_time, 49, 54, 432, 673, 'julenth', False, port)
-        osrs.clock.antiban_rest(45, 100, 300)
-        build_until_out()
-        osrs.clock.antiban_rest(45, 100, 300)
+        offer_until_out_v2()
         leave_house()
-        osrs.clock.antiban_rest(45, 100, 300)
+        start_time = osrs.game.break_manager(start_time, 49, 54, 432, 673, 'pass_70', False, port)
         click_phials()
-        osrs.clock.antiban_rest(45, 100, 300)
         enter_home()
-        osrs.clock.random_sleep(3, 5)
 
-osrs.clock.random_sleep(2, 3)
 main()
