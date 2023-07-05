@@ -11,6 +11,8 @@ import osrs
 
 port = '56799'
 waterbirth_portal_id = '29342'
+rejuv_pool_id = '29241'
+portal_nex_id = '33366' # this obj id changes based on which tele is left click FYI
 attack_square_left = {
     'x': -2,
     'y': 1
@@ -86,7 +88,6 @@ required_items = [
     # so breaking it up to ensure i have two restores. Can probably find a more elegant solution.
     {'id': super_restore_ids[:2], 'all': False},
     {'id': extended_super_anti_ids[:3], 'all': False},
-    {'id': ring_of_dueling_ids, 'all': False},
     {'id': super_restore_ids[:2], 'all': False},
     {'id': rune_pouch_id, 'all': False},
     {'id': ruby_dragon_bolt_e, 'all': True},
@@ -142,30 +143,6 @@ def begin_vork_fight(anchor_tile):
             anchor_tile['x'] + attack_square_mid['x'], anchor_tile['y'] + attack_square_mid['y']
         )],
         port)
-
-
-def move_tiles_to_avoid_fireball_v2(anchor_tile):
-    loc = osrs.server.get_world_location(port)
-    # I am standing on middle tile, so go right
-    if loc and loc['x'] == anchor_tile['x'] and loc['y'] == anchor_tile['y'] + 1:
-        osrs.move.run_to_loc_v2(
-            ['{},{},0'.format(
-                anchor_tile['x'] + attack_square_right['x'], anchor_tile['y'] + attack_square_right['y']
-            )],
-            port)
-    else:
-        osrs.move.run_to_loc_v2(
-            ['{},{},0'.format(
-                anchor_tile['x'], anchor_tile['y'] + 1
-            )],
-            port)
-    vork = osrs.server.get_npc_by_id('8061', port)
-    if vork:
-        osrs.move.move_and_click(vork['x'], vork['y'], 3, 3)
-    while True:
-        fireball = osrs.server.get_projectiles()
-        if 1481 not in fireball:
-            return
 
 
 def move_tiles_to_avoid_fireball_v3(anchor_tile, loc):
@@ -318,46 +295,6 @@ def avoid_acid_pools_v7(anchor_tile, inv, orb):
     osrs.move.spam_click('{},{},0'.format(anchor_tile['x'], anchor_tile['y'] + 1), 1, port)
 
 
-def tele_to_ferox():
-    while True:
-        inv = osrs.inv.get_inv()
-        duelings = osrs.inv.are_items_in_inventory_v2(inv, ring_of_dueling_ids)
-        if not duelings:
-            return print('no more rings of dueling')
-        osrs.move.right_click_menu_select(duelings, None, port, 'Ring', 'Rub')
-        osrs.clock.sleep_one_tick()
-        osrs.keeb.keyboard.type('3')
-        start_time = datetime.datetime.now()
-        while True:
-            loc = osrs.server.get_world_location()
-            if (datetime.datetime.now() - start_time).total_seconds() > 30:
-                break
-            elif loc and 3147 <= loc['x'] <= 3154 and 3630 <= loc['y'] <= 3638:
-                return
-
-
-def drink_from_pool_of_refreshment():
-    while True:
-        osrs.player.toggle_prayer_slow('off', port)
-        pool = osrs.server.get_game_object('3129,3634,0', '39651', port)
-        if not pool:
-            osrs.move.run_towards_square_v2('3137,3628,0', port)
-            continue
-        osrs.move.move_and_click(pool['x'], pool['y'], 3, 3)
-        start_time = datetime.datetime.now()
-        while True:
-            if (datetime.datetime.now() - start_time).total_seconds() > 15:
-                break
-            stats = osrs.server.get_skill_data(['prayer', 'hitpoints'])
-            if stats \
-                    and stats['hitpoints']['boostedLevel'] == stats['hitpoints']['level'] \
-                    and stats['prayer']['boostedLevel'] == stats['prayer']['level']:
-                osrs.player.toggle_prayer_slow('off', port)
-                osrs.clock.sleep_one_tick()
-                osrs.clock.sleep_one_tick()
-                return
-
-
 # should add check to see if i am back in lumby and tele
 def kill_vork(anchor_tile, last_super_anti_dose, last_divine_range_dose):
     # Store a variable to indicate if vorkath has gotten below 1/3 health
@@ -470,7 +407,7 @@ def kill_vork(anchor_tile, last_super_anti_dose, last_divine_range_dose):
                 continue
             osrs.move.fast_move_and_click(divine_range['x'], divine_range['y'], 3, 3)
             continue
-        if not vork_low_health and vork and vork[0]['health'] / vork[0]['scale'] < .35:
+        if vork and vork[0]['health'] / vork[0]['scale'] < .35:
             print('vork below 30% health - switching bolts')
             vork_low_health = True
             bolt_switch = osrs.inv.is_item_in_inventory_v2(inv, diamond_dragon_bolts_e_id)
@@ -580,8 +517,10 @@ def quick_pickup_loot():
                 if additional_loot:
                     curr_inv = osrs.inv.get_inv()
                     # inv is full or the only thing left are the dhides (unnoted)
-                    if len(curr_inv) == 28 or (len(additional_loot.keys()) == 1 and '1751' in additional_loot):
+                    if len(curr_inv) == 28:
                         return
+                    elif len(additional_loot.keys()) == 1 and '1751' in additional_loot:
+                        break
                     osrs.move.spam_click(tile, 0.6)
                 else:
                     break
@@ -679,9 +618,61 @@ def bank_at_ferox():
                 break
 
 
+def bank_at_lunar_isle():
+    while True:
+        chest = osrs.server.get_game_object('2099,3920,0', '16700', port)
+        if not chest:
+            continue
+        osrs.move.move_and_click(chest['x'], chest['y'], 3, 3)
+        start_time = datetime.datetime.now()
+        while True:
+            bank_tabs = osrs.server.get_widget('12,11', port)
+            if bank_tabs:
+                osrs.clock.sleep_one_tick()
+                osrs.bank.bank_dump_inv(port)
+                # sometimes if the bank interface is just about to open, its position is wrong. so let the interace
+                # fully open before doing any action
+                bank_tabs = osrs.server.get_widget('12,11', port)
+                # click the third tab
+                osrs.move.move_and_click(bank_tabs['x'] - 100, bank_tabs['y'], 3, 3)
+                osrs.clock.sleep_one_tick()
+                for item in required_items:
+                    withdraw_item(item)
+                osrs.keeb.keyboard.press(Key.esc)
+                osrs.keeb.keyboard.release(Key.esc)
+                osrs.clock.sleep_one_tick()
+                inv = osrs.inv.get_inv()
+                bolt_switch = osrs.inv.is_item_in_inventory_v2(inv, ruby_dragon_bolt_e)
+                if bolt_switch:
+                    osrs.move.fast_move_and_click(bolt_switch['x'], bolt_switch['y'], 3, 3)
+                return
+            elif (datetime.datetime.now() - start_time).total_seconds() > 10:
+                break
+
+
+def get_deported_from_lunar_isle():
+    while True:
+        chest = osrs.server.get_game_object('2098,3920,0', '16700', port)
+        if not chest:
+            continue
+        osrs.move.move_and_click(chest['x'], chest['y'], 3, 3)
+        start_time = datetime.datetime.now()
+        while True:
+            loc = osrs.server.get_world_location(port)
+            if loc and 2640 > loc['x'] > 2620 and 3640 < loc['y'] < 3690:
+                return
+            elif (datetime.datetime.now() - start_time).total_seconds() > 10:
+                break
+            else:
+                osrs.keeb.keyboard.type(' ')
+
 def tele_home():
     print('teleing home')
+    attempts = 0
     while True:
+        attempts += 1
+        if attempts > 25:
+            return print('tried to tele home 25 times')
         osrs.keeb.keyboard.press(Key.f6)
         osrs.keeb.keyboard.release(Key.f6)
         osrs.clock.random_sleep(0.2, 0.3)
@@ -714,6 +705,34 @@ def enter_waterbirth_portal():
                     break
 
 
+def drink_from_pool():
+    while True:
+        rejuv_pool = osrs.server.get_surrounding_game_objects(15, [rejuv_pool_id], port)
+        if rejuv_pool and rejuv_pool_id in rejuv_pool:
+            osrs.move.move_and_click(rejuv_pool[rejuv_pool_id]['x'], rejuv_pool[rejuv_pool_id]['y'], 3, 3)
+            start_time = datetime.datetime.now()
+            while True:
+                prayer_data = osrs.server.get_skill_data('prayer')
+                if prayer_data and prayer_data['level'] == prayer_data['boostedLevel']:
+                    return
+                elif (datetime.datetime.now() - start_time).total_seconds() > 7:
+                    break
+
+
+def tele_to_lunar_isle():
+    while True:
+        nexus = osrs.server.get_surrounding_game_objects(15, [portal_nex_id], port)
+        if nexus and portal_nex_id in nexus:
+            osrs.move.move_and_click(nexus[portal_nex_id]['x'], nexus[portal_nex_id]['y'], 3, 3)
+            start_time = datetime.datetime.now()
+            while True:
+                loc = osrs.server.get_world_location(port)
+                if loc and 2120 > loc['x'] > 2090 and 3900 < loc['y'] < 3930:
+                    return
+                elif (datetime.datetime.now() - start_time).total_seconds() > 7:
+                    break
+
+
 # might consider making exit condition that the tile i want to walk to has x and y coords on screen w a get tile call
 # not sure if that would work but worth investigation
 def travel_to_rellekka():
@@ -732,6 +751,7 @@ def travel_to_rellekka():
 
 
 def take_boat_to_ungael_v2():
+    print('taking boat to ungael')
     q = {
         'tiles': ['2640,3694,0']
     }
@@ -755,11 +775,16 @@ def take_boat_to_ungael_v2():
                     return
                 elif (datetime.datetime.now() - start_time).total_seconds() > 9:
                     break
+        loc = osrs.server.get_world_location(port)
+        if loc and loc['y'] > 4000:
+            return
 
 
 def enter_vorks_layer_v2():
+    print('entering lair')
     while True:
         ice = osrs.server.get_game_object('2272,4053,0', '31990', port)
+        print('get ice patch', ice)
         if ice:
             osrs.move.move_and_click(ice['x'], ice['y'], 3, 3)
             start_time = datetime.datetime.now()
@@ -789,16 +814,15 @@ script_config = {
 def vork_loop():
     while True:
         osrs.game.break_manager_v3(script_config)
-        bank_at_ferox()
-        tele_home()
-        enter_waterbirth_portal()
-        travel_to_rellekka()
+        bank_at_lunar_isle()
+        get_deported_from_lunar_isle()
         take_boat_to_ungael_v2()
         enter_vorks_layer_v2()
         vork_handler_v2()
         pickup_loot_v2()
-        tele_to_ferox()
-        drink_from_pool_of_refreshment()
+        tele_home()
+        drink_from_pool()
+        tele_to_lunar_isle()
 
 
 vork_loop()

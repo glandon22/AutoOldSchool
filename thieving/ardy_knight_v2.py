@@ -105,7 +105,7 @@ def steal_knight():
         # Sometimes I can climb the ladder, not see the knight and start hopping. So make sure I am on the
         # ground floor before hopping
         loc = osrs.server.get_world_location()
-        if loc and 'z' in loc and loc['z'] > 0:
+        if loc and 'z' in loc and loc['z'] == 0:
             print('knight not found after clicks: {}'.format(clicks))
             return hop_worlds()
 
@@ -114,7 +114,7 @@ def main():
     start_time = datetime.datetime.now()
     knight_last_seen = datetime.datetime.now()
     while True:
-        start_time = osrs.game.break_manager(start_time, 43, 48, 423, 551, 'julenth', False)
+        start_time = osrs.game.break_manager(start_time, 43, 48, 423, 551, 'pass_70', False)
         if paused:
             continue
 
@@ -137,6 +137,11 @@ def main():
             get_more_wine()
             continue
 
+        bank_interface = osrs.bank.get_bank_data()
+        if len(bank_interface) > 0:
+            osrs.keeb.press_key('esc')
+            continue
+
         if hp and 'boostedLevel' and hp['boostedLevel'] < 10 and wine:
             print('drinking wine.')
             osrs.move.move_and_click(wine['x'], wine['y'], 3, 3)
@@ -146,11 +151,6 @@ def main():
         if sacks and sacks['quantity'] >= 27:
             print('open loot sacks.')
             osrs.move.move_and_click(sacks['x'], sacks['y'], 3, 3)
-            continue
-
-        bank_interface = osrs.bank.get_bank_data()
-        if len(bank_interface) > 0:
-            osrs.keeb.press_key('esc')
             continue
 
         inv = osrs.inv.get_inv()

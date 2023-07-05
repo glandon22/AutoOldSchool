@@ -10,9 +10,9 @@ import osrs
 import keyboard
 # 91 guam unf
 # 227 vial water
-POT = 91
+POT = 99
 # newt 221
-SECONDARY = 221
+SECONDARY = 231
 
 
 def make_pot(port):
@@ -77,19 +77,23 @@ def withdraw_materials(port):
 
 
 def make_pots(port):
-    inv = osrs.inv.get_inv(port)
-    leveled_up_widget = osrs.server.get_widget('233,0', port)
-    if not osrs.inv.are_items_in_inventory_v2(inv, [POT, SECONDARY]):
-        print('Bag completed.')
-        print('Clicking on banker.')
-        click_banker(port)
-        print('Waiting for bank interface to open.')
-        osrs.clock.random_sleep(1.1, 1.3)
-        dump_inventory_in_bank(port)
-        print('Withdrawing potion materials.')
-        withdraw_materials(port)
-        print('Making pots.')
-        make_pot(port)
-    elif leveled_up_widget:
-        make_pot(port)
+    while True:
+        inv = osrs.inv.get_inv(port)
+        leveled_up_widget = osrs.server.get_widget('233,0', port)
+        if not osrs.inv.are_items_in_inventory_v2(inv, [POT, SECONDARY]):
+            print('Bag completed.')
+            print('Clicking on banker.')
+            click_banker(port)
+            print('Waiting for bank interface to open.')
+            osrs.clock.random_sleep(1.1, 1.3)
+            dump_inventory_in_bank(port)
+            print('Withdrawing potion materials.')
+            withdraw_materials(port)
+            print('Making pots.')
+            make_pot(port)
+        elif leveled_up_widget:
+            make_pot(port)
+        else:
+            make_pot('56799')
 
+make_pots('56799')

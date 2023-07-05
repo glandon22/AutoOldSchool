@@ -172,7 +172,7 @@ def get_varbit_value(varbit):
     return False
 
 
-def get_chat_options(port):
+def get_chat_options(port='56799'):
     q = {
         'chatOptions': True
     }
