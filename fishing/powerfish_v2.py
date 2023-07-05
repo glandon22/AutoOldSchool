@@ -91,7 +91,7 @@ def find_spot():
 def main():
     start_time = datetime.datetime.now()
     while True:
-        start_time = osrs.game.break_manager(start_time, 53, 58, 423, 551, 'pass_71', False)
+        start_time = osrs.game.break_manager(start_time, 53, 58, 423, 551, 'julenth', False)
         q = {
             'isFishing': True,
             'inv': True,

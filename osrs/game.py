@@ -44,13 +44,15 @@ def login_v2(password, port='56799'):
         clock.random_sleep(0.6, 0.7)
 
 
-def login_v3():
+def login_v3(ctp=True):
     keeb.keyboard.press(keeb.Key.enter)
     keeb.keyboard.release(keeb.Key.enter)
     print('press first enter')
     clock.sleep_one_tick()
+    clock.sleep_one_tick()
     keeb.keyboard.type(config['password'])
     print('type pass')
+    clock.sleep_one_tick()
     clock.sleep_one_tick()
     keeb.keyboard.press(keeb.Key.enter)
     keeb.keyboard.release(keeb.Key.enter)
@@ -59,23 +61,23 @@ def login_v3():
         'x': 0,
         'y': 0
     }
-
-    while True:
-        q = {
-            'widget': '378,72'
-        }
-        widget = server.query_game_data(q, config['port'])
-        if 'widget' in widget:
-            ctp = widget['widget']
-            # once the click to play button is loaded, it takes a couple seconds to get accurate coords
-            # due to some underlying game mechanics (i guess)
-            if ctp['x'] == coords['x'] and ctp['y'] == coords['y']:
-                move.move_and_click(ctp['x'], ctp['y'], 15, 15)
-                break
-            else:
-                coords['x'] = ctp['x']
-                coords['y'] = ctp['y']
-        clock.random_sleep(0.6, 0.7)
+    if ctp:
+        while True:
+            q = {
+                'widget': '378,72'
+            }
+            widget = server.query_game_data(q, config['port'])
+            if 'widget' in widget:
+                ctp = widget['widget']
+                # once the click to play button is loaded, it takes a couple seconds to get accurate coords
+                # due to some underlying game mechanics (i guess)
+                if ctp['x'] == coords['x'] and ctp['y'] == coords['y']:
+                    move.move_and_click(ctp['x'], ctp['y'], 15, 15)
+                    break
+                else:
+                    coords['x'] = ctp['x']
+                    coords['y'] = ctp['y']
+            clock.random_sleep(0.6, 0.7)
 
 
 def logout(port='56799'):
@@ -93,7 +95,7 @@ def logout(port='56799'):
     clock.random_sleep(1, 1.4)
     logout_button = server.query_game_data(LOGOUT_BUTTON, port)
     if 'widget' in logout_button:
-        move.move_and_click(logout_button['widget']['x'], logout_button['widget']['y'], 10, 10)
+        move.move_and_click(logout_button['widget']['x'], logout_button['widget']['y'], 3, 3)
         clock.random_sleep(0.3, 0.4)
     else:
         logout_button = server.query_game_data(WORLD_SWITCHER_LOGOUT, port)
@@ -227,6 +229,7 @@ def break_manager_v3(script_config):
         'intensity': 'high' | 'low',
         'logout': function(), -- Steps to run before logging out for break
         'login': function(), -- Steps to run after logging back in
+        'click_to_play': True | False -> Instances like Tithe Farm dont display this button after login
     }
     """
     current_time = datetime.datetime.now()
@@ -248,9 +251,10 @@ def break_manager_v3(script_config):
                 clock.random_sleep(10, 15)
             else:
                 break
-
-        login_v3()
-
+        if 'click_to_play' in script_config:
+            login_v3('click_to_play' in script_config and script_config['click_to_play'])
+        else:
+            login_v3()
         # Run post-login logic supplied by script
         if script_config['login']:
             script_config['login']()

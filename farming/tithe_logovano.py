@@ -4,23 +4,23 @@ import datetime
 import osrs, keyboard
 
 port = '56799'
-BOLOGANO_SEED = '13424'
+LOGOVANO_SEED = '13425'
 EMPTY_PATCH = '27383'
 
-UNWATERED_SEED_STAGE_1 = '27395'
-WATERED_STAGE_1 = '27396'
-BLIGHTED_STAGE_1 = '27397'
+UNWATERED_SEED_STAGE_1 = '27406'
+WATERED_STAGE_1 = '27407'
+BLIGHTED_STAGE_1 = '27408'
 
-UNWATERED_SEED_STAGE_2 = '27398'
-WATERED_STAGE_2 = '27399'
-BLIGHTED_STAGE_2 = '27400'
+UNWATERED_SEED_STAGE_2 = '27409'
+WATERED_STAGE_2 = '27410'
+BLIGHTED_STAGE_2 = '27411'
 
-UNWATERED_SEED_STAGE_3 = '27401'
-WATERED_STAGE_3 = '27402'
-BLIGHTED_STAGE_3 = '27403'
+UNWATERED_SEED_STAGE_3 = '27412'
+WATERED_STAGE_3 = '27413'
+BLIGHTED_STAGE_3 = '27414'
 
-HEALTHY_STAGE_4 = '27404'
-BLIGHTED_STAGE_4 = '27405'
+HEALTHY_STAGE_4 = '27415'
+BLIGHTED_STAGE_4 = '27416'
 
 start_point_diff = {
     'x': 4,
@@ -85,7 +85,7 @@ def run_to_fifth_row():
 
 def place_seed_in_patch():
     inv = osrs.inv.get_inv(port)
-    seed = osrs.inv.is_item_in_inventory_v2(inv, BOLOGANO_SEED)
+    seed = osrs.inv.is_item_in_inventory_v2(inv, LOGOVANO_SEED)
     osrs.move.move_and_click(seed['x'], seed['y'], 3, 3)
     patches = osrs.server.get_multiple_surrounding_game_objects(10, [EMPTY_PATCH], port)
     # {'x': 885, 'y': 579, 'dist': 2, 'x_coord': 15330, 'y_coord': 2584}

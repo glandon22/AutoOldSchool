@@ -1,6 +1,12 @@
 import datetime
 import osrs
 
+script_config = {
+    'intensity': 'low',
+    'logout': False,
+    'login': False
+}
+
 frag_portal_dict = {
     'S': {'x': 3615, 'y': 9490, 'z': 0},
     'E': {'x': 3628, 'y': 9499, 'z': 0},
@@ -123,7 +129,8 @@ sprite_to_rift_obj_dict = {
 available_catalytic_altars = [
     '4354',  # mind
     '4358',  # body
-    '4360'  # chaos
+    '4360',  # chaos
+    '4361',  # nature
 ]
 
 
@@ -160,12 +167,12 @@ def click_allowed(last_click, target, timeout):
         return True
 
 
-def run_to_large_remains(status_obj):
+def run_to_large_remains(status_obj, qh):
     inv = osrs.inv.get_inv()
     uncharged_cell = osrs.inv.is_item_in_inventory_v2(inv, 26882)
-    if (not game_active() or is_pregame()) \
-            and in_main_arena() \
-            and click_allowed(status_obj, '43724', 10) and uncharged_cell and uncharged_cell['quantity'] ==10:
+    if (not game_active(qh.get_widgets()) or is_pregame(qh.get_widgets())) \
+            and in_main_arena(qh.get_player_world_location()) \
+            and click_allowed(status_obj, '43724', 10) and uncharged_cell and uncharged_cell['quantity'] == 10:
         print('in run to large remains')
         obstacle = osrs.server.get_ground_object('3634,9503,0', '43724')
         if bool(obstacle):
@@ -176,13 +183,13 @@ def run_to_large_remains(status_obj):
     return status_obj
 
 
-def mine_large_remains(status_obj):
-    loc = osrs.server.get_world_location()
-    inv = osrs.inv.get_inv()
+def mine_large_remains(status_obj, qh):
+    loc = qh.get_player_world_location()
+    inv = qh.get_inventory()
     guardian_frags = osrs.inv.is_item_in_inventory_v2(inv, 26878)
     if 'x' in loc and loc['x'] >= 3637 and \
             (not guardian_frags or guardian_frags and guardian_frags['quantity'] < 150) \
-            and not osrs.server.is_mining() and game_active() and click_allowed(status_obj, '43719', 5):
+            and not qh.get_is_mining() and game_active(qh.get_widgets()) and click_allowed(status_obj, '43719', 5):
         print('in mine large remains')
         rock = osrs.server.get_game_object('3640,9498,0', '43719')
         if rock:
@@ -191,14 +198,13 @@ def mine_large_remains(status_obj):
     return status_obj
 
 
-def leave_large_remains_area(status_obj):
-    loc = osrs.server.get_world_location()
-    inv = osrs.inv.get_inv()
+def leave_large_remains_area(status_obj, qh):
+    loc = qh.get_player_world_location()
+    inv = qh.get_inventory()
     guardian_frags = osrs.inv.is_item_in_inventory_v2(inv, 26878)
-    beginning = osrs.server.get_widget('746,23')
     if 'x' in loc and loc['x'] >= 3637 and \
             guardian_frags and guardian_frags['quantity'] > 150 \
-            and beginning and 'spriteID' in beginning and beginning['spriteID'] != 4369 \
+            and not is_pregame(qh.get_widgets()) \
             and click_allowed(status_obj, '43726', 5):
         print('in leave large remains')
         obstacle = osrs.server.get_ground_object('3636,9503,0', '43726')
@@ -212,9 +218,12 @@ def leave_large_remains_area(status_obj):
 def take_uncharged_cells(status_obj, qh):
     inv = qh.get_inventory()
     uncharged_cell = osrs.inv.is_item_in_inventory_v2(inv, 26882)
+    elem_guardian_stone = osrs.inv.is_item_in_inventory_v2(inv, 26881)
+    catalytic_guardian_stone = osrs.inv.is_item_in_inventory_v2(inv, 26880)
     if in_main_arena(qh.get_player_world_location()) \
             and (not game_active(qh.get_widgets()) or is_pregame(qh.get_widgets())) \
             and (not uncharged_cell or uncharged_cell and uncharged_cell['quantity'] < 10) \
+            and not (elem_guardian_stone or catalytic_guardian_stone) \
             and click_allowed(status_obj, '43732', 5):
         print('in take uncharged cells')
         table = osrs.server.get_game_object('3618,9488,0', '43732')
@@ -227,40 +236,59 @@ def take_uncharged_cells(status_obj, qh):
     return status_obj
 
 
-def frag_port_available(status_obj):
-    portal_text = osrs.server.get_widget('746,28')
-    inv = osrs.inv.get_inv()
+def open_portal(widgets):
+    portal_text = widgets and '746,28' in widgets and widgets['746,28']
     if portal_text \
             and 'text' in portal_text \
-            and bool(portal_text['text']) \
-            and in_main_arena() \
-            and len(inv) < 28 \
-            and click_allowed(status_obj, '43729', 5):
-        print('in frag port available')
+            and bool(portal_text['text']):
         text_parts = portal_text['text'].split(' - ')
         if len(text_parts) >= 2 and text_parts[1] != '0:00':
-            orb = osrs.server.get_surrounding_game_objects(10, ['43729'])
-            if orb and '43729' in orb:
-                osrs.move.move_and_click(orb['43729']['x'], orb['43729']['y'], 1, 1)
-                osrs.clock.sleep_one_tick()
-                osrs.move.wait_until_stationary()
-                return {'43729': datetime.datetime.now()}
-            else:
-                osrs.move.run_towards_square_v2(frag_portal_dict[text_parts[0]])
+            return text_parts[0]
+    else:
+        return False
+
+
+def frag_port_available(status_obj, qh):
+    portal_text = open_portal(qh.get_widgets())
+    inv = qh.get_inventory()
+    elem_guardian_stone = osrs.inv.is_item_in_inventory_v2(inv, 26881)
+    catalytic_guardian_stone = osrs.inv.is_item_in_inventory_v2(inv, 26880)
+    powered_cells = osrs.inv.are_items_in_inventory_v2(
+        inv,
+        [
+            26885,  # strong
+            26884,  # medium
+            26886  # overpowered
+        ]
+    )
+    if portal_text \
+            and in_main_arena(qh.get_player_world_location()) \
+            and len(inv) < 19 \
+            and not powered_cells \
+            and not (elem_guardian_stone or catalytic_guardian_stone) \
+            and click_allowed(status_obj, '43729', 5):
+        print('in frag port available')
+        orb = osrs.server.get_surrounding_game_objects(10, ['43729'])
+        if orb and '43729' in orb:
+            osrs.move.move_and_click(orb['43729']['x'], orb['43729']['y'], 1, 1)
+            return {'43729': datetime.datetime.now()}
+        else:
+            osrs.move.run_towards_square_v2(frag_portal_dict[portal_text])
+
     return status_obj
 
 
 # need to make this more precise with coords
-def mine_huge_remains(status_obj):
-    loc = osrs.server.get_world_location()
-    inv = osrs.inv.get_inv()
+def mine_huge_remains(status_obj, qh):
+    loc = qh.get_player_world_location()
+    inv = qh.get_inventory()
     if loc \
             and 'x' in loc \
             and 3594 >= loc['x'] >= 3586 \
             and len(inv) < 28 \
             and not osrs.server.is_mining() \
             and click_allowed(status_obj, '43720', 5) \
-            and game_active():
+            and game_active(qh.get_widgets()):
         print('in mine huge remains')
         remains = osrs.server.get_surrounding_game_objects(8, ['43720'])
         if remains and '43720' in remains:
@@ -269,13 +297,13 @@ def mine_huge_remains(status_obj):
     return status_obj
 
 
-def leave_huge_remains(status_obj):
-    loc = osrs.server.get_world_location()
-    inv = osrs.inv.get_inv()
+def leave_huge_remains(status_obj, qh):
+    loc = qh.get_player_world_location()
+    inv = qh.get_inventory()
     if loc \
             and 'x' in loc \
-            and loc['x'] <= 3594 \
-            and (len(inv) == 28 or not game_active()) \
+            and 3594 >= loc['x'] >= 3585 \
+            and (len(inv) == 28 or not game_active(qh.get_widgets())) \
             and click_allowed(status_obj, '38044', 5):
         print('in leave huge remains')
         remains = osrs.server.get_game_object('3593,9503,0', '38044')
@@ -285,29 +313,30 @@ def leave_huge_remains(status_obj):
     return status_obj
 
 
-def make_essence_v2(status_obj):
-    inv = osrs.inv.get_inv()
+def make_essence_v2(status_obj, qh):
+    inv = qh.get_inventory()
     guardian_frags = osrs.inv.is_item_in_inventory_v2(inv, 26878)
     guardian_ess = osrs.inv.is_item_in_inventory_v2(inv, 26879)
     elem_guardian_stone = osrs.inv.is_item_in_inventory_v2(inv, 26881)
     catalytic_guardian_stone = osrs.inv.is_item_in_inventory_v2(inv, 26880)
+    portal_text = open_portal(qh.get_widgets())
     powered_cells = osrs.inv.are_items_in_inventory_v2(
         inv,
         [
             26885,  # strong
-            26883,  # weak
             26884,  # medium
             26886  # overpowered
         ]
     )
-    if in_main_arena() \
+    if in_main_arena(qh.get_player_world_location()) \
             and guardian_frags \
             and guardian_frags['quantity'] > 24 \
-            and not guardian_ess \
+            and (not guardian_ess or len(inv) < 28) \
             and not (elem_guardian_stone or catalytic_guardian_stone) \
-            and osrs.server.get_player_animation() != 9365 \
+            and qh.get_player_animation() != 9365 \
+            and not portal_text \
             and not powered_cells:
-        if osrs.inv.are_items_in_inventory_v2(inv, [554, 555, 556, 557]):
+        if osrs.inv.are_items_in_inventory_v2(inv, [554, 555, 556, 557, 558, 559, 560, 561, 562, 563, 564, 565]):
             print('have runes')
             rune_deposit = osrs.server.get_game_object('3609,9487,0', '43696')
             if rune_deposit:
@@ -328,40 +357,35 @@ def make_essence_v2(status_obj):
     return status_obj
 
 
-def in_air_altar():
-    loc = osrs.server.get_world_location()
+def in_air_altar(loc):
     if 'x' in loc and 2835 <= loc['x'] <= 2851:
         return True
     else:
         return False
 
 
-def in_mind_altar():
-    loc = osrs.server.get_world_location()
+def in_mind_altar(loc):
     if 'x' in loc and 2761 <= loc['x'] <= 2802:
         return True
     else:
         return False
 
 
-def in_body_altar():
-    loc = osrs.server.get_world_location()
+def in_body_altar(loc):
     if 'x' in loc and 2506 <= loc['x'] <= 2538:
         return True
     else:
         return False
 
 
-def in_chaos_altar():
-    loc = osrs.server.get_world_location()
+def in_chaos_altar(loc):
     if 'x' in loc and 2242 <= loc['x'] <= 2296:
         return True
     else:
         return False
 
 
-def in_nature_altar():
-    loc = osrs.server.get_world_location()
+def in_nature_altar(loc):
     if 'x' in loc and 2390 <= loc['x'] <= 2409 and 4832 <= loc['y'] <= 4851:
         return True
     else:
@@ -390,56 +414,21 @@ def determine_rift():
         return str(cata_rift) in sprite_to_rift_obj_dict and sprite_to_rift_obj_dict[str(cata_rift)]
 
 
-def enter_active_rift(status_obj):
-    inv = osrs.inv.get_inv()
+def enter_active_rift_v2(status_obj, qh):
+    inv = qh.get_inventory()
     guardian_ess = osrs.inv.is_item_in_inventory_v2(inv, 26879)
     elem_guardian_stone = osrs.inv.is_item_in_inventory_v2(inv, 26881)
     catalytic_guardian_stone = osrs.inv.is_item_in_inventory_v2(inv, 26880)
-    if in_main_arena() \
-            and guardian_ess \
-            and osrs.server.get_player_animation() != 9365 \
-            and not (elem_guardian_stone or catalytic_guardian_stone):
-        print('in enter active rift')
-        # will do catalytic rifts later bc i cant enter most of them
-        active_catalytic_rift = osrs.server.get_widget('746,23')
-        if active_catalytic_rift and 'spriteID' in active_catalytic_rift:
-            rift_to_enter = sprite_to_rift_obj_dict[str(active_catalytic_rift['spriteID'])]
-        active_elem_rift = osrs.server.get_widget('746,20')
-        if active_elem_rift \
-                and 'spriteID' in active_elem_rift \
-                and str(active_elem_rift['spriteID']) in sprite_to_rift_obj_dict \
-                and click_allowed(status_obj, sprite_to_rift_obj_dict[str(active_elem_rift['spriteID'])]['id'], 7):
-            rift_to_enter = sprite_to_rift_obj_dict[str(active_elem_rift['spriteID'])]
-            print('right to enter', rift_to_enter)
-            rift = osrs.server.get_game_object(rift_to_enter['tile'], rift_to_enter['id'])
-            if rift:
-                osrs.move.move_and_click(rift['x'], rift['y'], 3, 4)
-                return {rift_to_enter['id']: datetime.datetime.now()}
-            else:
-                osrs.move.run_towards_square_v2(rift_to_enter['tile_obj'])
-    return status_obj
-
-
-def enter_active_rift_v2(status_obj):
-    inv = osrs.inv.get_inv()
-    guardian_ess = osrs.inv.is_item_in_inventory_v2(inv, 26879)
-    elem_guardian_stone = osrs.inv.is_item_in_inventory_v2(inv, 26881)
-    catalytic_guardian_stone = osrs.inv.is_item_in_inventory_v2(inv, 26880)
-    if in_main_arena() \
-            and guardian_ess \
-            and osrs.server.get_player_animation() != 9365 \
+    portal_text = open_portal(qh.get_widgets())
+    guardian_frags = osrs.inv.is_item_in_inventory_v2(inv, 26878)
+    if in_main_arena(qh.get_player_world_location()) \
+            and ((guardian_ess and len(inv) == 28) or (guardian_ess and not guardian_frags)) \
+            and qh.get_player_animation() != 9365 \
+            and (not portal_text or (portal_text and len(inv) == 28)) \
             and not (elem_guardian_stone or catalytic_guardian_stone):
         rift_to_enter = determine_rift()
-        '''{  # air
-        'tile': '3617,9494,0',
-        'id': '43701',
-        'tile_obj': {
-            'x': 3617,
-            'y': 9494,
-            'z': 0
-        }'''
         if rift_to_enter and click_allowed(status_obj, rift_to_enter['id'], 5):
-            print('right to enter', rift_to_enter)
+            print('rift to enter', rift_to_enter)
             rift = osrs.server.get_game_object(rift_to_enter['tile'], rift_to_enter['id'])
             if rift:
                 osrs.move.move_and_click(rift['x'], rift['y'], 3, 4)
@@ -449,271 +438,60 @@ def enter_active_rift_v2(status_obj):
     return status_obj
 
 
-def make_airs(status_obj):
-    inv = osrs.inv.get_inv()
-    guardian_ess = osrs.inv.is_item_in_inventory_v2(inv, 26879)
-    if in_air_altar() \
-            and guardian_ess \
-            and click_allowed(status_obj, '34760', 7):
-        print('making airs')
-        altar = osrs.server.get_game_object('2844,4834,0', '34760')
-        if altar:
-            osrs.move.move_and_click(altar['x'], altar['y'], 3, 3)
-            return {'34760': datetime.datetime.now()}
-        else:
-            osrs.move.run_towards_square_v2({'x': 2844, 'y': 4834, 'z': 0})
-    return status_obj
-
-
-def make_minds(status_obj):
-    inv = osrs.inv.get_inv()
-    guardian_ess = osrs.inv.is_item_in_inventory_v2(inv, 26879)
-    if in_mind_altar() \
-            and guardian_ess \
-            and click_allowed(status_obj, '34761', 7):
-        print('making minds')
-        altar = osrs.server.get_game_object('2787,4840,0', '34761')
-        if altar:
-            osrs.move.move_and_click(altar['x'], altar['y'], 3, 3)
-            return {'34761': datetime.datetime.now()}
-        else:
-            osrs.move.run_towards_square_v2({'x': 2787, 'y': 4840, 'z': 0})
-    return status_obj
-
-
-def make_bodys(status_obj):
-    inv = osrs.inv.get_inv()
-    guardian_ess = osrs.inv.is_item_in_inventory_v2(inv, 26879)
-    if in_body_altar() \
-            and guardian_ess \
-            and click_allowed(status_obj, '34765', 7):
-        print('making bodys')
-        altar = osrs.server.get_game_object('2523,4840,0', '34765')
-        if altar:
-            osrs.move.move_and_click(altar['x'], altar['y'], 3, 3)
-            return {'34765': datetime.datetime.now()}
-        else:
-            osrs.move.run_towards_square_v2({'x': 2523, 'y': 4840, 'z': 0})
-    return status_obj
-
-
-def make_chaos(status_obj):
-    inv = osrs.inv.get_inv()
-    guardian_ess = osrs.inv.is_item_in_inventory_v2(inv, 26879)
-    if in_chaos_altar() \
-            and guardian_ess \
-            and click_allowed(status_obj, '34769', 7):
-        print('making chaos')
-        altar = osrs.server.get_game_object('2271,4842,0', '34769')
-        if altar:
-            osrs.move.move_and_click(altar['x'], altar['y'], 3, 3)
-            return {'34769': datetime.datetime.now()}
-        else:
-            osrs.move.run_towards_square_v2({'x': 2271, 'y': 4842, 'z': 0})
-    return status_obj
-
-
-def make_nats(status_obj):
-    inv = osrs.inv.get_inv()
-    guardian_ess = osrs.inv.is_item_in_inventory_v2(inv, 26879)
-    if in_nature_altar() \
-            and guardian_ess \
-            and click_allowed(status_obj, '34768', 7):
-        print('making nats')
-        altar = osrs.server.get_game_object('2400,4841,0', '34768')
-        if altar:
-            osrs.move.move_and_click(altar['x'], altar['y'], 3, 3)
-            return {'34768': datetime.datetime.now()}
-        else:
-            osrs.move.run_towards_square_v2({'x': 2400, 'y': 4841, 'z': 0})
-    return status_obj
-
-
-def leave_air_altar(status_obj):
-    inv = osrs.inv.get_inv()
-    guardian_ess = osrs.inv.is_item_in_inventory_v2(inv, 26879)
-    if in_air_altar() \
-            and not guardian_ess \
-            and click_allowed(status_obj, '34748', 7):
-        print('leaving air altar')
-        exit = osrs.server.get_game_object('2841,4828,0', '34748')
-        if exit:
-            osrs.move.move_and_click(exit['x'], exit['y'], 3, 3)
-            return {'34748': datetime.datetime.now()}
-        else:
-            osrs.move.run_towards_square_v2({'x': 2841, 'y': 4828, 'z': 0})
-    return status_obj
-
-
-def in_fire_altar():
-    loc = osrs.server.get_world_location()
+def in_fire_altar(loc):
     if 'x' in loc and 2560 <= loc['x'] <= 2605:
         return True
     else:
         return False
 
 
-def in_earth_altar():
-    loc = osrs.server.get_world_location()
+def in_earth_altar(loc):
     if 'x' in loc and 2628 <= loc['x'] <= 2680:
         return True
     else:
         return False
 
 
-def in_water_altar():
-    loc = osrs.server.get_world_location()
+def in_water_altar(loc):
     if 'x' in loc and 2707 <= loc['x'] <= 2732:
         return True
     else:
         return False
 
 
-def make_fires(status_obj):
-    inv = osrs.inv.get_inv()
+def leave_altar(status_obj, location_function, tile, exit_id, qh, rune):
+    inv = qh.get_inventory()
     guardian_ess = osrs.inv.is_item_in_inventory_v2(inv, 26879)
-    if in_fire_altar() and guardian_ess and click_allowed(status_obj, '34764', 5):
-        print('in fire altar')
-        altar = osrs.server.get_game_object('2585,4839,0', '34764')
+    if location_function(qh.get_player_world_location()) and not guardian_ess and click_allowed(status_obj, exit_id, 8):
+        print('leaving {} altar'.format(rune))
+        exit_obj = osrs.server.get_game_object('{},{},{}'.format(tile['x'], tile['y'], tile['z']), exit_id)
+        if exit_obj:
+            osrs.move.move_and_click(exit_obj['x'], exit_obj['y'], 3, 3)
+            return {exit_id: datetime.datetime.now()}
+        else:
+            osrs.move.run_towards_square_v2(tile)
+    return status_obj
+
+
+def craft_rune(status_obj, location_function, tile, altar_id, qh, rune):
+    inv = qh.get_inventory()
+    guardian_ess = osrs.inv.is_item_in_inventory_v2(inv, 26879)
+    if location_function(qh.get_player_world_location()) and guardian_ess and click_allowed(status_obj, altar_id, 5):
+        print('craft {} runes'.format(rune))
+        altar = osrs.server.get_game_object('{},{},{}'.format(tile['x'], tile['y'], tile['z']), altar_id)
         if altar:
             osrs.move.move_and_click(altar['x'], altar['y'], 3, 3)
-            return {'34764': datetime.datetime.now()}
+            return {altar_id: datetime.datetime.now()}
         else:
-            osrs.move.run_towards_square_v2({'x': 2585, 'y': 4839, 'z': 0})
+            osrs.move.run_towards_square_v2(tile)
     return status_obj
 
 
-def leave_fire_altar(status_obj):
-    inv = osrs.inv.get_inv()
-    guardian_ess = osrs.inv.is_item_in_inventory_v2(inv, 26879)
-    if in_fire_altar() and not guardian_ess and click_allowed(status_obj, '34752', 5):
-        print('leaving fire altar')
-        exit = osrs.server.get_game_object('2574,4850,0', '34752')
-        if exit:
-            osrs.move.move_and_click(exit['x'], exit['y'], 3, 3)
-            return {'34752': datetime.datetime.now()}
-        else:
-            osrs.move.run_towards_square_v2({'x': 2574, 'y': 4850, 'z': 0})
-    return status_obj
-
-
-def make_earths(status_obj):
-    inv = osrs.inv.get_inv()
-    guardian_ess = osrs.inv.is_item_in_inventory_v2(inv, 26879)
-    if in_earth_altar() and guardian_ess and click_allowed(status_obj, '34763', 5):
-        print('making earths')
-        altar = osrs.server.get_game_object('2658,4841,0', '34763')
-        if altar:
-            osrs.move.move_and_click(altar['x'], altar['y'], 3, 3)
-            return {'34763': datetime.datetime.now()}
-        else:
-            osrs.move.run_towards_square_v2({'x': 2658, 'y': 4841, 'z': 0})
-    return status_obj
-
-
-def leave_earth_altar(status_obj):
-    inv = osrs.inv.get_inv()
-    guardian_ess = osrs.inv.is_item_in_inventory_v2(inv, 26879)
-    if in_earth_altar() and not guardian_ess and click_allowed(status_obj, '34751', 5):
-        print('leaving earth altars')
-        exit = osrs.server.get_game_object('2655,4829,0', '34751')
-        if exit:
-            osrs.move.move_and_click(exit['x'], exit['y'], 3, 3)
-            return {'34751': datetime.datetime.now()}
-        else:
-            osrs.move.run_towards_square_v2({'x': 2655, 'y': 4829, 'z': 0})
-    return status_obj
-
-
-def make_waters(status_obj):
-    inv = osrs.inv.get_inv()
-    guardian_ess = osrs.inv.is_item_in_inventory_v2(inv, 26879)
-    if in_water_altar() and guardian_ess and click_allowed(status_obj, '34762', 5):
-        print('making waters')
-        altar = osrs.server.get_game_object('2716,4836,0', '34762')
-        if altar:
-            osrs.move.move_and_click(altar['x'], altar['y'], 3, 3)
-            return {'34762': datetime.datetime.now()}
-        else:
-            osrs.move.run_towards_square_v2({'x': 2716, 'y': 4836, 'z': 0})
-    return status_obj
-
-
-def leave_water_altar(status_obj):
-    inv = osrs.inv.get_inv()
-    guardian_ess = osrs.inv.is_item_in_inventory_v2(inv, 26879)
-    if in_water_altar() and not guardian_ess and click_allowed(status_obj, '34750', 5):
-        print('leaving water altar')
-        exit = osrs.server.get_game_object('2727,4832,0', '34750')
-        if exit:
-            osrs.move.move_and_click(exit['x'], exit['y'], 3, 3)
-            return {'34750': datetime.datetime.now()}
-        else:
-            osrs.move.run_towards_square_v2({'x': 2727, 'y': 4832, 'z': 0})
-    return status_obj
-
-
-def leave_mind_altar(status_obj):
-    inv = osrs.inv.get_inv()
-    guardian_ess = osrs.inv.is_item_in_inventory_v2(inv, 26879)
-    if in_mind_altar() and not guardian_ess and click_allowed(status_obj, '34749', 5):
-        print('leaving mind altar')
-        exit = osrs.server.get_game_object('2793,4827,0', '34749')
-        if exit:
-            osrs.move.move_and_click(exit['x'], exit['y'], 3, 3)
-            return {'34749': datetime.datetime.now()}
-        else:
-            osrs.move.run_towards_square_v2({'x': 2793, 'y': 4827, 'z': 0})
-    return status_obj
-
-
-def leave_body_altar(status_obj):
-    inv = osrs.inv.get_inv()
-    guardian_ess = osrs.inv.is_item_in_inventory_v2(inv, 26879)
-    if in_body_altar() and not guardian_ess and click_allowed(status_obj, '34753', 5):
-        print('leaving body altar')
-        exit = osrs.server.get_game_object('2521,4833,0', '34753')
-        if exit:
-            osrs.move.move_and_click(exit['x'], exit['y'], 3, 3)
-            return {'34753': datetime.datetime.now()}
-        else:
-            osrs.move.run_towards_square_v2({'x': 2521, 'y': 4833, 'z': 0})
-    return status_obj
-
-
-def leave_chaos_altar(status_obj):
-    inv = osrs.inv.get_inv()
-    guardian_ess = osrs.inv.is_item_in_inventory_v2(inv, 26879)
-    if in_chaos_altar() and not guardian_ess and click_allowed(status_obj, '34757', 5):
-        print('leaving chaos altar')
-        exit = osrs.server.get_game_object('2282,4837,0', '34757')
-        if exit:
-            osrs.move.move_and_click(exit['x'], exit['y'], 3, 3)
-            return {'34757': datetime.datetime.now()}
-        else:
-            osrs.move.run_towards_square_v2({'x': 2282, 'y': 4837, 'z': 0})
-    return status_obj
-
-
-def leave_nature_altar(status_obj):
-    inv = osrs.inv.get_inv()
-    guardian_ess = osrs.inv.is_item_in_inventory_v2(inv, 26879)
-    if in_nature_altar() and not guardian_ess and click_allowed(status_obj, '34756', 5):
-        print('leaving nat altar')
-        exit = osrs.server.get_game_object('2400,4834,0', '34756')
-        if exit:
-            osrs.move.move_and_click(exit['x'], exit['y'], 3, 3)
-            return {'34756': datetime.datetime.now()}
-        else:
-            osrs.move.run_towards_square_v2({'x': 2400, 'y': 4834, 'z': 0})
-    return status_obj
-
-
-def charge_guardian(status_obj):
-    inv = osrs.inv.get_inv()
+def charge_guardian(status_obj, qh):
+    inv = qh.get_inventory()
     elem_guardian_stone = osrs.inv.is_item_in_inventory_v2(inv, 26881)
     catalytic_guardian_stone = osrs.inv.is_item_in_inventory_v2(inv, 26880)
-    if in_main_arena() \
+    if in_main_arena(qh.get_player_world_location()) \
             and (elem_guardian_stone or catalytic_guardian_stone) \
             and click_allowed(status_obj, '11403', 5):
         print('charging guardian')
@@ -726,24 +504,23 @@ def charge_guardian(status_obj):
     return status_obj
 
 
-def place_charged_cells(status_obj):
-    inv = osrs.inv.get_inv()
+def place_charged_cells(status_obj, qh):
+    inv = qh.get_inventory()
     elem_guardian_stone = osrs.inv.is_item_in_inventory_v2(inv, 26881)
     catalytic_guardian_stone = osrs.inv.is_item_in_inventory_v2(inv, 26880)
     powered_cells = osrs.inv.are_items_in_inventory_v2(
         inv,
         [
             26885,  # strong
-            26883,  # weak
             26884,  # medium
             26886  # overpowered
         ]
     )
-    if in_main_arena() \
+    if in_main_arena(qh.get_player_world_location()) \
             and powered_cells \
             and click_allowed(status_obj, '3608,9503,0', 5) \
             and not (elem_guardian_stone or catalytic_guardian_stone) \
-            and game_active():
+            and game_active(qh.get_widgets()):
         print('placing charged cell')
         osrs.move.spam_click('3608,9503,0', 1.5)
         return {'3608,9503,0': datetime.datetime.now()}
@@ -751,16 +528,32 @@ def place_charged_cells(status_obj):
 
 
 # currently if i have less than 24 guardian frags in bag it doesnt do anything
-def mine_regular_guardian_remains(status_obj):
-    inv = osrs.inv.get_inv()
+def mine_regular_guardian_remains(status_obj, qh):
+    inv = qh.get_inventory()
     guardian_frags = osrs.inv.is_item_in_inventory_v2(inv, 26878)
     guardian_ess = osrs.inv.is_item_in_inventory_v2(inv, 26879)
-    if in_main_arena() \
-            and game_active() \
-            and not (guardian_frags or (guardian_frags and guardian_frags['quantity'] <= 24)) \
+    elem_guardian_stone = osrs.inv.is_item_in_inventory_v2(inv, 26881)
+    catalytic_guardian_stone = osrs.inv.is_item_in_inventory_v2(inv, 26880)
+    portal_text = open_portal(qh.get_widgets())
+    powered_cells = osrs.inv.are_items_in_inventory_v2(
+        inv,
+        [
+            26885,  # strong
+            26884,  # medium
+            26886  # overpowered
+        ]
+    )
+    if in_main_arena(qh.get_player_world_location()) \
+            and game_active(qh.get_widgets()) \
+            and (not guardian_frags or (guardian_frags and guardian_frags['quantity'] <= 24)) \
             and not guardian_ess \
+            and not qh.get_is_mining() \
+            and not powered_cells \
+            and not portal_text \
+            and not elem_guardian_stone \
+            and not catalytic_guardian_stone \
             and click_allowed(status_obj, '43717', 5) \
-            and not is_pregame():
+            and not is_pregame(qh.get_widgets()):
         remains = osrs.server.get_game_object('3602,9491,0', '43717')
         if remains:
             osrs.move.move_and_click(remains['x'], remains['y'], 3, 3)
@@ -771,7 +564,7 @@ def mine_regular_guardian_remains(status_obj):
 
 
 def enter_arena(status_obj, qh):
-    if outside_main_arena(qh.get_player_world_location()) and click_allowed(status_obj, '43700', 5):
+    if outside_main_arena(qh.get_player_world_location()) and click_allowed(status_obj, '43700', 2):
         remains = osrs.server.get_game_object('3615,9483,0', '43700')
         if remains:
             osrs.move.move_and_click(remains['x'], remains['y'], 3, 3)
@@ -779,13 +572,24 @@ def enter_arena(status_obj, qh):
         elif click_allowed(status_obj, '000', 30):
             loc = osrs.server.get_world_location()
             if loc:
-                osrs.move.spam_click('{},{},{}'.format(loc['x'], loc['y'], loc['z']), 1)
+                osrs.move.spam_click('3617,9482,0', 1)
                 return {'000': datetime.datetime.now()}
     return status_obj
 
 
+def turn_on_run(widgets):
+    run_orb = widgets and '160,29' in widgets and widgets['160,29']
+    if run_orb:
+        if run_orb['spriteID'] != 1065:
+            osrs.move.fast_move_and_click(run_orb['x'], run_orb['y'], 3, 3)
+        return
 
-# need to add the rest of the elemental rune altars in here
+
+def check_for_logout(qh):
+    if in_main_arena(qh.get_player_world_location()) \
+            and (not game_active(qh.get_widgets()) or is_pregame(qh.get_widgets())):
+        osrs.game.break_manager_v3(script_config)
+
 def main():
     clicks = {}
     qh = osrs.queryHelper.QueryHelper()
@@ -794,37 +598,40 @@ def main():
         qh.player_world_location()
         qh.is_mining()
         qh.player_animation()
-        qh.widgets(['746,23'])
+        qh.widgets(['746,23', '746,28', '160,29'])
         qh.query_backend()
+        turn_on_run(qh.get_widgets())
         clicks = enter_arena(clicks, qh)
         clicks = take_uncharged_cells(clicks, qh)
-        clicks = run_to_large_remains(clicks)
-        clicks = mine_large_remains(clicks)
-        clicks = leave_large_remains_area(clicks)
-        clicks = frag_port_available(clicks)
-        clicks = mine_huge_remains(clicks)
-        clicks = leave_huge_remains(clicks)
-        clicks = enter_active_rift_v2(clicks)
-        clicks = make_airs(clicks)
-        clicks = make_fires(clicks)
-        clicks = make_earths(clicks)
-        clicks = make_waters(clicks)
-        clicks = make_minds(clicks)
-        clicks = make_bodys(clicks)
-        clicks = make_chaos(clicks)
-        clicks = make_nats(clicks)
-        clicks = leave_air_altar(clicks)
-        clicks = leave_fire_altar(clicks)
-        clicks = leave_earth_altar(clicks)
-        clicks = leave_water_altar(clicks)
-        clicks = leave_mind_altar(clicks)
-        clicks = leave_body_altar(clicks)
-        clicks = leave_chaos_altar(clicks)
-        clicks = leave_nature_altar(clicks)
-        clicks = charge_guardian(clicks)
-        clicks = place_charged_cells(clicks)
-        clicks = make_essence_v2(clicks)
-        clicks = mine_regular_guardian_remains(clicks)
+        clicks = run_to_large_remains(clicks, qh)
+        clicks = mine_large_remains(clicks, qh)
+        clicks = leave_large_remains_area(clicks, qh)
+        clicks = frag_port_available(clicks, qh)
+        clicks = mine_huge_remains(clicks, qh)
+        clicks = leave_huge_remains(clicks, qh)
+        clicks = enter_active_rift_v2(clicks, qh)
+        clicks = craft_rune(clicks, in_air_altar, {'x': 2844, 'y': 4834, 'z': 0}, '34760', qh, 'air')
+        clicks = craft_rune(clicks, in_fire_altar, {'x': 2585, 'y': 4839, 'z': 0}, '34764', qh, 'fire')
+        clicks = craft_rune(clicks, in_earth_altar, {'x': 2658, 'y': 4841, 'z': 0}, '34763', qh, 'earth')
+        clicks = craft_rune(clicks, in_water_altar, {'x': 2716, 'y': 4836, 'z': 0}, '34762', qh, 'water')
+        clicks = craft_rune(clicks, in_mind_altar, {'x': 2787, 'y': 4840, 'z': 0}, '34761', qh, 'mind')
+        clicks = craft_rune(clicks, in_body_altar, {'x': 2523, 'y': 4840, 'z': 0}, '34765', qh, 'body')
+        clicks = craft_rune(clicks, in_chaos_altar, {'x': 2271, 'y': 4842, 'z': 0}, '34769', qh, 'chaos')
+        clicks = craft_rune(clicks, in_nature_altar, {'x': 2400, 'y': 4841, 'z': 0}, '34768', qh, 'nature')
+        clicks = leave_altar(clicks, in_air_altar, {'x': 2841, 'y': 4828, 'z': 0}, '34748', qh, 'air')
+        clicks = leave_altar(clicks, in_fire_altar, {'x': 2574, 'y': 4850, 'z': 0}, '34752', qh, 'fire')
+        clicks = leave_altar(clicks, in_earth_altar, {'x': 2655, 'y': 4829, 'z': 0}, '34751', qh, 'earth')
+        clicks = leave_altar(clicks, in_water_altar, {'x': 2727, 'y': 4832, 'z': 0}, '34750', qh, 'water')
+        clicks = leave_altar(clicks, in_mind_altar, {'x': 2793, 'y': 4827, 'z': 0}, '34749', qh, 'mind')
+        clicks = leave_altar(clicks, in_body_altar, {'x': 2521, 'y': 4833, 'z': 0}, '34753', qh, 'body')
+        clicks = leave_altar(clicks, in_chaos_altar, {'x': 2282, 'y': 4837, 'z': 0}, '34757', qh, 'chaos')
+        clicks = leave_altar(clicks, in_nature_altar, {'x': 2400, 'y': 4834, 'z': 0}, '34756', qh, 'nature')
+        clicks = charge_guardian(clicks, qh)
+        clicks = place_charged_cells(clicks, qh)
+        clicks = make_essence_v2(clicks, qh)
+        clicks = mine_regular_guardian_remains(clicks, qh)
+        check_for_logout(qh)
 
 
+# it wont craft nats, need to investigate
 main()

@@ -13,7 +13,7 @@ course_start = {
 
 # wait a few seconds before logging out in case i am in an obstacle
 def logout():
-    osrs.clock.random_sleep(5, 6)
+    osrs.clock.random_sleep(10, 11)
 
 
 script_config = {

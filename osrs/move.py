@@ -103,6 +103,17 @@ def move_and_click(x, y, w, h, button='left'):
     clock.random_sleep(0.15, 0.25)
 
 
+def click(obj):
+    movement = bezier_movement(obj['x'] - 3, obj['y'] - 3, obj['x'] + 3, obj['y'] + 3)
+    clock.random_sleep(0.15, 0.25)
+    # DO NOT CLICK ON THE TASK BAR
+    if not movement:
+        print('movement was unsuccessful, target was off screen. Rejecting click.')
+        return
+    pyautogui.click()
+    clock.random_sleep(0.15, 0.25)
+
+
 def run_to_loc(steps, port='56799'):
     # dont click on squares hidden by my inventory
     q = {
@@ -224,7 +235,10 @@ def run_towards_square_v2(destination, port='56799'):
         loc['y'] = loc['y'] + y_inc
         next_sq = '{},{},{}'.format(loc['x'], loc['y'], loc['z'])
         steps.append(next_sq)
-    print(steps)
+    print('run towards steps', steps)
+    # I will never call this function on a destination this far away
+    if len(steps) > 100:
+        return
     run_to_loc_v2(steps)
 
 
