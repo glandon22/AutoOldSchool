@@ -1,6 +1,7 @@
 from pynput.keyboard import Controller, Key
 
 keyboard = Controller()
+key = Key
 
 
 def press_key(key):

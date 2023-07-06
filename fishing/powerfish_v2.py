@@ -19,7 +19,7 @@ fish_to_catch_config = {
     '7': 'barbarian'
 }
 
-fish_to_catch = fish_to_catch_config['2']
+fish_to_catch = fish_to_catch_config['7']
 
 fish_spot_ids = {
     'shrimp': [
@@ -59,7 +59,8 @@ fish_spot_ids = {
         '7464',
         '7468',
         '8524'
-    ]
+    ],
+    'barbarian': ['1542']
 }
 
 fish_to_drop_ids = {
@@ -69,7 +70,12 @@ fish_to_drop_ids = {
     'salmon': [
         335,
         331
-    ]
+    ],
+    'barbarian': [
+            11328,
+            11330,
+            11332
+        ]
 }
 
 
@@ -82,7 +88,6 @@ def find_spot():
         closest = osrs.util.find_closest_target(data['npcs'])
         osrs.move.move_and_click(closest['x'], closest['y'], 8, 8)
         osrs.clock.random_sleep(0.5, 0.8)
-        osrs.move.click_off_screen(click=False)
     else:
         print('did not find any fishing spots.')
         osrs.clock.random_sleep(2, 3)
@@ -110,7 +115,6 @@ def main():
             print('not fishing')
             # wait a second or two so that I dont click the spot right before it disappears
             osrs.clock.random_sleep(1.2, 1.5)
-            osrs.clock.antiban_rest(40, 75, 100)
             find_spot()
             osrs.clock.random_sleep(1.2, 1.5)
 

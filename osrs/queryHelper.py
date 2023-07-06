@@ -199,6 +199,21 @@ class QueryHelper:
         else:
             return 'bankItems' in self.game_data and self.game_data['bankItems']
 
+    def set_equipment(self):
+        self.query['equipmentInv'] = True
+
+    def get_equipment(self, item=False):
+        if item:
+            if 'equipmentInv' in self.game_data:
+                for equipment in self.game_data['equipmentInv']:
+                    if equipment['id'] == int(item):
+                        return equipment
+                    else:
+                        return False
+            else:
+                return False
+        return 'equipmentInv' in self.game_data and self.game_data['equipmentInv']
+
     def query_backend(self):
         self.game_data = server.query_game_data(self.query, config['port'])
         return self.game_data

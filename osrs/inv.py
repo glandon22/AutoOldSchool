@@ -24,6 +24,7 @@ def get_item_quantity_in_inv(inv, targ):
 
 
 def are_items_in_inventory_v2(inv, items_to_find):
+    print(inv, items_to_find)
     if not inv:
         return False
     for item in inv:

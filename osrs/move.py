@@ -114,6 +114,11 @@ def click(obj):
     clock.random_sleep(0.15, 0.25)
 
 
+def fast_click(obj):
+    bezier_movement(obj['x'] - 3, obj['y'] - 3, obj['x'] + 3, obj['y'] + 3)
+    pyautogui.click()
+
+
 def run_to_loc(steps, port='56799'):
     # dont click on squares hidden by my inventory
     q = {
@@ -315,8 +320,34 @@ def right_click_menu_select_v2(item, entry_action):
         reversed_entries = list(reversed(data['menuEntries']['items']))
         for i, item in enumerate(reversed_entries):
             if entry_action in item:
-                additional_pixels = 19 + (len(data['menuEntries']['items']) - 1 - i) * 15
+                additional_pixels = 22 + (len(data['menuEntries']['items']) - 1 - i) * 15
                 move_and_click(curr_pos[0], curr_pos[1] + additional_pixels, 0, 0)
+                return
+
+
+def right_click_v3(item, action):
+    move_and_click(item['x'], item['y'], 3, 3, 'right')
+    curr_pos = pyautogui.position()
+    clock.random_sleep(0.2, 0.3)
+    q = {
+        'rightClick': True
+    }
+    data = server.query_game_data(q, config['port'])
+    if 'rightClickMenu' in data:
+        entry_data = data['rightClickMenu']
+        choose_option_offset = entry_data['height'] - (len(entry_data['entries']) * 15)
+        parsed_entries = reversed(entry_data['entries'])
+        for i, entry in enumerate(parsed_entries):
+            if action.upper() == entry.upper():
+                print(i)
+                additional = choose_option_offset + (i * 15)
+                print(additional)
+                move_and_click(
+                    curr_pos[0],
+                    curr_pos[1] + additional,
+                    0,
+                    0
+                )
                 return
 
 
