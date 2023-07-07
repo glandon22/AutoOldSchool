@@ -45,3 +45,10 @@ def toggle_run(desired_state, port):
             if run_orb['spriteID'] != desired_state:
                 move.fast_move_and_click(run_orb['x'], run_orb['y'], 3, 3)
             return
+
+
+def get_run_energy():
+    while True:
+        run_orb = server.get_widget('160,28')
+        if run_orb:
+            return int(run_orb['text'])
