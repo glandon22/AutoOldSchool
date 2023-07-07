@@ -132,3 +132,4 @@ def blow_glass(crafting_lvl):
     elif crafting_lvl != osrs.server.get_skill_data('crafting'):
         return craft()
 
+main()

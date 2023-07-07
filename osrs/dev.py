@@ -1,6 +1,9 @@
 import math
-
+import os
 import yaml
+
+
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 def point_dist(x1, y1, x2, y2):
@@ -37,7 +40,7 @@ def config_loader():
 
 
 def load_yaml():
-    with open("../config.yaml", "r") as stream:
+    with open("{}/config.yaml".format(ROOT_DIR[:-5]), "r") as stream:
         try:
             return yaml.safe_load(stream)
         except yaml.YAMLError as exc:
