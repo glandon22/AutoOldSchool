@@ -128,11 +128,13 @@ def bank(qh):
 
 
 def open_bank_interface(qh):
+    logging.info('looking for bank interface.')
     started_banking = datetime.datetime.now()
     last_click = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
         qh.query_backend()
         bank_chest = qh.get_game_objects(bank_id)
+        logging.info('bank chest: {}'.format(bank_chest))
         if qh.get_bank():
             return True
         elif (datetime.datetime.now() - started_banking).total_seconds() > 30:
