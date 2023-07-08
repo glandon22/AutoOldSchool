@@ -52,6 +52,7 @@ def withdraw_and_equip_items(qh, need_ring, need_binding, need_stam):
             logging.info('need a ring.')
             ring = qh.get_bank(ring_of_dueling_ids)
             if not ring:
+                logging.error('out of rings of dueling: {}'.format(qh.get_bank()))
                 exit('out of rings of dueling')
             osrs.move.click(ring)
         if need_binding:
