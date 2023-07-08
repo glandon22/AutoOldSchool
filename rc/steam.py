@@ -100,7 +100,10 @@ def withdraw_materials(qh: osrs.queryHelper.QueryHelper):
 
 
 def bank(qh):
+    logging.info('Banking.')
+    logging.debug('equipment information: {}'.format(qh.get_equipment()))
     need_ring = not find_equipment(qh.get_equipment(), ring_of_dueling_ids)
+    logging.debug('need ring: {}'.format(need_ring))
     need_binding = not find_equipment(qh.get_equipment(), [binding_id])
     need_stam = False
     run_energy = osrs.player.get_run_energy()
