@@ -6,9 +6,8 @@ logging.basicConfig(filename='test',
                     filemode='a',
                     format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
                     datefmt='%H:%M:%S',
-                    level=logging.DEBUG)
+                    level=logging.INFO)
 
-logging.info("Running Urban Planning")
 fire_altar_entrance_tile = '3313,3256,0'
 fire_altar_tile = '2584,4839,0'
 bank_tile = '2444,3083,0'
@@ -47,13 +46,16 @@ def find_equipment(equipment, ids):
 
 
 def withdraw_and_equip_items(qh, need_ring, need_binding, need_stam):
+    logging.info('withdrawing necessary rings and necklaces.')
     if need_ring or need_binding or need_stam:
         if need_ring:
+            logging.info('need a ring.')
             ring = qh.get_bank(ring_of_dueling_ids)
             if not ring:
                 exit('out of rings of dueling')
             osrs.move.click(ring)
         if need_binding:
+            logging.info('need a binding.')
             binding = qh.get_bank(binding_id)
             if not binding:
                 exit('out of binding necklaces')
@@ -80,6 +82,7 @@ def withdraw_and_equip_items(qh, need_ring, need_binding, need_stam):
 
 
 def dump_items(qh):
+    logging.info('dumping items.')
     qh.query_backend()
     if qh.get_inventory() and len(qh.get_inventory()) != 0:
         dump_inv = qh.get_widgets('12,42')
@@ -101,17 +104,19 @@ def withdraw_materials(qh: osrs.queryHelper.QueryHelper):
 
 def bank(qh):
     logging.info('Banking.')
-    logging.debug('equipment information: {}'.format(qh.get_equipment()))
+    logging.info('equipment information: {}'.format(qh.get_equipment()))
     need_ring = not find_equipment(qh.get_equipment(), ring_of_dueling_ids)
     logging.debug('need ring: {}'.format(need_ring))
     need_binding = not find_equipment(qh.get_equipment(), [binding_id])
     need_stam = False
     run_energy = osrs.player.get_run_energy()
     if run_energy and run_energy < 25:
+        logging.info('need a stam pot.')
         need_stam = True
     banking = open_bank_interface(qh)
     if not banking:
         return False
+    logging.info('opened bank interface.')
     osrs.clock.sleep_one_tick()
     dump_items(qh)
     withdraw_and_equip_items(qh, need_ring, need_binding, need_stam)
@@ -143,12 +148,15 @@ def tele(qh, dest):
         valid_rings = ring_of_dueling_ids if dest == 'pvp arena' else [] + ring_of_dueling_ids + [single_charge_dueling_id]
         have_ring = find_equipment(qh.get_equipment(), valid_rings)
         if not have_ring:
+            logging.warning('did not have a ring to tele with.')
             return print('did not have a valid ring!!!')
+        logging.info('have ring to tele with.')
         osrs.keeb.keyboard.press(osrs.keeb.key.f4)
         osrs.keeb.keyboard.release(osrs.keeb.key.f4)
         osrs.clock.sleep_one_tick()
         ring_slot = qh.get_widgets('387,24')
         if ring_slot:
+            logging.info('clicking ring to tele.')
             osrs.move.right_click_v3(ring_slot, dest)
             osrs.keeb.keyboard.press(osrs.keeb.key.esc)
             osrs.keeb.keyboard.release(osrs.keeb.key.esc)
@@ -217,7 +225,9 @@ def main():
         curr_loc = qh.get_player_world_location()
         if curr_loc and 2435 <= curr_loc['x'] <= 2445 and \
                 3082 <= curr_loc['y'] <= 3098:
+            logging.info('in c wars bank.')
             if len(qh.get_inventory()) == 28:
+                logging.info('inv is full, heading to pvp arena.')
                 tele(qh, 'pvp arena')
             else:
                 bank(qh)
