@@ -154,7 +154,7 @@ def tele(qh, dest):
         have_ring = find_equipment(qh.get_equipment(), valid_rings)
         if not have_ring:
             logging.warning('did not have a ring to tele with.')
-            return print('did not have a valid ring!!!')
+            return bank(qh)
         logging.info('have ring to tele with.')
         osrs.keeb.keyboard.press(osrs.keeb.key.f4)
         osrs.keeb.keyboard.release(osrs.keeb.key.f4)
