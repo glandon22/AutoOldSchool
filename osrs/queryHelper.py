@@ -1,6 +1,13 @@
 import osrs.server as server
 import osrs.dev as dev
 import osrs.inv as inv
+import logging
+
+logging.basicConfig(filename='test',
+                    filemode='a',
+                    format='%(asctime)s %(name)s %(levelname)s %(message)s',
+                    datefmt='%H:%M:%S',
+                    level=logging.INFO)
 
 config = dev.load_yaml()
 
@@ -188,9 +195,11 @@ class QueryHelper:
         those items to be found or False
         :return: {'x': 1738, 'y': 768, 'index': 0, 'id': 8007, 'quantity': 77} || False
         """
+        logging.info('getting bank data.')
         if item:
             if 'bankItems' in self.game_data:
                 if type(item) is list:
+                    logging.info('got a list of items to search for: {}'.format(item))
                     return inv.are_items_in_inventory_v2(self.game_data['bankItems'], item)
                 else:
                     return inv.is_item_in_inventory_v2(self.game_data['bankItems'], item)
