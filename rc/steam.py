@@ -1,7 +1,14 @@
 import datetime
-
+import logging
 import osrs
 
+logging.basicConfig(filename='test',
+                    filemode='a',
+                    format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+                    datefmt='%H:%M:%S',
+                    level=logging.DEBUG)
+
+logging.info("Running Urban Planning")
 fire_altar_entrance_tile = '3313,3256,0'
 fire_altar_tile = '2584,4839,0'
 bank_tile = '2444,3083,0'
@@ -200,6 +207,7 @@ def main():
     qh.set_game_objects({fire_altar_entrance_tile, fire_altar_tile, bank_tile}, {altar_id, bank_id, altar_entrance_id})
     qh.set_equipment()
     qh.set_bank()
+    logging.info('starting the script')
     while True:
         osrs.game.break_manager_v3(script_config)
         qh.query_backend()
