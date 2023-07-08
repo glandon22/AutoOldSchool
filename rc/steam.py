@@ -50,6 +50,7 @@ def withdraw_and_equip_items(qh, need_ring, need_binding, need_stam):
     if need_ring or need_binding or need_stam:
         if need_ring:
             logging.info('need a ring.')
+            logging.info('bank items: {}'.format(qh.get_bank()))
             ring = qh.get_bank(ring_of_dueling_ids)
             logging.info('ring: {}'.format(ring))
             if not ring:
