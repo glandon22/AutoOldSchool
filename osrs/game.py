@@ -245,9 +245,12 @@ def break_manager_v3(script_config):
         if script_config['logout']:
             script_config['logout']()
         logout()
+        config['timings']['break_end'] = datetime.datetime.now() + datetime.timedelta(
+            minutes=random.randint(timings['min_rest'], timings['max_rest'])
+        )
         while True:
             if datetime.datetime.now() < config['timings']['break_end']:
-                move.move_and_click(500, 500, 5, 5)
+                move.move_and_click(500, 750, 5, 5)
                 clock.random_sleep(10, 15)
             else:
                 break

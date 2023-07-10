@@ -233,6 +233,7 @@ def main():
             logging.info('in c wars bank.')
             if len(qh.get_inventory()) == 28:
                 logging.info('inv is full, heading to pvp arena.')
+                osrs.server.post_game_status('Teleporting to PVP Arena.')
                 tele(qh, 'pvp arena')
             else:
                 bank(qh)
