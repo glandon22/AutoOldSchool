@@ -28,7 +28,7 @@ def post_game_status(q, updated_config, port='56798'):
     while True:
         try:
             start = updated_config['timings']['break_start']
-            osrs.dev.app_log.info(f'Timing variables. Start: {start}')
+            osrs.dev.app_log.info(f'Timing variables. Start: {start} and {type(start)}')
             start = type(start) is datetime and f'{start.hour}:{start.minute}:{start.second}'
             end = updated_config['timings']['break_end']
             osrs.dev.app_log.info(f'Timing variables. Start: {start}, end: {end}')
