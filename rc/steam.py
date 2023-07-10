@@ -160,7 +160,6 @@ def tele(qh, dest):
         osrs.keeb.keyboard.press(osrs.keeb.key.f4)
         osrs.keeb.keyboard.release(osrs.keeb.key.f4)
         osrs.clock.sleep_one_tick()
-        osrs.clock.sleep_one_tick()
         ring_slot = qh.get_widgets('387,24')
         if ring_slot:
             logging.info('clicking ring to tele.')
@@ -227,7 +226,7 @@ def main():
     qh.set_bank()
     logging.info('starting the script')
     while True:
-        osrs.game.break_manager_v3(script_config)
+        updated_config = osrs.game.break_manager_v3(script_config)
         qh.query_backend()
         curr_loc = qh.get_player_world_location()
         if curr_loc and 2435 <= curr_loc['x'] <= 2445 and \
@@ -235,22 +234,22 @@ def main():
             logging.info('in c wars bank.')
             if len(qh.get_inventory()) == 28:
                 logging.info('inv is full, heading to pvp arena.')
-                osrs.server.post_game_status('Teleporting to PVP Arena.')
+                osrs.server.post_game_status('Teleporting to PVP Arena.', updated_config)
                 tele(qh, 'pvp arena')
             else:
-                osrs.server.post_game_status('Banking.')
+                osrs.server.post_game_status('Banking.', updated_config)
                 bank(qh)
         elif curr_loc and 3300 <= curr_loc['x'] <= 3328 and \
                 3224 <= curr_loc['y'] <= 3259:
-            osrs.server.post_game_status('Running to fire altar.')
+            osrs.server.post_game_status('Running to fire altar.', updated_config)
             run_to_altar(qh)
         elif curr_loc and 2566 <= curr_loc['x'] <= 2599 and \
                 4837 <= curr_loc['y'] <= 4853:
             if qh.get_inventory(pure_ess_id):
-                osrs.server.post_game_status('Crafting steam runes.')
+                osrs.server.post_game_status('Crafting steam runes.', updated_config)
                 make_runes(qh)
             else:
-                osrs.server.post_game_status('Teleporting to Castle Wars.')
+                osrs.server.post_game_status('Teleporting to Castle Wars.', updated_config)
                 tele(qh, 'castle wars')
 
 main()

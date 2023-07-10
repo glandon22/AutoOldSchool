@@ -262,3 +262,4 @@ def break_manager_v3(script_config):
         if script_config['login']:
             script_config['login']()
         set_timings(timings, current_time)
+    return config

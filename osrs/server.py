@@ -24,12 +24,12 @@ def query_game_data(q, port='56799'):
             print('Got an error trying to query the game server: ', e)
 
 
-def post_game_status(q, port='56798'):
+def post_game_status(q, updated_config, port='56798'):
     while True:
         try:
-            start = config['timings']['break_start']
+            start = updated_config['timings']['break_start']
             start = type(start) is datetime and f'{start.hour}:{start.minute}:{start.second}'
-            end = config['timings']['break_end']
+            end = updated_config['timings']['break_end']
             end = type(end) is datetime and f'{end.hour}:{end.minute}:{end.second}'
             osrs.dev.app_log.info(f'Timing variables. Start: {start}, end: {end}')
             enhanced_q = {
