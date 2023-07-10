@@ -2,6 +2,8 @@ import datetime
 import logging
 
 import requests
+
+import osrs.dev
 import osrs.util as util
 import osrs.dev as dev
 
@@ -29,6 +31,7 @@ def post_game_status(q, port='56798'):
             start = type(start) is datetime and f'{start.hour}:{start.minute}:{start.second}'
             end = config['timings']['break_end']
             end = type(end) is datetime and f'{end.hour}:{end.minute}:{end.second}'
+            osrs.dev.app_log.info(f'Timing variables. Start: {start}, end: {end}')
             enhanced_q = {
                 'status': q,
                 'next_break': start,
