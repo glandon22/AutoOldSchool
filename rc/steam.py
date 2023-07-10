@@ -47,18 +47,20 @@ def withdraw_and_equip_items(qh, need_ring, need_binding, need_stam):
             ring = qh.get_bank(ring_of_dueling_ids)
             osrs.dev.app_log.info('ring: {}'.format(ring))
             if not ring:
-                logging.error('out of rings of dueling: {}'.format(qh.get_bank()))
+                osrs.dev.app_log.error('out of rings of dueling: {}'.format(qh.get_bank()))
                 exit('out of rings of dueling')
             osrs.move.click(ring)
         if need_binding:
             osrs.dev.app_log.info('need a binding.')
             binding = qh.get_bank(binding_id)
             if not binding:
+                osrs.dev.app_log.error('out of binding: {}'.format(qh.get_bank()))
                 exit('out of binding necklaces')
             osrs.move.click(binding)
         if need_stam:
             stam = qh.get_bank(stam_pot_ids)
             if not stam:
+                osrs.dev.app_log.error('out of stams: {}'.format(qh.get_bank()))
                 exit('out of stams')
             osrs.move.click(stam)
         osrs.keeb.keyboard.press(osrs.keeb.key.esc)
@@ -102,7 +104,7 @@ def bank(qh):
     osrs.dev.app_log.info('Banking.')
     osrs.dev.app_log.info('equipment information: {}'.format(qh.get_equipment()))
     need_ring = not find_equipment(qh.get_equipment(), ring_of_dueling_ids)
-    logging.debug('need ring: {}'.format(need_ring))
+    osrs.dev.app_log.debug('need ring: {}'.format(need_ring))
     need_binding = not find_equipment(qh.get_equipment(), [binding_id])
     need_stam = False
     run_energy = osrs.player.get_run_energy()
@@ -147,7 +149,7 @@ def tele(qh, dest):
         valid_rings = ring_of_dueling_ids if dest == 'pvp arena' else [] + ring_of_dueling_ids + [single_charge_dueling_id]
         have_ring = find_equipment(qh.get_equipment(), valid_rings)
         if not have_ring:
-            logging.warning('did not have a ring to tele with.')
+            osrs.dev.app_log.warning('did not have a ring to tele with.')
             return bank(qh)
         osrs.dev.app_log.info('have ring to tele with.')
         osrs.keeb.keyboard.press(osrs.keeb.key.f4)
@@ -245,4 +247,7 @@ def main():
                 osrs.server.post_game_status('Teleporting to Castle Wars.', updated_config)
                 tele(qh, 'castle wars')
 
-main()
+try:
+    main()
+except Exception as e:
+    osrs.dev.app_log.error(f'Script blew up: {e}')
