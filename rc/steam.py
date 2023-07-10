@@ -128,6 +128,7 @@ def bank(qh):
     osrs.keeb.keyboard.press(osrs.keeb.key.esc)
     osrs.keeb.keyboard.release(osrs.keeb.key.esc)
     osrs.clock.sleep_one_tick()
+    osrs.clock.sleep_one_tick()
 
 
 def open_bank_interface(qh):
@@ -158,6 +159,7 @@ def tele(qh, dest):
         logging.info('have ring to tele with.')
         osrs.keeb.keyboard.press(osrs.keeb.key.f4)
         osrs.keeb.keyboard.release(osrs.keeb.key.f4)
+        osrs.clock.sleep_one_tick()
         osrs.clock.sleep_one_tick()
         ring_slot = qh.get_widgets('387,24')
         if ring_slot:
