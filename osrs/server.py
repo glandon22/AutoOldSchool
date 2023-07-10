@@ -1,3 +1,4 @@
+import datetime
 import logging
 
 import requests
@@ -24,17 +25,21 @@ def query_game_data(q, port='56799'):
 def post_game_status(q, port='56798'):
     while True:
         try:
+            start = config['timings']['break_start']
+            start = type(start) is datetime and f'{start.hour}:{start.minute}:{start.second}'
+            end = config['timings']['break_end']
+            end = type(end) is datetime and f'{end.hour}:{end.minute}:{end.second}'
             enhanced_q = {
                 'status': q,
-                'next_break': config['timings']['break_start'],
-                'break_end': config['timings']['break_end']
+                'next_break': start,
+                'break_end': end
             }
             r = session.post(url='http://localhost:{}/manager'.format(port), json=enhanced_q)
             parsed = r.json()
             logging.info('Parsed response from game server: {}'.format(parsed))
-            if parsed and 'terminate' in parsed:
+            if parsed and 'terminate' in parsed and parsed['terminate']:
                 logging.info('Process killed by game server.')
-                exit(0)
+                exit(99)
             return r.json()
         except Exception as e:
             print('Got an error trying to post to the game server: ', e)

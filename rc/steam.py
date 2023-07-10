@@ -236,15 +236,19 @@ def main():
                 osrs.server.post_game_status('Teleporting to PVP Arena.')
                 tele(qh, 'pvp arena')
             else:
+                osrs.server.post_game_status('Banking.')
                 bank(qh)
         elif curr_loc and 3300 <= curr_loc['x'] <= 3328 and \
                 3224 <= curr_loc['y'] <= 3259:
+            osrs.server.post_game_status('Running to fire altar.')
             run_to_altar(qh)
         elif curr_loc and 2566 <= curr_loc['x'] <= 2599 and \
                 4837 <= curr_loc['y'] <= 4853:
             if qh.get_inventory(pure_ess_id):
+                osrs.server.post_game_status('Crafting steam runes.')
                 make_runes(qh)
             else:
+                osrs.server.post_game_status('Teleporting to Castle Wars.')
                 tele(qh, 'castle wars')
 
 main()
