@@ -39,9 +39,9 @@ def post_game_status(q, updated_config, port='56798'):
             }
             r = session.post(url='http://localhost:{}/manager'.format(port), json=enhanced_q)
             parsed = r.json()
-            logging.info('Parsed response from game server: {}'.format(parsed))
+            dev.app_log.info('Parsed response from game server: {}'.format(parsed))
             if parsed and 'terminate' in parsed and parsed['terminate']:
-                logging.info('Process killed by game server.')
+                dev.app_log.info('Process killed by game server.')
                 exit(99)
             return r.json()
         except Exception as e:
