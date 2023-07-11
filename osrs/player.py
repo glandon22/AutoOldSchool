@@ -17,7 +17,7 @@ def toggle_prayer_slow(desired_state, port):
             return
 
 
-def toggle_prayer(desired_state, port):
+def toggle_prayer(desired_state, port='56799'):
     """
     :param desired_state: string : 'on' : 'off'
     :param port:
