@@ -93,6 +93,7 @@ def withdraw_materials(qh: osrs.queryHelper.QueryHelper):
     for item in [water_talisman_id, water_rune_id, pure_ess_id]:
         found_item = qh.get_bank(item)
         if not found_item:
+            osrs.dev.app_log.warn(f'didnt find {found_item}')
             exit('out of {}'.format(found_item))
         if item == water_talisman_id:
             osrs.move.click(found_item)
@@ -135,6 +136,7 @@ def open_bank_interface(qh):
         bank_chest = qh.get_game_objects(bank_id)
         osrs.dev.app_log.info('bank chest: {}'.format(bank_chest))
         if qh.get_bank():
+            osrs.dev.app_log.info('opened bank interface')
             return True
         elif (datetime.datetime.now() - started_banking).total_seconds() > 30:
             return False
