@@ -188,9 +188,11 @@ class QueryHelper:
         those items to be found or False
         :return: {'x': 1738, 'y': 768, 'index': 0, 'id': 8007, 'quantity': 77} || False
         """
+        dev.app_log.info('getting bank data.')
         if item:
             if 'bankItems' in self.game_data:
                 if type(item) is list:
+                    dev.app_log.info('got a list of items to search for: {}'.format(item))
                     return inv.are_items_in_inventory_v2(self.game_data['bankItems'], item)
                 else:
                     return inv.is_item_in_inventory_v2(self.game_data['bankItems'], item)

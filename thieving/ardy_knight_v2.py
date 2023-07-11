@@ -1,9 +1,5 @@
 import datetime
 
-import pyautogui
-
-import osrs
-
 import osrs
 import random
 from pynput import keyboard

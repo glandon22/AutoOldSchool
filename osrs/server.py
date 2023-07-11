@@ -1,4 +1,9 @@
+import datetime
+import logging
+
 import requests
+
+import osrs.dev
 import osrs.util as util
 import osrs.dev as dev
 
@@ -16,7 +21,31 @@ def query_game_data(q, port='56799'):
             r = session.get(url='http://localhost:{}/osrs'.format(port), json=q)
             return r.json()
         except Exception as e:
-            print('Got an error trying to query the db: ', e)
+            print('Got an error trying to query the game server: ', e)
+
+
+def post_game_status(q, updated_config, port='56798'):
+    while True:
+        try:
+            start = updated_config['timings']['break_start']
+            start = type(start) is datetime.datetime and f'{start.hour}:{start.minute}:{start.second}'
+            end = updated_config['timings']['break_end']
+            end = type(end) is datetime.datetime and f'{end.hour}:{end.minute}:{end.second}'
+            osrs.dev.app_log.info(f'Timing variables. Start: {start}, end: {end}')
+            enhanced_q = {
+                'status': q,
+                'next_break': start,
+                'break_end': end
+            }
+            r = session.post(url='http://localhost:{}/manager'.format(port), json=enhanced_q)
+            parsed = r.json()
+            dev.app_log.info('Parsed response from game server: {}'.format(parsed))
+            if parsed and 'terminate' in parsed and parsed['terminate']:
+                dev.app_log.info('Process killed by game server.')
+                exit(99)
+            return r.json()
+        except Exception as e:
+            print('Got an error trying to post to the game server: ', e)
 
 
 # not sure if this even works anymore

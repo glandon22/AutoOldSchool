@@ -1,5 +1,4 @@
 import datetime
-
 import osrs
 
 fire_altar_entrance_tile = '3313,3256,0'
@@ -40,20 +39,28 @@ def find_equipment(equipment, ids):
 
 
 def withdraw_and_equip_items(qh, need_ring, need_binding, need_stam):
+    osrs.dev.app_log.info('withdrawing necessary rings and necklaces.')
     if need_ring or need_binding or need_stam:
         if need_ring:
+            osrs.dev.app_log.info('need a ring.')
+            osrs.dev.app_log.info('bank items: {}'.format(qh.get_bank()))
             ring = qh.get_bank(ring_of_dueling_ids)
+            osrs.dev.app_log.info('ring: {}'.format(ring))
             if not ring:
+                osrs.dev.app_log.error('out of rings of dueling: {}'.format(qh.get_bank()))
                 exit('out of rings of dueling')
             osrs.move.click(ring)
         if need_binding:
+            osrs.dev.app_log.info('need a binding.')
             binding = qh.get_bank(binding_id)
             if not binding:
+                osrs.dev.app_log.error('out of binding: {}'.format(qh.get_bank()))
                 exit('out of binding necklaces')
             osrs.move.click(binding)
         if need_stam:
             stam = qh.get_bank(stam_pot_ids)
             if not stam:
+                osrs.dev.app_log.error('out of stams: {}'.format(qh.get_bank()))
                 exit('out of stams')
             osrs.move.click(stam)
         osrs.keeb.keyboard.press(osrs.keeb.key.esc)
@@ -73,6 +80,7 @@ def withdraw_and_equip_items(qh, need_ring, need_binding, need_stam):
 
 
 def dump_items(qh):
+    osrs.dev.app_log.info('dumping items.')
     qh.query_backend()
     if qh.get_inventory() and len(qh.get_inventory()) != 0:
         dump_inv = qh.get_widgets('12,42')
@@ -85,6 +93,7 @@ def withdraw_materials(qh: osrs.queryHelper.QueryHelper):
     for item in [water_talisman_id, water_rune_id, pure_ess_id]:
         found_item = qh.get_bank(item)
         if not found_item:
+            osrs.dev.app_log.warn(f'didnt find {found_item}')
             exit('out of {}'.format(found_item))
         if item == water_talisman_id:
             osrs.move.click(found_item)
@@ -93,15 +102,20 @@ def withdraw_materials(qh: osrs.queryHelper.QueryHelper):
 
 
 def bank(qh):
+    osrs.dev.app_log.info('Banking.')
+    osrs.dev.app_log.info('equipment information: {}'.format(qh.get_equipment()))
     need_ring = not find_equipment(qh.get_equipment(), ring_of_dueling_ids)
+    osrs.dev.app_log.debug('need ring: {}'.format(need_ring))
     need_binding = not find_equipment(qh.get_equipment(), [binding_id])
     need_stam = False
     run_energy = osrs.player.get_run_energy()
     if run_energy and run_energy < 25:
+        osrs.dev.app_log.info('need a stam pot.')
         need_stam = True
     banking = open_bank_interface(qh)
     if not banking:
         return False
+    osrs.dev.app_log.info('opened bank interface.')
     osrs.clock.sleep_one_tick()
     dump_items(qh)
     withdraw_and_equip_items(qh, need_ring, need_binding, need_stam)
@@ -110,15 +124,19 @@ def bank(qh):
     osrs.keeb.keyboard.press(osrs.keeb.key.esc)
     osrs.keeb.keyboard.release(osrs.keeb.key.esc)
     osrs.clock.sleep_one_tick()
+    osrs.clock.sleep_one_tick()
 
 
 def open_bank_interface(qh):
+    osrs.dev.app_log.info('looking for bank interface.')
     started_banking = datetime.datetime.now()
     last_click = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
         qh.query_backend()
         bank_chest = qh.get_game_objects(bank_id)
+        osrs.dev.app_log.info('bank chest: {}'.format(bank_chest))
         if qh.get_bank():
+            osrs.dev.app_log.info('opened bank interface')
             return True
         elif (datetime.datetime.now() - started_banking).total_seconds() > 30:
             return False
@@ -133,12 +151,15 @@ def tele(qh, dest):
         valid_rings = ring_of_dueling_ids if dest == 'pvp arena' else [] + ring_of_dueling_ids + [single_charge_dueling_id]
         have_ring = find_equipment(qh.get_equipment(), valid_rings)
         if not have_ring:
-            return print('did not have a valid ring!!!')
+            osrs.dev.app_log.warning('did not have a ring to tele with.')
+            return bank(qh)
+        osrs.dev.app_log.info('have ring to tele with.')
         osrs.keeb.keyboard.press(osrs.keeb.key.f4)
         osrs.keeb.keyboard.release(osrs.keeb.key.f4)
         osrs.clock.sleep_one_tick()
         ring_slot = qh.get_widgets('387,24')
         if ring_slot:
+            osrs.dev.app_log.info('clicking ring to tele.')
             osrs.move.right_click_v3(ring_slot, dest)
             osrs.keeb.keyboard.press(osrs.keeb.key.esc)
             osrs.keeb.keyboard.release(osrs.keeb.key.esc)
@@ -200,24 +221,35 @@ def main():
     qh.set_game_objects({fire_altar_entrance_tile, fire_altar_tile, bank_tile}, {altar_id, bank_id, altar_entrance_id})
     qh.set_equipment()
     qh.set_bank()
+    osrs.dev.app_log.info('starting the script')
     while True:
-        osrs.game.break_manager_v3(script_config)
+        updated_config = osrs.game.break_manager_v3(script_config)
         qh.query_backend()
         curr_loc = qh.get_player_world_location()
         if curr_loc and 2435 <= curr_loc['x'] <= 2445 and \
                 3082 <= curr_loc['y'] <= 3098:
+            osrs.dev.app_log.info('in c wars bank.')
             if len(qh.get_inventory()) == 28:
+                osrs.dev.app_log.info('inv is full, heading to pvp arena.')
+                osrs.server.post_game_status('Teleporting to PVP Arena.', updated_config)
                 tele(qh, 'pvp arena')
             else:
+                osrs.server.post_game_status('Banking.', updated_config)
                 bank(qh)
         elif curr_loc and 3300 <= curr_loc['x'] <= 3328 and \
                 3224 <= curr_loc['y'] <= 3259:
+            osrs.server.post_game_status('Running to fire altar.', updated_config)
             run_to_altar(qh)
         elif curr_loc and 2566 <= curr_loc['x'] <= 2599 and \
                 4837 <= curr_loc['y'] <= 4853:
             if qh.get_inventory(pure_ess_id):
+                osrs.server.post_game_status('Crafting steam runes.', updated_config)
                 make_runes(qh)
             else:
+                osrs.server.post_game_status('Teleporting to Castle Wars.', updated_config)
                 tele(qh, 'castle wars')
 
-main()
+try:
+    main()
+except Exception as e:
+    osrs.dev.app_log.error(f'Script blew up: {e}')

@@ -1,6 +1,24 @@
 import math
-
+import os
 import yaml
+import logging
+from logging.handlers import RotatingFileHandler
+
+log_formatter = logging.Formatter('%(asctime)s %(levelname)s %(funcName)s(%(lineno)d) %(message)s')
+
+logFile = 'log'
+
+my_handler = RotatingFileHandler(logFile, mode='a', maxBytes=5*1024*1024,
+                                 backupCount=2, encoding=None, delay=False)
+my_handler.setFormatter(log_formatter)
+my_handler.setLevel(logging.INFO)
+
+app_log = logging.getLogger('root')
+app_log.setLevel(logging.INFO)
+
+app_log.addHandler(my_handler)
+
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 def point_dist(x1, y1, x2, y2):
@@ -37,7 +55,7 @@ def config_loader():
 
 
 def load_yaml():
-    with open("../config.yaml", "r") as stream:
+    with open("{}/config.yaml".format(ROOT_DIR[:-5]), "r") as stream:
         try:
             return yaml.safe_load(stream)
         except yaml.YAMLError as exc:

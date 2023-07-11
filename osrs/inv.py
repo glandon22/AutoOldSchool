@@ -3,6 +3,8 @@ import random
 
 import osrs.server as server
 import osrs.move as move
+import osrs.dev as dev
+
 
 def get_inv(port='56799', reject_empty=True):
     while True:
@@ -24,12 +26,14 @@ def get_item_quantity_in_inv(inv, targ):
 
 
 def are_items_in_inventory_v2(inv, items_to_find):
-    print(inv, items_to_find)
+    dev.app_log.info('looking for {} in inv: {}'.format(items_to_find, inv))
     if not inv:
         return False
     for item in inv:
         if item['id'] in items_to_find:
+            dev.app_log.info('found the following item: {}'. format(item))
             return item
+    dev.app_log.info('didnt find the item.')
     return False
 
 
