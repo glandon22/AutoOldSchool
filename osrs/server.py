@@ -46,6 +46,7 @@ def post_game_status(q, updated_config, port='56798'):
             return r.json()
         except Exception as e:
             print('Got an error trying to post to the game server: ', e)
+            return
 
 
 # not sure if this even works anymore

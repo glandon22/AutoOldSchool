@@ -1,10 +1,12 @@
 import osrs.inv as inv_util
 import osrs.clock as clock
 import osrs.move as move
+import osrs.queryHelper
 import osrs.server as server
 import osrs.util as util
 import osrs.keeb as keeb
-
+import osrs.dev as dev
+import osrs.queryHelper as queryHelper
 
 def deposit_all_of_x(items, port='56799'):
     while True:
@@ -110,3 +112,15 @@ def deposit_box_dump_inv():
             break
     keeb.keyboard.press(keeb.Key.esc)
     keeb.keyboard.release(keeb.Key.esc)
+
+
+def dump_items():
+    dev.app_log.info('dumping items.')
+    qh = queryHelper.QueryHelper()
+    qh.set_inventory()
+    qh.set_widgets({'12,42'})
+    qh.query_backend()
+    if qh.get_inventory() and len(qh.get_inventory()) != 0:
+        dump_inv = qh.get_widgets('12,42')
+        if dump_inv:
+            move.click(dump_inv)

@@ -266,11 +266,11 @@ def avoid_acid_pools_v7(anchor_tile, inv, orb):
         loc = osrs.server.get_world_location(port)
         if (datetime.datetime.now() - last_click).total_seconds() > .85:
             if direction == 1 and loc and loc['x'] < anchor_tile['x'] + 2:
-                osrs.move.spam_click('{},{},0'.format(anchor_tile['x'] + 3, anchor_tile['y']), 0.25, port)
+                osrs.move.spam_click('{},{},0'.format(anchor_tile['x'] + 5, anchor_tile['y']), 0.25, port)
                 last_click = datetime.datetime.now()
                 direction = 0
             elif direction == 0 and loc and loc['x'] > anchor_tile['x'] - 2:
-                osrs.move.spam_click('{},{},0'.format(anchor_tile['x'] - 3, anchor_tile['y']), 0.25, port)
+                osrs.move.spam_click('{},{},0'.format(anchor_tile['x'] - 5, anchor_tile['y']), 0.25, port)
                 last_click = datetime.datetime.now()
                 direction = 1
 

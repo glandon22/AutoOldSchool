@@ -12,6 +12,16 @@ import osrs.dev as dev
 config = dev.load_yaml()
 
 
+class ScriptConfiguration(object):
+    def __init__(self, intensity, login, logout):
+        self.config = {
+            'intensity': intensity,
+            'login': login,
+            'logout': logout
+        }
+    low = 'low'
+    high = 'high'
+
 def login_v2(password, port='56799'):
     keeb.keyboard.press(keeb.Key.enter)
     keeb.keyboard.release(keeb.Key.enter)
