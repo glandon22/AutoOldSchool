@@ -90,7 +90,7 @@ def main():
     fletching_level = get_fletching_level()
     start_time = datetime.datetime.now()
     while True:
-        start_time = osrs.game.break_manager(start_time, 53, 58, 587, 874, 'pass_70', False)
+        start_time = osrs.game.break_manager(start_time, 53, 58, 345, 567, 'julenth', False)
         print('Clicking on banker.')
         click_banker()
         print('Waiting for bank interface to open.')
@@ -100,6 +100,7 @@ def main():
         withdraw_materials()
         print('Stringing bows.')
         string()
+        start_stringing = datetime.datetime.now()
         while True:
             # Throttle calls to the backend slightly
             osrs.clock.random_sleep(0.025, 0.026)
@@ -110,11 +111,12 @@ def main():
             data = osrs.server.query_game_data(q)
             if 'inv' in data and not osrs.inv.are_items_in_inventory(data['inv'], [BOWSTRING, UNSTRUNG_BOW]):
                 print('Bag completed stringing.')
-                osrs.clock.antiban_rest(40, 100, 150)
                 break
-            elif data['skills']['fletching']['level'] != fletching_level:
+            elif data['skills']['fletching']['level'] != fletching_level or \
+                    (datetime.datetime.now() - start_stringing).total_seconds() > 30:
                 print('Leveled fletching. Stringing again.')
                 fletching_level = data['skills']['fletching']['level']
+                start_stringing = datetime.datetime.now()
                 string()
 
 
