@@ -104,7 +104,7 @@ def main():
     start_time = datetime.datetime.now()
     while True:
         # need to create function to allow log out
-        start_time = osrs.game.break_manager(start_time, 51, 56, 423, 551, 'julenth', False, port, collect_traps_to_logout)
+        start_time = osrs.game.break_manager(start_time, 51, 56, 423, 551, 'pass_70', False, port, collect_traps_to_logout)
         for pair in locs:
             catch = osrs.server.get_game_object(pair['tree'], CAUGHT_SALLY, port)
             if catch:
@@ -118,4 +118,7 @@ def main():
 
 
 main()
-# i accidentally trapped a ninja imp over my trap which blocked action...
+# i accidentally trapped a ninja imp over my trap which blocked action.../plugins/python-ce/helpers/pydev/pydevd.py --multiprocess --qt-support=auto --client 127.0.0.1 --port 37925 --file /home/george/PycharmProjects/AutoOldSchool/hunter/red_sally.py
+# Connected to pydev debugger (build 231.9161.41)
+# Current Script Runtime:  0.697167 . Maximum Script Runtime:  3180
+# here

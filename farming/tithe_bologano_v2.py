@@ -131,8 +131,10 @@ def plant_seed(amount):
 
 
 def water_plant(amount, nominal_state):
+    start_time = datetime.datetime.now()
     planted = 0
     blighted = 0
+    #  or (start_time - datetime.datetime.now()).total_seconds() < 75
     while planted + blighted < amount:
         patches = osrs.server.get_multiple_surrounding_game_objects(
             10,

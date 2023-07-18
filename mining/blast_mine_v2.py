@@ -153,7 +153,12 @@ def do_action_v3(tile, obj, next_obj):
             return True
         spot = osrs.server.get_game_object(tile, obj, port)
         if spot and (datetime.datetime.now() - last_click).total_seconds() > 5:
-            osrs.move.move_and_click(spot['x'], spot['y'], 3, 3)
+            # this tile is too close to another excavation spot, so i need to click a little higher
+            # to ensure i avoid it
+            if tile == '1467,3883,0':
+                osrs.move.move_and_click(spot['x'], spot['y'] - 10, 3, 0)
+            else:
+                osrs.move.move_and_click(spot['x'], spot['y'], 3, 3)
             last_click = datetime.datetime.now()
         elif (datetime.datetime.now() - start_time).total_seconds() > 35:
             return False
@@ -247,10 +252,10 @@ def collect_ore():
                         osrs.move.right_click_menu_select(found_ore, None, '56799', '', 'Deposit-All')
 
             osrs.keeb.keyboard.press(Key.esc)
-            osrs.keeb.keyboard.press(Key.esc)
-            osrs.keeb.keyboard.press(Key.down)
+            osrs.keeb.keyboard.release(Key.esc)
+            osrs.keeb.keyboard.press(Key.up)
             osrs.clock.random_sleep(2, 3)
-            osrs.keeb.keyboard.release(Key.down)
+            osrs.keeb.keyboard.release(Key.up)
             return
 
 
@@ -258,7 +263,7 @@ def main():
     start_time = datetime.datetime.now()
     while True:
         start_time = osrs.game.break_manager(start_time, 49, 54, 432, 673, 'julenth')
-        osrs.server.set_yaw(random.randint(300, 325), port)
+        osrs.server.set_yaw(0, port)
         osrs.clock.sleep_one_tick()
         blast_ore()
         osrs.server.set_yaw(random.randint(800, 825), port)

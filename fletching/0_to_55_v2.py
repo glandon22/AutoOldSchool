@@ -3,7 +3,7 @@ import osrs
 
 import osrs
 import base64
-import keyboard
+from pynput import keyboard
 port = '56799'
 knife_id = 946
 
@@ -49,20 +49,26 @@ def fletch(log, lvl):
     osrs.move.move_and_click(log_in_inv['x'], log_in_inv['y'], 4, 4)
     osrs.clock.random_sleep(0.9, 1)
     button = determine_button(lvl)
-    keyboard.send(button)
+    osrs.keeb.keyboard.press(button)
 
 def bank(log):
     osrs.bank.click_banker(port)
     osrs.bank.wait_for_bank_interface(port)
     osrs.bank.deposit_all_but_x_in_bank([knife_id], port)
+    while True:
+        bank = osrs.bank.get_bank_data(port)
+        if bank:
+            break
     bank = osrs.bank.get_bank_data(port)
+    print(bank)
     log_to_withdraw = osrs.inv.is_item_in_inventory_v2(bank, log)
     print('33333', log_to_withdraw)
     osrs.move.move_and_click(log_to_withdraw['x'], log_to_withdraw['y'], 3, 3)
     osrs.clock.random_sleep(0.5, 0.6)
+    osrs.keeb.keyboard.press(osrs.keeb.Key.esc)
+    osrs.keeb.keyboard.release(osrs.keeb.Key.esc)
 
 def main():
-    osrs.clock.random_sleep(5, 6)
     # do some checking to make sure my inv is changing, if not, start fletching again
     prev_inv_hash = '1'
     inv_updated = datetime.datetime.now()

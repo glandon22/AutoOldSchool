@@ -28,7 +28,7 @@ def main():
     last_click = datetime.datetime.now()
     start_time = datetime.datetime.now()
     while True:
-        start_time = osrs.game.break_manager(start_time, 51, 57, 456, 578, 'pass_70', False)
+        start_time = osrs.game.break_manager(start_time, 51, 57, 456, 578, 'julenth', False)
         animation = osrs.server.get_player_animation(port)
         inv = osrs.inv.get_inv(port)
         if animation in wc_animations:
