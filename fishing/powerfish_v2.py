@@ -6,6 +6,8 @@
 import datetime
 import time
 
+import pyautogui
+
 import osrs
 import math
 
@@ -119,3 +121,32 @@ def main():
             osrs.clock.random_sleep(1.2, 1.5)
 
 main()
+'''#osrs.server.query_game_data({'canvas': True})
+pyautogui.moveTo(0, 23)'''
+
+# 3051 unselected
+# 3055 blue, unseelcted
+# 3053 selected
+'''
+individual chat buttons
+162,1 full bar
+
+buttons vvv
+162,5
+162,8
+162,12
+162,16
+162,20
+162,24
+162,28
+
+
+161,93 minimap
+161,95 inv interface
+'''
+'''qh = osrs.queryHelper.QueryHelper()
+qh.set_widgets({'162,1', '162,5','162,8','162,12','162,16','162,20','162,24','162,28', '161,93', '161,95'})
+qh.set_canvas()
+qh.query_backend()
+print(qh.get_widgets('161,95'))
+print(qh.get_canvas())'''

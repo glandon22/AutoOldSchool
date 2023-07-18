@@ -96,7 +96,6 @@ class QueryHelper:
             self.query['widgets'] = list(set(old_widgets).union(widgets))
         else:
             self.query['widgets'] = list(widgets)
-        print(self.query['widgets'])
 
     def get_widgets(self, widget=False):
         if widget:
@@ -210,11 +209,16 @@ class QueryHelper:
                 for equipment in self.game_data['equipmentInv']:
                     if equipment['id'] == int(item):
                         return equipment
-                    else:
-                        return False
+                return False
             else:
                 return False
         return 'equipmentInv' in self.game_data and self.game_data['equipmentInv']
+
+    def set_canvas(self):
+        self.query['canvas'] = True
+
+    def get_canvas(self):
+        return 'canvas' in self.game_data and self.game_data['canvas']
 
     def query_backend(self):
         self.game_data = server.query_game_data(self.query, config['port'])

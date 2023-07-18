@@ -266,11 +266,11 @@ def avoid_acid_pools_v7(anchor_tile, inv, orb):
         loc = osrs.server.get_world_location(port)
         if (datetime.datetime.now() - last_click).total_seconds() > .85:
             if direction == 1 and loc and loc['x'] < anchor_tile['x'] + 2:
-                osrs.move.spam_click('{},{},0'.format(anchor_tile['x'] + 3, anchor_tile['y']), 0.25, port)
+                osrs.move.spam_click('{},{},0'.format(anchor_tile['x'] + 5, anchor_tile['y']), 0.25, port)
                 last_click = datetime.datetime.now()
                 direction = 0
             elif direction == 0 and loc and loc['x'] > anchor_tile['x'] - 2:
-                osrs.move.spam_click('{},{},0'.format(anchor_tile['x'] - 3, anchor_tile['y']), 0.25, port)
+                osrs.move.spam_click('{},{},0'.format(anchor_tile['x'] - 5, anchor_tile['y']), 0.25, port)
                 last_click = datetime.datetime.now()
                 direction = 1
 
@@ -407,14 +407,13 @@ def kill_vork(anchor_tile, last_super_anti_dose, last_divine_range_dose):
                 continue
             osrs.move.fast_move_and_click(divine_range['x'], divine_range['y'], 3, 3)
             continue
-        if vork and vork[0]['health'] / vork[0]['scale'] < .35:
+        if vork and vork[0]['health'] / vork[0]['scale'] < .35 and not vork_low_health:
             print('vork below 30% health - switching bolts')
             vork_low_health = True
             bolt_switch = osrs.inv.is_item_in_inventory_v2(inv, diamond_dragon_bolts_e_id)
             if bolt_switch:
                 osrs.move.fast_move_and_click(bolt_switch['x'], bolt_switch['y'], 3, 3)
                 # have to sleep for a tick otherwise it just keeps switching back and forth
-                osrs.clock.random_sleep(0.8, 0.9)
             continue
         if (vork and vork[0]['health'] == 0) or (not vork and vork_low_health):
             print('killed vork')
@@ -666,6 +665,7 @@ def get_deported_from_lunar_isle():
             else:
                 osrs.keeb.keyboard.type(' ')
 
+
 def tele_home():
     print('teleing home')
     attempts = 0
@@ -683,7 +683,8 @@ def tele_home():
             while True:
                 loc = osrs.server.get_world_location(port)
                 if loc and loc['x'] > 4000:
-                    osrs.clock.random_sleep(2, 2.3)
+                    osrs.player.toggle_prayer('off')
+                    osrs.clock.random_sleep(2.5, 2.7)
                     osrs.keeb.keyboard.press(Key.esc)
                     osrs.keeb.keyboard.release(Key.esc)
                     return
@@ -707,6 +708,7 @@ def enter_waterbirth_portal():
 
 def drink_from_pool():
     while True:
+        osrs.player.toggle_prayer('off')
         rejuv_pool = osrs.server.get_surrounding_game_objects(15, [rejuv_pool_id], port)
         if rejuv_pool and rejuv_pool_id in rejuv_pool:
             osrs.move.move_and_click(rejuv_pool[rejuv_pool_id]['x'], rejuv_pool[rejuv_pool_id]['y'], 3, 3)
