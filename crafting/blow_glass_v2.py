@@ -1,10 +1,6 @@
 
 import osrs
-import keyboard
-import math
 import datetime
-import random
-import time
 
 
 def craft():
@@ -21,8 +17,7 @@ def craft():
             osrs.move.move_and_click(item["x"], item["y"], 8, 8)
             break
     osrs.clock.random_sleep(.9, 1.2)
-    keyboard.send(item_to_make)
-    osrs.move.click_off_screen(300, 1000, 400, 700, False)
+    osrs.keeb.keyboard.type(item_to_make)
     return crafting_level
 
 
@@ -70,7 +65,8 @@ def main():
             if item["id"] == 1775:
                 found = True
                 osrs.move.move_and_click(item["x"], item["y"], 8, 8)
-        keyboard.send('esc')
+        osrs.keeb.keyboard.press(osrs.keeb.Key.esc)
+        osrs.keeb.keyboard.release(osrs.keeb.Key.esc)
         if not found:
             osrs.game.logout()
             print('out of glass')
@@ -78,7 +74,6 @@ def main():
 
         osrs.clock.random_sleep(0.9, 1.1)
         craft()
-        osrs.move.click_off_screen()
         while True:
             data = osrs.server.get_player_info(8814)
             found = False
@@ -91,7 +86,6 @@ def main():
             elif data['craftingLevel'] != crafting_level:
                 craft()
                 crafting_level = data['craftingLevel']
-                osrs.move.click_off_screen()
 
 
 def complete_inv_on_login(port):
@@ -123,7 +117,8 @@ def blow_glass(crafting_lvl):
             if item["id"] == 1775:
                 found = True
                 osrs.move.move_and_click(item["x"], item["y"], 8, 8)
-        keyboard.send('esc')
+        osrs.keeb.keyboard.press(osrs.keeb.Key.esc)
+        osrs.keeb.keyboard.release(osrs.keeb.Key.esc)
         if not found:
             return print('out of glass')
         osrs.clock.random_sleep(0.8, 0.9)

@@ -1,12 +1,11 @@
 import datetime
+import osrs
 
-import osrs
-import keyboard
-import osrs
 BOWSTRING = 1777
 # 66 yew long
 # 70 mage long
 # 62 maple long
+# 64 maple short
 UNSTRUNG_BOW = 66
 
 
@@ -24,9 +23,8 @@ def string():
             osrs.move.move_and_click(item["x"], item["y"], 8, 8)
             break
     osrs.clock.random_sleep(.9, 1.2)
-    keyboard.send('space')
-    osrs.clock.random_sleep(0.3, 0.4)
-    osrs.move.click_off_screen()
+    osrs.keeb.keyboard.press(osrs.keeb.key.space)
+    osrs.keeb.keyboard.release(osrs.keeb.key.space)
 
 
 def click_banker():
@@ -70,7 +68,8 @@ def withdraw_materials():
             elif item["id"] == BOWSTRING:
                 osrs.move.move_and_click(item["x"], item["y"], 8, 8)
                 found_bowstring = True
-        keyboard.send('esc')
+        osrs.keeb.keyboard.press(osrs.keeb.key.esc)
+        osrs.keeb.keyboard.release(osrs.keeb.key.esc)
         break
     if not found_bowstring or not found_unstrung:
         print(data)
@@ -113,7 +112,7 @@ def main():
                 print('Bag completed stringing.')
                 break
             elif data['skills']['fletching']['level'] != fletching_level or \
-                    (datetime.datetime.now() - start_stringing).total_seconds() > 30:
+                    (datetime.datetime.now() - start_stringing).total_seconds() > 17:
                 print('Leveled fletching. Stringing again.')
                 fletching_level = data['skills']['fletching']['level']
                 start_stringing = datetime.datetime.now()

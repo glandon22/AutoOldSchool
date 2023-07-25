@@ -46,10 +46,11 @@ def fletch(log, lvl):
     osrs.move.move_and_click(knife['x'], knife['y'], 3, 4)
     osrs.clock.random_sleep(0.5, 0.6)
     log_in_inv = osrs.inv.is_item_in_inventory_v2(inv, log)
-    osrs.move.move_and_click(log_in_inv['x'], log_in_inv['y'], 4, 4)
-    osrs.clock.random_sleep(0.9, 1)
-    button = determine_button(lvl)
-    osrs.keeb.keyboard.press(button)
+    if log_in_inv:
+        osrs.move.move_and_click(log_in_inv['x'], log_in_inv['y'], 4, 4)
+        osrs.clock.random_sleep(0.9, 1)
+        button = determine_button(lvl)
+        osrs.keeb.keyboard.press(button)
 
 def bank(log):
     osrs.bank.click_banker(port)
@@ -60,10 +61,10 @@ def bank(log):
         if bank:
             break
     bank = osrs.bank.get_bank_data(port)
-    print(bank)
+    print(log)
     log_to_withdraw = osrs.inv.is_item_in_inventory_v2(bank, log)
-    print('33333', log_to_withdraw)
-    osrs.move.move_and_click(log_to_withdraw['x'], log_to_withdraw['y'], 3, 3)
+    if log_to_withdraw:
+        osrs.move.move_and_click(log_to_withdraw['x'], log_to_withdraw['y'], 3, 3)
     osrs.clock.random_sleep(0.5, 0.6)
     osrs.keeb.keyboard.press(osrs.keeb.Key.esc)
     osrs.keeb.keyboard.release(osrs.keeb.Key.esc)
