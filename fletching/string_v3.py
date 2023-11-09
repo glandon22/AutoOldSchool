@@ -46,7 +46,7 @@ def withdraw_materials_v2(qh: osrs.queryHelper.QueryHelper):
     osrs.move.click(uns)
     osrs.keeb.keyboard.press(osrs.keeb.key.esc)
     osrs.keeb.keyboard.release(osrs.keeb.key.esc)
-    osrs.clock.sleep_one_tick()
+    osrs.clock.random_sleep(0.8, 0.9)
 
 
 script_config = {

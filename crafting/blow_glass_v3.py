@@ -1,4 +1,6 @@
 import datetime
+import random
+
 import osrs
 
 bankers_ids = [
@@ -71,33 +73,42 @@ def main():
     qh.set_npcs(bankers_ids)
     last_click = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
-        osrs.game.break_manager_v3(script_config)
+        updated_config = osrs.game.break_manager_v3(script_config)
         qh.query_backend()
         glass = qh.get_inventory(molten_glass_id)
         pipe = qh.get_inventory(pipe_id)
         if not pipe:
+            osrs.server.post_game_status('ERROR: Could not find pipe.', updated_config)
             exit('no pipe')
         if not glass:
+            osrs.server.post_game_status('Banking.', updated_config)
             open_bank_interface(qh)
             # click the second item in inv
+            osrs.server.post_game_status('Dumping processed items.', updated_config)
             osrs.move.click({'x': pipe['x'] + 30, 'y': pipe['y']})
             withdraw_materials_v2(qh)
+            osrs.server.post_game_status('Withdrawing supplies.', updated_config)
             last_click = datetime.datetime.now() - datetime.timedelta(hours=1)
         elif glass and (datetime.datetime.now() - last_click).total_seconds() > 60:
+            osrs.server.post_game_status('Beginning to craft items.', updated_config)
             osrs.move.click(pipe)
             osrs.move.click(glass)
             wait_time = datetime.datetime.now()
             while True:
                 qh.query_backend()
                 if qh.get_widgets('270,14'):
+                    osrs.server.post_game_status('Selecting item to craft from menu.', updated_config)
                     lvl = qh.get_skills('crafting')
                     osrs.keeb.keyboard.type(determine_item_to_make(lvl['level']))
                     last_click = datetime.datetime.now()
+                    for i in range(random.randint(0, 10)):
+                        osrs.move.jiggle_mouse()
                     break
                 elif (datetime.datetime.now() - wait_time).total_seconds() > 4:
                     break
         elif qh.get_widgets('233,0'):
+            osrs.server.post_game_status('Leveled up!', updated_config)
             last_click = datetime.datetime.now() - datetime.timedelta(hours=1)
 
-main()
 
+main()
