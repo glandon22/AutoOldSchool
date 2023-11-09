@@ -28,96 +28,28 @@ ores = [
     444,  # gold
     447,  # mith
     449,  # addy
-    451  # rune
+    451,  # rune
+    12012, # nugget
 ]
 
+gems = [
+    1623, #sap
+    1621, # em
+    1619, #ruby
+    1617, #dia
+]
 
-def click_i1():
+def navigate_rockfall_v2():
+    start_point = osrs.server.get_world_location()
+    dest = '3728' if start_point and start_point['x'] < 3727 else '3726'
     while True:
-        data = osrs.server.query_game_data(queries.I1)
-        if 'tiles' in data and '374856550' in data['tiles'] and data['tiles']['374856550']['y'] < 1010:
-            osrs.move.move_and_click(data['tiles']['374856550']['x'], data['tiles']['374856550']['y'], 7, 7)
+        curr_loc = osrs.server.get_world_location()
+        if curr_loc and curr_loc['x'] == 3727 and curr_loc['y'] == 5652:
+            osrs.move.spam_click(f'{dest},5652,0', 0.6)
+        elif curr_loc and curr_loc['x'] == int(dest):
             break
-
-
-def walk_to_i2_sq():
-    while True:
-        data = osrs.server.query_game_data(queries.I2_TILE)
-        # since i am so zoomed out, things at the top of the screen arent fully loaded and may not be clickable
-        # so, i wait until the square gets closer to assure that it is loaded
-        if 'tiles' in data and '373756520' in data['tiles'] and data['tiles']['373756520']['y'] > 150:
-            osrs.move.move_and_click(data['tiles']['373756520']['x'], data['tiles']['373756520']['y'], 7, 7)
-            break
-
-
-def navigate_rockfall():
-    wait_until_stationary()
-    data = osrs.server.query_game_data(queries.ROCKFALL_TILE)
-    rft = data['tiles']['372756520']
-    osrs.move.move_and_click(rft['x'], rft['y'], 10, 10)
-    # once rockfall is cleared, click on i2 square
-    while True:
-        data = osrs.server.query_game_data(queries.ROCKFALL_TILE_OBJECT_AND_I2_PLAYER_WP)
-        # want to basically model this off pass_rockfall_to_mine_veins but click to i2 after passing rock
-        # want to check if i am past the rockfall in order to break loop
-        if 'playerWorldPoint' in data and data['playerWorldPoint']['x'] > 3727:
-            break
-        #not moving
-        elif data['poseAnimation'] == 808:
-            # if not, try to mine ore veins
-            if '26680' not in data['gameObjects']:
-                walk_to_i2_sq()
-            # if rock is preset, click on the tile to mine it out
-            else:
-                if '372756520' in data['tiles']:
-                    osrs.move.move_and_click(data['tiles']['372756520']['x'], data['tiles']['372756520']['y'], 6, 6)
-                    osrs.clock.random_sleep(0.5, 0.6)
-        # still walking or running
         else:
-            osrs.clock.random_sleep(0.2, 0.3)
-        if '26680' not in data['gameObjects']:
-            if '373756520' in data['tiles']:
-                osrs.move.move_and_click(data['tiles']['373756520']['x'], data['tiles']['373756520']['y'], 6, 6)
-                break
-            elif am_stationary():
-                rft = data['tiles']['372756520']
-                osrs.move.move_and_click(rft['x'], rft['y'], 10, 10)
-                osrs.clock.random_sleep(0.5, 0.6)
-        else:
-            data = osrs.server.query_game_data(queries.POSE_ANIMATION)
-            if 'poseAnimation' in data and data['poseAnimation'] == 808:
-                data = osrs.server.query_game_data(queries.ROCKFALL_TILE)
-                rft = data['tiles']['372756520']
-                osrs.move.move_and_click(rft['x'], rft['y'], 10, 10)
-                osrs.clock.random_sleep(0.5, 0.6)
-
-
-#def navigate_rockfall_v2():
-
-
-def pass_rockfall_to_mine_veins():
-    wait_until_stationary()
-    data = osrs.server.query_game_data(queries.ROCKFALL_TILE)
-    rft = data['tiles']['372756520']
-    osrs.move.move_and_click(rft['x'], rft['y'], 10, 10)
-    osrs.clock.random_sleep(0.5, 0.6)
-    while True:
-        data = osrs.server.query_game_data(queries.ROCKFALL_TILE_AND_OBJECT_AND_ANIMATION_IS_MINING)
-        # break once i start mining
-        if data['isMining']:
-            break
-        # if im not moving, check whether or not rock is blocking me
-        elif data['poseAnimation'] == 808:
-            # if not, try to mine ore veins
-            if '26680' not in data['gameObjects']:
-                click_closest_ore_vein()
-            # if rock is preset, click on the tile to mine it out
-            else:
-                if '372756520' in data['tiles']:
-                    osrs.move.move_and_click(data['tiles']['372756520']['x'], data['tiles']['372756520']['y'], 6, 6)
-                    osrs.clock.random_sleep(0.5, 0.6)
-        else:
-            osrs.clock.random_sleep(0.2, 0.3)
+            osrs.move.spam_click('3727,5652,0', 0.6)
 
 
 def click_closest_ore_vein():
@@ -148,6 +80,7 @@ def should_collect_ore():
     return ore_in_inv + data['varBit'] > 80
 
 
+#need to make this retry TODO
 def deposit_paydirt():
     # deposit pay dirt
     while True:
@@ -172,77 +105,53 @@ def deposit_paydirt():
                 break
 
 
-def wait_until_stationary():
+def ore_handler():
+    clicked_sack = datetime.datetime.now() - datetime.timedelta(hours=1)
+    clicked_bank = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
-        data = osrs.server.query_game_data(queries.POSE_ANIMATION)
-        # i am not moving
-        if 'poseAnimation' in data and data['poseAnimation'] == 808:
-            break
-        else:
-            osrs.clock.random_sleep(0.1, 0.2)
-
-
-def am_stationary():
-    data = osrs.server.query_game_data(queries.POSE_ANIMATION)
-    # i am not moving
-    if 'poseAnimation' in data:
-        return data['poseAnimation'] == 808
+        data = osrs.server.query_game_data(queries.ORE_COUNT)
+        inv = osrs.inv.get_inv(reject_empty=False)
+        bank_data = osrs.bank.get_deposit_box_data()
+        if 'varBit' in data and data['varBit'] == 0 and not osrs.inv.are_items_in_inventory_v2(inv, ores + gems):
+            return
+        elif not osrs.inv.are_items_in_inventory_v2(inv, ores + gems) and (datetime.datetime.now() - clicked_sack).total_seconds() > 10:
+            data = osrs.server.query_game_data(queries.ORE_SACK)
+            if 'groundObjects' in data and '26688' in data['groundObjects']:
+                osrs.move.move_and_click(data['groundObjects']['26688']['x'], data['groundObjects']['26688']['y'], 3, 3)
+                clicked_sack = datetime.datetime.now()
+                clicked_bank = datetime.datetime.now() - datetime.timedelta(hours=1)
+        elif bank_data:
+            dumps = {}
+            dep = osrs.bank.get_deposit_box_data()
+            print('dep', dep)
+            if dep:
+                for item in dep:
+                    if item['id'] != 11920:
+                        dumps[item['id']] = item
+                print('dumps', dumps)
+                for key in dumps:
+                    osrs.move.click(dumps[key])
+                osrs.keeb.keyboard.press(osrs.keeb.key.esc)
+                osrs.keeb.keyboard.release(osrs.keeb.key.esc)
+        elif osrs.inv.are_items_in_inventory_v2(inv, ores + gems) and (datetime.datetime.now() - clicked_bank).total_seconds() > 10:
+            data = osrs.server.query_game_data(queries.BANK)
+            if 'gameObjects' in data and '25937' in data['gameObjects']:
+                osrs.move.move_and_click(data['gameObjects']['25937']['x'], data['gameObjects']['25937']['y'], 5, 5)
+                clicked_sack = datetime.datetime.now() - datetime.timedelta(hours=1)
+                clicked_bank = datetime.datetime.now()
 
 
 def bank_and_return():
-    navigate_rockfall()
-    osrs.clock.random_sleep(0.5, 6)
-    click_i1()
-    wait_until_stationary()
-    osrs.clock.random_sleep(0.5, 6)
+    navigate_rockfall_v2()
     collect_ore_decision = should_collect_ore()
+    osrs.move.run_towards_square_v2({'x': 3748, 'y': 5672, 'z': 0})
     deposit_paydirt()
     if collect_ore_decision:
-        # collect ore from ore sack until empty
-        osrs.clock.random_sleep(0.7, 0.9)
-        while True:
-            while True:
-                # blew up once here with connection reset, should investigate
-                data = osrs.server.query_game_data(queries.ORE_SACK)
-                if 'groundObjects' in data and '26688' in data['groundObjects']:
-                    osrs.move.move_and_click(data['groundObjects']['26688']['x'], data['groundObjects']['26688']['y'], 3, 3)
-                    break
-            while True:
-                data = osrs.server.query_game_data(queries.INVENTORY)
-                if 'inv' in data and len(data['inv']) != 0:
-                    have_ore = False
-                    for item in data['inv']:
-                        if item['id'] in ores:
-                            have_ore = True
-                            break
-                    if have_ore:
-                        osrs.clock.random_sleep(0.9, 1.1)
-                        data = osrs.server.query_game_data(queries.BANK)
-                        if 'gameObjects' in data and '25937' in data['gameObjects']:
-                            osrs.move.move_and_click(data['gameObjects']['25937']['x'], data['gameObjects']['25937']['y'], 5, 5)
-                        break
-            osrs.bank.deposit_box_dump_inv()
-            data = osrs.server.query_game_data(queries.ORE_COUNT)
-            if data['varBit'] == 0:
-                break
-    click_i1()
-    # walk to i2
-    osrs.clock.random_sleep(1.7, 1.9)
-    walk_to_i2_sq()
-    osrs.clock.random_sleep(0.5, 0.8)
-    wait_until_stationary()
+        osrs.move.run_towards_square_v2({'x': 3748, 'y': 5659, 'z': 0})
+        ore_handler()
+    osrs.move.run_towards_square_v2({'x': 3727, 'y': 5652, 'z': 0})
     # pass the rock fall
-    pass_rockfall_to_mine_veins()
-
-
-def look_west_and_zoom_out():
-    osrs.server.query_game_data(queries.SET_YAW)
-    pyautogui.scroll(-4000, 500, 500)
-    osrs.clock.random_sleep(0.5, 0.6)
-    keyboard.press(Key.up)
-    osrs.clock.random_sleep(1, 1.2)
-    keyboard.release(Key.up)
-
+    navigate_rockfall_v2()
 
 def main():
     # the mining animation will go to false for two ticks even though im mining
@@ -250,7 +159,7 @@ def main():
     not_mining_timestamp = -1
     start_time = datetime.datetime.now()
     while True:
-        start_time = osrs.game.break_manager(start_time, 53, 59, 432, 673, 'julenth', look_west_and_zoom_out)
+        start_time = osrs.game.break_manager(start_time, 53, 59, 432, 673, 'julenth', False)
         data = osrs.server.query_game_data(queries.MINING_STATUS_AND_INV_AND_POSE)
         if 'inv' in data and len(data['inv']) == 28:
             not_mining_timestamp = -1
@@ -268,4 +177,3 @@ def main():
                 osrs.clock.random_sleep(0.5, 0.6)
 
 main()
-

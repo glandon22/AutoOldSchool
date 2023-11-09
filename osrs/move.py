@@ -11,6 +11,7 @@ from scipy import interpolate
 import osrs.dev as dev
 import osrs.server as server
 import osrs.clock as clock
+
 config = dev.load_yaml()
 
 def bezier_movement(x_min, y_min, x_max, y_max):
@@ -118,6 +119,10 @@ def fast_click(obj):
     bezier_movement(obj['x'] - 3, obj['y'] - 3, obj['x'] + 3, obj['y'] + 3)
     pyautogui.click()
 
+
+def jiggle_mouse():
+    x1, y1 = pyautogui.position()
+    bezier_movement(x1 - 90, y1 - 90, x1 - 50, y1 -30)
 
 def run_to_loc(steps, port='56799'):
     # dont click on squares hidden by my inventory

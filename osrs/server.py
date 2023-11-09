@@ -1,6 +1,5 @@
 import datetime
 import logging
-
 import requests
 
 import osrs.dev
@@ -28,10 +27,10 @@ def post_game_status(q, updated_config, port='56798'):
     while True:
         try:
             start = updated_config['timings']['break_start']
-            start = type(start) is datetime.datetime and f'{start.hour}:{start.minute}:{start.second}'
+            start = type(start) is datetime.datetime and f'{start.hour}:{str(start.minute).zfill(2)}:{str(start.second).zfill(2)}'
             end = updated_config['timings']['break_end']
-            end = type(end) is datetime.datetime and f'{end.hour}:{end.minute}:{end.second}'
-            osrs.dev.app_log.info(f'Timing variables. Start: {start}, end: {end}')
+            end = type(end) is datetime.datetime and f'{end.hour}:{str(end.minute).zfill(2)}:{str(end.second).zfill(2)}'
+            logging.info(f'Timing variables. Start: {start}, end: {end}')
             enhanced_q = {
                 'status': q,
                 'next_break': start,
@@ -39,9 +38,9 @@ def post_game_status(q, updated_config, port='56798'):
             }
             r = session.post(url='http://localhost:{}/manager'.format(port), json=enhanced_q)
             parsed = r.json()
-            dev.app_log.info('Parsed response from game server: {}'.format(parsed))
+            logging.info('Parsed response from game server: {}'.format(parsed))
             if parsed and 'terminate' in parsed and parsed['terminate']:
-                dev.app_log.info('Process killed by game server.')
+                logging.info('Process killed by game server.')
                 exit(99)
             return r.json()
         except Exception as e:

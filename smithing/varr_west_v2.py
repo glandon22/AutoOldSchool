@@ -1,8 +1,4 @@
 import datetime
-
-import keyboard
-
-
 import osrs
 
 port = '56799'
@@ -35,7 +31,8 @@ def bank():
         exit('no more bars')
     osrs.move.move_and_click(bar_in_bank['x'], bar_in_bank['y'], 4, 4)
     osrs.clock.random_sleep(0.5, 0.6)
-    keyboard.send('esc')
+    osrs.keeb.keyboard.press(osrs.keeb.key.space)
+    osrs.keeb.keyboard.release(osrs.keeb.key.space)
     osrs.clock.random_sleep(0.5, 0.6)
 
 
@@ -71,7 +68,7 @@ def main():
     # 2349  # bronze
     start_time = datetime.datetime.now()
     while True:
-        start_time = osrs.game.break_manager(start_time, 51, 57, 453, 609, 'pass_70', post_login)
+        start_time = osrs.game.break_manager(start_time, 51, 57, 453, 609, 'julenth', post_login)
         inv = osrs.inv.get_inv(port)
         bar_in_inv = osrs.inv.is_item_in_inventory_v2(inv, bar)
         if not bar_in_inv:

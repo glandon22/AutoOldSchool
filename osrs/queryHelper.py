@@ -1,6 +1,7 @@
 import osrs.server as server
 import osrs.dev as dev
 import osrs.inv as inv
+import logging
 
 config = dev.load_yaml()
 
@@ -176,6 +177,30 @@ class QueryHelper:
                 return []
         return 'gameObjectsV2' in self.game_data and self.game_data['gameObjectsV2'] or []
 
+    def set_deposit_box(self):
+        self.query['depositBox'] = True
+
+    def get_deposit_box(self, item=False):
+        """
+
+        :param item: None, String, List<String>
+        No item returns the full inv, a string returns that item or False, a list of strings returns the first of
+        those items to be found or False
+        :return: {'x': 1738, 'y': 768, 'index': 0, 'id': 8007, 'quantity': 77} || False
+        """
+        logging.info('getting deposit data.')
+        if item:
+            if 'depositBox' in self.game_data:
+                if type(item) is list:
+                    logging.info('got a list of items to search for: {}'.format(item))
+                    return inv.are_items_in_inventory_v2(self.game_data['depositBox'], item)
+                else:
+                    return inv.is_item_in_inventory_v2(self.game_data['depositBox'], item)
+            else:
+                return False
+        else:
+            return 'depositBox' in self.game_data and self.game_data['depositBox']
+
     def set_bank(self):
         self.query['bank'] = True
 
@@ -187,11 +212,11 @@ class QueryHelper:
         those items to be found or False
         :return: {'x': 1738, 'y': 768, 'index': 0, 'id': 8007, 'quantity': 77} || False
         """
-        dev.app_log.info('getting bank data.')
+        logging.info('getting bank data.')
         if item:
             if 'bankItems' in self.game_data:
                 if type(item) is list:
-                    dev.app_log.info('got a list of items to search for: {}'.format(item))
+                    logging.info('got a list of items to search for: {}'.format(item))
                     return inv.are_items_in_inventory_v2(self.game_data['bankItems'], item)
                 else:
                     return inv.is_item_in_inventory_v2(self.game_data['bankItems'], item)

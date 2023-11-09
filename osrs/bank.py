@@ -7,6 +7,7 @@ import osrs.util as util
 import osrs.keeb as keeb
 import osrs.dev as dev
 import osrs.queryHelper as queryHelper
+import logging
 
 def deposit_all_of_x(items, port='56799'):
     while True:
@@ -56,6 +57,16 @@ def get_bank_data(port='56799'):
         data = server.query_game_data(q, port)
         if 'bankItems' in data:
             return data['bankItems']
+
+
+def get_deposit_box_data(port='56799'):
+    q = {
+        'depositBox': True
+    }
+    while True:
+        data = server.query_game_data(q, port)
+        if 'depositBox' in data:
+            return data['depositBox']
 
 
 def find_item_in_bank(item_to_find, port='56799'):
@@ -115,7 +126,7 @@ def deposit_box_dump_inv():
 
 
 def dump_items():
-    dev.app_log.info('dumping items.')
+    logging.info('dumping items.')
     qh = queryHelper.QueryHelper()
     qh.set_inventory()
     qh.set_widgets({'12,42'})

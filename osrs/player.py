@@ -1,6 +1,7 @@
 import osrs.move as move
 import osrs.server as server
 import osrs.dev as dev
+import logging
 
 def toggle_prayer_slow(desired_state, port):
     """
@@ -49,8 +50,8 @@ def toggle_run(desired_state, port):
 
 def get_run_energy():
     while True:
-        dev.app_log.info('getting run energy.')
+        logging.info('getting run energy.')
         run_orb = server.get_widget('160,28')
         if run_orb:
-            dev.app_log.info('got run energy: {}'.format(run_orb))
+            logging.info('got run energy: {}'.format(run_orb))
             return int(run_orb['text'])

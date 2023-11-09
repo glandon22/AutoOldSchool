@@ -88,6 +88,12 @@ def find_spot():
     data = osrs.server.query_game_data(q)
     if 'npcs' in data:
         closest = osrs.util.find_closest_target(data['npcs'])
+        if not closest:
+            print('failed to find spot')
+            print(data['npcs'])
+            print(closest)
+            osrs.move.run_towards_square_v2({'x': 2499, 'y': 3510, 'z': 0})
+            return
         osrs.move.move_and_click(closest['x'], closest['y'], 8, 8)
         osrs.clock.random_sleep(0.5, 0.8)
     else:

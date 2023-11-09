@@ -1,6 +1,6 @@
 import math
 import random
-
+import logging
 import osrs.server as server
 import osrs.move as move
 import osrs.dev as dev
@@ -26,14 +26,14 @@ def get_item_quantity_in_inv(inv, targ):
 
 
 def are_items_in_inventory_v2(inv, items_to_find):
-    dev.app_log.info('looking for {} in inv: {}'.format(items_to_find, inv))
+    logging.info('looking for {} in inv: {}'.format(items_to_find, inv))
     if not inv:
         return False
     for item in inv:
         if item['id'] in items_to_find:
-            dev.app_log.info('found the following item: {}'. format(item))
+            logging.info('found the following item: {}'. format(item))
             return item
-    dev.app_log.info('didnt find the item.')
+    logging.info('didnt find the item.')
     return False
 
 
