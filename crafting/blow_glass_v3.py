@@ -44,7 +44,7 @@ def open_bank_interface(qh: osrs.queryHelper.QueryHelper):
             last_click = datetime.datetime.now()
 
 
-def withdraw_materials_v2(qh: osrs.queryHelper.QueryHelper):
+def withdraw_materials_v3(qh: osrs.queryHelper.QueryHelper):
     qh.query_backend()
     if not qh.get_bank():
         return
@@ -54,7 +54,13 @@ def withdraw_materials_v2(qh: osrs.queryHelper.QueryHelper):
     osrs.move.click(glass)
     osrs.keeb.keyboard.press(osrs.keeb.key.esc)
     osrs.keeb.keyboard.release(osrs.keeb.key.esc)
-    osrs.clock.random_sleep(0.8, 0.9)
+    start_time = datetime.datetime.now()
+    while True:
+        qh.query_backend()
+        if qh.get_inventory(molten_glass_id):
+            break
+        elif (datetime.datetime.now() - start_time).total_seconds() > 5:
+            break
 
 
 script_config = {
@@ -86,8 +92,8 @@ def main():
             # click the second item in inv
             osrs.server.post_game_status('Dumping processed items.', updated_config)
             osrs.move.click({'x': pipe['x'] + 30, 'y': pipe['y']})
-            withdraw_materials_v2(qh)
             osrs.server.post_game_status('Withdrawing supplies.', updated_config)
+            withdraw_materials_v3(qh)
             last_click = datetime.datetime.now() - datetime.timedelta(hours=1)
         elif glass and (datetime.datetime.now() - last_click).total_seconds() > 60:
             osrs.server.post_game_status('Beginning to craft items.', updated_config)
@@ -101,7 +107,8 @@ def main():
                     lvl = qh.get_skills('crafting')
                     osrs.keeb.keyboard.type(determine_item_to_make(lvl['level']))
                     last_click = datetime.datetime.now()
-                    for i in range(random.randint(0, 10)):
+                    osrs.server.post_game_status('Crafting.', updated_config)
+                    if random.randint(0, 10) == 1:
                         osrs.move.jiggle_mouse()
                     break
                 elif (datetime.datetime.now() - wait_time).total_seconds() > 4:
