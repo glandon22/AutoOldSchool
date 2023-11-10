@@ -1,3 +1,4 @@
+import datetime
 import math
 
 import pyautogui
@@ -95,3 +96,12 @@ def rough_img_compare(img, confidence, region):
                 return False
         except Exception as e:
             print('error calling screenshot, retrying.', e)
+
+
+def loop_timeout_handler(success_condition, timeout):
+    start_time = datetime.datetime.now()
+    while True:
+        if success_condition:
+            break
+        elif (datetime.datetime.now() - start_time).total_seconds() > timeout:
+            break

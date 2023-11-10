@@ -46,7 +46,13 @@ def withdraw_materials_v2(qh: osrs.queryHelper.QueryHelper):
     osrs.move.click(uns)
     osrs.keeb.keyboard.press(osrs.keeb.key.esc)
     osrs.keeb.keyboard.release(osrs.keeb.key.esc)
-    osrs.clock.random_sleep(0.8, 0.9)
+    start_time = datetime.datetime.now()
+    while True:
+        qh.query_backend()
+        if qh.get_inventory(BOWSTRING):
+            break
+        elif (datetime.datetime.now() - start_time).total_seconds() > 5:
+            break
 
 
 script_config = {
