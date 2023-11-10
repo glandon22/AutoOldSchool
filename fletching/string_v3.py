@@ -49,7 +49,7 @@ def withdraw_materials_v2(qh: osrs.queryHelper.QueryHelper):
     start_time = datetime.datetime.now()
     while True:
         qh.query_backend()
-        if qh.get_inventory(BOWSTRING):
+        if qh.get_inventory(BOWSTRING) and qh.get_inventory(UNSTRUNG_BOW):
             break
         elif (datetime.datetime.now() - start_time).total_seconds() > 5:
             break
@@ -97,8 +97,8 @@ def main():
                     osrs.keeb.keyboard.release(osrs.keeb.key.space)
                     last_click = datetime.datetime.now()
                     osrs.server.post_game_status('Fletching.', updated_config)
-                    osrs.move.jiggle_mouse()
-
+                    if random.randint(0, 2) == 1:
+                        osrs.move.jiggle_mouse()
                     break
                 elif (datetime.datetime.now() - wait_time).total_seconds() > 4:
                     break
