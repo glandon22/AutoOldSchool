@@ -271,5 +271,5 @@ def break_manager_v3(script_config):
         # Run post-login logic supplied by script
         if script_config['login']:
             script_config['login']()
-        set_timings(timings, current_time)
+        set_timings(timings, datetime.datetime.now())
     return config
