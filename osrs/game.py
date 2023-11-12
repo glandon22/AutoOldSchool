@@ -185,10 +185,10 @@ def multi_break_manager(start_time, min_session, max_session, min_rest, max_rest
 def set_timings(timings, current_time):
     config['timings']['script_start'] = current_time
     config['timings']['break_start'] = current_time + datetime.timedelta(
-        minutes=random.randint(timings['min_session'], timings['max_session'])
+        seconds=random.randint(timings['min_session'] * 60, timings['max_session'] * 60)
     )
     config['timings']['break_end'] = config['timings']['break_start'] + datetime.timedelta(
-        minutes=random.randint(timings['min_rest'], timings['max_rest'])
+        seconds=random.randint(timings['min_rest'] * 60, timings['max_rest'] * 60)
     )
 
 
