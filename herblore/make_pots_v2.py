@@ -1,10 +1,20 @@
 import datetime
+import random
 
 import osrs
+import sys
 
-POT = 91 # guam unf
-SECONDARY = 221 # eye newt
+print(sys.argv)
 
+bankers_ids = [
+    '1633',
+    '1613',
+    '1634',
+    '3089'
+]
+
+POT = int(sys.argv[1])
+SECONDARY = int(sys.argv[2])
 
 def open_bank_interface(qh: osrs.queryHelper.QueryHelper):
     last_click = datetime.datetime.now() - datetime.timedelta(hours=1)
@@ -21,63 +31,18 @@ def open_bank_interface(qh: osrs.queryHelper.QueryHelper):
             last_click = datetime.datetime.now()
 
 
-def dump_inventory_in_bank():
-    q = {
-        'dumpInvButton': True
-    }
-    while True:
-        data = osrs.server.query_game_data(q)
-        if 'dumpInvButton' in data:
-            # wait for button to settle on screen
-            osrs.clock.sleep_one_tick()
-            data = osrs.server.query_game_data(q)
-            if 'dumpInvButton' in data:
-                center = data['dumpInvButton']
-                osrs.move.move_and_click(center['x'], center['y'], 10, 10)
-                osrs.clock.random_sleep(.5, .6)
-                break
-
-
-def withdraw_materials():
-    found_pot = False
-    found_secondary = False
-    data = osrs.bank.get_bank_data()
-    pot = osrs.inv.is_item_in_inventory_v2(data, POT)
-    if not pot:
-        exit(' out of pots')
-    osrs.move.move_and_click(pot['x'], pot['y'], 3, 3)
-    sec = osrs.inv.is_item_in_inventory_v2(data, SECONDARY)
-    if not sec:
-        exit('out of secondaries')
-    osrs.move.move_and_click(sec['x'], sec['y'], 3, 3)
-    osrs.keeb.press_key('esc')
-    osrs.clock.random_sleep(0.9, 1.1)
-
-
-def make_pot():
-    inv = osrs.inv.get_inv()
-    pot = osrs.inv.is_item_in_inventory_v2(inv, POT)
-    osrs.move.move_and_click(pot['x'], pot['y'], 3, 3)
-    secondary = osrs.inv.is_item_in_inventory_v2(inv, SECONDARY)
-    osrs.move.move_and_click(secondary['x'], secondary['y'], 3, 3)
-    osrs.clock.random_sleep(.9, 1.2)
-    osrs.keeb.keyboard.type(' ')
-    osrs.clock.random_sleep(0.3, 0.4)
-    osrs.move.click_off_screen(click=False)
-
-
 def withdraw_materials_v2(qh: osrs.queryHelper.QueryHelper):
     qh.query_backend()
     if not qh.get_bank():
         return
-    pot = qh.get_bank(POT)
-    secondary_ingredient = qh.get_bank(SECONDARY)
-    if not pot:
-        exit('out of pot')
-    if not secondary_ingredient:
-        exit('out secondary_ingredient uns')
-    osrs.move.click(pot)
-    osrs.move.click(secondary_ingredient)
+    bstring = qh.get_bank(POT)
+    uns = qh.get_bank(SECONDARY)
+    if not bstring:
+        exit('out of bstring')
+    if not uns:
+        exit('out of uns')
+    osrs.move.click(bstring)
+    osrs.move.click(uns)
     osrs.keeb.keyboard.press(osrs.keeb.key.esc)
     osrs.keeb.keyboard.release(osrs.keeb.key.esc)
     start_time = datetime.datetime.now()
@@ -88,13 +53,6 @@ def withdraw_materials_v2(qh: osrs.queryHelper.QueryHelper):
         elif (datetime.datetime.now() - start_time).total_seconds() > 5:
             break
 
-
-bankers_ids = [
-    '1633',
-    '1613',
-    '1634',
-    '3089'
-]
 
 script_config = {
     'intensity': 'high',
@@ -112,19 +70,37 @@ def main():
     last_click = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
         updated_config = osrs.game.break_manager_v3(script_config)
-        inv = osrs.inv.get_inv()
-        leveled_up_widget = osrs.server.get_widget('233,0')
-        have_pot = osrs.inv.is_item_in_inventory_v2(inv, POT)
-        have_sec = osrs.inv.is_item_in_inventory_v2(inv, SECONDARY)
-        if not have_sec or not have_pot:
+        qh.query_backend()
+        bstring = qh.get_inventory(POT)
+        bow = qh.get_inventory(SECONDARY)
+        if not bow or not bstring:
             osrs.server.post_game_status('Out of supplies, opening bank.', updated_config)
             open_bank_interface(qh)
             osrs.server.post_game_status('Dumping inventory in bank.', updated_config)
             osrs.bank.dump_items()
             osrs.server.post_game_status('Withdrawing materials from bank.', updated_config)
             withdraw_materials_v2(qh)
-        elif leveled_up_widget or (datetime.datetime.now() - last_click).total_seconds() > 18:
-            make_pot()
-            last_click = datetime.datetime.now()
-
+            last_click = datetime.datetime.now() - datetime.timedelta(hours=1)
+        elif bstring and bow and (datetime.datetime.now() - last_click).total_seconds() > 25:
+            osrs.server.post_game_status('Clicking bow string.', updated_config)
+            osrs.move.click(bstring)
+            osrs.server.post_game_status('Clicking bow.', updated_config)
+            osrs.move.click(bow)
+            wait_time = datetime.datetime.now()
+            osrs.server.post_game_status('Waiting for fletching menu.', updated_config)
+            while True:
+                qh.query_backend()
+                if qh.get_widgets('270,14'):
+                    osrs.server.post_game_status('Starting to fletch bows.', updated_config)
+                    osrs.keeb.keyboard.press(osrs.keeb.key.space)
+                    osrs.keeb.keyboard.release(osrs.keeb.key.space)
+                    last_click = datetime.datetime.now()
+                    osrs.server.post_game_status('Fletching.', updated_config)
+                    if random.randint(0, 2) == 1:
+                        osrs.move.jiggle_mouse()
+                    break
+                elif (datetime.datetime.now() - wait_time).total_seconds() > 4:
+                    break
+        elif qh.get_widgets('233,0'):
+            last_click = datetime.datetime.now() - datetime.timedelta(hours=1)
 main()
