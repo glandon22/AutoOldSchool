@@ -1,6 +1,6 @@
 import datetime
 import random
-
+import logging
 import osrs
 import sys
 
@@ -15,6 +15,9 @@ bankers_ids = [
 
 POT = int(sys.argv[1])
 SECONDARY = int(sys.argv[2])
+
+logging.info(f'pot and sec vals: {POT} : {SECONDARY}')
+
 
 def open_bank_interface(qh: osrs.queryHelper.QueryHelper):
     last_click = datetime.datetime.now() - datetime.timedelta(hours=1)
