@@ -1,13 +1,16 @@
 import datetime
+import math
 import random
 import time
 
+import osrs.move
 import osrs.server as server
 import osrs.clock as clock
 import secret_keepr
 import osrs.keeb as keeb
 import osrs.move as move
 import osrs.dev as dev
+import osrs.queryHelper as QueryHelper
 
 config = dev.load_yaml()
 
@@ -88,6 +91,29 @@ def login_v3(ctp=True):
                     coords['x'] = ctp['x']
                     coords['y'] = ctp['y']
             clock.random_sleep(0.6, 0.7)
+
+
+def login_v4():
+    qh = QueryHelper.QueryHelper()
+    qh.set_canvas()
+    qh.set_game_state()
+    while True:
+        qh.query_backend()
+        canvas = qh.get_canvas()
+        x = math.floor((canvas['xMax'] + canvas['xMin']) / 2)
+        # Game image is a fixed size, only black space is added horizontally as UI scales
+        y = canvas['yMin'] + 251
+        osrs.move.click({'x': x, 'y': y})
+        osrs.clock.sleep_one_tick()
+        qh.query_backend()
+        if qh.get_game_state() == 'LOGGING_IN' or qh.get_game_state() == 'LOADING':
+            print(f'Log in stats: {qh.get_game_state()}')
+            continue
+        elif qh.get_game_state() == 'LOGGED_IN':
+            keeb.keyboard.press(keeb.Key.esc)
+            keeb.keyboard.release(keeb.Key.esc)
+            clock.sleep_one_tick()
+            return
 
 
 def logout(port='56799'):
@@ -231,7 +257,6 @@ def break_manager_v2(script_config):
         config['timings']['on_break'] = False
 
 
-# experimental
 def break_manager_v3(script_config):
     """
     :param script_config: Object
@@ -268,6 +293,46 @@ def break_manager_v3(script_config):
             login_v3('click_to_play' in script_config and script_config['click_to_play'])
         else:
             login_v3()
+        # Run post-login logic supplied by script
+        if script_config['login']:
+            script_config['login']()
+        set_timings(timings, datetime.datetime.now())
+    return config
+
+
+def break_manager_v4(script_config):
+    """
+    :param script_config: Object
+    {
+        'intensity': 'high' | 'low',
+        'logout': function(), -- Steps to run before logging out for break
+        'login': function(), -- Steps to run after logging back in
+        'click_to_play': True | False -> Instances like Tithe Farm dont display this button after login
+    }
+    """
+    current_time = datetime.datetime.now()
+    timings = config['{}_intensity_script'.format(script_config['intensity'])]
+    # Initialize timings on script start
+    if not config['timings']['script_start']:
+        set_timings(timings, current_time)
+        print('current config: {}'.format(config))
+
+    # Begin break period
+    if current_time > config['timings']['break_start']:
+        # Run pre-logout logic supplied by script
+        if script_config['logout']:
+            script_config['logout']()
+        logout()
+        config['timings']['break_end'] = datetime.datetime.now() + datetime.timedelta(
+            minutes=random.randint(timings['min_rest'], timings['max_rest'])
+        )
+        while True:
+            if datetime.datetime.now() < config['timings']['break_end']:
+                move.move_and_click(500, 223, 5, 5)
+                clock.random_sleep(10, 15)
+            else:
+                break
+        login_v4()
         # Run post-login logic supplied by script
         if script_config['login']:
             script_config['login']()

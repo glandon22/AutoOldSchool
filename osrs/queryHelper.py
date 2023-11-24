@@ -10,6 +10,18 @@ class QueryHelper:
     query = {}
     game_data = {}
 
+    def set_game_state(self):
+        self.query['gameState'] = True
+
+    def get_game_state(self):
+        return 'gameState' in self.game_data and self.game_data['gameState']
+
+    def set_interating_with(self):
+        self.query['interactingWith'] = True
+
+    def get_interating_with(self):
+        return 'interactingWith' in self.game_data and self.game_data['interactingWith']
+
     def player_animation(self):
         self.query['playerAnimation'] = True
 

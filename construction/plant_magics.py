@@ -6,13 +6,14 @@ from pynput.keyboard import Key, Controller
 
 keyboard = Controller()
 port = '56799'
-built_larder = '5134'
+built_larder = '4537'
 larder_slot = '15362'
-item_to_make = '4'
-plant = '8431'
-noted_plant = '8432'
+item_to_make = '7'
+plant = '8429'
+noted_plant = '8430'
 phials = '1614'
 empty_can = '5331'
+cans_with_water = [5333, 5334, 5335, 5336, 5337, 5338, 5339, 5340]
 
 def make_chair():
     chair_to_build = osrs.server.get_surrounding_game_objects(10, [larder_slot], port)
@@ -49,8 +50,8 @@ def build_until_out():
     while True:
         inv = osrs.inv.get_inv(port)
         plant_count = osrs.inv.get_item_quantity_in_inv(inv, plant)
-        empty_can_exists = osrs.inv.is_item_in_inventory_v2(inv, empty_can)
-        if plant_count > 0 and not empty_can_exists:
+        filled_can_exists = osrs.inv.are_items_in_inventory_v2(inv, cans_with_water)
+        if plant_count > 0 and filled_can_exists:
             make_chair()
             osrs.clock.random_sleep(0.6,0.7)
             remove_chair()
@@ -115,17 +116,18 @@ def enter_home():
         if loc and 'x' in loc and loc['x'] > 4000:
             break
 
+script_config = {
+    'intensity': 'high',
+    'login': lambda: osrs.clock.random_sleep(2, 3),
+    'logout': lambda: osrs.clock.random_sleep(2, 3),
+}
+
 def main():
     start_time = datetime.datetime.now()
-    osrs.clock.random_sleep(3, 3.1)
     while True:
-        osrs.clock.antiban_rest(45, 100, 300)
         build_until_out()
-        osrs.clock.antiban_rest(45, 100, 300)
         leave_house()
-        osrs.clock.antiban_rest(45, 100, 300)
         click_phials()
-        osrs.clock.antiban_rest(45, 100, 300)
         start_time = osrs.game.break_manager(start_time, 49, 54, 432, 673, 'julenth', False, port)
         enter_home()
         osrs.clock.random_sleep(3, 5)

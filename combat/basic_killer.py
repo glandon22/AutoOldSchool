@@ -5,7 +5,7 @@ import osrs
 from pynput.keyboard import Key, Controller
 import osrs
 keyboard = Controller()
-monster_to_kill = 'Yak'
+monster_to_kill = 'Hill Giant'
 minimum_eat_health = 35
 food_to_eat = [7946, 379, 361]
 port = '56799'

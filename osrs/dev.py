@@ -4,12 +4,12 @@ import yaml
 import logging
 import datetime
 
-for handler in logging.root.handlers[:]:
+'''for handler in logging.root.handlers[:]:
     logging.root.removeHandler(handler)
-logFile = f'/home/george/test/{datetime.datetime.now().strftime("%d.%m.%y-%H:%M:%S")}-log-osrs'
+logFile = f'{datetime.datetime.now().strftime("%d.%m.%y-%H:%M:%S")}-log-osrs'
 log_formatter = '%(asctime)s %(levelname)s %(funcName)s(%(lineno)d) %(message)s'
 date_fmt = '%d/%m/%y-%H:%M:%S'
-logging.basicConfig(filename=logFile, format=log_formatter, force=True, level=logging.INFO, datefmt=date_fmt)
+logging.basicConfig(filename=logFile, format=log_formatter, force=True, level=logging.INFO, datefmt=date_fmt)'''
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
