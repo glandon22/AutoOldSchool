@@ -16,6 +16,18 @@ class QueryHelper:
     def get_game_state(self):
         return 'gameState' in self.game_data and self.game_data['gameState']
 
+    def set_game_cycle(self):
+        self.query['gameCycle'] = True
+
+    def get_game_cycle(self):
+        return 'gameCycle' in self.game_data and self.game_data['gameCycle']
+
+    def set_active_prayers(self):
+        self.query['activePrayers'] = True
+
+    def get_active_prayers(self):
+        return 'activePrayers' in self.game_data and self.game_data['activePrayers']
+
     def set_interating_with(self):
         self.query['interactingWith'] = True
 
@@ -73,6 +85,18 @@ class QueryHelper:
 
     def get_projectiles(self):
         return 'projectiles' in self.game_data and self.game_data['projectiles']
+
+    def set_projectiles_v2(self):
+        self.query['projectilesV2'] = True
+
+    def get_projectiles_v2(self):
+        return 'projectilesV2' in self.game_data and self.game_data['projectilesV2']
+
+    def set_chat_options(self):
+        self.query['chatOptions'] = True
+
+    def get_chat_options(self):
+        return 'chatOptions' in self.game_data and self.game_data['chatOptions']
 
     def is_fishing(self):
         self.query['isFishing'] = True

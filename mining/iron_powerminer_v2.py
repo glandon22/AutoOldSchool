@@ -39,10 +39,26 @@ def wait_for_ore():
             #something is wrong, re mine rock
             break
 
+
+script_config = {
+    'intensity': 'high',
+    'login': lambda: osrs.clock.random_sleep(4, 5),
+    'logout': lambda: osrs.clock.random_sleep(11, 14),
+}
+
+
 def main():
     start_time = datetime.datetime.now()
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_inventory()
     while True:
-        start_time = osrs.game.break_manager(start_time, 49, 52, 432, 673, 'julenth')
+        qh.query_backend()
+        if len(qh.get_inventory()) == 28:
+            exit('full inv')
+        else:
+            print(len(qh.get_inventory()))
+        qh.query_backend()
+        osrs.game.break_manager_v4(script_config)
         mine()
         wait_for_ore()
 

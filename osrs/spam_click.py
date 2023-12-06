@@ -4,7 +4,7 @@ import random
 import osrs
 import pyautogui
 
-run_time_in_seconds = 45
+run_time_in_seconds = 35
 
 def main():
     start_time = datetime.datetime.now()

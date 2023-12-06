@@ -120,9 +120,14 @@ def fast_click(obj):
     pyautogui.click()
 
 
+def fast_move(obj):
+    bezier_movement(obj['x'] - 3, obj['y'] - 3, obj['x'] + 3, obj['y'] + 3)
+
+
 def jiggle_mouse():
     x1, y1 = pyautogui.position()
     bezier_movement(x1 - 90, y1 - 90, x1 - 50, y1 -30)
+
 
 def run_to_loc(steps, port='56799'):
     # dont click on squares hidden by my inventory
@@ -265,6 +270,12 @@ def fast_move_and_click(x, y, w, h, button='left'):
     pyautogui.click()
 
 
+def instant_click(x, y):
+    pyautogui.moveTo(x, y)
+    clock.random_sleep(0.1, 0.11)
+    pyautogui.click()
+
+
 def spam_click(tile, seconds, port='56799'):
     start_time = datetime.datetime.now()
     while True:
@@ -279,6 +290,25 @@ def spam_click(tile, seconds, port='56799'):
                 if 'tiles' in data and formatted_step in data['tiles'] and \
                         75 < data['tiles'][formatted_step]['y'] < 1040:
                     fast_move_and_click(data['tiles'][formatted_step]['x'], data['tiles'][formatted_step]['y'], 3, 3)
+                    break
+                else:
+                    break
+
+
+def instant_spam_click(tile, seconds, port='56799'):
+    start_time = datetime.datetime.now()
+    while True:
+        if (datetime.datetime.now() - start_time).total_seconds() > seconds:
+            break
+        else:
+            while True:
+                data = server.query_game_data({
+                    'tiles': [tile]
+                }, port)
+                formatted_step = tile.replace(',', '')
+                if 'tiles' in data and formatted_step in data['tiles'] and \
+                        75 < data['tiles'][formatted_step]['y'] < 1040:
+                    instant_click(data['tiles'][formatted_step]['x'], data['tiles'][formatted_step]['y'])
                     break
                 else:
                     break
@@ -344,9 +374,7 @@ def right_click_v3(item, action):
         parsed_entries = reversed(entry_data['entries'])
         for i, entry in enumerate(parsed_entries):
             if action.upper() == entry.upper():
-                print(i)
                 additional = choose_option_offset + (i * 15)
-                print(additional)
                 move_and_click(
                     curr_pos[0],
                     curr_pos[1] + additional,

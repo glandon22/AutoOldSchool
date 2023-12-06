@@ -19,6 +19,19 @@ def find_closest_npc(npcs, ignore=-1):
     return closest
 
 
+def find_closest_alive_npc(npcs):
+    closest = {
+        "dist": 999,
+        "x": None,
+        "y": None,
+        "id": None
+    }
+    for npc in npcs:
+        if npc["dist"] < closest["dist"] and npc['health'] != 0:
+            closest = npc
+    return closest
+
+
 def select_chat_option(chat_options, phrase):
     if not chat_options:
         return -1

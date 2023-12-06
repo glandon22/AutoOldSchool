@@ -103,6 +103,8 @@ def login_v4():
         x = math.floor((canvas['xMax'] + canvas['xMin']) / 2)
         # Game image is a fixed size, only black space is added horizontally as UI scales
         y = canvas['yMin'] + 251
+        # add this click below to clear any unexpected interfaces. i.e. world was full
+        osrs.move.click({'x': x, 'y': y + 50})
         osrs.move.click({'x': x, 'y': y})
         osrs.clock.sleep_one_tick()
         qh.query_backend()

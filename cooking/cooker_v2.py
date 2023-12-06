@@ -11,7 +11,7 @@ possible_raw_fish = [327, 335, 331, 359, 377, 371, 383, 363]
 
 
 def determine_fish(lvl):
-    if lvl < 15:
+    '''if lvl < 15:
         return 327 # raw sardine, get 200
     elif lvl < 25:
         return 335 # trout 200
@@ -22,7 +22,8 @@ def determine_fish(lvl):
     elif lvl < 99:
         return 363
     else:
-        return 383
+        return 383'''
+    return 3144
 
 
 def cook_fish_on_fire(port):
