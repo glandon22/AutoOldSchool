@@ -64,7 +64,7 @@ def withdraw_materials_v3(qh: osrs.queryHelper.QueryHelper):
 
 
 script_config = {
-    'intensity': 'high',
+    'intensity': 'low',
     'login': lambda: osrs.clock.random_sleep(3, 4),
     'logout': False
 }
@@ -79,7 +79,7 @@ def main():
     qh.set_npcs(bankers_ids)
     last_click = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
-        updated_config = osrs.game.break_manager_v3(script_config)
+        updated_config = osrs.game.break_manager_v4(script_config)
         qh.query_backend()
         glass = qh.get_inventory(molten_glass_id)
         pipe = qh.get_inventory(pipe_id)

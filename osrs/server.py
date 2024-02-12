@@ -21,6 +21,7 @@ def query_game_data(q, port='56799'):
             return r.json()
         except Exception as e:
             print('Got an error trying to query the game server: ', e)
+            print('failed query: ', q)
 
 
 def post_game_status(q, updated_config, port='56798'):

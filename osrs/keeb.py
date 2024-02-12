@@ -15,6 +15,9 @@ def press_key(key):
     elif key == 'enter':
         keyboard.press(Key.enter)
         keyboard.release(Key.enter)
+    elif key == 'f4':
+        keyboard.press(Key.f4)
+        keyboard.release(Key.f4)
     elif key == 'f5':
         keyboard.press(Key.f5)
         keyboard.release(Key.f5)

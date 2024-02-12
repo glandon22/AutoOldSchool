@@ -88,7 +88,7 @@ def find_spot():
     data = osrs.server.query_game_data(q)
     if 'npcs' in data:
         closest = osrs.util.find_closest_target(data['npcs'])
-        if not closest:
+        if 'x' in closest and closest['x'] is None:
             print('failed to find spot')
             print(data['npcs'])
             print(closest)
@@ -101,10 +101,17 @@ def find_spot():
         osrs.clock.random_sleep(2, 3)
 
 
+script_config = {
+    'intensity': 'low',
+    'login': lambda: osrs.clock.random_sleep(3, 4),
+    'logout': False
+}
+
+
 def main():
     start_time = datetime.datetime.now()
     while True:
-        start_time = osrs.game.break_manager(start_time, 53, 58, 423, 551, 'julenth', False)
+        start_time = osrs.game.break_manager_v4(script_config)
         q = {
             'isFishing': True,
             'inv': True,

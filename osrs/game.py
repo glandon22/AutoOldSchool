@@ -120,7 +120,7 @@ def login_v4():
 
 def logout(port='56799'):
     LOGOUT_ICON = {
-        'widget': '161,52'
+        'widget': '161,46'
     }
     LOGOUT_BUTTON = {
         'widget': '182,12'

@@ -13,8 +13,11 @@ bankers_ids = [
     '3089'
 ]
 
-POT = int(sys.argv[1])
-SECONDARY = int(sys.argv[2])
+#POT = int(sys.argv[1])
+#SECONDARY = int(sys.argv[2])
+
+POT = 99
+SECONDARY = 231
 
 logging.info(f'pot and sec vals: {POT} : {SECONDARY}')
 

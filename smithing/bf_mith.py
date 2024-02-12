@@ -110,11 +110,16 @@ def collect_bars():
             break
 
 
+script_config = {
+    'intensity': 'high',
+    'login': lambda: osrs.clock.random_sleep(3, 4),
+    'logout': False
+}
+
 def main():
     trip_count = 0
-    start_time = datetime.datetime.now()
     while True:
-        start_time = osrs.game.break_manager(start_time, 49, 54, 432, 673, 'pass_70', False, port)
+        osrs.game.break_manager_v4(script_config)
         bank(trip_count % 3)
         put_ore_on_belt()
         print(trip_count, trip_count % 3, trip_count % 3 != 0)
@@ -122,5 +127,4 @@ def main():
             collect_bars()
         trip_count += 1
 
-osrs.clock.random_sleep(2, 3)
 main()

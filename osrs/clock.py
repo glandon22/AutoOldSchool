@@ -36,3 +36,7 @@ def break_every_hour(max_run, start_time=-1):
     else:
         return False
 
+
+def time_diff_in_seconds(prev_time):
+    return datetime.datetime.now() - prev_time
+

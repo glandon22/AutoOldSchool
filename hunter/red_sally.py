@@ -23,6 +23,8 @@ CAUGHT_SALLY = '8986'
 YOUNG_TREE = '8990'
 port = '56799'
 
+
+
 locs = [
     {
         'tree': NORTH_TREE,
@@ -99,12 +101,18 @@ def collect_traps_to_logout():
             if verify == TRAP_COUNT:
                 return
 
+script_config = {
+    'intensity': 'high',
+    'login': lambda: osrs.clock.random_sleep(4, 5),
+    'logout': collect_traps_to_logout,
+}
+
 
 def main():
     start_time = datetime.datetime.now()
     while True:
+        osrs.game.break_manager_v4(script_config)
         # need to create function to allow log out
-        start_time = osrs.game.break_manager(start_time, 51, 56, 423, 551, 'pass_70', False, port, collect_traps_to_logout)
         for pair in locs:
             catch = osrs.server.get_game_object(pair['tree'], CAUGHT_SALLY, port)
             if catch:

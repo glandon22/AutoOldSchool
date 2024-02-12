@@ -5,9 +5,14 @@ import pyautogui
 import osrs
 
 min_health = 35
-npc_ids = ['2137', '2138','2139','2140','2141','2137',]
+npc_ids = ['496']
 karambwan_id = '3144'
 explosive = '6664'
+tentacle = '12004'
+trident = '11905'
+dirt = '12007'
+
+
 def find_next_target(npcs):
     res = False
     for npc in npcs:
@@ -40,10 +45,21 @@ def main():
         elif qh.get_interating_with():
             print('In combat.')
         else:
+            loot_items = osrs.server.get_surrounding_ground_items_any_ids(15)
+            for item in [
+                tentacle,
+                trident,
+                dirt
+            ]:
+                if item in loot_items:
+                    osrs.move.spam_click(
+                        '{},{},0'.format(loot_items[item][0]['x_coord'], loot_items[item][0]['y_coord']), 7)
             targ = find_next_target(qh.get_npcs())
             if targ:
+                osrs.move.click(qh.get_inventory(explosive))
                 print(targ['health'])
                 osrs.move.fast_click(targ)
+                osrs.clock.random_sleep(7, 7.1)
 
 
 

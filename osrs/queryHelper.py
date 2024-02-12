@@ -1,7 +1,9 @@
 import osrs.server as server
 import osrs.dev as dev
 import osrs.inv as inv
+import osrs.util as util
 import logging
+import inspect
 
 config = dev.load_yaml()
 
@@ -49,8 +51,17 @@ class QueryHelper:
     def set_player_world_location(self):
         self.query['playerWorldPoint'] = True
 
-    def get_player_world_location(self):
-        return 'playerWorldPoint' in self.game_data and self.game_data['playerWorldPoint']
+    def get_player_world_location(self, coord=False):
+        if not coord:
+            return 'playerWorldPoint' in self.game_data and self.game_data['playerWorldPoint']
+        elif coord == 'x':
+            return 'playerWorldPoint' in self.game_data and self.game_data['playerWorldPoint']['x']
+        elif coord == 'y':
+            return 'playerWorldPoint' in self.game_data and self.game_data['playerWorldPoint']['y']
+        elif coord == 'z':
+            return 'playerWorldPoint' in self.game_data and self.game_data['playerWorldPoint']['']
+        else:
+            return 'playerWorldPoint' in self.game_data and self.game_data['playerWorldPoint']
 
     def inventory(self):
         self.query['inv'] = True
@@ -173,6 +184,12 @@ class QueryHelper:
                 return False
         return 'tiles' in self.game_data and self.game_data['tiles']
 
+    def set_varbit(self, varbit):
+        self.query['varBit'] = varbit
+
+    def get_varbit(self):
+        return 'varBit' in self.game_data and self.game_data['varBit']
+
     def set_skills(self, skills):
         if type(skills) is not set:
             raise Exception('skills must be a set, {} is not a valid value.'.format(skills))
@@ -205,6 +222,11 @@ class QueryHelper:
         else:
             self.query['gameObjectsV2'] = {'tiles': list(tiles), 'objects': list(objects)}
 
+    # Sometimes this ends up being a huge array of tiles which the server cant handle,
+    # add the ability to clear out old tiles if that happens
+    def clear_game_objects(self):
+        self.query.get('gameObjectsV2', None)
+
     def get_game_objects(self, game_object=False):
         if game_object:
             if 'gameObjectsV2' in self.game_data and game_object in self.game_data['gameObjectsV2']:
@@ -212,6 +234,29 @@ class QueryHelper:
             else:
                 return []
         return 'gameObjectsV2' in self.game_data and self.game_data['gameObjectsV2'] or []
+
+    def set_wall_objects(self, tiles, objects):
+        if type(tiles) is not set:
+            raise Exception('tiles must be a set, {} is not a valid value.'.format(tiles))
+        if type(objects) is not set:
+            raise Exception('objects must be a set, {} is not a valid value.'.format(objects))
+        # dont keep adding the same tiles/ objects to the query over and over
+        # for a long running script, this could be thousands of dupes
+        if 'gameObjectsV2' in self.query:
+            old_tiles = self.query['wallObjectsV2']['tiles']
+            old_objects = self.query['wallObjectsV2']['objects']
+            self.query['wallObjectsV2']['tiles'] = list(set(old_tiles).union(tiles))
+            self.query['wallObjectsV2']['objects'] = list(set(old_objects).union(objects))
+        else:
+            self.query['wallObjectsV2'] = {'tiles': list(tiles), 'objects': list(objects)}
+
+    def get_wall_objects(self, game_object=False):
+        if game_object:
+            if 'wallObjectsV2' in self.game_data and game_object in self.game_data['wallObjectsV2']:
+                return self.game_data['wallObjectsV2'][game_object]
+            else:
+                return []
+        return 'wallObjectsV2' in self.game_data and self.game_data['wallObjectsV2'] or []
 
     def set_deposit_box(self):
         self.query['depositBox'] = True
@@ -281,6 +326,25 @@ class QueryHelper:
     def get_canvas(self):
         return 'canvas' in self.game_data and self.game_data['canvas']
 
+    def set_surrounding_ground_items(self, distance, loc):
+        tiles = util.generate_surrounding_tiles_from_point(distance, loc)
+        items = []
+        for tile in tiles:
+            items.append({
+                'tile': tile,
+                'object': '20997'
+            })
+        self.query['allGroundItems'] = items
+
+    def get_surrounding_ground_items(self):
+        return 'allGroundItems' in self.game_data and self.game_data['allGroundItems']
+
+
     def query_backend(self):
+        '''print("\t«{}»\tLine number in which the function is defined.".
+              format(inspect.getsourcelines(self.query_backend)[1]))
+        print("\t«{}»\tLine from which the function has been called.".
+              format(inspect.stack()[1][2]))
+        print("\t«{}»\tInvoking/calling function.".format(inspect.stack()[1][3]))'''
         self.game_data = server.query_game_data(self.query, config['port'])
         return self.game_data

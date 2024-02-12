@@ -194,7 +194,7 @@ def main():
         'ts': datetime.datetime.now()
     }
     while True:
-        osrs.game.break_manager_v3(script_config)
+        osrs.game.break_manager_v4(script_config)
         osrs.move.wait_until_stationary(port)
         drink_stam()
         drink_wine()

@@ -58,6 +58,14 @@ def generate_surrounding_tiles(dist, port='56799'):
     return tiles
 
 
+def generate_surrounding_tiles_from_point(dist, player_loc, port='56799'):
+    tiles = []
+    for x in range(player_loc['x'] - dist, player_loc['x'] + dist):
+        for y in range(player_loc['y'] - dist, player_loc['y'] + dist):
+            tiles.append('{},{},{}'.format(x, y, player_loc['z']))
+    return tiles
+
+
 def find_closest_target(targs):
     closest = {
         "dist": 999,

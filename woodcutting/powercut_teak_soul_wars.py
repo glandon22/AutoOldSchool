@@ -3,6 +3,12 @@ import datetime
 
 import osrs
 
+script_config = {
+    'intensity': 'high',
+    'login': lambda: osrs.clock.random_sleep(4, 5),
+    'logout': lambda: osrs.clock.random_sleep(11, 14),
+}
+
 wc_animations = [
     879,877,875,873,871,869,867,8303,2846,24,2117,7264,8324,8778
 ]
@@ -26,9 +32,8 @@ tiles = [
 
 def main():
     last_click = datetime.datetime.now()
-    start_time = datetime.datetime.now()
     while True:
-        start_time = osrs.game.break_manager(start_time, 51, 57, 456, 578, 'julenth', False)
+        osrs.game.break_manager_v4(script_config)
         animation = osrs.server.get_player_animation(port)
         inv = osrs.inv.get_inv(port)
         if animation in wc_animations:

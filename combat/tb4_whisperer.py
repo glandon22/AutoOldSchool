@@ -49,7 +49,7 @@ ax_piece_1 = '28325'
 ax_piece_2 = '28323'
 ax_piece_3 = '28319'
 ax_piece_4 = '28321'
-awakener_orb = '28334'
+# awakener_orb = '28334'
 
 drag_jave_id = '19582'
 r_bolts_unf_id = '9381'
@@ -79,7 +79,7 @@ def pray_flick(projectile, phase, qh: osrs.queryHelper.QueryHelper, anchor_tile)
         osrs.clock.random_sleep(0.2, 0.21)
         return avoid_tentacle(qh, anchor_tile)
     elif phase == 4:
-        osrs.clock.random_sleep(0.78, 0.79)
+        '''osrs.clock.random_sleep(0.84, 0.85)
         if projectile['id'] == 2444:
             osrs.move.instant_click(qh.get_widgets(mage_prayer_widget)['x'], qh.get_widgets(mage_prayer_widget)['y'])
         else:
@@ -88,7 +88,8 @@ def pray_flick(projectile, phase, qh: osrs.queryHelper.QueryHelper, anchor_tile)
         if projectile['id'] == 2444:
             osrs.move.instant_click(qh.get_widgets(range_prayer_widget)['x'], qh.get_widgets(range_prayer_widget)['y'])
         else:
-            osrs.move.instant_click(qh.get_widgets(mage_prayer_widget)['x'], qh.get_widgets(mage_prayer_widget)['y'])
+            osrs.move.instant_click(qh.get_widgets(mage_prayer_widget)['x'], qh.get_widgets(mage_prayer_widget)['y'])'''
+        osrs.clock.random_sleep(1.4, 1.41)
         return avoid_tentacle(qh, anchor_tile)
 
 
@@ -169,21 +170,33 @@ def calculate_second_pillar(first_pillar, third_pillar, npcs):
                 )
             # If we don't have a second pillar saved yet, save the first one we see.
             if not second_pillar:
+                if first_pillar['x_coord'] < npc['x_coord'] < third_pillar['x_coord'] \
+                        or third_pillar['x_coord'] < npc['x_coord'] < first_pillar['x_coord']:
+                    second_pillar_between_first_and_third = True
                 npc['thid_pillar_dist'] = distance_between_this_pillar_and_third_pillar
                 second_pillar = npc
-            elif distance_between_this_pillar_and_third_pillar < second_pillar['thid_pillar_dist']:
+            elif npc['dist'] <= second_pillar['dist']:
                 if first_pillar['x_coord'] < npc['x_coord'] < third_pillar['x_coord'] \
                         or third_pillar['x_coord'] < npc['x_coord'] < first_pillar['x_coord']:
                     second_pillar_between_first_and_third = True
                     npc['thid_pillar_dist'] = distance_between_this_pillar_and_third_pillar
                     second_pillar = npc
+            elif not second_pillar_between_first_and_third and first_pillar['x_coord'] < npc['x_coord'] < third_pillar['x_coord'] \
+                        or third_pillar['x_coord'] < npc['x_coord'] < first_pillar['x_coord']:
+                second_pillar_between_first_and_third = True
+                npc['thid_pillar_dist'] = distance_between_this_pillar_and_third_pillar
+                second_pillar = npc
             # If we never saw a second pillar between our first and third stages, just select the one
             # that is closest to me
-            if not second_pillar_between_first_and_third:
-                second_pillar = False
-                print('++++++++++++++++')
-                print(second_pillar)
-                print('++++++++++++++++')
+    if not second_pillar_between_first_and_third:
+        print('did not see a second pillar in between first and third')
+        print(first_pillar, third_pillar, npcs)
+        second_pillar = False
+        print('++++++++++++++++')
+        print(second_pillar)
+        print('++++++++++++++++')
+        for npc in npcs:
+            if str(npc['compositionID']) == floating_pillar_shadow_id and npc['health'] == 27:
                 distance_between_this_pillar_and_third_pillar = osrs.dev.point_dist(
                     npc['x_coord'],
                     npc['y_coord'],
@@ -194,10 +207,11 @@ def calculate_second_pillar(first_pillar, third_pillar, npcs):
                 if not second_pillar:
                     npc['thid_pillar_dist'] = distance_between_this_pillar_and_third_pillar
                     second_pillar = npc
-                elif distance_between_this_pillar_and_third_pillar < second_pillar['thid_pillar_dist']:
+                elif npc['dist'] <= second_pillar['dist']:
                     npc['thid_pillar_dist'] = distance_between_this_pillar_and_third_pillar
                     second_pillar = npc
-    print(second_pillar)
+    print('final second pillar: ', second_pillar)
+    return second_pillar
 
 
 def return_to_cathedral(qh: osrs.queryHelper.QueryHelper):
@@ -250,6 +264,8 @@ def return_to_cathedral(qh: osrs.queryHelper.QueryHelper):
 
 
 def restore_at_nardah(qh: osrs.queryHelper.QueryHelper):
+    osrs.player.toggle_prayer('on')
+    osrs.clock.sleep_one_tick()
     osrs.player.toggle_prayer('off')
     osrs.keeb.press_key('esc')
     curr_time = datetime.datetime.now()
@@ -306,30 +322,8 @@ def handle_screech_attack(qh: osrs.queryHelper.QueryHelper, anchor_tile):
                     closest = npc
             elif str(npc['compositionID']) == floating_pillar_shadow_id and npc['health'] == 40:
                 third_pillar = npc
-        print(qh.get_npcs())
-        print(qh.get_player_world_location())
-        print(closest)
-        print(second_pillar)
-        print(third_pillar)
-        print("-------------------------------------")
         osrs.move.spam_click('{},{},3'.format(closest['x_coord'], closest['y_coord'] + 2), 0.6)
-        for npc in npcs:
-            print('++++++++++++++++')
-            print(second_pillar)
-            if str(npc['compositionID']) == floating_pillar_shadow_id and npc['health'] == 27:
-                if not second_pillar:
-                    npc['thid_pillar_dist'] = osrs.dev.point_dist(npc['x_coord'], npc['y_coord'], third_pillar['x_coord'],
-                                                      third_pillar['y_coord'])
-                    second_pillar = npc
-                elif osrs.dev.point_dist(
-                        npc['x_coord'],
-                        npc['y_coord'],
-                        third_pillar['x_coord'],
-                        third_pillar['y_coord']
-                ) < second_pillar['thid_pillar_dist'] and (closest['x_coord'] < npc['x_coord'] < third_pillar['x_coord'] or third_pillar['x_coord'] < npc['x_coord'] < closest['x_coord']):
-                    npc['thid_pillar_dist'] = osrs.dev.point_dist(npc['x_coord'], npc['y_coord'],
-                                                      third_pillar['x_coord'], third_pillar['y_coord'])
-                    second_pillar = npc
+        second_pillar = calculate_second_pillar(closest, third_pillar, qh.get_npcs())
         if closest:
             break
     wait_for_pillar_projectile(qh)
@@ -340,6 +334,7 @@ def handle_screech_attack(qh: osrs.queryHelper.QueryHelper, anchor_tile):
     osrs.clock.sleep_one_tick()
     wait_for_pillar_projectile(qh)
     osrs.move.spam_click('{},{},3'.format(anchor_tile['x'], anchor_tile['y']), 1.3)
+    osrs.clock.random_sleep(1, 1.01)
     qh.query_backend()
     whisp = find_next_npc(qh.get_npcs(), whisperer_id)
     osrs.move.instant_click(whisp['x'], whisp['y'])
@@ -348,6 +343,7 @@ def handle_screech_attack(qh: osrs.queryHelper.QueryHelper, anchor_tile):
 def handle_vita_souls(qh: osrs.queryHelper.QueryHelper, tile):
     vita_souls = []
     osrs.keeb.press_key('esc')
+    osrs.move.spam_click('{},{},0'.format(qh.get_player_world_location()['x'], qh.get_player_world_location()['y'] + 2), 0.4)
     while True:
         qh.query_backend()
         if qh.get_inventory() and qh.get_inventory(ready_blackstone_id):
@@ -389,21 +385,69 @@ def handle_enrage(curr_loc, prev_loc, qh: osrs.queryHelper.QueryHelper):
     qh.query_backend()
     if not (qh.get_active_prayers() and 4117 in qh.get_active_prayers()):
         osrs.move.instant_click(qh.get_widgets(range_prayer_widget)['x'], qh.get_widgets(range_prayer_widget)['y'])
+    clicks = 0
     while True:
-        osrs.move.spam_click('{},{},0'.format(prev_loc['x'], prev_loc['y']), 0.6)
+        qh.set_tiles({
+            '{},{},{}'.format(prev_loc['x'] - 2, prev_loc['y'] + 1, 0),
+            '{},{},{}'.format(prev_loc['x'] + 2, prev_loc['y'], 0)
+        })
         qh.query_backend()
-        whispy = find_next_npc(qh.get_npcs(), whisperer_id)
-        if whispy:
-            osrs.move.instant_click(whispy['x'], whispy['y'])
-            osrs.clock.random_sleep(0.2, 0.22)
+        if qh.get_tiles('{},{},{}'.format(prev_loc['x'] - 2, prev_loc['y'] + 1, 0)):
+            osrs.move.fast_click(qh.get_tiles('{},{},{}'.format(prev_loc['x'] - 2, prev_loc['y'] + 1, 0)))
+            osrs.clock.random_sleep(0.1, 0.11)
+            clicks += 1
         else:
-            return 1
-        osrs.move.spam_click(curr_loc, 0.6)
+            break
+        qh.query_backend()
+        whispy = find_next_npc(qh.get_npcs(), whisperer_id)
+        if whispy and clicks % 3 == 0:
+            osrs.move.instant_click(whispy['x'], whispy['y'])
+            osrs.clock.random_sleep(0.07, 0.08)
+        qh.query_backend()
+        if qh.get_tiles('{},{},{}'.format(prev_loc['x'] + 2, prev_loc['y'], 0)):
+            osrs.move.fast_click(qh.get_tiles('{},{},{}'.format(prev_loc['x'] + 2, prev_loc['y'], 0)))
+            osrs.clock.random_sleep(0.1, 0.11)
+            clicks += 1
+        else:
+            break
+    while True:
+        print('in last phase')
+        qh.set_tiles({
+            '{},{},{}'.format(prev_loc['x'] - 2, prev_loc['y'] + 4, 3),
+            '{},{},{}'.format(prev_loc['x'] + 2, prev_loc['y'] + 3, 3)
+        })
+        qh.set_surrounding_ground_items(10, qh.get_player_world_location())
+        qh.query_backend()
+        if qh.get_tiles('{},{},{}'.format(prev_loc['x'] - 2, prev_loc['y'] + 4, 3)):
+            osrs.move.fast_click(qh.get_tiles('{},{},{}'.format(prev_loc['x'] - 2, prev_loc['y'] + 4, 3)))
+            osrs.clock.random_sleep(0.1, 0.11)
+        else:
+            if qh.get_surrounding_ground_items():
+                return 1
+            print('couldnt find first lvl 3 tile but no loot')
         qh.query_backend()
         whispy = find_next_npc(qh.get_npcs(), whisperer_id)
         if whispy:
             osrs.move.instant_click(whispy['x'], whispy['y'])
             osrs.clock.random_sleep(0.2, 0.22)
+        qh.query_backend()
+        if qh.get_tiles('{},{},{}'.format(prev_loc['x'] + 2, prev_loc['y'] + 3, 3)):
+            osrs.move.fast_click(qh.get_tiles('{},{},{}'.format(prev_loc['x'] + 2, prev_loc['y'] + 3, 3)))
+            osrs.clock.random_sleep(0.1, 0.11)
+        else:
+            if qh.get_surrounding_ground_items():
+                return 1
+            print('couldnt find second lvl 3 tile but no loot')
+            print(find_next_npc(qh.get_npcs(), whisperer_id))
+            print('||||||||||||||||||||||||||||||||||||||||||||||')
+        whispy = find_next_npc(qh.get_npcs(), whisperer_id)
+        if whispy:
+            osrs.move.instant_click(whispy['x'], whispy['y'])
+            osrs.clock.random_sleep(0.2, 0.22)
+        if qh.get_surrounding_ground_items():
+            return 1
+
+
 
 
 def avoid_tentacle(qh: osrs.queryHelper.QueryHelper, anchor_tile):
@@ -428,6 +472,9 @@ def avoid_tentacle(qh: osrs.queryHelper.QueryHelper, anchor_tile):
     qh.query_backend()
     whispy = find_next_npc(qh.get_npcs(), whisperer_id)
     if whispy['health'] / whispy['scale'] < .19 and qh.get_inventory(sage_axe):
+        print('++++++++++++++++++++++++++++++++++++')
+        print(whispy)
+        print('++++++++++++++++++++++++++++++++++++')
         osrs.keeb.press_key('esc')
         osrs.move.instant_click(qh.get_inventory(sage_axe)['x'], qh.get_inventory(sage_axe)['y'])
         return handle_enrage(destination_tile, loc, qh)
@@ -445,7 +492,6 @@ def collect_loot():
         loot_items = osrs.server.get_surrounding_ground_items_any_ids(15)
         found_loot = False
         if not loot_items:
-            osrs.clock.random_sleep(7, 8)
             break
         for item in [
             virtus_mask_id,
@@ -455,7 +501,7 @@ def collect_loot():
             ax_piece_2,
             ax_piece_3,
             ax_piece_4,
-            awakener_orb,
+            #awakener_orb,
             drag_jave_id,
             r_bolts_unf_id, pure_ess_id, shadow_quartz_id
         ]:
@@ -477,6 +523,7 @@ script_config = {
 def main():
     phase = 1
     global ball_phase_complete
+    global last_freeze_attack
     ball_phase_complete = False
     # Use this to track where I am in prayer cycle versus the projectiles
     qh = osrs.queryHelper.QueryHelper()
@@ -489,6 +536,7 @@ def main():
     qh.set_inventory()
     qh.set_interating_with()
     qh.set_skills({'magic', 'prayer'})
+    qh.clear_game_objects()
     qh.set_game_objects(
         {elidnis_stat_tile},
         {elidnis_stat_id}
@@ -500,6 +548,7 @@ def main():
     # This is the anchor tile, where Odd Figure is located. Center of room
     anchor_tile = False
     tentacle_next = False
+    last_freeze_attack = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
         qh.query_backend()
         npcs = qh.get_npcs()
@@ -559,7 +608,8 @@ def main():
                 if res == 1:
                     return qh
             # freeze and melee attack - i need to barrage her
-            elif closest_projectile['id'] == 2467:
+            elif closest_projectile['id'] == 2467 and (datetime.datetime.now() - last_freeze_attack).total_seconds() > 20:
+                # may need to set a skip here if she is already below 20% health to just equip my sage ax and kill her
                 # click the ice barrage spell to manually cast
                 osrs.keeb.press_key('f6')
                 while True:
@@ -569,29 +619,10 @@ def main():
                         break
                 osrs.move.fast_click(qh.get_widgets(ice_barrage_id))
                 whisp = find_next_npc(qh.get_npcs(), whisperer_melee_id)
-                if whisp:
-                    #hover whisperer to click when ready
-                    osrs.move.fast_move(whisp)
-                # wait until her projectile hits me, otherwise she will not freeze
-                while True:
-                    qh.query_backend()
-                    # or freezing_special_id not in qh.get_projectiles_v2()
-                    if not qh.get_projectiles_v2():
-                        break
-                while True:
-                    qh.query_backend()
-                    print('looking for melee whisp')
-                    whisp = find_next_npc(qh.get_npcs(), whisperer_melee_id)
-                    # once whisperer threw out the freezing bolt, but instantly changed out of melee phase, so look for either instance
-                    whisp_reg = find_next_npc(qh.get_npcs(), whisperer_id)
-                    if whisp:
-                        print('shes gone')
-                        osrs.move.fast_click(whisp)
-                        break
-                    elif whisp_reg:
-                        print('shes gone, never saw melee')
-                        osrs.move.fast_click(whisp_reg)
-                        break
+                osrs.move.fast_move(whisp)
+                osrs.clock.sleep_one_tick()
+                osrs.move.fast_click(whisp)
+                last_freeze_attack = datetime.datetime.now()
                 continue
             # tortured souls special attack, kill the ones saying vita!
             elif closest_projectile['id'] == 668:
@@ -637,7 +668,7 @@ def main():
                     if consumed_ball:
                         osrs.move.click(qh.get_inventory(ready_blackstone_id))
                         osrs.clock.sleep_one_tick()
-                        osrs.move.run_to_loc_v2(['{},{},0'.format(anchor_tile['x'], anchor_tile['y'] + 8)])
+                        osrs.move.run_to_loc_v2(['{},{},0'.format(anchor_tile['x'], anchor_tile['y'] + 9)])
                         ball_phase_complete = True
                         qh.query_backend()
                         whisp = find_next_npc(qh.get_npcs(), whisperer_id)
@@ -647,25 +678,16 @@ def main():
                         osrs.move.spam_click('{},{},3'.format(closest['x_coord'], closest['y_coord']), .3)
 
 
-'''while True:
+while True:
     qh = main()
     collect_loot()
-    restore_at_nardah(qh)'''
+    restore_at_nardah(qh)
 
 
-'''
-still breaks my pilalr thing:
-runs to far right, should stay left
-[{'x': 1280, 'y': 505, 'name': '<col=00ffff>Floating Column</col>', 'id': 12209, 'dist': 10, 'graphic': -1, 'health': 27, 'scale': 40, 'x_coord': 9590, 'y_coord': 2613, 'compositionID': 12209}, {'x': 960, 'y': 261, 'name': 'The Whisperer', 'id': 12204, 'dist': 10, 'graphic': 377, 'health': 44, 'scale': 80, 'x_coord': 9599, 'y_coord': 2604, 'compositionID': 12204}, {'x': 1182, 'y': 399, 'name': '<col=00ffff>Floating Column</col>', 'id': 12209, 'dist': 8, 'graphic': -1, 'health': 14, 'scale': 40, 'x_coord': 9592, 'y_coord': 2609, 'compositionID': 12209}, {'x': 1097, 'y': 451, 'name': '<col=00ffff>Floating Column</col>', 'id': 12209, 'dist': 5, 'graphic': -1, 'health': 14, 'scale': 40, 'x_coord': 9595, 'y_coord': 2611, 'compositionID': 12209}, {'x': 1010, 'y': 475, 'name': '<col=00ffff>Floating Column</col>', 'id': 12209, 'dist': 2, 'graphic': -1, 'health': 27, 'scale': 40, 'x_coord': 9598, 'y_coord': 2612, 'compositionID': 12209}, {'x': 913, 'y': 475, 'name': '<col=00ffff>Floating Column</col>', 'id': 12209, 'dist': 2, 'graphic': -1, 'health': 27, 'scale': 40, 'x_coord': 9601, 'y_coord': 2612, 'compositionID': 12209}, {'x': 819, 'y': 451, 'name': '<col=00ffff>Floating Column</col>', 'id': 12209, 'dist': 4, 'graphic': -1, 'health': 14, 'scale': 40, 'x_coord': 9604, 'y_coord': 2611, 'compositionID': 12209}, {'x': 726, 'y': 394, 'name': '<col=00ffff>Floating Column</col>', 'id': 12209, 'dist': 7, 'graphic': -1, 'health': 40, 'scale': 40, 'x_coord': 9607, 'y_coord': 2609, 'compositionID': 12209}, {'x': 654, 'y': 509, 'name': '<col=00ffff>Floating Column</col>', 'id': 12209, 'dist': 9, 'graphic': -1, 'health': 14, 'scale': 40, 'x_coord': 9609, 'y_coord': 2613, 'compositionID': 12209}]
-{'x': 9600, 'y': 2614, 'z': 3}
-{'x': 819, 'y': 451, 'name': '<col=00ffff>Floating Column</col>', 'id': 12209, 'dist': 4, 'graphic': -1, 'health': 14, 'scale': 40, 'x_coord': 9604, 'y_coord': 2611, 'compositionID': 12209}
-False
-{'x': 726, 'y': 394, 'name': '<col=00ffff>Floating Column</col>', 'id': 12209, 'dist': 7, 'graphic': -1, 'health': 40, 'scale': 40, 'x_coord': 9607, 'y_coord': 2609, 'compositionID': 12209}
-
-'''
-
-calculate_second_pillar(
+'''calculate_second_pillar(
     {'x': 819, 'y': 451, 'name': '<col=00ffff>Floating Column</col>', 'id': 12209, 'dist': 4, 'graphic': -1, 'health': 14, 'scale': 40, 'x_coord': 9604, 'y_coord': 2611, 'compositionID': 12209},
     {'x': 726, 'y': 394, 'name': '<col=00ffff>Floating Column</col>', 'id': 12209, 'dist': 7, 'graphic': -1, 'health': 40, 'scale': 40, 'x_coord': 9607, 'y_coord': 2609, 'compositionID': 12209},
     [{'x': 1280, 'y': 505, 'name': '<col=00ffff>Floating Column</col>', 'id': 12209, 'dist': 10, 'graphic': -1, 'health': 27, 'scale': 40, 'x_coord': 9590, 'y_coord': 2613, 'compositionID': 12209}, {'x': 960, 'y': 261, 'name': 'The Whisperer', 'id': 12204, 'dist': 10, 'graphic': 377, 'health': 44, 'scale': 80, 'x_coord': 9599, 'y_coord': 2604, 'compositionID': 12204}, {'x': 1182, 'y': 399, 'name': '<col=00ffff>Floating Column</col>', 'id': 12209, 'dist': 8, 'graphic': -1, 'health': 14, 'scale': 40, 'x_coord': 9592, 'y_coord': 2609, 'compositionID': 12209}, {'x': 1097, 'y': 451, 'name': '<col=00ffff>Floating Column</col>', 'id': 12209, 'dist': 5, 'graphic': -1, 'health': 14, 'scale': 40, 'x_coord': 9595, 'y_coord': 2611, 'compositionID': 12209}, {'x': 1010, 'y': 475, 'name': '<col=00ffff>Floating Column</col>', 'id': 12209, 'dist': 2, 'graphic': -1, 'health': 27, 'scale': 40, 'x_coord': 9598, 'y_coord': 2612, 'compositionID': 12209}, {'x': 913, 'y': 475, 'name': '<col=00ffff>Floating Column</col>', 'id': 12209, 'dist': 2, 'graphic': -1, 'health': 27, 'scale': 40, 'x_coord': 9601, 'y_coord': 2612, 'compositionID': 12209}, {'x': 819, 'y': 451, 'name': '<col=00ffff>Floating Column</col>', 'id': 12209, 'dist': 4, 'graphic': -1, 'health': 14, 'scale': 40, 'x_coord': 9604, 'y_coord': 2611, 'compositionID': 12209}, {'x': 726, 'y': 394, 'name': '<col=00ffff>Floating Column</col>', 'id': 12209, 'dist': 7, 'graphic': -1, 'health': 40, 'scale': 40, 'x_coord': 9607, 'y_coord': 2609, 'compositionID': 12209}, {'x': 654, 'y': 509, 'name': '<col=00ffff>Floating Column</col>', 'id': 12209, 'dist': 9, 'graphic': -1, 'health': 14, 'scale': 40, 'x_coord': 9609, 'y_coord': 2613, 'compositionID': 12209}]
-)
+)'''
+
+#calculate_second_pillar({'x': 906, 'y': 537, 'name': '<col=00ffff>Floating Column</col>', 'id': 12209, 'dist': 1, 'graphic': -1, 'health': 14, 'scale': 40, 'x_coord': 11326, 'y_coord': 3188, 'compositionID': 12209}, {'x': 620, 'y': 445, 'name': '<col=00ffff>Floating Column</col>', 'id': 12209, 'dist': 10, 'graphic': -1, 'health': 40, 'scale': 40, 'x_coord': 11335, 'y_coord': 3185, 'compositionID': 12209}, [{'x': 1180, 'y': 569, 'name': '<col=00ffff>Floating Column</col>', 'id': 12209, 'dist': 7, 'graphic': -1, 'health': 14, 'scale': 40, 'x_coord': 11318, 'y_coord': 3189, 'compositionID': 12209}, {'x': 868, 'y': 307, 'name': 'The Whisperer', 'id': 12204, 'dist': 8, 'graphic': 377, 'health': 44, 'scale': 80, 'x_coord': 11327, 'y_coord': 3180, 'compositionID': 12204}, {'x': 1097, 'y': 449, 'name': '<col=00ffff>Floating Column</col>', 'id': 12209, 'dist': 5, 'graphic': -1, 'health': 14, 'scale': 40, 'x_coord': 11320, 'y_coord': 3185, 'compositionID': 12209}, {'x': 1005, 'y': 506, 'name': '<col=00ffff>Floating Column</col>', 'id': 12209, 'dist': 2, 'graphic': -1, 'health': 14, 'scale': 40, 'x_coord': 11323, 'y_coord': 3187, 'compositionID': 12209}, {'x': 906, 'y': 537, 'name': '<col=00ffff>Floating Column</col>', 'id': 12209, 'dist': 1, 'graphic': -1, 'health': 14, 'scale': 40, 'x_coord': 11326, 'y_coord': 3188, 'compositionID': 12209}, {'x': 816, 'y': 534, 'name': '<col=00ffff>Floating Column</col>', 'id': 12209, 'dist': 4, 'graphic': -1, 'health': 27, 'scale': 40, 'x_coord': 11329, 'y_coord': 3188, 'compositionID': 12209, 'thid_pillar_dist': 6.708203932499369}, {'x': 719, 'y': 506, 'name': '<col=00ffff>Floating Column</col>', 'id': 12209, 'dist': 7, 'graphic': -1, 'health': 14, 'scale': 40, 'x_coord': 11332, 'y_coord': 3187, 'compositionID': 12209}, {'x': 620, 'y': 445, 'name': '<col=00ffff>Floating Column</col>', 'id': 12209, 'dist': 10, 'graphic': -1, 'health': 40, 'scale': 40, 'x_coord': 11335, 'y_coord': 3185, 'compositionID': 12209}, {'x': 537, 'y': 569, 'name': '<col=00ffff>Floating Column</col>', 'id': 12209, 'dist': 12, 'graphic': -1, 'health': 14, 'scale': 40, 'x_coord': 11337, 'y_coord': 3189, 'compositionID': 12209}])

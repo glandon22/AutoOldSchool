@@ -105,7 +105,7 @@ def move_and_click(x, y, w, h, button='left'):
 
 
 def click(obj):
-    movement = bezier_movement(obj['x'] - 3, obj['y'] - 3, obj['x'] + 3, obj['y'] + 3)
+    movement = bezier_movement(obj['x'] - 1, obj['y'], obj['x'], obj['y'] + 1)
     clock.random_sleep(0.15, 0.25)
     # DO NOT CLICK ON THE TASK BAR
     if not movement:
@@ -312,6 +312,14 @@ def instant_spam_click(tile, seconds, port='56799'):
                     break
                 else:
                     break
+
+
+def spam_on_screen(x, y, seconds):
+    start_time = datetime.datetime.now()
+    while True:
+        if (datetime.datetime.now() - start_time).total_seconds() > seconds:
+            instant_click(x, y)
+
 
 
 # this doesnt work on my mac bc of the different screen resolutions...
