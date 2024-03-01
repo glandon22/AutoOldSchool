@@ -110,12 +110,12 @@ def build_v3(qh):
     # 1 = building 2 = waiting
     status = 2
     while True:
+        osrs.game.break_manager_v4(script_config)
         qh.query_backend()
         inv = qh.get_inventory()
         plank_count = osrs.inv.get_item_quantity_in_inv(inv, plank)
         butler = osrs.server.get_npc_by_id('227')
         if status == 1:
-            osrs.game.break_manager_v4(script_config)
             if plank_count >= min_planks:
                 make_chair()
                 remove_chair()
@@ -139,41 +139,17 @@ def call_butler_v2(qh: osrs.queryHelper.QueryHelper):
     last_butler_click = datetime.datetime.now() - datetime.timedelta(hours=777)
     # send him for planks
     requested_planks = False
+    called_butler = False
     while True:
         qh.query_backend()
-        # wrench is always present, so check for that last
+        # i try to click right as he spawns in and misclick,
+        # add a while loop here that waits for three seconds to see if the chat dialogue pops up before clicking
         if qh.get_npcs() \
                 and len(qh.get_npcs()) > 0 \
                 and 'dist' in qh.get_npcs()[0] \
                 and qh.get_npcs()[0]['dist'] == 1 and (datetime.datetime.now() - last_butler_click).total_seconds() > 7:
             osrs.move.click(qh.get_npcs()[0])
             last_butler_click = datetime.datetime.now()
-        elif qh.get_chat_options():
-            for i, option in enumerate(qh.get_chat_options()):
-                if 'Fetch from bank' in option:
-                    return osrs.keeb.keyboard.type(str(i))
-        elif qh.get_widgets(butler_greeting_widget_id):
-            break
-        elif qh.get_widgets(house_widget_id) and \
-                qh.get_widgets(wrench_widget_id) and \
-                'spriteID' in qh.get_widgets(wrench_widget_id) and \
-                qh.get_widgets(wrench_widget_id)['spriteID'] == 1030:
-            print(qh.get_widgets(wrench_widget_id))
-            osrs.move.click(qh.get_widgets(house_widget_id))
-            osrs.clock.sleep_one_tick()
-        elif qh.get_widgets(call_servant_widget_id) and \
-                qh.get_widgets(wrench_widget_id) and \
-                'spriteID' in qh.get_widgets(wrench_widget_id) and \
-                qh.get_widgets(wrench_widget_id)['spriteID'] == 1030:
-            osrs.move.click(qh.get_widgets(call_servant_widget_id))
-            osrs.clock.sleep_one_tick()
-        elif qh.get_widgets(wrench_widget_id):
-            osrs.move.click(qh.get_widgets(wrench_widget_id))
-            osrs.clock.sleep_one_tick()
-    while True:
-        qh.query_backend()
-        if qh.get_widgets(butler_greeting_widget_id) or qh.get_widgets(player_chat_widget_id):
-            osrs.keeb.press_key('space')
         elif qh.get_chat_options():
             for i, option in enumerate(qh.get_chat_options()):
                 if 'Go to the bank' in option or 'Bring something from the bank' in option or 'Oak planks' in option or '5,000 coins' in option:
@@ -185,8 +161,25 @@ def call_butler_v2(qh: osrs.queryHelper.QueryHelper):
                     return osrs.keeb.keyboard.type(str(i))
                 elif 'Fetch from bank' in option:
                     return osrs.keeb.keyboard.type(str(i))
+        elif qh.get_widgets(butler_greeting_widget_id) or qh.get_widgets(player_chat_widget_id):
+            osrs.keeb.press_key('space')
+        elif qh.get_widgets(house_widget_id) and \
+                qh.get_widgets(wrench_widget_id) and \
+                'spriteID' in qh.get_widgets(wrench_widget_id) and \
+                qh.get_widgets(wrench_widget_id)['spriteID'] == 1030 and not called_butler:
+            osrs.move.click(qh.get_widgets(house_widget_id))
+            osrs.clock.sleep_one_tick()
+        elif qh.get_widgets(call_servant_widget_id) and \
+                qh.get_widgets(wrench_widget_id) and \
+                'spriteID' in qh.get_widgets(wrench_widget_id) and \
+                qh.get_widgets(wrench_widget_id)['spriteID'] == 1030 and not called_butler:
+            osrs.move.click(qh.get_widgets(call_servant_widget_id))
+            osrs.clock.sleep_one_tick()
+            called_butler = True
+        elif qh.get_widgets(wrench_widget_id) and not called_butler:
+            osrs.move.click(qh.get_widgets(wrench_widget_id))
+            osrs.clock.sleep_one_tick()
         elif qh.get_widgets(chat_box_input_widget_id) and requested_planks:
-            print('found', qh.get_widgets(chat_box_input_widget_id))
             osrs.keeb.keyboard.type('16')
             return osrs.keeb.press_key('enter')
 
@@ -201,10 +194,19 @@ def enter_home():
 
 
 def login_routine():
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_widgets({
+        wrench_widget_id, house_widget_id, call_servant_widget_id, butler_greeting_widget_id, player_chat_widget_id,
+        chat_box_input_widget_id
+    })
+    qh.set_chat_options()
+    qh.set_inventory()
+    qh.set_npcs(['227'])
     osrs.clock.random_sleep(2, 3)
     enter_home()
     osrs.clock.random_sleep(3, 5)
     get_in_position()
+    call_butler_v2(qh)
 
 
 script_config = {
