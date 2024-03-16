@@ -54,8 +54,8 @@ def main():
                 print(targ['health'])
                 osrs.move.fast_click(targ)
 
-        if qh.get_skills('strength')['boostedLevel'] - qh.get_skills('strength')['level'] < 5:
-            super_combat = osrs.inv.are_items_in_inventory_v2(qh.get_inventory(), [12695, 12697, 12699, 12701])
+        if qh.get_skills('ranged')['boostedLevel'] - qh.get_skills('ranged')['level'] < 5:
+            super_combat = osrs.inv.are_items_in_inventory_v2(qh.get_inventory(), [169, 171, 173, 2444])
             if not super_combat:
                 print('out of super combats')
             else:
