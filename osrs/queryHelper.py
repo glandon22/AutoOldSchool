@@ -3,9 +3,16 @@ import osrs.dev as dev
 import osrs.inv as inv
 import osrs.util as util
 import logging
-import inspect
+from enum import Enum
 
 config = dev.load_yaml()
+
+
+class ObjectTypes(Enum):
+    GAME = 'game'
+    GROUND = 'ground'
+    DECORATIVE = 'decorative'
+    WALL = 'wall'
 
 
 class QueryHelper:
@@ -146,6 +153,11 @@ class QueryHelper:
             self.query['widgets'] = list(widgets)
 
     def get_widgets(self, widget=False):
+        """
+
+        :param widget: '608,11' || None
+        :return: {'x': 576, 'y': 493, 'text': '', 'spriteID': -1, 'name': '', 'itemID': -1, 'xMin': 476, 'xMax': 676, 'yMin': 444, 'yMax': 496} || False
+        """
         if widget:
             if 'widgets' in self.game_data and widget in self.game_data['widgets']:
                 return self.game_data['widgets'][widget]
@@ -228,6 +240,11 @@ class QueryHelper:
         self.query.get('gameObjectsV2', None)
 
     def get_game_objects(self, game_object=False):
+        """
+
+        :param game_object: string - '30920'
+        :return: [{'x': 836, 'y': 189, 'dist': 13, 'x_coord': 3765, 'y_coord': 3880, 'id': 30920}] || []
+        """
         if game_object:
             if 'gameObjectsV2' in self.game_data and game_object in self.game_data['gameObjectsV2']:
                 return self.game_data['gameObjectsV2'][game_object]
@@ -339,6 +356,45 @@ class QueryHelper:
     def get_surrounding_ground_items(self):
         return 'allGroundItems' in self.game_data and self.game_data['allGroundItems']
 
+    def set_objects(self, tiles, objects, object_type: ObjectTypes):
+        search_value = f'{object_type}ObjectsV2'
+        if type(tiles) is not set:
+            raise Exception('tiles must be a set, {} is not a valid value.'.format(tiles))
+        if type(objects) is not set:
+            raise Exception('objects must be a set, {} is not a valid value.'.format(objects))
+        # dont keep adding the same tiles/ objects to the query over and over
+        # for a long running script, this could be thousands of dupes
+        if search_value in self.query:
+            old_tiles = self.query[search_value]['tiles']
+            old_objects = self.query[search_value]['objects']
+            self.query[search_value]['tiles'] = list(set(old_tiles).union(tiles))
+            self.query[search_value]['objects'] = list(set(old_objects).union(objects))
+        else:
+            self.query[search_value] = {'tiles': list(tiles), 'objects': list(objects)}
+
+    # Sometimes this ends up being a huge array of tiles which the server cant handle,
+    # add the ability to clear out old tiles if that happens
+    def clear_objects(self, object_type: ObjectTypes):
+        value = f'type{object_type}ObjectsV2'
+        self.query.get(value, None)
+
+    def get_objects(self, object_type: ObjectTypes, game_object=False,):
+        """
+
+        :param object_type: ObjectTypes - 'wall'
+        :param game_object: string - '30920'
+        :return: [{'x': 836, 'y': 189, 'dist': 13, 'x_coord': 3765, 'y_coord': 3880, 'id': 30920}] || []
+        """
+        search_value = f'{object_type}ObjectsV2'
+        if game_object:
+            if search_value in self.game_data and game_object in self.game_data[search_value]:
+                return self.game_data[search_value][game_object]
+            else:
+                return []
+        return search_value in self.game_data and self.game_data[search_value] or []
+
+    def clear_query(self):
+        self.query = {}
 
     def query_backend(self):
         '''print("\t«{}»\tLine number in which the function is defined.".
