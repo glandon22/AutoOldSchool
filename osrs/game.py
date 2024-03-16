@@ -99,6 +99,15 @@ def login_v4():
     qh.set_game_state()
     while True:
         qh.query_backend()
+        print(f'Log in status: {qh.get_game_state()}')
+        if qh.get_game_state() == 'LOGGING_IN' or qh.get_game_state() == 'LOADING':
+            continue
+        elif qh.get_game_state() == 'LOGGED_IN':
+            clock.sleep_one_tick()
+            keeb.keyboard.press(keeb.Key.esc)
+            keeb.keyboard.release(keeb.Key.esc)
+            clock.sleep_one_tick()
+            return
         canvas = qh.get_canvas()
         x = math.floor((canvas['xMax'] + canvas['xMin']) / 2)
         # Game image is a fixed size, only black space is added horizontally as UI scales
@@ -108,14 +117,6 @@ def login_v4():
         osrs.move.click({'x': x, 'y': y})
         osrs.clock.sleep_one_tick()
         qh.query_backend()
-        if qh.get_game_state() == 'LOGGING_IN' or qh.get_game_state() == 'LOADING':
-            print(f'Log in stats: {qh.get_game_state()}')
-            continue
-        elif qh.get_game_state() == 'LOGGED_IN':
-            keeb.keyboard.press(keeb.Key.esc)
-            keeb.keyboard.release(keeb.Key.esc)
-            clock.sleep_one_tick()
-            return
 
 
 def logout(port='56799'):
@@ -340,3 +341,72 @@ def break_manager_v4(script_config):
             script_config['login']()
         set_timings(timings, datetime.datetime.now())
     return config
+
+
+# this simulates the login logout functionality for rapid testing
+def break_manager_debugging(script_config):
+    """
+    :param script_config: Object
+    {
+        'intensity': 'high' | 'low',
+        'logout': function(), -- Steps to run before logging out for break
+        'login': function(), -- Steps to run after logging back in
+        'click_to_play': True | False -> Instances like Tithe Farm dont display this button after login
+    }
+    """
+    current_time = datetime.datetime.now()
+    timings = config['{}_intensity_script'.format(script_config['intensity'])]
+    # Initialize timings on script start
+    if not config['timings']['script_start']:
+        set_timings(timings, current_time - datetime.timedelta(hours=777))
+        print('current config: {}'.format(config))
+
+    # Begin break period
+    if current_time > config['timings']['break_start']:
+        # Run pre-logout logic supplied by script
+        if script_config['logout']:
+            script_config['logout']()
+        logout()
+        # log right back in
+        config['timings']['break_end'] = datetime.datetime.now()
+        while True:
+            if datetime.datetime.now() < config['timings']['break_end']:
+                move.move_and_click(500, 223, 5, 5)
+                clock.random_sleep(10, 15)
+            else:
+                break
+        login_v4()
+        # Run post-login logic supplied by script
+        if script_config['login']:
+            script_config['login']()
+        set_timings(timings, datetime.datetime.now())
+    return config
+
+
+def tele_home():
+    while True:
+        osrs.keeb.press_key('f6')
+        osrs.clock.random_sleep(0.2, 0.3)
+        home_tele_button = osrs.server.get_widget('218,29')
+        if home_tele_button:
+            osrs.move.move_and_click(home_tele_button['x'], home_tele_button['y'], 3, 3)
+            start_time = datetime.datetime.now()
+            while True:
+                loc = osrs.server.get_world_location()
+                if loc and loc['x'] > 4000:
+                    osrs.clock.random_sleep(2, 2.3)
+                    osrs.keeb.press_key('esc')
+                    return
+                elif (datetime.datetime.now() - start_time).total_seconds() > 15:
+                    break
+
+
+def cast_spell(widget):
+    while True:
+        osrs.keeb.press_key('f6')
+        osrs.clock.random_sleep(0.2, 0.3)
+        home_tele_button = osrs.server.get_widget(widget)
+        if home_tele_button:
+            osrs.move.move_and_click(home_tele_button['x'], home_tele_button['y'], 3, 3)
+            osrs.keeb.press_key('esc')
+            break
