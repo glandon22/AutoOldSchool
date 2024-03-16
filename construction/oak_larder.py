@@ -108,11 +108,10 @@ script_config = {
 
 
 def main():
-    osrs.clock.random_sleep(3, 3.1)
     while True:
         build_until_out()
         leave_house()
-        osrs.game.break_manager_v3(script_config)
+        osrs.game.break_manager_v4(script_config)
         click_phials()
         enter_home()
         osrs.clock.random_sleep(3, 5)
