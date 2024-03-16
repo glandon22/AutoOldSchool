@@ -11,7 +11,7 @@ import random
 # repeat loop
 import osrs
 
-log_id = '1517'
+log_id = '19669'
 lit_fire_id = '26185'
 tinderbox_id = '590'
 varrock_tele_tab_id = '8007'
@@ -64,6 +64,10 @@ def tele_to_varrock_fountain_v2(qh):
         tele_button = qh.get_widgets(varrock_tele_widget_id)
         if tele_button:
             osrs.move.click(tele_button)
+            osrs.clock.sleep_one_tick()
+            osrs.clock.sleep_one_tick()
+            osrs.clock.sleep_one_tick()
+            osrs.clock.sleep_one_tick()
             osrs.clock.sleep_one_tick()
             osrs.keeb.press_key('esc')
             return
@@ -145,9 +149,9 @@ def bank(qh):
             osrs.keeb.press_key('esc')
             break
         elif len(qh.get_game_objects(bank_booth_id)) > 0 \
-                and (datetime.datetime.now() - last_click).total_seconds() > 7:
+                and (datetime.datetime.now() - last_click).total_seconds() > 5:
             booth = qh.get_game_objects(bank_booth_id)[0]
-            osrs.move.click(booth)
+            osrs.move.fast_click(booth)
             last_click = datetime.datetime.now()
 
 
@@ -170,7 +174,7 @@ def main():
         walk_to_start(qh, tile)
         light_fires(qh)
         bank(qh)
-        osrs.game.break_manager_v3({'intensity': 'low', 'login': False, 'logout': False})
+        osrs.game.break_manager_v4({'intensity': 'low', 'login': False, 'logout': False})
 
 
 main()
