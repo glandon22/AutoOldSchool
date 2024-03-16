@@ -12,7 +12,7 @@ bones = '536'
 noted_bones = '537'
 min_planks = 8
 phials = '1614'
-player_house = 'rezold'
+player_house = 'z e g g'
 
 
 def offer():
@@ -115,14 +115,20 @@ def enter_home():
             break
 
 
+script_config = {
+    'intensity': 'low',
+    'logout': False,
+    'login': False
+}
+
+
 def main():
-    start_time = datetime.datetime.now()
-    osrs.clock.random_sleep(3, 3.1)
     while True:
         offer_until_out_v2()
         leave_house()
-        start_time = osrs.game.break_manager(start_time, 49, 54, 432, 673, 'pass_70', False, port)
+        osrs.game.break_manager_v4(script_config)
         click_phials()
+        osrs.clock.sleep_one_tick()
         enter_home()
 
 main()
