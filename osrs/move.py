@@ -321,7 +321,6 @@ def spam_on_screen(x, y, seconds):
             instant_click(x, y)
 
 
-
 # this doesnt work on my mac bc of the different screen resolutions...
 def right_click_menu_select(item, entry, port='56799', entry_string=None, entry_action=None):
     if platform.system() == 'Darwin':
@@ -347,8 +346,8 @@ def right_click_menu_select(item, entry, port='56799', entry_string=None, entry_
                         additional_pixels = 19 + (len(data['menuEntries']['items']) - 1 - i) * 15
                     print(additional_pixels)
                     move_and_click(curr_pos[0], curr_pos[1] + additional_pixels, 7, 1)
-                    #random_sleep(0.5, 0.6)
-                    return
+                    return True
+            return False
 
 
 def right_click_menu_select_v2(item, entry_action):

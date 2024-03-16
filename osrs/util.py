@@ -76,7 +76,10 @@ def find_closest_target(targs):
     for targ in targs:
         if int(targ["dist"]) < int(closest["dist"]):
             closest = targ
-    return closest
+    if closest['x'] is None:
+        return False
+    else:
+        return closest
 
 
 def find_an_npc(npcs, min_dist):

@@ -7,7 +7,7 @@ key = Key
 def press_key(key):
     """
 
-    :param key: 'esc' | 'enter' | 'f5
+    :param key: 'esc' | 'enter' | 'f5 | 'f6'
     """
     if key == 'esc':
         keyboard.press(Key.esc)
@@ -24,6 +24,9 @@ def press_key(key):
     elif key == 'f6':
         keyboard.press(Key.f6)
         keyboard.release(Key.f6)
+    elif key == 'space':
+        keyboard.press(Key.space)
+        keyboard.release(Key.space)
 
 
 def write(phrase):
