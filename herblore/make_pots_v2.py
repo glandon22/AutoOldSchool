@@ -16,8 +16,8 @@ bankers_ids = [
 #POT = int(sys.argv[1])
 #SECONDARY = int(sys.argv[2])
 
-POT = 99
-SECONDARY = 231
+POT = 269
+SECONDARY = 12905
 
 logging.info(f'pot and sec vals: {POT} : {SECONDARY}')
 
@@ -75,7 +75,7 @@ def main():
     qh.set_npcs(bankers_ids)
     last_click = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
-        updated_config = osrs.game.break_manager_v3(script_config)
+        updated_config = osrs.game.break_manager_v4(script_config)
         qh.query_backend()
         bstring = qh.get_inventory(POT)
         bow = qh.get_inventory(SECONDARY)

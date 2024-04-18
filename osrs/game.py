@@ -325,6 +325,7 @@ def break_manager_v4(script_config):
         # Run pre-logout logic supplied by script
         if script_config['logout']:
             script_config['logout']()
+        print(f"logging back in at: {config['timings']['break_end']}")
         logout()
         config['timings']['break_end'] = datetime.datetime.now() + datetime.timedelta(
             minutes=random.randint(timings['min_rest'], timings['max_rest'])
@@ -387,7 +388,7 @@ def tele_home():
     while True:
         osrs.keeb.press_key('f6')
         osrs.clock.random_sleep(0.2, 0.3)
-        home_tele_button = osrs.server.get_widget('218,29')
+        home_tele_button = osrs.server.get_widget('218,31')
         if home_tele_button:
             osrs.move.move_and_click(home_tele_button['x'], home_tele_button['y'], 3, 3)
             start_time = datetime.datetime.now()

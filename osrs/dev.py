@@ -2,58 +2,8 @@ import math
 import os
 import yaml
 import logging
-import datetime
 
-'''for handler in logging.root.handlers[:]:
-    logging.root.removeHandler(handler)
-logFile = f'{datetime.datetime.now().strftime("%d.%m.%y-%H:%M:%S")}-log-osrs'
-log_formatter = '%(asctime)s %(levelname)s %(funcName)s(%(lineno)d) %(message)s'
-date_fmt = '%d/%m/%y-%H:%M:%S'
-logging.basicConfig(filename=logFile, format=log_formatter, force=True, level=logging.INFO, datefmt=date_fmt)'''
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-
-
-def point_dist(x1, y1, x2, y2):
-    return abs(math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2))
-
-
-def config_loader():
-    config = {
-        'port': '56799',
-        'password': 'pass_70',
-        'timings': {
-            'script_start': None,
-            'break_start': None,
-            'break_end': None,
-            'on_break': False
-        },
-        'high_intensity_script': {
-            'max_session': 48,
-            'min_session': 42,
-            'max_rest': 10,
-            'min_rest': 7
-        },
-        'low_intensity_script': {
-            'max_session': 59,
-            'min_session': 53,
-            'max_rest': 10,
-            'min_rest': 7
-        }
-    }
-
-    yaml_output = yaml.dump(config, sort_keys=True)
-
-    print(yaml_output)
-
-
-def load_yaml():
-    with open("{}/config.yaml".format(ROOT_DIR[:-5]), "r") as stream:
-        try:
-            return yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print('Failed to load configuration.')
-            print(exc)
-            return
 
 
 class DuplicateFilter(logging.Filter):
@@ -91,7 +41,7 @@ class CustomFormatter(logging.Formatter):
 
 
 def instantiate_logger():
-    logger = logging.getLogger("My_app")
+    logger = logging.getLogger("GoonLite")
     logger.setLevel(logging.DEBUG)
 
     # create console handler with a higher log level
@@ -102,3 +52,45 @@ def instantiate_logger():
     ch.addFilter(DuplicateFilter())
     logger.addHandler(ch)
     return logger
+
+
+def point_dist(x1, y1, x2, y2):
+    return abs(math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2))
+
+
+def config_loader():
+    config = {
+        'port': '56799',
+        'password': 'pass_70',
+        'timings': {
+            'script_start': None,
+            'break_start': None,
+            'break_end': None,
+            'on_break': False
+        },
+        'high_intensity_script': {
+            'max_session': 48,
+            'min_session': 42,
+            'max_rest': 10,
+            'min_rest': 7
+        },
+        'low_intensity_script': {
+            'max_session': 59,
+            'min_session': 53,
+            'max_rest': 10,
+            'min_rest': 7
+        }
+    }
+
+    yaml_output = yaml.dump(config, sort_keys=True)
+
+
+def load_yaml():
+    with open("{}/config.yaml".format(ROOT_DIR[:-5]), "r") as stream:
+        try:
+            return yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print('Failed to load configuration.')
+            print(exc)
+            return
+

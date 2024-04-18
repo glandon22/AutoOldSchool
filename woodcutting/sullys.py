@@ -11,7 +11,7 @@ bank_container_widget_id = '12,1'
 bank_dump_widget_id = '12,42'
 
 fancy_restore_pool_id = '29241'
-varrock_tele_widget_id = '218,21'
+varrock_tele_widget_id = '218,23'
 sara_brew_ids = [6685, 6687, 6689, 6691]
 mort_myre_fungus_id = 2970
 super_antipoison_id = '185'
@@ -90,7 +90,7 @@ def mushtree_to_swamp(qh: osrs.queryHelper.QueryHelper):
         elif qh.get_player_world_location() and qh.get_player_world_location()['y'] < 3800:
             logger.info('in sticky swamp.')
             return
-        elif qh.get_game_objects(mush_tree_id) and (datetime.datetime.now() - last_mushtree_click).total_seconds() > 5:
+        elif qh.get_game_objects(mush_tree_id) and (datetime.datetime.now() - last_mushtree_click).total_seconds() > 8:
             osrs.move.click(qh.get_game_objects(mush_tree_id)[0])
             last_mushtree_click = datetime.datetime.now()
             logger.info('Clicked mushtree.')
@@ -121,7 +121,7 @@ def chop_sully(qh: osrs.queryHelper.QueryHelper, position):
             osrs.move.click(s_brew)
         elif qh.get_player_animation() and qh.get_player_animation() in wc_animations:
             logger.info('Currently chopping.')
-        elif qh.get_game_objects(sully_to_chop) and (datetime.datetime.now() - last_sully_click).total_seconds() > 4:
+        elif qh.get_game_objects(sully_to_chop) and (datetime.datetime.now() - last_sully_click).total_seconds() > 7:
             found_option = osrs.move.right_click_menu_select(
                 qh.get_game_objects(sully_to_chop)[0], None, '56799', 'Sulliuscep', 'Cut'
             )

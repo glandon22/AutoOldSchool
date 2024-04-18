@@ -10,7 +10,9 @@ __all__ = [
     'game',
     'util',
     'server',
-    'queryHelper'
+    'queryHelper',
+    'dax',
+    'models'
 ]
 
 import osrs.dev
@@ -25,3 +27,5 @@ import osrs.game
 import osrs.util
 import osrs.server
 import osrs.queryHelper
+import osrs.dax
+import osrs.models

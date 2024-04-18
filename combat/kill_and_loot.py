@@ -31,7 +31,7 @@ script_config = {
 def main():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_npcs(npc_ids)
-    qh.set_skills({'hitpoints', 'strength', 'ranged', 'magic', 'attack', 'defense'})
+    qh.set_skills({'hitpoints', 'strength', 'ranged', 'magic', 'attack', 'defence'})
     qh.set_inventory()
     qh.set_interating_with()
     qh.set_widgets({'233,0'})

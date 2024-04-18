@@ -9,8 +9,16 @@ import pyautogui
 from scipy import interpolate
 
 import osrs.dev as dev
+import osrs.move
 import osrs.server as server
 import osrs.clock as clock
+import osrs.dax as dax
+import osrs.util as util
+import osrs.queryHelper as queryHelper
+
+inv_widget_id = '161,97'
+minimap_widget_id = '161,95'
+chat_buttons_widget_id = '162,1'
 
 config = dev.load_yaml()
 
@@ -116,7 +124,10 @@ def click(obj):
 
 
 def fast_click(obj):
-    bezier_movement(obj['x'] - 3, obj['y'] - 3, obj['x'] + 3, obj['y'] + 3)
+    movement = bezier_movement(obj['x'] - 3, obj['y'] - 3, obj['x'] + 3, obj['y'] + 3)
+    if not movement:
+        print('movement was unsuccessful, target was off screen. Rejecting click.')
+        return
     pyautogui.click()
 
 
@@ -281,18 +292,13 @@ def spam_click(tile, seconds, port='56799'):
     while True:
         if (datetime.datetime.now() - start_time).total_seconds() > seconds:
             break
-        else:
-            while True:
-                data = server.query_game_data({
-                    'tiles': [tile]
-                }, port)
-                formatted_step = tile.replace(',', '')
-                if 'tiles' in data and formatted_step in data['tiles'] and \
-                        75 < data['tiles'][formatted_step]['y'] < 1040:
-                    fast_move_and_click(data['tiles'][formatted_step]['x'], data['tiles'][formatted_step]['y'], 3, 3)
-                    break
-                else:
-                    break
+        data = server.query_game_data({
+            'tiles': [tile]
+        }, port)
+        formatted_step = tile.replace(',', '')
+        if 'tiles' in data and formatted_step in data['tiles'] and \
+                75 < data['tiles'][formatted_step]['y'] < 1040:
+            fast_move_and_click(data['tiles'][formatted_step]['x'], data['tiles'][formatted_step]['y'], 3, 3)
 
 
 def instant_spam_click(tile, seconds, port='56799'):
@@ -413,7 +419,51 @@ def mac_right_click_menu_select(item, entry_action=None):
                 return
 
 
-
 def move_around_center_screen(x1=800, y1=400, x2=1000, y2=600):
     bezier_movement(x1, y1, x2, y2)
     clock.random_sleep(0.15, 0.25)
+
+
+def follow_path(start, end):
+    path = dax.generate_path(start, end)
+    if not path:
+        return
+    parsed_tiles = util.tile_objects_to_strings(path)
+    qh = queryHelper.QueryHelper()
+    qh.set_tiles(set(parsed_tiles))
+    qh.set_destination_tile()
+    qh.set_player_world_location()
+    while True:
+        qh.query_backend()
+        dist_to_end = osrs.dev.point_dist(
+            qh.get_player_world_location('x'),
+            qh.get_player_world_location('y'),
+            int(parsed_tiles[-1].split(',')[0]),
+            int(parsed_tiles[-1].split(',')[1])
+        )
+        # sometimes the tile i want to end up on has an object on it so i cant actually stand on it,
+        # in that case, i still want to break if i am at the end of the path
+        if f"{qh.get_player_world_location('x')},{qh.get_player_world_location('y')},0" == parsed_tiles[-1] or \
+                dist_to_end <= 3:
+            break
+        for tile in reversed(parsed_tiles):
+            if is_clickable(qh.get_tiles(tile)):
+                osrs.move.fast_click(qh.get_tiles(tile))
+                break
+
+
+def is_clickable(target):
+    if not target or 'x' not in target or 'y' not in target:
+        return False
+    qh = queryHelper.QueryHelper()
+    qh.set_canvas()
+    qh.set_widgets({minimap_widget_id, inv_widget_id, chat_buttons_widget_id})
+    qh.query_backend()
+    target_on_canvas = qh.get_canvas()['xMin'] + 10 < target['x'] < qh.get_canvas()['xMax'] - 10 and qh.get_canvas()['yMin'] + 10 < target['y'] < qh.get_canvas()['yMax'] - 10
+    target_on_inv = qh.get_widgets(inv_widget_id)['xMin'] + 10 < target['x'] < qh.get_widgets(inv_widget_id)['xMax'] - 10 and \
+                    qh.get_widgets(inv_widget_id)['yMin'] + 10 < target['y'] < qh.get_widgets(inv_widget_id)['yMax'] - 10
+    target_on_chat_buttons = qh.get_widgets(chat_buttons_widget_id)['xMin'] < target['x'] < qh.get_widgets(chat_buttons_widget_id)['xMax'] and \
+                    qh.get_widgets(chat_buttons_widget_id)['yMin'] - 25 < target['y'] < qh.get_widgets(chat_buttons_widget_id)['yMax']
+    target_on_minimap = qh.get_widgets(minimap_widget_id)['xMin'] < target['x'] < qh.get_widgets(minimap_widget_id)['xMax'] and \
+                    qh.get_widgets(minimap_widget_id)['yMin'] < target['y'] < qh.get_widgets(minimap_widget_id)['yMax']
+    return target_on_canvas and not target_on_inv and not target_on_minimap and not target_on_chat_buttons

@@ -1,8 +1,8 @@
+import osrs.game
 import osrs.server as server
 import osrs.dev as dev
 import osrs.inv as inv
 import osrs.util as util
-import logging
 from enum import Enum
 
 config = dev.load_yaml()
@@ -18,6 +18,11 @@ class ObjectTypes(Enum):
 class QueryHelper:
     query = {}
     game_data = {}
+
+    def __init__(self):
+        # Always pull in the game canvas area
+        self.query = {}
+        self.game_data = {}
 
     def set_game_state(self):
         self.query['gameState'] = True
@@ -36,6 +41,12 @@ class QueryHelper:
 
     def get_active_prayers(self):
         return 'activePrayers' in self.game_data and self.game_data['activePrayers']
+
+    def set_destination_tile(self):
+        self.query['destinationTile'] = True
+
+    def get_destination_tile(self):
+        return 'destinationTile' in self.game_data and self.game_data['destinationTile']
 
     def set_interating_with(self):
         self.query['interactingWith'] = True
@@ -278,6 +289,13 @@ class QueryHelper:
     def set_deposit_box(self):
         self.query['depositBox'] = True
 
+    def set_script_stats(self, fields):
+        self.query['scriptStats'] = {
+            #'Next Break: ': osrs.game.config['timings']['break_start'],
+            #'Break End: ': osrs.game.config['timings']['break_end'],
+            **fields
+        }
+
     def get_deposit_box(self, item=False):
         """
 
@@ -286,11 +304,9 @@ class QueryHelper:
         those items to be found or False
         :return: {'x': 1738, 'y': 768, 'index': 0, 'id': 8007, 'quantity': 77} || False
         """
-        logging.info('getting deposit data.')
         if item:
             if 'depositBox' in self.game_data:
                 if type(item) is list:
-                    logging.info('got a list of items to search for: {}'.format(item))
                     return inv.are_items_in_inventory_v2(self.game_data['depositBox'], item)
                 else:
                     return inv.is_item_in_inventory_v2(self.game_data['depositBox'], item)
@@ -310,11 +326,9 @@ class QueryHelper:
         those items to be found or False
         :return: {'x': 1738, 'y': 768, 'index': 0, 'id': 8007, 'quantity': 77} || False
         """
-        logging.info('getting bank data.')
         if item:
             if 'bankItems' in self.game_data:
                 if type(item) is list:
-                    logging.info('got a list of items to search for: {}'.format(item))
                     return inv.are_items_in_inventory_v2(self.game_data['bankItems'], item)
                 else:
                     return inv.is_item_in_inventory_v2(self.game_data['bankItems'], item)
@@ -392,6 +406,12 @@ class QueryHelper:
             else:
                 return []
         return search_value in self.game_data and self.game_data[search_value] or []
+
+    def set_herbiboar(self):
+        self.query['herbiboar'] = True
+
+    def get_herbiboar(self):
+        return 'herbiboar' in self.game_data and self.game_data['herbiboar']
 
     def clear_query(self):
         self.query = {}

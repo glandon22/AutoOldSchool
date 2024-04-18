@@ -126,7 +126,6 @@ def deposit_box_dump_inv():
 
 
 def dump_items():
-    logging.info('dumping items.')
     qh = queryHelper.QueryHelper()
     qh.set_inventory()
     qh.set_widgets({'12,42'})

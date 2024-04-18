@@ -33,7 +33,7 @@ def toggle_prayer(desired_state, port='56799'):
             return
 
 
-def toggle_run(desired_state, port):
+def toggle_run(desired_state, port='56799'):
     """
     :param desired_state: string : 'on' : 'off'
     :param port:

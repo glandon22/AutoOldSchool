@@ -129,3 +129,17 @@ def loop_timeout_handler(success_condition, timeout):
             break
         elif (datetime.datetime.now() - start_time).total_seconds() > timeout:
             break
+
+
+def tile_objects_to_strings(tiles):
+    parsed_tiles = []
+    for tile in tiles:
+        parsed_tiles.append(f'{tile["x"]},{tile["y"]},{tile["z"]}')
+    return parsed_tiles
+
+
+def combine_objects(objects):
+    reduced = []
+    for k in objects:
+        reduced = reduced + objects[k]
+    return reduced
