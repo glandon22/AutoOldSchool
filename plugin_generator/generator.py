@@ -2,19 +2,19 @@ import shutil
 import copy
 import os
 
-plugin_name = 'glpowerfisher'
-plugin_description = 'fish and drop'
+plugin_name = 'glglassblower'
+plugin_description = 'blows glass - up to orbs'
 # IMPORTANT: plugin must have tag "goonlite" to be loaded into the client!!!!!!!!!!!!!!!!!!!!!!!!!!
-plugin_tags = '{"bot", "fishing", "goonlite"}'
-script_cmd = 'fishing/powerfish_v3.py'
+plugin_tags = '{"crafting", "glass", "goonlite"}'
+script_cmd = 'crafting/blow_glass_v3.py'
+'''{
+    'key_name': 'fish',
+    'key_desc': 'fish to catch',
+    'key_position': '1',
+    'return_type': 'fishEnum',
+    'default_return_value': 'fishEnum.SHRIMP'
+}'''
 dropdowns_configs = [
-    {
-        'key_name': 'fish',
-        'key_desc': 'fish to catch',
-        'key_position': '1',
-        'return_type': 'fishEnum',
-        'default_return_value': 'fishEnum.SHRIMP'
-    }
 ]
 # NOT IMPLEMENTED YET!!!!!
 
@@ -65,6 +65,7 @@ dropdown_config_item = '''
 
 
 def build_dropdown(vars):
+    print(vars)
     stub = copy.deepcopy(dropdown_config_item)
     stub = stub.replace('$key_name$', vars['key_name'])
     stub = stub.replace('$key_desc$', vars['key_desc'])
