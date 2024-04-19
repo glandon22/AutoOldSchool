@@ -6,7 +6,6 @@ import time
 import osrs.move
 import osrs.server as server
 import osrs.clock as clock
-import secret_keepr
 import osrs.keeb as keeb
 import osrs.move as move
 import osrs.dev as dev
@@ -29,7 +28,7 @@ def login_v2(password, port='56799'):
     keeb.keyboard.press(keeb.Key.enter)
     keeb.keyboard.release(keeb.Key.enter)
     clock.sleep_one_tick()
-    p = secret_keepr.get_config(password)
+    p = config['password']
     keeb.keyboard.type(p)
     clock.sleep_one_tick()
     keeb.keyboard.press(keeb.Key.enter)
