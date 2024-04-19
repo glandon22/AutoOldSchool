@@ -19,6 +19,8 @@ fish_to_catch = fish_to_catch_config['1']
 if str(sys.argv[1]):
     fish_to_catch = str(sys.argv[1]).lower()
 
+print('333', fish_to_catch, 'iiii', sys.argv[1])
+
 fish_spot_ids = {
     'shrimp': [
         '1514',
