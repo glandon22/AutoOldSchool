@@ -1,8 +1,3 @@
-# find a fishing spot
-# start fishing
-# fish until bag is full
-# drop everything
-# repeat
 import datetime
 import time
 

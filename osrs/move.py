@@ -22,10 +22,8 @@ chat_buttons_widget_id = '162,1'
 
 config = dev.load_yaml()
 
+
 def bezier_movement(x_min, y_min, x_max, y_max):
-    if platform.system() == 'Darwin':
-        y_min += 37
-        y_max += 37
     # Any duration less than this is rounded to 0.0 to instantly move the mouse.
     pyautogui.MINIMUM_DURATION = 0  # Default: 0.1
     # Minimal number of seconds to sleep between mouse moves.
@@ -55,8 +53,8 @@ def bezier_movement(x_min, y_min, x_max, y_max):
     try:
         # noinspection PyTupleAssignmentBalance
         tck, u = interpolate.splprep([x, y], k=degree)
-    except ValueError:
-        print('bezier movement blew up')
+    except ValueError as bez:
+        print(f'bezier movement blew up: {bez}')
         pyautogui.moveTo(x2, y2)
         return [x2, y2]
     # Move upto a certain number of points

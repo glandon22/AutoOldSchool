@@ -1,0 +1,12 @@
+package net.runelite.client.plugins.$plugin_name$;
+
+import net.runelite.client.config.Config;
+
+import net.runelite.client.config.ConfigGroup;
+import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.Range;
+
+@ConfigGroup("$plugin_name$")
+public interface $plugin_name$Config extends Config {
+    $config_items$
+}
