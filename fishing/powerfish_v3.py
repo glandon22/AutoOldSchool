@@ -128,7 +128,7 @@ def main():
                 logger.info(
                     f'''
                     Clicking a new fishing spot. 
-                    New spot: {(c['x_coord'] != spot_data['x_coord'] and c['y_coord'] != spot_data['y_coord'])}'
+                    New spot: {(c['x_coord'] != spot_data['x_coord'] or c['y_coord'] != spot_data['y_coord'])}'
                     Click expiration timeout: {(datetime.datetime.now() - last_spot_click).total_seconds() > 15}
                     '''
                 )

@@ -86,7 +86,7 @@ public class $plugin_name$Plugin extends Plugin {
                 Integer.toString(config.pot()),
                 Integer.toString(config.secondary())
         );
-        processBuilder.redirectErrorStream(true);
+        processBuilder.redirectOutput(new File("./last_script_run_logs.txt"));
         // Get the environment variables from the ProcessBuilder instance
         Map<String, String> environment = processBuilder.environment();
 
