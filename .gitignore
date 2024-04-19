@@ -11,3 +11,5 @@ project.properties
 .vscode
 .factorypath
 .DS_Store
+config.yaml
+secret_keepr/config.py
