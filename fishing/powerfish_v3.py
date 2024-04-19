@@ -104,6 +104,10 @@ script_config = {
 
 def main():
     last_spot_click = datetime.datetime.now() - datetime.timedelta(hours=1)
+    spot_data = {
+        'x_coord': 0,
+        'y_coord': 0
+    }
     while True:
         osrs.game.break_manager_v4(script_config)
         if game_state.get_inventory() and len(game_state.get_inventory()) == 28:
@@ -114,11 +118,15 @@ def main():
         elif game_state.get_is_fishing():
             print('Currently fishing.')
             continue
-        elif not game_state.get_is_fishing() and (datetime.datetime.now() - last_spot_click).total_seconds() > 15:
+        elif not game_state.get_is_fishing():
             print('not fishing')
             c = osrs.util.find_closest_target(game_state.get_npcs())
-            if c:
+            if c and (
+                    (c['x_coord'] != spot_data['x_coord'] and c['y_coord'] != spot_data['y_coord'])
+                    or (datetime.datetime.now() - last_spot_click).total_seconds() > 15
+            ):
                 last_spot_click = datetime.datetime.now()
+                spot_data = c
                 osrs.move.click(c)
 
 main()
