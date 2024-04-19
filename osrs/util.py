@@ -67,6 +67,8 @@ def generate_surrounding_tiles_from_point(dist, player_loc, port='56799'):
 
 
 def find_closest_target(targs):
+    if not targs:
+        return False
     closest = {
         "dist": 999,
         "x": None,
