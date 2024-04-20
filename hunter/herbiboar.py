@@ -156,6 +156,13 @@ def catch_herbi_v2():
     qh.query_backend()
     target_object = None
     last_seen_stop = None
+    # there seems to be one combination of trails that the herbiboar runelite plugin cant handle, and it gets stuck
+    # leading you in a loop, so in case i draw this one particular trail set, i need to log out and reset the herbiboar
+    cached_step = {
+        'x': 0,
+        'y': 0,
+        'time': datetime.datetime.now()
+    }
     while True:
         # ensure I am always running
         osrs.player.toggle_run('on')
@@ -173,14 +180,20 @@ def catch_herbi_v2():
         # Determine if I am at the end of a trail or still following it
         '''
         TODO: I have seen the plugin mess up and get stuck in a loop, if i have clicked
-        the same spot for more than a minute or two just log out and reset
-        
-        this is high priority
-        
-        it is also clicking on the inventory and and other tabs
-        
+        the same spot for more than a minute or two just log out and reset    
         '''
         if 'nextStop' in herbi_data:
+            if cached_step['x'] != herbi_data['nextStop']['x_coord'] and cached_step['y'] != herbi_data['nextStop']['y_coord']:
+                cached_step['x'] = herbi_data['nextStop']['x_coord']
+                cached_step['y'] = herbi_data['nextStop']['y_coord']
+                cached_step['time'] = datetime.datetime.now()
+            elif (datetime.datetime.now() - cached_step['time']).total_seconds() > 60:
+                print('im stuck on a step, log out and reset')
+                osrs.game.logout()
+                osrs.clock.random_sleep(10, 11)
+                osrs.game.login_v4()
+                return
+
             target_object = herbi_data['nextStop']
             last_seen_stop = datetime.datetime.now()
         # sometimes you fail to catch the herbiboar, make sure i dont get trapped in this loop waiting to see him

@@ -458,10 +458,12 @@ def is_clickable(target):
     qh.set_widgets({minimap_widget_id, inv_widget_id, chat_buttons_widget_id})
     qh.query_backend()
     target_on_canvas = qh.get_canvas()['xMin'] + 10 < target['x'] < qh.get_canvas()['xMax'] - 10 and qh.get_canvas()['yMin'] + 10 < target['y'] < qh.get_canvas()['yMax'] - 10
-    target_on_inv = qh.get_widgets(inv_widget_id)['xMin'] + 10 < target['x'] < qh.get_widgets(inv_widget_id)['xMax'] - 10 and \
-                    qh.get_widgets(inv_widget_id)['yMin'] + 10 < target['y'] < qh.get_widgets(inv_widget_id)['yMax'] - 10
+    target_on_inv = qh.get_widgets(inv_widget_id)['xMin'] - 10 < target['x'] < qh.get_widgets(inv_widget_id)['xMax'] + 10 and \
+                    qh.get_widgets(inv_widget_id)['yMin'] - 10 < target['y'] < qh.get_widgets(inv_widget_id)['yMax'] + 10
     target_on_chat_buttons = qh.get_widgets(chat_buttons_widget_id)['xMin'] < target['x'] < qh.get_widgets(chat_buttons_widget_id)['xMax'] and \
-                    qh.get_widgets(chat_buttons_widget_id)['yMin'] - 25 < target['y'] < qh.get_widgets(chat_buttons_widget_id)['yMax']
+                    qh.get_widgets(chat_buttons_widget_id)['yMin'] - 25 < target['y'] < qh.get_widgets(chat_buttons_widget_id)['yMax'] + 25
     target_on_minimap = qh.get_widgets(minimap_widget_id)['xMin'] < target['x'] < qh.get_widgets(minimap_widget_id)['xMax'] and \
                     qh.get_widgets(minimap_widget_id)['yMin'] < target['y'] < qh.get_widgets(minimap_widget_id)['yMax']
     return target_on_canvas and not target_on_inv and not target_on_minimap and not target_on_chat_buttons
+
+
