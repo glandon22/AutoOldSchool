@@ -2,25 +2,48 @@ import shutil
 import copy
 import os
 
-plugin_name = 'glglassblower'
-plugin_description = 'blows glass - up to orbs'
+plugin_name = 'glmobkiller'
+# this is what gets displayed in the sidebar for users to actually read
+plugin_name_readable = 'NPC Killer'
+plugin_description = 'Kills a configured NPC, drinks potions, and eats food'
 # IMPORTANT: plugin must have tag "goonlite" to be loaded into the client!!!!!!!!!!!!!!!!!!!!!!!!!!
-plugin_tags = '{"crafting", "glass", "goonlite"}'
-script_cmd = 'crafting/blow_glass_v3.py'
+plugin_tags = '{"combat", "killer", "goonlite"}'
+script_cmd = 'combat/kill_and_loot_v2.py'
 '''{
-    'key_name': 'fish',
-    'key_desc': 'fish to catch',
+    'key_name': 'npcToKill',
+    'key_desc': 'NPC to kill',
     'key_position': '1',
-    'return_type': 'fishEnum',
-    'default_return_value': 'fishEnum.SHRIMP'
+    'return_type': 'String',
+    'default_return_value': '""'
 }'''
 dropdowns_configs = [
+{
+    'key_name': 'npcToKill',
+    'key_desc': 'NPC to kill',
+    'key_position': '1',
+    'return_type': 'String',
+    'default_return_value': '""'
+}
 ]
 # NOT IMPLEMENTED YET!!!!!
 
 number_configs = [
 
 ]
+'''
+    @ConfigItem(
+		keyName = "highlightedItems",
+		name = "Highlighted Items",
+		description = "Configures specifically highlighted ground items. Format: (item), (item)",
+		position = 0,
+		section = itemLists
+	)
+	default String getHighlightItems()
+	{
+		return "";
+	}
+'''
+
 
 '''''''''''''''''''''''''''''
  ^^^^^^^^^^^^^^^^^^^^^^^^^^^ALL VARS ABOVE NEED TO BE CONFIGURED FOR EACH PLUGIN! ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -81,6 +104,7 @@ with open(dest_file_name, 'r') as file:
     # Searching and replacing the text
     # using the replace() function
     data = data.replace('$plugin_name$', plugin_name)
+    data = data.replace('$plugin_name_readable$', plugin_name_readable)
     data = data.replace('$plugin_description$', plugin_description)
     data = data.replace('$plugin_tags$', plugin_tags)
     data = data.replace('$script_cmd$', script_cmd)

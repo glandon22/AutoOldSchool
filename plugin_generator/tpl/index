@@ -31,7 +31,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 @PluginDescriptor(
-        name = "$plugin_name$",
+        name = "$plugin_name_readable$",
         description = "$plugin_description$",
         tags = $plugin_tags$,
         enabledByDefault = false

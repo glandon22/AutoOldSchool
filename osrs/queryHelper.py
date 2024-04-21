@@ -185,6 +185,14 @@ class QueryHelper:
     def get_npcs(self):
         return 'npcs' in self.game_data and self.game_data['npcs']
 
+    def set_npcs_by_name(self, ids):
+        if type(ids) is not list:
+            raise Exception('tiles must be a list, {} is not a valid value.'.format(ids))
+        self.query['npcs'] = [i.upper() for i in ids]
+
+    def get_npcs_by_name(self):
+        return 'npcs' in self.game_data and self.game_data['npcs']
+
     def set_tiles(self, tiles):
         if type(tiles) is not set:
             raise Exception('tiles must be a set, {} is not a valid value.'.format(tiles))
