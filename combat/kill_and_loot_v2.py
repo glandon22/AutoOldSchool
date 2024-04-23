@@ -31,10 +31,10 @@ food_ids = [
 ]
 
 pot_matcher = {
-    "SUPER COMBATS": [12695, 12697, 12699, 12701],
-    "SUPER STRENGTH AND ATTACK": [[157, 159, 161, 2440], [145, 147, 149, 2436]],
-    "RANGING POTION": [168, 171, 173, 2444],
-    "MAGIC POTION": [3040, 3042, 3044, 3046]
+    "SUPER_COMBATS": [12695, 12697, 12699, 12701],
+    "SUPER_STRENGTH_AND_ATTACK": [[157, 159, 161, 2440], [145, 147, 149, 2436]],
+    "RANGING_POTION": [168, 171, 173, 2444],
+    "MAGIC_POTION": [3040, 3042, 3044, 3046]
 }
 
 karambwan_id = '7946'
@@ -84,7 +84,8 @@ def main():
                 osrs.move.fast_click(targ)
 
         if pot != 'NONE' and (datetime.datetime.now() - last_pot).total_seconds() / 60 > pot_interval:
-            if pot == "SUPER STRENGTH AND ATTACK":
+            last_pot = datetime.datetime.now()
+            if pot == "SUPER_STRENGTH_AND_ATTACK":
                 str = osrs.inv.are_items_in_inventory_v2(qh.get_inventory(), pot_matcher[pot][0])
                 atk = osrs.inv.are_items_in_inventory_v2(qh.get_inventory(), pot_matcher[pot][1])
                 if not str:
