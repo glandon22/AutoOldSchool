@@ -118,28 +118,24 @@ def login_v4():
         qh.query_backend()
 
 
-def logout(port='56799'):
-    LOGOUT_ICON = {
-        'widget': '161,46'
-    }
-    LOGOUT_BUTTON = {
-        'widget': '182,12'
-    }
-    WORLD_SWITCHER_LOGOUT = {
-        'widget': '69,25'
-    }
-    icon = server.query_game_data(LOGOUT_ICON, port)
-    move.move_and_click(icon['widget']['x'], icon['widget']['y'], 10, 10)
-    clock.random_sleep(1, 1.4)
-    logout_button = server.query_game_data(LOGOUT_BUTTON, port)
-    if 'widget' in logout_button:
-        move.move_and_click(logout_button['widget']['x'], logout_button['widget']['y'], 3, 3)
-        clock.random_sleep(0.3, 0.4)
-    else:
-        logout_button = server.query_game_data(WORLD_SWITCHER_LOGOUT, port)
-        move.move_and_click(logout_button['widget']['x'], logout_button['widget']['y'], 3, 3)
-        clock.random_sleep(0.3, 0.4)
-    print('logged out')
+def logout():
+    logout_icon_widget_id = '161,46'
+    logout_button_widget_id = '182,12'
+    world_switcher_logout_widget_id = '69,25'
+
+    qh = QueryHelper.QueryHelper()
+    qh.set_widgets({logout_icon_widget_id, logout_button_widget_id, world_switcher_logout_widget_id})
+    qh.set_game_state()
+    while True:
+        qh.query_backend()
+        if qh.get_game_state() == 'LOGIN_SCREEN':
+            return
+        if qh.get_widgets(logout_button_widget_id):
+            osrs.move.click(qh.get_widgets(logout_button_widget_id))
+        if qh.get_widgets(world_switcher_logout_widget_id):
+            osrs.move.click(qh.get_widgets(world_switcher_logout_widget_id))
+        if qh.get_widgets(logout_icon_widget_id):
+            osrs.move.click(qh.get_widgets(logout_icon_widget_id))
 
 
 def break_manager(start_time, min_session, max_session, min_rest, max_rest, password, post_login_steps=None, port='56799', pre_logout_steps=None):
@@ -216,7 +212,7 @@ def set_timings(timings, current_time):
         seconds=random.randint(timings['min_session'] * 60, timings['max_session'] * 60)
     )
     # dont run the script over night
-    if config['timings']['break_start'].hour >= 22:
+    if config['timings']['break_start'].hour >= 21:
         config['timings']['break_end'] = config['timings']['break_start'] + datetime.timedelta(
             seconds=random.randint(timings['min_rest'] * 60, timings['max_rest'] * 60)
         ) + datetime.timedelta(hours=8)
@@ -224,6 +220,7 @@ def set_timings(timings, current_time):
         config['timings']['break_end'] = config['timings']['break_start'] + datetime.timedelta(
             seconds=random.randint(timings['min_rest'] * 60, timings['max_rest'] * 60)
         )
+    print(config['timings']['break_end'])
 
 
 # experimental

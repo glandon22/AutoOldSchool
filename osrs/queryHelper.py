@@ -191,6 +191,11 @@ class QueryHelper:
         self.query['npcs'] = [i.upper() for i in ids]
 
     def get_npcs_by_name(self):
+        """
+
+        :return: [] OR  [{'x': 942, 'y': 439, 'name': 'Squire (Veteran)', 'id': 1773, 'dist': 3, 'graphic': -1, 'health': -1, 'scale': -1, 'x_coord': 2638, 'y_coord': 2656, 'compositionID': 1773}]
+
+        """
         return 'npcs' in self.game_data and self.game_data['npcs']
 
     def set_tiles(self, tiles):

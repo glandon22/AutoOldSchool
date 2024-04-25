@@ -16,7 +16,7 @@ sys.argv[1]
 '''
 # yak SUPER COMBATS 10 20
 
-npc_to_kill = str(sys.argv[1]).upper() or 'YAKS'
+npc_to_kill = str(sys.argv[1]).replace('_', ' ').upper() or 'YAKS'
 pot = str(sys.argv[2]) or 'SUPER COMBATS'
 pot_interval = int(sys.argv[3]) or 10
 min_health = int(sys.argv[4]) or 12
