@@ -362,7 +362,6 @@ script_config = {
 
 
 def main():
-    return osrs.game.logout()
     while True:
         osrs.game.tele_home()
         click_mounted_digsite_pendant()

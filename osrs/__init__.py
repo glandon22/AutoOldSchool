@@ -12,7 +12,9 @@ __all__ = [
     'server',
     'queryHelper',
     'dax',
-    'models'
+    'models',
+    'item_ids',
+    'widget_ids'
 ]
 
 import osrs.dev
@@ -29,3 +31,5 @@ import osrs.server
 import osrs.queryHelper
 import osrs.dax
 import osrs.models
+import osrs.item_ids
+import osrs.widget_ids

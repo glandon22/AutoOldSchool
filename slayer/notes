@@ -6,5 +6,16 @@ fairy ring djr to chasm of fire
 enter chasm of fire
 in chasm, run to nothern ladder
 enter lift
-run to square 1423,10078,2
+run to square 1424 10079 2
 kill demons while remaining on that square
+
+
+
+# iron dragon
+
+begin in bank
+dump inv and all equipment
+search for tag 'metal_dragons'
+withdraw gear
+withdraw some food
+withdraw some antifire pots

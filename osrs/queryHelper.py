@@ -176,6 +176,29 @@ class QueryHelper:
                 return False
         return 'widgets' in self.game_data and self.game_data['widgets']
 
+    def set_widgets_v2(self, widgets):
+        if type(widgets) is not set:
+            raise Exception('widgets must be a set, {} is not a valid value.'.format(widgets))
+        if 'widgetsV2' in self.query:
+            old_widgets = self.query['widgetsV2']
+
+            self.query['widgetsV2'] = list(set(old_widgets).union(widgets))
+        else:
+            self.query['widgetsV2'] = list(widgets)
+
+    def get_widgets_v2(self, widget=False):
+        """
+
+        :param widget: '608,11' || None
+        :return: {'x': 576, 'y': 493, 'text': '', 'spriteID': -1, 'name': '', 'itemID': -1, 'xMin': 476, 'xMax': 676, 'yMin': 444, 'yMax': 496} || False
+        """
+        if widget:
+            if 'widgets' in self.game_data and str(widget) in self.game_data['widgets']:
+                return self.game_data['widgets'][str(widget)]
+            else:
+                return False
+        return 'widgets' in self.game_data and self.game_data['widgets']
+
     def npcs(self, ids):
         self.query['npcsID'] = ids
 
@@ -197,6 +220,24 @@ class QueryHelper:
 
         """
         return 'npcs' in self.game_data and self.game_data['npcs']
+
+    def set_var_player(self, ids):
+        if type(ids) is not list:
+            raise Exception('varp must be a list, {} is not a valid value.'.format(ids))
+        self.query['varPlayer'] = ids
+
+    def get_var_player(self, varp_id=False):
+        """
+
+        :param varp_id: None or String: '302'
+        :return: 103 || False
+        """
+        if varp_id:
+            if 'varPlayer' in self.game_data and varp_id in self.game_data['varPlayer']:
+                return self.game_data['varPlayer'][varp_id]
+            else:
+                return False
+        return 'varPlayer' in self.game_data and self.game_data['varPlayer']
 
     def set_tiles(self, tiles):
         if type(tiles) is not set:
@@ -425,6 +466,16 @@ class QueryHelper:
 
     def get_herbiboar(self):
         return 'herbiboar' in self.game_data and self.game_data['herbiboar']
+
+    def set_slayer(self):
+        self.query['slayer'] = True
+
+    def get_slayer(self):
+        """
+
+        :return: {'area': '', 'amount': '35', 'monster': 'Iron Dragons'}
+        """
+        return 'slayer' in self.game_data and self.game_data['slayer']
 
     def clear_query(self):
         self.query = {}

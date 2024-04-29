@@ -142,6 +142,8 @@ def tile_objects_to_strings(tiles):
 
 def combine_objects(objects):
     reduced = []
+    if not objects:
+        return reduced
     for k in objects:
         reduced = reduced + objects[k]
     return reduced
