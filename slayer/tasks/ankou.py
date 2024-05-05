@@ -1,3 +1,4 @@
+# 2134,9305,0
 import osrs
 from osrs.item_ids import ItemIDs
 from slayer import transport_functions
@@ -5,8 +6,32 @@ from combat import slayer_killer
 from slayer.tasks import gear
 
 varrock_tele_widget_id = '218,23'
-supplies = gear.slayer_melee['supplies']
+
+# for this one i dont want a slayer ring with only one charge,
+# bc i tele to the cave, then to nieve after the task is done
+supplies = [
+        ItemIDs.SUPER_COMBAT_POTION4.value,
+        ItemIDs.SUPER_COMBAT_POTION4.value,
+        ItemIDs.RUNE_POUCH.value,
+        {
+            'id': [
+                ItemIDs.SLAYER_RING_2.value,
+                ItemIDs.SLAYER_RING_3.value,
+                ItemIDs.SLAYER_RING_4.value,
+                ItemIDs.SLAYER_RING_5.value,
+                ItemIDs.SLAYER_RING_6.value,
+                ItemIDs.SLAYER_RING_7.value,
+                ItemIDs.SLAYER_RING_8.value,
+            ],
+            'quantity': '1'
+        },
+        {
+            'id': ItemIDs.MONKFISH.value,
+            'quantity': 'All'
+        },
+    ]
 equipment = gear.slayer_melee['equipment']
+
 banking_config_equipment = {
     'dump_inv': True,
     'dump_equipment': True,
@@ -20,6 +45,10 @@ banking_config_supplies = {
 }
 
 pot_config = slayer_killer.PotConfig(super_combat=True)
+
+
+def hop_logic():
+    osrs.clock.random_sleep(11, 11.1)
 
 
 def main():
@@ -44,13 +73,13 @@ def main():
             print('failed to withdraw supplies.')
             return False
         osrs.game.tele_home()
-        osrs.clock.random_sleep(2, 2.1)
-        osrs.game.tele_home_fairy_ring('biq')
-        transport_functions.kalphite_layer()
+        osrs.game.click_restore_pool()
+        transport_functions.stronghold_slayer_dungeon_ankou()
         qh.query_backend()
-        osrs.move.click(qh.get_inventory(ItemIDs.ABYSSAL_WHIP.value))
         task_started = True
-        finished = slayer_killer.main('kalphite worker', pot_config.asdict(), 35, -1, -1, -1)
+        success = slayer_killer.main('ankou', pot_config.asdict(), 35, 15, -1, -1, -1, hop=True, pre_hop=hop_logic)
+        qh.query_backend()
         osrs.game.cast_spell(varrock_tele_widget_id)
-        if finished:
-            return
+        if success:
+            return True
+

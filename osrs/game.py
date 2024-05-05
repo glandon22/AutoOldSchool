@@ -129,16 +129,19 @@ def logout():
     qh = QueryHelper.QueryHelper()
     qh.set_widgets({logout_icon_widget_id, logout_button_widget_id, world_switcher_logout_widget_id})
     qh.set_game_state()
+    clicked_first_button = False
     while True:
         qh.query_backend()
         if qh.get_game_state() == 'LOGIN_SCREEN':
             return
-        if qh.get_widgets(logout_button_widget_id):
-            osrs.move.click(qh.get_widgets(logout_button_widget_id))
-        if qh.get_widgets(world_switcher_logout_widget_id):
-            osrs.move.click(qh.get_widgets(world_switcher_logout_widget_id))
-        if qh.get_widgets(logout_icon_widget_id):
+        if clicked_first_button:
+            if qh.get_widgets(logout_button_widget_id):
+                osrs.move.click(qh.get_widgets(logout_button_widget_id))
+            if qh.get_widgets(world_switcher_logout_widget_id):
+                osrs.move.click(qh.get_widgets(world_switcher_logout_widget_id))
+        if qh.get_widgets(logout_icon_widget_id) and not clicked_first_button:
             osrs.move.click(qh.get_widgets(logout_icon_widget_id))
+            clicked_first_button = True
 
 
 def break_manager(start_time, min_session, max_session, min_rest, max_rest, password, post_login_steps=None,
@@ -416,6 +419,7 @@ def cast_spell(widget):
             osrs.move.move_and_click(home_tele_button['x'], home_tele_button['y'], 3, 3)
             osrs.keeb.press_key('esc')
             break
+    osrs.keeb.press_key('esc')
 
 
 def tele_home_fairy_ring(code):
@@ -496,4 +500,81 @@ def tele_home_fairy_ring(code):
                     'y': qh.get_widgets_v2(WidgetIDs.FAIRY_RING_RIGHT_WHEEL_CENTER.value)['y'] + 50
                 })
             osrs.move.click(qh.get_widgets_v2(WidgetIDs.FAIRY_RING_TELEPORT_BUTTON.value))
+            return
+
+
+def click_restore_pool():
+    fancy_restore_pool_id = '29241'
+    tile_map = None
+    run_energy_widget_id = '160,28'
+    last_pool_click = datetime.datetime.now() - datetime.timedelta(hours=1)
+    qh = osrs.queryHelper.QueryHelper()
+    while True:
+        qh.set_widgets({run_energy_widget_id})
+        qh.set_player_world_location()
+        qh.set_skills({'hitpoints'})
+        qh.query_backend()
+        if qh.get_player_world_location('x') > 4000 and not tile_map:
+            tile_map = osrs.util.generate_game_tiles_in_coords(
+                qh.get_player_world_location('x') - 15,
+                qh.get_player_world_location('x') + 15,
+                qh.get_player_world_location('y') - 15,
+                qh.get_player_world_location('y') + 15,
+                1
+            )
+            qh.set_objects(set(tile_map), set(), osrs.queryHelper.ObjectTypes.DECORATIVE.value)
+            qh.set_objects(set(tile_map), {fancy_restore_pool_id}, osrs.queryHelper.ObjectTypes.GAME.value)
+        elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, fancy_restore_pool_id) and \
+                (datetime.datetime.now() - last_pool_click).total_seconds() > 12 \
+                and (
+                int(qh.get_widgets(run_energy_widget_id)['text']) < 95 or
+                qh.get_skills('hitpoints')['level'] != qh.get_skills('hitpoints')['boostedLevel']
+        ):
+
+            osrs.move.click(
+                qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value)[fancy_restore_pool_id][0]
+            )
+            last_pool_click = datetime.datetime.now()
+        elif int(qh.get_widgets(run_energy_widget_id)['text']) > 95 \
+                and qh.get_skills('hitpoints')['level'] == qh.get_skills('hitpoints')['boostedLevel']:
+            return
+
+
+def hop_worlds(pre_hop=False):
+    world_list = [
+        '349',
+        '361',
+        '396',
+        '428',
+        '527',
+        '467',
+        '420',
+        '421',
+        '422',
+        '485',
+        '486',
+        '487',
+        '488',
+        '489',
+        '490',
+    ]
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_game_state()
+    qh.set_world()
+    qh.query_backend()
+    index = qh.get_world() in world_list and world_list.index(qh.get_world())
+    if not index or index == len(world_list) - 1:
+        index = -1
+
+    osrs.keeb.press_key('enter')
+    if pre_hop:
+        pre_hop()
+    osrs.keeb.write(f'::hop {world_list[index + 1]}')
+    osrs.keeb.press_key('enter')
+    osrs.clock.random_sleep(2, 2.1)
+    while True:
+        qh.query_backend()
+        if qh.get_game_state() == 'LOGGED_IN':
+            clock.sleep_one_tick()
+            keeb.press_key('esc')
             return

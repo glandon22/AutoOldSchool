@@ -54,6 +54,18 @@ class QueryHelper:
     def get_interating_with(self):
         return 'interactingWith' in self.game_data and self.game_data['interactingWith']
 
+    def set_players(self):
+        self.query['players'] = True
+
+    def get_players(self):
+        return 'players' in self.game_data and self.game_data['players']
+
+    def set_world(self):
+        self.query['world'] = True
+
+    def get_world(self):
+        return 'world' in self.game_data and self.game_data['world']
+
     def player_animation(self):
         self.query['playerAnimation'] = True
 
@@ -77,7 +89,7 @@ class QueryHelper:
         elif coord == 'y':
             return 'playerWorldPoint' in self.game_data and self.game_data['playerWorldPoint']['y']
         elif coord == 'z':
-            return 'playerWorldPoint' in self.game_data and self.game_data['playerWorldPoint']['']
+            return 'playerWorldPoint' in self.game_data and self.game_data['playerWorldPoint']['z']
         else:
             return 'playerWorldPoint' in self.game_data and self.game_data['playerWorldPoint']
 

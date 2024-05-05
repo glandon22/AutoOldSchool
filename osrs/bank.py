@@ -1,3 +1,5 @@
+import datetime
+
 import osrs.inv as inv_util
 import osrs.clock as clock
 import osrs.move as move
@@ -5,9 +7,11 @@ import osrs.queryHelper
 import osrs.server as server
 import osrs.util as util
 import osrs.keeb as keeb
-import osrs.dev as dev
+from osrs.item_ids import ItemIDs
 import osrs.queryHelper as queryHelper
-import logging
+from osrs.widget_ids import WidgetIDs
+from collections import Counter
+
 
 def deposit_all_of_x(items, port='56799'):
     while True:
@@ -134,3 +138,154 @@ def dump_items():
         dump_inv = qh.get_widgets('12,42')
         if dump_inv:
             move.click(dump_inv)
+
+
+def withdraw_configured_items(item, game_state: osrs.queryHelper.QueryHelper):
+    banked_item = game_state.get_bank(item['id'])
+    if not banked_item:
+        print(f'{ItemIDs(item).name} not found')
+        return False
+    if item['quantity'] != 'All' and banked_item['quantity'] < int(item['quantity']):
+        print(f'not enough {ItemIDs(item).name} to satisfy request')
+        return False
+
+    osrs.move.right_click_v3(banked_item, f'Withdraw-{item["quantity"]}')
+    return True
+
+
+def withdraw_items(item, quantities, game_state: osrs.queryHelper.QueryHelper):
+    banked_item = game_state.get_bank(item)
+    if not banked_item:
+        print(f'{ItemIDs(item).name} not found')
+        return False
+    if banked_item['quantity'] < quantities['item']:
+        print(f'not enough {ItemIDs(item).name} to satisfy request')
+        return False
+
+    osrs.move.click(game_state.get_bank(item))
+    return True
+
+
+def search_and_withdraw(searches, game_state: osrs.queryHelper.QueryHelper):
+    for search in searches:
+        osrs.move.click(game_state.get_widgets_v2(WidgetIDs.BANK_SEARCH_BUTTON_BACKGROUND.value))
+        osrs.keeb.write(search['query'])
+        osrs.keeb.press_key('enter')
+        osrs.clock.sleep_one_tick()
+        game_state.query_backend()
+        quantities = Counter([item for item in search['items'] if type(item) is not dict])
+        for item in search['items']:
+            if type(item) is dict:
+                success = withdraw_configured_items(item, game_state)
+                if not success:
+                    return False
+            else:
+                success = withdraw_items(item, quantities, game_state)
+                if not success:
+                    return False
+    return True
+
+
+def banking_handler(params):
+    """
+    Supports banking in GE, Varrock, Fally, C Wars, Crafting Guild, Camelot
+
+    :param params: {
+        dump_inv: True | False
+        dump_equipment: True | False
+        deposit: [itemID, itemID...]
+        withdraw: [itemID, itemID...]: Repeat item IDs to withdraw multiple
+        search: [{ query: 'metal_dragons', items:[itemID, itemID....] }]
+    }
+    """
+    ge_banker_npc_ids = [
+        1613, 1633, 1634, 3089
+    ]
+    varr_banker_npc_ids = [
+        2897, 2898
+    ]
+    fally_banker_npc_ids = [
+        1618, 1613, 3094
+    ]
+    crafting_guild_bank_tile = '2936,3280,0'
+    crafting_guild_bank_id = 14886
+    c_wars_bank_tile = '2444,3083,0'
+    c_wars_bank_id = 4483
+    v_west_bank_tile_1 = '3186,3436,0'
+    v_west_bank_id_1 = '34810'
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_npcs([*ge_banker_npc_ids, *varr_banker_npc_ids, *fally_banker_npc_ids])
+    qh.set_objects(
+        {crafting_guild_bank_tile, c_wars_bank_tile, v_west_bank_tile_1},
+        {crafting_guild_bank_id, c_wars_bank_id, v_west_bank_id_1},
+        osrs.queryHelper.ObjectTypes.GAME.value
+    )
+    qh.set_player_world_location()
+    qh.set_widgets_v2({
+        WidgetIDs.BANK_ITEM_CONTAINER.value,
+        WidgetIDs.BANK_DEPOSIT_INVENTORY.value,
+        WidgetIDs.BANK_DEPOSIT_EQUIPMENT.value,
+        WidgetIDs.BANK_SEARCH_BUTTON_BACKGROUND.value
+    })
+    qh.set_bank()
+    last_banker_click = datetime.datetime.now() - datetime.timedelta(hours=1)
+    banker_search_duration = datetime.datetime.now()
+    while True:
+        if (datetime.datetime.now() - banker_search_duration).total_seconds() > 60:
+            return {'error': 'No banker.'}
+
+        qh.query_backend()
+        # Exit Condition: successfully opened the banking interface
+        if qh.get_widgets_v2(WidgetIDs.BANK_ITEM_CONTAINER.value):
+            print('Banking interface is open.')
+            break
+
+        # combine the npcs and bank objects into one list
+        all_bank_objects = osrs.util.combine_objects(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value))
+        if qh.get_npcs():
+            all_bank_objects += qh.get_npcs()
+        c = osrs.util.find_closest_target(all_bank_objects)
+        if c and osrs.move.is_clickable(c) and (datetime.datetime.now() - last_banker_click).total_seconds() > 13:
+            osrs.move.fast_click(c)
+            osrs.move.fast_click(c)
+            last_banker_click = datetime.datetime.now()
+
+    dumped_inv = False
+    dumped_equipment = False
+    osrs.clock.random_sleep(1, 1.1)
+    # Deposit desired items
+    while True:
+        qh.query_backend()
+        if params['dump_inv'] \
+                and qh.get_widgets_v2(WidgetIDs.BANK_DEPOSIT_INVENTORY.value) and not dumped_inv:
+            osrs.move.click(qh.get_widgets_v2(WidgetIDs.BANK_DEPOSIT_INVENTORY.value))
+            dumped_inv = True
+
+        if params['dump_equipment'] \
+                and qh.get_widgets_v2(
+            WidgetIDs.BANK_DEPOSIT_EQUIPMENT.value
+        ) and not dumped_equipment:
+            osrs.move.click(qh.get_widgets_v2(WidgetIDs.BANK_DEPOSIT_EQUIPMENT.value))
+            dumped_equipment = True
+
+        if (not params['dump_inv'] or dumped_inv) and (not params['dump_equipment'] or dumped_equipment):
+            break
+    # sleep for a second so that all the items i deposited will register and be return on query
+    osrs.clock.random_sleep(1, 1.1)
+    qh.query_backend()
+    # Withdraw desired items
+    if 'deposit' in params:
+        # TODO!
+        print('not implemented')
+    if 'withdraw' in params:
+        success = search_and_withdraw(params['withdraw'], qh)
+        if not success:
+            print('Failed to withdraw items successfully.')
+            return False
+    if 'search' in params:
+        success = search_and_withdraw(params['search'], qh)
+        if not success:
+            print('Failed to search and withdraw items successfully.')
+            return False
+    osrs.keeb.press_key('esc')
+    return True

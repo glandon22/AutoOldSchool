@@ -1,6 +1,19 @@
 import datetime
 import osrs
 from osrs.item_ids import ItemIDs
+from osrs.widget_ids import WidgetIDs
+
+prayer_map = {
+    'protect_melee': 4118,
+    'protect_range': 4117,
+    'protect_mage': 4116
+}
+
+prayer_map_widgets = {
+    'protect_melee': '541,23',
+    'protect_range': '541,22',
+    'protect_mage': '541,21'
+}
 
 
 class PotConfig:
@@ -60,24 +73,25 @@ pot_matcher = {
         ItemIDs.EXTENDED_ANTIFIRE3.value,
         ItemIDs.EXTENDED_ANTIFIRE2.value,
         ItemIDs.EXTENDED_ANTIFIRE1.value,
+    ],
+    "PRAYER": [
+        ItemIDs.PRAYER_POTION4.value,
+        ItemIDs.PRAYER_POTION3.value,
+        ItemIDs.PRAYER_POTION2.value,
+        ItemIDs.PRAYER_POTION1.value,
     ]
 }
 
 
-def find_next_target(npcs, min_monster_dist, max_monster_dist):
+def find_next_target(npcs):
     res = False
+    if not npcs:
+        return False
     for npc in npcs:
-        if npc['health'] != 0 and min_monster_dist <= npc['dist'] <= max_monster_dist and 'interacting' not in npc:
+        if npc['health'] != 0:
             if not res or npc['dist'] < res['dist']:
                 res = npc
     return res
-
-
-script_config = {
-    'intensity': 'high',
-    'login': False,
-    'logout': lambda: osrs.clock.random_sleep(11, 14),
-}
 
 
 def not_in_safe_spot(qh, ss_x, ss_y, ss_z):
@@ -110,7 +124,7 @@ def food_handler(qh, min_health):
     return True
 
 
-def pot_handler(qh: osrs.queryHelper.QueryHelper, pots):
+def pot_handler(qh: osrs.queryHelper.QueryHelper, pots, min_prayer):
     if 'SUPER_COMBATS' in pots \
             and pots['SUPER_COMBATS'] \
             and qh.get_skills('strength')['boostedLevel'] - qh.get_skills('strength')['level'] < 12:
@@ -152,7 +166,25 @@ def pot_handler(qh: osrs.queryHelper.QueryHelper, pots):
             osrs.move.click(p)
         else:
             return False
+    if qh.get_skills('prayer')['boostedLevel'] < min_prayer:
+        p = osrs.inv.are_items_in_inventory_v2(qh.get_inventory(), pot_matcher['PRAYER'])
+        if p:
+            osrs.move.click(p)
+        else:
+            return False
     return True
+
+
+def prayer_handler(qh: osrs.queryHelper.QueryHelper, prayers):
+    if not prayers:
+        return
+    for prayer in prayers:
+        if prayer_map[prayer] not in qh.get_active_prayers():
+            osrs.keeb.press_key('f5')
+            osrs.clock.sleep_one_tick()
+            qh.query_backend()
+            osrs.move.fast_click(qh.get_widgets(prayer_map_widgets[prayer]))
+    osrs.keeb.press_key('esc')
 
 
 def hop_handler(qh: osrs.queryHelper.QueryHelper, pre_hop):
@@ -162,35 +194,38 @@ def hop_handler(qh: osrs.queryHelper.QueryHelper, pre_hop):
         osrs.game.hop_worlds(pre_hop)
 
 
-def main(npc_to_kill, pots, min_health, ss_x, ss_y, ss_z, min_monster_dist=0, max_monster_dist=999, hop=False, pre_hop=False):
-    monster = npc_to_kill if type(npc_to_kill) is list else [npc_to_kill]
+def main(npc_to_kill, pots, min_health, min_prayer, prayers=None, hop=False):
+    script_config = {
+        'intensity': 'high',
+        'login': False,
+        'logout': hop,
+    }
+    if prayers is None:
+        prayers = []
     qh = osrs.queryHelper.QueryHelper()
-    qh.set_npcs_by_name(monster)
-    qh.set_skills({'hitpoints', 'strength', 'ranged', 'magic', 'attack', 'defence'})
+    qh.set_npcs_by_name([npc_to_kill])
+    qh.set_skills({'hitpoints', 'strength', 'ranged', 'magic', 'attack', 'defence', 'prayer'})
     qh.set_inventory()
     qh.set_interating_with()
-    qh.set_widgets({'233,0'})
-    qh.set_tiles({f'{ss_x},{ss_y},{ss_z}'})
+    qh.set_widgets({'233,0', '541,23', '541,22', '541,21'})
     qh.set_player_world_location()
     qh.set_slayer()
     qh.set_var_player(['102'])
     qh.set_varbit(ANTIFIRE_VARBIT)
     qh.set_players()
+    qh.set_active_prayers()
     while True:
         qh.query_backend()
 
         if not qh.get_slayer() or not qh.get_slayer()['monster']:
-            print('task complete')
+            print('task complete: ', qh.get_slayer())
             return True
 
         if not qh.get_interating_with():
             targets = qh.get_npcs_by_name()
-            c = find_next_target(targets, min_monster_dist, max_monster_dist)
+            c = find_next_target(targets)
             if c:
                 osrs.move.fast_click(c)
-                # sleep for one tick if i am trying to safespot so im not jumping in and out like a bot
-                if ss_x and ss_y and ss_z:
-                    osrs.clock.sleep_one_tick()
 
         success = food_handler(qh, min_health)
         # Ran out of food, exit script
@@ -198,11 +233,12 @@ def main(npc_to_kill, pots, min_health, ss_x, ss_y, ss_z, min_monster_dist=0, ma
             print('failed to eat')
             return False
 
-        safe_spot_handler(qh, ss_x, ss_y, ss_z)
-        pot_success = pot_handler(qh, pots)
+        pot_success = pot_handler(qh, pots, min_prayer)
         if not pot_success:
             print('failed to pot up')
             return False
+
+        prayer_handler(qh, prayers)
 
         # check if i leveled
         if qh.get_widgets('233,0'):
@@ -214,6 +250,4 @@ def main(npc_to_kill, pots, min_health, ss_x, ss_y, ss_z, min_monster_dist=0, ma
         if not qh.get_interating_with():
             osrs.game.break_manager_v4(script_config)
             if hop:
-                hop_handler(qh, pre_hop)
-
-        osrs.player.toggle_run('on')
+                hop_handler(qh, hop)

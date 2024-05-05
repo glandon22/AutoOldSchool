@@ -1,30 +1,30 @@
+
+# run to 2865,9827,1
+# then exit
+# 2134,9305,0
 import osrs
 from osrs.item_ids import ItemIDs
 from slayer import transport_functions
 from combat import slayer_killer
 
 varrock_tele_widget_id = '218,23'
+fally_tele_widget_id = '218,29'
 
 
 items = [
     ItemIDs.RUNE_POUCH.value,
     ItemIDs.DRAMEN_STAFF.value,
-    ItemIDs.OCCULT_NECKLACE.value,
-    ItemIDs.SEERS_RING.value,
-    ItemIDs.OBSIDIAN_CAPE.value,
-    ItemIDs.WIZARD_BOOTS.value,
+    ItemIDs.AMULET_OF_FURY.value,
+    ItemIDs.ARCHERS_RING.value,
+    ItemIDs.AVAS_ACCUMULATOR.value,
+    ItemIDs.SNAKESKIN_BOOTS.value,
     ItemIDs.ANTIDRAGON_SHIELD.value,
-    ItemIDs.TRIDENT_OF_THE_SWAMP.value,
-    ItemIDs.VOID_MAGE_HELM.value,
+    ItemIDs.DRAGON_HUNTER_CROSSBOW.value,
+    ItemIDs.VOID_RANGER_HELM.value,
     ItemIDs.VOID_KNIGHT_TOP.value,
     ItemIDs.VOID_KNIGHT_ROBE.value,
     ItemIDs.VOID_KNIGHT_GLOVES.value,
-    ItemIDs.MONKFISH.value,
-    ItemIDs.MONKFISH.value,
-    ItemIDs.MONKFISH.value,
-    ItemIDs.EXTENDED_ANTIFIRE4.value,
-    ItemIDs.EXTENDED_ANTIFIRE4.value,
-    ItemIDs.EXTENDED_ANTIFIRE4.value,
+    {'id': ItemIDs.RUNITE_BOLTS.value, 'quantity': 'All'},
     {
         'id': [
             ItemIDs.SLAYER_RING_1.value,
@@ -38,29 +38,33 @@ items = [
         ],
         'quantity': '1'
     },
-
+    {'id': ItemIDs.MONKFISH.value, 'quantity': '5'},
+    ItemIDs.RANGING_POTION4.value,
+    ItemIDs.RANGING_POTION4.value,
+    ItemIDs.RANGING_POTION4.value,
 ]
 
 equipment = [
     ItemIDs.DRAMEN_STAFF.value,
-    ItemIDs.OCCULT_NECKLACE.value,
-    ItemIDs.SEERS_RING.value,
-    ItemIDs.OBSIDIAN_CAPE.value,
-    ItemIDs.WIZARD_BOOTS.value,
+    ItemIDs.AMULET_OF_FURY.value,
+    ItemIDs.ARCHERS_RING.value,
+    ItemIDs.AVAS_ACCUMULATOR.value,
+    ItemIDs.SNAKESKIN_BOOTS.value,
     ItemIDs.ANTIDRAGON_SHIELD.value,
-    ItemIDs.VOID_MAGE_HELM.value,
+    ItemIDs.VOID_RANGER_HELM.value,
     ItemIDs.VOID_KNIGHT_TOP.value,
     ItemIDs.VOID_KNIGHT_ROBE.value,
     ItemIDs.VOID_KNIGHT_GLOVES.value,
+    ItemIDs.RUNITE_BOLTS.value,
 ]
 
 banking_config = {
     'dump_inv': True,
     'dump_equipment': True,
-    'search': [{'query': 'metal_dragons', 'items': items}]
+    'search': [{'query': 'slayer_ranged', 'items': items}]
 }
 
-pot_config = slayer_killer.PotConfig(antifire=True)
+pot_config = slayer_killer.PotConfig(ranging=True)
 
 
 def main():
@@ -73,13 +77,11 @@ def main():
         osrs.clock.sleep_one_tick()
         qh.query_backend()
         osrs.inv.power_drop(qh.get_inventory(), [], equipment)
-        osrs.game.tele_home()
-        osrs.clock.random_sleep(2, 2.1)
-        osrs.game.tele_home_fairy_ring('bjp')
-        transport_functions.isle_of_souls_dungeon()
+        osrs.game.cast_spell(fally_tele_widget_id)
+        transport_functions.taverley_dungeon()
         qh.query_backend()
-        osrs.move.click(qh.get_inventory(ItemIDs.TRIDENT_OF_THE_SWAMP.value))
-        success = slayer_killer.main('iron dragon', pot_config.asdict(), 35, 2145, 9296, 0, 3, 5)
+        osrs.move.click(qh.get_inventory(ItemIDs.DRAGON_HUNTER_CROSSBOW.value))
+        success = slayer_killer.main('baby black dragon', pot_config.asdict(), 35, -1, -1, -1)
         osrs.game.cast_spell(varrock_tele_widget_id)
         if success:
             return True

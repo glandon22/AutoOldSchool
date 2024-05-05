@@ -1,6 +1,8 @@
 import osrs.move as move
+import osrs.queryHelper
 import osrs.server as server
 import osrs.dev as dev
+from osrs.widget_ids import WidgetIDs
 import logging
 
 def toggle_prayer_slow(desired_state, port):
@@ -31,6 +33,19 @@ def toggle_prayer(desired_state, port='56799'):
             if prayer_orb['spriteID'] != desired_state:
                 move.fast_move_and_click(prayer_orb['x'], prayer_orb['y'], 3, 3)
             return
+
+
+def turn_off_all_prayers():
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_active_prayers()
+    qh.set_widgets({'160,21'})
+    while True:
+        qh.query_backend()
+        if not qh.get_active_prayers():
+            return
+        elif qh.get_widgets('160,21'):
+            osrs.move.click(qh.get_widgets('160,21'))
+            osrs.clock.random_sleep(1, 1.1)
 
 
 def toggle_run(desired_state, port='56799'):

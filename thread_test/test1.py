@@ -1,46 +1,50 @@
 import osrs
-import slayer.transport_functions
-from osrs.item_ids import ItemIDs
 
-items = [
-    ItemIDs.RUNE_POUCH.value,
-    ItemIDs.DRAMEN_STAFF.value,
-    ItemIDs.OCCULT_NECKLACE.value,
-    ItemIDs.SEERS_RING.value,
-    ItemIDs.OBSIDIAN_CAPE.value,
-    ItemIDs.WIZARD_BOOTS.value,
-    ItemIDs.ANTIDRAGON_SHIELD.value,
-    ItemIDs.TRIDENT_OF_THE_SWAMP.value,
-    ItemIDs.VOID_MAGE_HELM.value,
-    ItemIDs.VOID_KNIGHT_TOP.value,
-    ItemIDs.VOID_KNIGHT_ROBE.value,
-    ItemIDs.VOID_KNIGHT_GLOVES.value,
-    ItemIDs.MONKFISH.value,
-    ItemIDs.MONKFISH.value,
-    ItemIDs.MONKFISH.value,
-    ItemIDs.EXTENDED_ANTIFIRE4.value,
-    ItemIDs.EXTENDED_ANTIFIRE4.value,
-    ItemIDs.EXTENDED_ANTIFIRE4.value,
 
-]
+def frem_dungeon_turoth():
+    dungeon_entrance_id = '2123'
+    shortcut_2_id = '16539'
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_player_world_location()
+    qh.set_objects(
+        {'2797,3614,0'},
+        {dungeon_entrance_id},
+        osrs.queryHelper.ObjectTypes.GAME.value
+    )
+    qh.set_objects(
+        {'2734,10008,0'},
+        {shortcut_2_id},
+        osrs.queryHelper.ObjectTypes.WALL.value
+    )
+    qh.set_tiles({'2774,10003,0', '2769,10002,0'})
+    while True:
+        qh.query_backend()
+        # I am in the dungeon
+        if qh.get_player_world_location('y') > 9000:
+            break
+        elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, dungeon_entrance_id):
+            osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, dungeon_entrance_id)[0])
+            osrs.clock.random_sleep(1, 1.1)
+    print('passing first stage of shortcut 1')
+    while True:
+        qh.query_backend()
+        if qh.get_player_world_location('x') <= 2769:
+            break
+        elif qh.get_tiles('2774,10003,0') and qh.get_player_world_location('x') >= 2775:
+            osrs.move.fast_click(qh.get_tiles('2774,10003,0'))
+        elif qh.get_tiles('2769,10002,0') and 2773 >= qh.get_player_world_location('x') >= 2770:
+            osrs.move.fast_click(qh.get_tiles('2769,10002,0'))
+        else:
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2775, 'y': 10003, 'z': 0})
+    while True:
+        qh.query_backend()
+        if qh.get_player_world_location('x') <= 2731:
+            break
+        elif qh.get_objects(osrs.queryHelper.ObjectTypes.WALL.value, shortcut_2_id):
+            osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.WALL.value, shortcut_2_id)[0])
+        else:
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2737, 'y': 10007, 'z': 0})
 
-'''config = {
-        'dump_inv': True,
-        'dump_equipment': True,
-        #'withdraw': items
-        'search': [{'query': 'metal_dragons', 'items': items}]
-    }
+frem_dungeon_turoth()
 
-osrs.bank.banking_handler(config)'''
 
-'''#osrs.game.tele_home_fairy_ring('alr')
-#slayer.transport_functions.isle_of_souls_dungeon()
-qh = osrs.queryHelper.QueryHelper()
-qh.set_slayer()
-qh.query_backend()
-print(qh.get_slayer())'''
-
-qh = osrs.queryHelper.QueryHelper()
-qh.set_var_player(['102'])
-qh.query_backend()
-print(qh.get_var_player('102'))

@@ -1,3 +1,4 @@
+# 2134,9305,0
 import osrs
 from osrs.item_ids import ItemIDs
 from slayer import transport_functions
@@ -5,8 +6,12 @@ from combat import slayer_killer
 from slayer.tasks import gear
 
 varrock_tele_widget_id = '218,23'
-supplies = gear.slayer_melee['supplies']
+
+
+supplies = [ItemIDs.WATERBIRTH_TELEPORT.value, *gear.slayer_melee['supplies']]
+
 equipment = gear.slayer_melee['equipment']
+
 banking_config_equipment = {
     'dump_inv': True,
     'dump_equipment': True,
@@ -44,13 +49,19 @@ def main():
             print('failed to withdraw supplies.')
             return False
         osrs.game.tele_home()
-        osrs.clock.random_sleep(2, 2.1)
-        osrs.game.tele_home_fairy_ring('biq')
-        transport_functions.kalphite_layer()
+        osrs.game.click_restore_pool()
+        qh.query_backend()
+        tab = qh.get_inventory(ItemIDs.WATERBIRTH_TELEPORT.value)
+        if not tab:
+            exit('missing tele tab')
+        osrs.move.click(tab)
+        transport_functions.waterbirth_dungeon()
         qh.query_backend()
         osrs.move.click(qh.get_inventory(ItemIDs.ABYSSAL_WHIP.value))
         task_started = True
-        finished = slayer_killer.main('kalphite worker', pot_config.asdict(), 35, -1, -1, -1)
+        success = slayer_killer.main('dagannoth', pot_config.asdict(), 35, -1, -1, -1, )
         osrs.game.cast_spell(varrock_tele_widget_id)
-        if finished:
-            return
+        if success:
+            return True
+        qh.query_backend()
+        osrs.move.click(qh.get_inventory(ItemIDs.DRAMEN_STAFF.value))

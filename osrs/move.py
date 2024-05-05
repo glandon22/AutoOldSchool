@@ -81,7 +81,8 @@ def wait_until_stationary(port='56799'):
     while True:
         data = server.query_game_data(POSE_ANIMATION, port)
         # i am not moving
-        if 'poseAnimation' in data and (data['poseAnimation'] == 808 or data['poseAnimation'] == 813 or data['poseAnimation'] == 4591):
+        if 'poseAnimation' in data and (
+                data['poseAnimation'] == 808 or data['poseAnimation'] == 813 or data['poseAnimation'] == 4591):
             break
         else:
             clock.random_sleep(0.1, 0.2)
@@ -135,7 +136,7 @@ def fast_move(obj):
 
 def jiggle_mouse():
     x1, y1 = pyautogui.position()
-    bezier_movement(x1 - 90, y1 - 90, x1 - 50, y1 -30)
+    bezier_movement(x1 - 90, y1 - 90, x1 - 50, y1 - 30)
 
 
 def run_to_loc(steps, port='56799'):
@@ -392,7 +393,7 @@ def right_click_v3(item, action):
                     0,
                     0
                 )
-                return
+                return True
 
 
 def mac_right_click_menu_select(item, entry_action=None):
@@ -425,6 +426,7 @@ def move_around_center_screen(x1=800, y1=400, x2=1000, y2=600):
 def follow_path(start, end):
     path = dax.generate_path(start, end)
     if not path:
+        osrs.clock.sleep_one_tick()
         return
     parsed_tiles = util.tile_objects_to_strings(path)
     qh = queryHelper.QueryHelper()
@@ -457,13 +459,19 @@ def is_clickable(target):
     qh.set_canvas()
     qh.set_widgets({minimap_widget_id, inv_widget_id, chat_buttons_widget_id})
     qh.query_backend()
-    target_on_canvas = qh.get_canvas()['xMin'] + 10 < target['x'] < qh.get_canvas()['xMax'] - 10 and qh.get_canvas()['yMin'] + 10 < target['y'] < qh.get_canvas()['yMax'] - 10
-    target_on_inv = qh.get_widgets(inv_widget_id)['xMin'] - 10 < target['x'] < qh.get_widgets(inv_widget_id)['xMax'] + 10 and \
-                    qh.get_widgets(inv_widget_id)['yMin'] - 10 < target['y'] < qh.get_widgets(inv_widget_id)['yMax'] + 10
-    target_on_chat_buttons = qh.get_widgets(chat_buttons_widget_id)['xMin'] < target['x'] < qh.get_widgets(chat_buttons_widget_id)['xMax'] and \
-                    qh.get_widgets(chat_buttons_widget_id)['yMin'] - 25 < target['y'] < qh.get_widgets(chat_buttons_widget_id)['yMax'] + 25
-    target_on_minimap = qh.get_widgets(minimap_widget_id)['xMin'] < target['x'] < qh.get_widgets(minimap_widget_id)['xMax'] and \
-                    qh.get_widgets(minimap_widget_id)['yMin'] < target['y'] < qh.get_widgets(minimap_widget_id)['yMax']
+    target_on_canvas = qh.get_canvas()['xMin'] + 10 < target['x'] < qh.get_canvas()['xMax'] - 10 and qh.get_canvas()[
+        'yMin'] + 10 < target['y'] < qh.get_canvas()['yMax'] - 10
+    target_on_inv = qh.get_widgets(inv_widget_id)['xMin'] - 10 < target['x'] < qh.get_widgets(inv_widget_id)[
+        'xMax'] + 10 and \
+                    qh.get_widgets(inv_widget_id)['yMin'] - 10 < target['y'] < qh.get_widgets(inv_widget_id)[
+                        'yMax'] + 10
+    target_on_chat_buttons = qh.get_widgets(chat_buttons_widget_id)['xMin'] < target['x'] < \
+                             qh.get_widgets(chat_buttons_widget_id)['xMax'] and \
+                             qh.get_widgets(chat_buttons_widget_id)['yMin'] - 25 < target['y'] < \
+                             qh.get_widgets(chat_buttons_widget_id)['yMax'] + 25
+    target_on_minimap = qh.get_widgets(minimap_widget_id)['xMin'] < target['x'] < qh.get_widgets(minimap_widget_id)[
+        'xMax'] and \
+                        qh.get_widgets(minimap_widget_id)['yMin'] < target['y'] < qh.get_widgets(minimap_widget_id)[
+                            'yMax']
     return target_on_canvas and not target_on_inv and not target_on_minimap and not target_on_chat_buttons
-
 

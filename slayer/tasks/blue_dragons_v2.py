@@ -1,3 +1,4 @@
+# 2134,9305,0
 import osrs
 from osrs.item_ids import ItemIDs
 from slayer import transport_functions
@@ -5,8 +6,12 @@ from combat import slayer_killer
 from slayer.tasks import gear
 
 varrock_tele_widget_id = '218,23'
-supplies = gear.slayer_melee['supplies']
-equipment = gear.slayer_melee['equipment']
+
+
+supplies = [ItemIDs.DRAMEN_STAFF.value, *gear.melee_dragon['supplies']]
+
+equipment = gear.melee_dragon['equipment']
+
 banking_config_equipment = {
     'dump_inv': True,
     'dump_equipment': True,
@@ -19,7 +24,7 @@ banking_config_supplies = {
     'search': [{'query': 'slayer_melee', 'items': supplies}]
 }
 
-pot_config = slayer_killer.PotConfig(super_combat=True)
+pot_config = slayer_killer.PotConfig(super_combat=True, antifire=True)
 
 
 def main():
@@ -43,14 +48,20 @@ def main():
         if not success:
             print('failed to withdraw supplies.')
             return False
+        while True:
+            qh.query_backend()
+            if qh.get_inventory(ItemIDs.DRAMEN_STAFF.value):
+                osrs.move.click(qh.get_inventory(ItemIDs.DRAMEN_STAFF.value))
+                break
         osrs.game.tele_home()
-        osrs.clock.random_sleep(2, 2.1)
-        osrs.game.tele_home_fairy_ring('biq')
-        transport_functions.kalphite_layer()
+        osrs.game.click_restore_pool()
+        osrs.game.tele_home_fairy_ring('bjp')
+        transport_functions.isle_of_souls_dungeon(2134, 9305)
         qh.query_backend()
         osrs.move.click(qh.get_inventory(ItemIDs.ABYSSAL_WHIP.value))
         task_started = True
-        finished = slayer_killer.main('kalphite worker', pot_config.asdict(), 35, -1, -1, -1)
+        success = slayer_killer.main(['blue dragon', 'baby blue dragon'], pot_config.asdict(), 35, 15, -1, -1, -1)
+        qh.query_backend()
         osrs.game.cast_spell(varrock_tele_widget_id)
-        if finished:
-            return
+        if success:
+            return True
