@@ -145,11 +145,16 @@ def withdraw_configured_items(item, game_state: osrs.queryHelper.QueryHelper):
     if not banked_item:
         print(f'{ItemIDs(item).name} not found')
         return False
-    if item['quantity'] != 'All' and banked_item['quantity'] < int(item['quantity']):
+    if item['quantity'] not in ['All', 'X', 'x'] and banked_item['quantity'] < int(item['quantity']):
         print(f'not enough {ItemIDs(item).name} to satisfy request')
         return False
 
     osrs.move.right_click_v3(banked_item, f'Withdraw-{item["quantity"]}')
+
+    if item['quantity'] == 'X':
+        osrs.clock.sleep_one_tick()
+        osrs.keeb.write(str(item['amount']))
+        osrs.keeb.press_key('enter')
     return True
 
 
@@ -179,6 +184,10 @@ def search_and_withdraw(searches, game_state: osrs.queryHelper.QueryHelper):
                 success = withdraw_configured_items(item, game_state)
                 if not success:
                     return False
+                if 'quantity' in item and item['quantity'] == 'X':
+                    osrs.move.click(game_state.get_widgets_v2(WidgetIDs.BANK_SEARCH_BUTTON_BACKGROUND.value))
+                    osrs.keeb.write(search['query'])
+                    osrs.keeb.press_key('enter')
             else:
                 success = withdraw_items(item, quantities, game_state)
                 if not success:

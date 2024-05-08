@@ -433,7 +433,10 @@ def follow_path(start, end):
     qh.set_tiles(set(parsed_tiles))
     qh.set_destination_tile()
     qh.set_player_world_location()
+    path_start = datetime.datetime.now()
     while True:
+        if (datetime.datetime.now() - path_start).total_seconds() > 30:
+            return
         qh.query_backend()
         dist_to_end = osrs.dev.point_dist(
             qh.get_player_world_location('x'),

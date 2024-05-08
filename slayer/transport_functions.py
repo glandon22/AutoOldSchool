@@ -1,4 +1,5 @@
 import osrs
+import osrs.move
 from osrs.item_ids import ItemIDs
 
 
@@ -65,7 +66,7 @@ def kalphite_layer():
         while True:
             qh.query_backend()
             # I am in the dungeon
-            if qh.get_player_world_location('y') > 5000:
+            if qh.get_player_world_location('y') > 5000 and 3268 <= qh.get_player_world_location('x') <= 3348:
                 return
             elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, '30180'):
                 osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, '30180')[0])
@@ -351,8 +352,8 @@ def stronghold_slayer_dungeon_bloodvelds():
     while True:
         qh.query_backend()
         dungeon = qh.get_objects(
-                osrs.queryHelper.ObjectTypes.GAME.value,
-                dungeon_entrance_id
+            osrs.queryHelper.ObjectTypes.GAME.value,
+            dungeon_entrance_id
         )
         if dungeon:
             osrs.move.fast_click(dungeon[0])
@@ -402,8 +403,8 @@ def stronghold_slayer_dungeon_ankou():
     while True:
         qh.query_backend()
         dungeon = qh.get_objects(
-                osrs.queryHelper.ObjectTypes.GAME.value,
-                dungeon_entrance_id
+            osrs.queryHelper.ObjectTypes.GAME.value,
+            dungeon_entrance_id
         )
         if dungeon:
             osrs.move.fast_click(dungeon[0])
@@ -416,4 +417,338 @@ def stronghold_slayer_dungeon_ankou():
             return
         else:
             osrs.move.follow_path(qh.get_player_world_location(), {'x': 2478, 'y': 9800, 'z': 0})
+
+
+def mount_karuulm_wyrms():
+    shortcut_1_id = '34397'
+    shortcut_2_id = '34396'
+    obstacle_1_id = '34544'
+    gap_1_id = '34515'
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_player_world_location()
+    qh.set_objects(
+        {'1324,3778,0', '1324,3788,0', '1302,10205,0', '1272,10174,0'},
+        {shortcut_1_id, shortcut_2_id, obstacle_1_id, gap_1_id},
+        osrs.queryHelper.ObjectTypes.GAME.value
+    )
+    qh.set_tiles({'1311,3807,0'})
+    while True:
+        qh.query_backend()
+        s1 = qh.get_objects(
+            osrs.queryHelper.ObjectTypes.GAME.value,
+            shortcut_1_id
+        )
+        if qh.get_player_world_location('y') > 3778 and 1275 <= qh.get_player_world_location('x') <= 1350:
+            break
+        elif s1:
+            osrs.move.fast_click(s1[0])
+        else:
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': 1324, 'y': 3776, 'z': 0})
+    while True:
+        qh.query_backend()
+        s2 = qh.get_objects(
+            osrs.queryHelper.ObjectTypes.GAME.value,
+            shortcut_2_id
+        )
+        if qh.get_player_world_location('y') > 3788 and 1275 <= qh.get_player_world_location('x') <= 1350:
+            break
+        elif s2:
+            osrs.move.fast_click(s2[0])
+    while True:
+        qh.query_backend()
+        if qh.get_player_world_location('y') > 9000:
+            break
+        elif qh.get_tiles('1311,3807,0'):
+            # clicking this constantly stalls the animation
+            # so i have to cool down after a click
+            osrs.move.fast_click(qh.get_tiles('1311,3807,0'))
+            osrs.clock.sleep_one_tick()
+    while True:
+        qh.query_backend()
+        o1 = qh.get_objects(
+            osrs.queryHelper.ObjectTypes.GAME.value,
+            obstacle_1_id
+        )
+        if qh.get_player_world_location('x') < 1302:
+            break
+        elif o1:
+            osrs.move.fast_click(o1[0])
+        else:
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': 1303, 'y': 10204, 'z': 0})
+    while True:
+        qh.query_backend()
+        g1 = qh.get_objects(
+            osrs.queryHelper.ObjectTypes.GAME.value,
+            gap_1_id
+        )
+        if qh.get_player_world_location('y') <= 10170:
+            osrs.clock.sleep_one_tick()
+            break
+        elif g1:
+            osrs.move.fast_click(g1[0])
+        else:
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': 1271, 'y': 10176, 'z': 0})
+    while True:
+        qh.query_backend()
+        if qh.get_player_world_location('y') <= 10161:
+            return
+        else:
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': 1264, 'y': 10156, 'z': 0})
+
+
+def stronghold_slayer_dungeon_spectres():
+    dungeon_entrance_id = '26709'
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_slayer()
+    qh.set_inventory()
+    qh.set_chat_options()
+    qh.set_player_world_location()
+    qh.set_objects(
+        {'2429,3425,0'},
+        {dungeon_entrance_id},
+        osrs.queryHelper.ObjectTypes.GAME.value
+    )
+    while True:
+        qh.query_backend()
+        slayer_ring = qh.get_inventory([
+            ItemIDs.SLAYER_RING_1.value,
+            ItemIDs.SLAYER_RING_2.value,
+            ItemIDs.SLAYER_RING_3.value,
+            ItemIDs.SLAYER_RING_4.value,
+            ItemIDs.SLAYER_RING_5.value,
+            ItemIDs.SLAYER_RING_6.value,
+            ItemIDs.SLAYER_RING_7.value,
+            ItemIDs.SLAYER_RING_8.value,
+        ])
+        if not slayer_ring:
+            return print('need new task, no slayer ring in inv')
+        if osrs.move.right_click_v3(slayer_ring, 'Rub'):
+            osrs.clock.sleep_one_tick()
+            osrs.keeb.write('1')
+            osrs.clock.sleep_one_tick()
+            osrs.keeb.write('1')
+            break
+    while True:
+        qh.query_backend()
+        dungeon = qh.get_objects(
+            osrs.queryHelper.ObjectTypes.GAME.value,
+            dungeon_entrance_id
+        )
+        if dungeon:
+            osrs.move.fast_click(dungeon[0])
+            osrs.clock.sleep_one_tick()
+        elif qh.get_player_world_location('y') > 8000:
+            break
+    while True:
+        qh.query_backend()
+        if 2441 <= qh.get_player_world_location('x') <= 2447 and 9773 <= qh.get_player_world_location('y') <= 9787:
+            return
+        else:
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2444, 'y': 9780, 'z': 0})
+
+
+'''
+click esc key
+run to 3310,2959,0
+find obj 6279 on tile 3310,2962,0
+i dungeon when y greater than 9k
+end func
+'''
+
+
+def smoke_dungeon():
+    carpet_guy_id = 'Rug Merchant'
+    dungeon_entrance_id = '6279'
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_npcs_by_name([carpet_guy_id])
+    qh.set_chat_options()
+    qh.set_tiles({'3259,3096,0', '3310,2959,0'})
+    qh.set_objects(
+        {'3310,2962,0'},
+        {dungeon_entrance_id},
+        osrs.queryHelper.ObjectTypes.GAME.value
+    )
+    qh.set_player_world_location()
+    print('running to rug merchant')
+    while True:
+        qh.query_backend()
+        if qh.get_chat_options():
+            osrs.clock.sleep_one_tick()
+            osrs.keeb.write('3')
+            break
+        elif qh.get_npcs_by_name():
+            c = osrs.util.find_closest_target(qh.get_npcs_by_name())
+            if c:
+                osrs.move.fast_click(c)
+                osrs.clock.sleep_one_tick()
+        else:
+            if qh.get_tiles('3259,3096,0'):
+                osrs.move.fast_click(qh.get_tiles('3259,3096,0'))
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': 3309, 'y': 3105, 'z': 0})
+    print('on carpet to polli')
+    while True:
+        qh.query_backend()
+        if 3334 <= qh.get_player_world_location('x') <= 3366 and 2994 <= qh.get_player_world_location('y') <= 3012:
+            break
+    print('in polli')
+    while True:
+        qh.query_backend()
+        if qh.get_player_world_location('y') > 9000:
+            break
+        elif qh.get_objects(
+                osrs.queryHelper.ObjectTypes.GAME.value,
+                dungeon_entrance_id
+        ):
+            osrs.move.fast_click(qh.get_objects(
+                osrs.queryHelper.ObjectTypes.GAME.value,
+                dungeon_entrance_id
+            )[0])
+        else:
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': '3310', 'y': 2962, 'z': 0})
+    while True:
+        qh.query_backend()
+        if qh.get_player_world_location('x') >= 3222:
+            osrs.keeb.press_key('esc')
+            return
+        else:
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': 3224, 'y': 9377, 'z': 0})
+
+
+def brimhaven_dungeon_steels():
+    dungeon_entrance_id = '66'
+    crevice_id = '30198'
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_player_world_location()
+    qh.set_objects(
+        {'2759,3062,0', '2696,9436,0'},
+        {dungeon_entrance_id, crevice_id},
+        osrs.queryHelper.ObjectTypes.GAME.value
+    )
+    qh.set_tiles({'2796,3003,0'})
+    while True:
+        qh.query_backend()
+        if qh.get_player_world_location('y') > 9200 and 2722 <= qh.get_player_world_location('x') <= 2746:
+            break
+        elif qh.get_objects(
+                osrs.queryHelper.ObjectTypes.GAME.value,
+                dungeon_entrance_id
+        ):
+            osrs.move.fast_click(qh.get_objects(
+                osrs.queryHelper.ObjectTypes.GAME.value,
+                dungeon_entrance_id
+            )[0])
+        else:
+            if qh.get_tiles('2796,3003,0'):
+                osrs.move.fast_click(qh.get_tiles('2796,3003,0'))
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2763, 'y': 3062, 'z': 0})
+    while True:
+        qh.query_backend()
+        if qh.get_player_world_location('x') <= 2688:
+            break
+        elif qh.get_objects(
+                osrs.queryHelper.ObjectTypes.GAME.value,
+                crevice_id
+        ):
+            osrs.move.fast_click(qh.get_objects(
+                osrs.queryHelper.ObjectTypes.GAME.value,
+                crevice_id
+            )[0])
+        else:
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2699, 'y': 9436, 'z': 0})
+    while True:
+        qh.query_backend()
+        if qh.get_player_world_location('x') <= 2667:
+            return
+        else:
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2662, 'y': 9425, 'z': 0})
+
+
+def godwars_main_room():
+    mountain_shortcut_1 = '16524'
+    mountain_shortcut_2 = '16523'
+    mountain_shortcut_3 = '3748'
+    boulder_id = '26415'
+    gwd_entrance_id = '26419'
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_player_world_location()
+    qh.set_objects(
+        {'2901,3680,0', '2908,3682,0'},
+        {mountain_shortcut_1, mountain_shortcut_2},
+        osrs.queryHelper.ObjectTypes.GROUND.value
+    )
+    qh.set_objects(
+        {'2910,3686,0', '2899,3717,0', '2917,3745,0'},
+        {mountain_shortcut_3, boulder_id, gwd_entrance_id},
+        osrs.queryHelper.ObjectTypes.GAME.value
+    )
+    # wait until i am actually in trollheim to do anything
+    while True:
+        qh.query_backend()
+        if 3667 <= qh.get_player_world_location('y') <= 3700 and 2887 <= qh.get_player_world_location('x') <= 2896:
+            break
+    while True:
+        qh.query_backend()
+        if qh.get_player_world_location('x') >= 2901:
+            break
+        elif qh.get_player_world_location('x') <= 2900 and qh.get_objects(
+                osrs.queryHelper.ObjectTypes.GROUND.value,
+                mountain_shortcut_1
+        ):
+            osrs.move.fast_click(qh.get_objects(
+                osrs.queryHelper.ObjectTypes.GROUND.value,
+                mountain_shortcut_1
+            )[0])
+    while True:
+        qh.query_backend()
+        if qh.get_player_world_location('x') >= 2909:
+            break
+        elif qh.get_player_world_location('x') <= 2907 and qh.get_objects(
+                osrs.queryHelper.ObjectTypes.GROUND.value,
+                mountain_shortcut_2
+        ):
+            osrs.move.fast_click(qh.get_objects(
+                osrs.queryHelper.ObjectTypes.GROUND.value,
+                mountain_shortcut_2
+            )[0])
+    while True:
+        qh.query_backend()
+        if qh.get_player_world_location('x') >= 2911:
+            break
+        elif qh.get_player_world_location('x') <= 2909 and qh.get_objects(
+                osrs.queryHelper.ObjectTypes.GAME.value,
+                mountain_shortcut_3
+        ):
+            osrs.move.fast_click(qh.get_objects(
+                osrs.queryHelper.ObjectTypes.GAME.value,
+                mountain_shortcut_3
+            )[0])
+    while True:
+        qh.query_backend()
+        if qh.get_player_world_location('y') >= 3717:
+            break
+        elif qh.get_objects(
+            osrs.queryHelper.ObjectTypes.GAME.value,
+            boulder_id
+        ) and qh.get_player_world_location('y') > 3700:
+            osrs.move.fast_click(qh.get_objects(
+                osrs.queryHelper.ObjectTypes.GAME.value,
+                boulder_id
+            )[0])
+        else:
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2899, 'y': 3710, 'z': 0})
+    while True:
+        qh.query_backend()
+        if qh.get_player_world_location('y') >= 5200:
+            break
+        elif qh.get_objects(
+            osrs.queryHelper.ObjectTypes.GAME.value,
+            gwd_entrance_id
+        ):
+            osrs.move.fast_click(qh.get_objects(
+                osrs.queryHelper.ObjectTypes.GAME.value,
+                gwd_entrance_id
+            )[0])
+        else:
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2914, 'y': 3742, 'z': 0})
+
 

@@ -24,7 +24,7 @@ def main():
             elif slayer_task == 'Blue Dragons':
                 slayer.blue_dragons_v2.main()
             elif slayer_task == 'Black Dragons':
-                slayer.black_dragons.main()
+                slayer.black_dragons_v2.main()
             elif slayer_task == 'Greater Demons':
                 slayer.greater_demons.main()
             elif slayer_task == 'Fire Giants':
@@ -41,6 +41,16 @@ def main():
                 slayer.bloodvelds.main()
             elif slayer_task == 'Ankou':
                 slayer.ankou.main()
+            elif slayer_task == 'Wyrms':
+                slayer.wyrms.main()
+            elif slayer_task == 'Aberrant Spectres':
+                slayer.aberrant_spectres.main()
+            elif slayer_task == 'Dust Devils':
+                slayer.dust_devils.main()
+            elif slayer_task == 'Steel Dragons':
+                slayer.steel_dragons.main()
+            elif slayer_task == 'Spiritual Creatures':
+                slayer.spiritual_creatures.main()
             else:
                 return print(f'Can not parse {slayer_task}')
         else:

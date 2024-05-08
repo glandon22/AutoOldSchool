@@ -30,7 +30,7 @@ supplies = [
             'quantity': 'All'
         },
     ]
-equipment = gear.slayer_melee['equipment']
+equipment = gear.pure_melee['equipment']
 
 banking_config_equipment = {
     'dump_inv': True,

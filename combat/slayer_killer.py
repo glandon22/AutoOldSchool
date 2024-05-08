@@ -60,17 +60,55 @@ pot_matcher = {
         ItemIDs.EXTENDED_ANTIFIRE3.value,
         ItemIDs.EXTENDED_ANTIFIRE2.value,
         ItemIDs.EXTENDED_ANTIFIRE1.value,
+    ],
+    "PRAYER": [
+        ItemIDs.PRAYER_POTION4.value,
+        ItemIDs.PRAYER_POTION3.value,
+        ItemIDs.PRAYER_POTION2.value,
+        ItemIDs.PRAYER_POTION1.value,
     ]
 }
 
+prayer_map = {
+    'protect_melee': 4118,
+    'protect_range': 4117,
+    'protect_mage': 4116
+}
 
-def find_next_target(npcs, min_monster_dist, max_monster_dist):
+prayer_map_widgets = {
+    'protect_melee': '541,23',
+    'protect_range': '541,22',
+    'protect_mage': '541,21'
+}
+
+
+def find_next_target(npcs, min_monster_dist, max_monster_dist, ignore_interacting):
     res = False
+    if not npcs:
+        return False
     for npc in npcs:
-        if npc['health'] != 0 and min_monster_dist <= npc['dist'] <= max_monster_dist and 'interacting' not in npc:
+        # always attack a monster if it is already attacking me and not dead
+        if npc['health'] != 0 and 'interacting' in npc and 'GreazyDonkey' in npc['interacting']:
+            print(f'attacking an npc that is already attacking me: {npc}')
+            return npc
+        if npc['health'] != 0 \
+                and min_monster_dist <= npc['dist'] <= max_monster_dist \
+                and (ignore_interacting or 'interacting' not in npc):
             if not res or npc['dist'] < res['dist']:
                 res = npc
     return res
+
+
+def prayer_handler(qh: osrs.queryHelper.QueryHelper, prayers):
+    if not prayers:
+        return
+    for prayer in prayers:
+        if prayer_map[prayer] not in qh.get_active_prayers():
+            osrs.keeb.press_key('f5')
+            osrs.clock.sleep_one_tick()
+            qh.query_backend()
+            osrs.move.fast_click(qh.get_widgets(prayer_map_widgets[prayer]))
+    osrs.keeb.press_key('esc')
 
 
 script_config = {
@@ -152,6 +190,12 @@ def pot_handler(qh: osrs.queryHelper.QueryHelper, pots):
             osrs.move.click(p)
         else:
             return False
+    if qh.get_skills('prayer')['boostedLevel'] < 15:
+        p = osrs.inv.are_items_in_inventory_v2(qh.get_inventory(), pot_matcher['PRAYER'])
+        if p:
+            osrs.move.click(p)
+        else:
+            return False
     return True
 
 
@@ -162,20 +206,21 @@ def hop_handler(qh: osrs.queryHelper.QueryHelper, pre_hop):
         osrs.game.hop_worlds(pre_hop)
 
 
-def main(npc_to_kill, pots, min_health, ss_x, ss_y, ss_z, min_monster_dist=0, max_monster_dist=999, hop=False, pre_hop=False):
+def main(npc_to_kill, pots, min_health, ss_x, ss_y, ss_z, min_monster_dist=0, max_monster_dist=999, hop=False, pre_hop=False, prayers=None, ignore_interacting=False):
     monster = npc_to_kill if type(npc_to_kill) is list else [npc_to_kill]
     qh = osrs.queryHelper.QueryHelper()
     qh.set_npcs_by_name(monster)
-    qh.set_skills({'hitpoints', 'strength', 'ranged', 'magic', 'attack', 'defence'})
+    qh.set_skills({'hitpoints', 'strength', 'ranged', 'magic', 'attack', 'defence', 'prayer'})
     qh.set_inventory()
     qh.set_interating_with()
-    qh.set_widgets({'233,0'})
+    qh.set_widgets({'233,0', '541,23', '541,22', '541,21'})
     qh.set_tiles({f'{ss_x},{ss_y},{ss_z}'})
     qh.set_player_world_location()
     qh.set_slayer()
     qh.set_var_player(['102'])
     qh.set_varbit(ANTIFIRE_VARBIT)
     qh.set_players()
+    qh.set_active_prayers()
     while True:
         qh.query_backend()
 
@@ -185,11 +230,11 @@ def main(npc_to_kill, pots, min_health, ss_x, ss_y, ss_z, min_monster_dist=0, ma
 
         if not qh.get_interating_with():
             targets = qh.get_npcs_by_name()
-            c = find_next_target(targets, min_monster_dist, max_monster_dist)
+            c = find_next_target(targets, min_monster_dist, max_monster_dist, ignore_interacting)
             if c:
                 osrs.move.fast_click(c)
                 # sleep for one tick if i am trying to safespot so im not jumping in and out like a bot
-                if ss_x and ss_y and ss_z:
+                if -1 not in [ss_x, ss_y, ss_z]:
                     osrs.clock.sleep_one_tick()
 
         success = food_handler(qh, min_health)
@@ -203,6 +248,8 @@ def main(npc_to_kill, pots, min_health, ss_x, ss_y, ss_z, min_monster_dist=0, ma
         if not pot_success:
             print('failed to pot up')
             return False
+
+        prayer_handler(qh, prayers)
 
         # check if i leveled
         if qh.get_widgets('233,0'):

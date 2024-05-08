@@ -6,6 +6,11 @@ from slayer.tasks import gear
 
 varrock_tele_widget_id = '218,23'
 supplies = [
+        {
+            'id': ItemIDs.COINS_995.value,
+            'quantity': 'X',
+            'amount': '200'
+        },
         ItemIDs.SUPER_COMBAT_POTION4.value,
         ItemIDs.SUPER_COMBAT_POTION4.value,
         ItemIDs.SUPER_COMBAT_POTION4.value,
@@ -34,7 +39,7 @@ equipment = [
         ItemIDs.RUNE_DEFENDER.value,
         ItemIDs.COMBAT_BRACELET.value,
         ItemIDs.OBSIDIAN_CAPE.value,
-        ItemIDs.BLACK_MASK.value,
+        ItemIDs.FACEMASK.value,
         ItemIDs.BRIMSTONE_RING.value,
         ItemIDs.DRAGON_BOOTS.value,
         ItemIDs.BANDOS_CHESTPLATE.value,
@@ -85,11 +90,27 @@ def main():
         osrs.game.tele_home()
         osrs.clock.random_sleep(2, 2.1)
         osrs.game.tele_home_fairy_ring('biq')
-        transport_functions.kalphite_layer()
+        transport_functions.smoke_dungeon()
         qh.query_backend()
-        osrs.move.click(qh.get_inventory(ItemIDs.ABYSSAL_WHIP.value))
+        while True:
+            qh.query_backend()
+            if qh.get_inventory(ItemIDs.ABYSSAL_WHIP.value):
+                osrs.move.click(qh.get_inventory(ItemIDs.ABYSSAL_WHIP.value))
+                break
         task_started = True
-        finished = slayer_killer.main('kalphite worker', pot_config.asdict(), 35, -1, -1, -1)
+        finished = slayer_killer.main('dust devil', pot_config.asdict(), 35, -1, -1, -1)
         osrs.game.cast_spell(varrock_tele_widget_id)
         if finished:
             return
+
+'''
+run from fairy ring biq to 3309,3105,0
+find npc id 17 and click need 200 gp for this carpet ride smh
+click optino 3 to polli
+in polli when coords 334 x 3366 :  2994 y 3012
+click esc key
+run to 3310,2959,0
+find obj 6279 on tile 3310,2962,0
+i dungeon when y greater than 9k
+end func
+'''

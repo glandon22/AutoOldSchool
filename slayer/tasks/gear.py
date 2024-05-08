@@ -189,19 +189,10 @@ melee_dragon = {
         ItemIDs.BLACK_MASK.value,
         ItemIDs.BRIMSTONE_RING.value,
         ItemIDs.DRAGON_BOOTS.value,
-        {
-            'id': [
-                ItemIDs.TORAGS_PLATEBODY.value,
-                ItemIDs.TORAGS_PLATEBODY_25.value,
-                ItemIDs.TORAGS_PLATEBODY_50.value,
-                ItemIDs.TORAGS_PLATEBODY_75.value,
-                ItemIDs.TORAGS_PLATEBODY_100.value,
-            ],
-            'quantity': 1
-        },
+        ItemIDs.BANDOS_CHESTPLATE.value,
         ItemIDs.BANDOS_TASSETS.value,
         ItemIDs.AMULET_OF_FURY.value,
-        ItemIDs.ABYSSAL_WHIP.value,
+        ItemIDs.DRAGON_HUNTER_LANCE.value,
     ],
     'supplies': [
         ItemIDs.SUPER_COMBAT_POTION4.value,
@@ -262,6 +253,53 @@ melee_mage_defence = {
         ItemIDs.ABYSSAL_WHIP.value,
     ],
     'supplies': [
+        ItemIDs.SUPER_COMBAT_POTION4.value,
+        ItemIDs.SUPER_COMBAT_POTION4.value,
+        ItemIDs.RUNE_POUCH.value,
+        {
+            'id': [
+                ItemIDs.SLAYER_RING_1.value,
+                ItemIDs.SLAYER_RING_2.value,
+                ItemIDs.SLAYER_RING_3.value,
+                ItemIDs.SLAYER_RING_4.value,
+                ItemIDs.SLAYER_RING_5.value,
+                ItemIDs.SLAYER_RING_6.value,
+                ItemIDs.SLAYER_RING_7.value,
+                ItemIDs.SLAYER_RING_8.value,
+            ],
+            'quantity': '1'
+        },
+        {
+            'id': ItemIDs.MONKFISH.value,
+            'quantity': 'All'
+        },
+    ]
+}
+
+pure_melee = {
+    'equipment': [
+        ItemIDs.ABYSSAL_WHIP.value,
+        ItemIDs.RUNE_DEFENDER.value,
+        ItemIDs.COMBAT_BRACELET.value,
+        ItemIDs.OBSIDIAN_CAPE.value,
+        ItemIDs.BLACK_MASK.value,
+        ItemIDs.BRIMSTONE_RING.value,
+        ItemIDs.DRAGON_BOOTS.value,
+        {
+            'id': [
+                ItemIDs.TORAGS_PLATEBODY.value,
+                ItemIDs.TORAGS_PLATEBODY_25.value,
+                ItemIDs.TORAGS_PLATEBODY_50.value,
+                ItemIDs.TORAGS_PLATEBODY_75.value,
+                ItemIDs.TORAGS_PLATEBODY_100.value,
+            ],
+            'quantity': 1
+        },
+        ItemIDs.BANDOS_TASSETS.value,
+        ItemIDs.AMULET_OF_FURY.value,
+    ],
+    'supplies': [
+        ItemIDs.SUPER_COMBAT_POTION4.value,
         ItemIDs.SUPER_COMBAT_POTION4.value,
         ItemIDs.SUPER_COMBAT_POTION4.value,
         ItemIDs.RUNE_POUCH.value,

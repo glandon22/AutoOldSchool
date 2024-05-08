@@ -1,17 +1,27 @@
+'''
+
+gwd entrance 26419 2917,3745,0
+'''
+
+# run to 2865,9827,1
+# then exit
 # 2134,9305,0
 import osrs
+import osrs.move
 from osrs.item_ids import ItemIDs
 from slayer import transport_functions
 from combat import slayer_killer
-from slayer.tasks import gear
 
 varrock_tele_widget_id = '218,23'
+fally_tele_widget_id = '218,29'
+trollheim_tele_widget_id = '218,54'
 
 
 supplies = [
     ItemIDs.SUPER_COMBAT_POTION4.value,
     ItemIDs.SUPER_COMBAT_POTION4.value,
     ItemIDs.RUNE_POUCH.value,
+    ItemIDs.SUPER_RESTORE4.value,
     {
         'id': [
             ItemIDs.SLAYER_RING_1.value,
@@ -25,24 +35,29 @@ supplies = [
         ],
         'quantity': '1'
     },
-    ItemIDs.DRAMEN_STAFF.value,
     {
         'id': ItemIDs.MONKFISH.value,
+        'quantity': 'X',
+        'amount': '9'
+    },
+    {
+        'id': ItemIDs.PRAYER_POTION4.value,
         'quantity': 'All'
     },
 ]
 
 equipment = [
-    ItemIDs.BLACK_MASK.value,
     ItemIDs.ABYSSAL_WHIP.value,
-    ItemIDs.COMBAT_BRACELET.value,
+    ItemIDs.HOLY_BLESSING.value,
+    ItemIDs.RUNE_DEFENDER.value,
+    ItemIDs.ARMADYL_BRACERS.value,
+    ItemIDs.ZAMORAK_CLOAK.value,
+    ItemIDs.SLAYER_HELMET.value,
     ItemIDs.BRIMSTONE_RING.value,
     ItemIDs.DRAGON_BOOTS.value,
-    ItemIDs.BANDOS_TASSETS.value,
     ItemIDs.BANDOS_CHESTPLATE.value,
+    ItemIDs.BANDOS_TASSETS.value,
     ItemIDs.AMULET_OF_FURY.value,
-    ItemIDs.RUNE_DEFENDER.value,
-    ItemIDs.OBSIDIAN_CAPE.value,
 ]
 
 banking_config_equipment = {
@@ -74,26 +89,27 @@ def main():
                 return False
             osrs.clock.sleep_one_tick()
             qh.query_backend()
-            osrs.inv.power_drop(qh.get_inventory(), [], equipment)
+            for item in qh.get_inventory():
+                osrs.move.click(item)
             qh.query_backend()
         success = osrs.bank.banking_handler(banking_config_supplies)
         if not success:
             print('failed to withdraw supplies.')
             return False
+        osrs.game.tele_home()
+        osrs.game.click_restore_pool()
+        osrs.clock.sleep_one_tick()
+        osrs.game.cast_spell(trollheim_tele_widget_id)
+        transport_functions.godwars_main_room()
+        task_started = True
         while True:
             qh.query_backend()
-            if qh.get_inventory(ItemIDs.DRAMEN_STAFF.value):
-                osrs.move.click(qh.get_inventory(ItemIDs.DRAMEN_STAFF.value))
+            if qh.get_inventory(ItemIDs.SUPER_RESTORE4.value):
+                osrs.move.fast_click(qh.get_inventory(ItemIDs.SUPER_RESTORE4.value))
+            else:
                 break
-        osrs.game.tele_home()
-        osrs.clock.random_sleep(2, 2.1)
-        osrs.game.tele_home_fairy_ring('bjp')
-        transport_functions.isle_of_souls_dungeon(2128, 9328)
-        qh.query_backend()
-        osrs.move.click(qh.get_inventory(ItemIDs.ABYSSAL_WHIP.value))
-        task_started = True
-        success = slayer_killer.main('fire giant', pot_config.asdict(), 35, -1, -1, -1)
-        osrs.move.click(qh.get_inventory(ItemIDs.ABYSSAL_WHIP.value))
+        success = slayer_killer.main('spiritual warrior', pot_config.asdict(), 35, -1, -1, -1, prayers=['protect_melee'], ignore_interacting=True)
+        osrs.player.turn_off_all_prayers()
         osrs.game.cast_spell(varrock_tele_widget_id)
         if success:
             return True
