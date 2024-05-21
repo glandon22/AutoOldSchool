@@ -40,7 +40,7 @@ equipment = [
     ItemIDs.RUNE_DEFENDER.value,
     ItemIDs.COMBAT_BRACELET.value,
     ItemIDs.OBSIDIAN_CAPE.value,
-    ItemIDs.BLACK_MASK.value,
+    ItemIDs.SLAYER_HELMET.value,
     ItemIDs.BRIMSTONE_RING.value,
     ItemIDs.DRAGON_BOOTS.value,
     ItemIDs.BANDOS_CHESTPLATE.value,
@@ -51,13 +51,13 @@ equipment = [
 banking_config_equipment = {
     'dump_inv': True,
     'dump_equipment': True,
-    'search': [{'query': 'slayer_melee', 'items': equipment}]
+    'search': [{'query': 'slayer', 'items': equipment}]
 }
 
 banking_config_supplies = {
     'dump_inv': True,
     'dump_equipment': False,
-    'search': [{'query': 'slayer_melee', 'items': supplies}]
+    'search': [{'query': 'slayer', 'items': supplies}]
 }
 
 pot_config = slayer_killer.PotConfig(super_combat=True)
@@ -90,7 +90,7 @@ def main():
         osrs.game.cast_spell(fally_tele_widget_id)
         transport_functions.taverley_dungeon()
         task_started = True
-        success = slayer_killer.main('baby black dragon', pot_config.asdict(), 35, -1, -1, -1)
+        success = slayer_killer.main('baby black dragon', pot_config.asdict(), 35)
         osrs.game.cast_spell(varrock_tele_widget_id)
         if success:
             return True

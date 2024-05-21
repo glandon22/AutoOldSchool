@@ -43,7 +43,7 @@ equipment = [
     ItemIDs.RUNE_DEFENDER.value,
     ItemIDs.COMBAT_BRACELET.value,
     ItemIDs.OBSIDIAN_CAPE.value,
-    ItemIDs.BLACK_MASK.value,
+    ItemIDs.SLAYER_HELMET.value,
     ItemIDs.BRIMSTONE_RING.value,
     ItemIDs.BOOTS_OF_BRIMSTONE.value,
     ItemIDs.BANDOS_CHESTPLATE.value,
@@ -54,13 +54,13 @@ equipment = [
 banking_config_equipment = {
     'dump_inv': True,
     'dump_equipment': True,
-    'search': [{'query': 'slayer_melee', 'items': equipment}]
+    'search': [{'query': 'slayer', 'items': equipment}]
 }
 
 banking_config_supplies = {
     'dump_inv': True,
     'dump_equipment': False,
-    'search': [{'query': 'slayer_melee', 'items': supplies}]
+    'search': [{'query': 'slayer', 'items': supplies}]
 }
 
 pot_config = slayer_killer.PotConfig(super_combat=True)
@@ -99,7 +99,7 @@ def main():
         qh.query_backend()
         osrs.move.click(qh.get_inventory(ItemIDs.DRAGON_HUNTER_LANCE.value))
         task_started = True
-        success = slayer_killer.main('wyrm', pot_config.asdict(), 35, 15, -1, -1, -1, prayers=['protect_mage'])
+        success = slayer_killer.main('wyrm', pot_config.asdict(), 35, 15, prayers=['protect_mage'])
         qh.query_backend()
         osrs.player.turn_off_all_prayers()
         osrs.game.cast_spell(varrock_tele_widget_id)

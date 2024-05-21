@@ -2,23 +2,14 @@ from osrs.item_ids import ItemIDs
 
 slayer_melee = {
     'equipment': [
-        ItemIDs.TOKTZKETXIL.value,
+        ItemIDs.RUNE_DEFENDER.value,
         ItemIDs.COMBAT_BRACELET.value,
         ItemIDs.OBSIDIAN_CAPE.value,
         ItemIDs.DRAMEN_STAFF.value,
-        ItemIDs.BLACK_MASK.value,
+        ItemIDs.SLAYER_HELMET.value,
         ItemIDs.BRIMSTONE_RING.value,
         ItemIDs.DRAGON_BOOTS.value,
-        {
-            'id': [
-                ItemIDs.TORAGS_PLATEBODY.value,
-                ItemIDs.TORAGS_PLATEBODY_25.value,
-                ItemIDs.TORAGS_PLATEBODY_50.value,
-                ItemIDs.TORAGS_PLATEBODY_75.value,
-                ItemIDs.TORAGS_PLATEBODY_100.value,
-            ],
-            'quantity': 1
-        },
+        ItemIDs.BANDOS_CHESTPLATE.value,
         ItemIDs.BANDOS_TASSETS.value,
         ItemIDs.AMULET_OF_FURY.value,
     ],
@@ -95,7 +86,7 @@ slayer_ranged = {
 
 melee_prayer = {
     'equipment': [
-        ItemIDs.BLACK_MASK.value,
+        ItemIDs.SLAYER_HELMET.value,
         ItemIDs.ABYSSAL_WHIP.value,
         ItemIDs.COMBAT_BRACELET.value,
         ItemIDs.BRIMSTONE_RING.value,
@@ -140,7 +131,7 @@ slayer_leafbladed_melee = {
         ItemIDs.RUNE_DEFENDER.value,
         ItemIDs.COMBAT_BRACELET.value,
         ItemIDs.OBSIDIAN_CAPE.value,
-        ItemIDs.BLACK_MASK.value,
+        ItemIDs.SLAYER_HELMET.value,
         ItemIDs.BRIMSTONE_RING.value,
         ItemIDs.DRAGON_BOOTS.value,
         {
@@ -186,7 +177,7 @@ melee_dragon = {
         ItemIDs.DRAGONFIRE_SHIELD.value,
         ItemIDs.COMBAT_BRACELET.value,
         ItemIDs.OBSIDIAN_CAPE.value,
-        ItemIDs.BLACK_MASK.value,
+        ItemIDs.SLAYER_HELMET.value,
         ItemIDs.BRIMSTONE_RING.value,
         ItemIDs.DRAGON_BOOTS.value,
         ItemIDs.BANDOS_CHESTPLATE.value,
@@ -226,7 +217,7 @@ melee_mage_defence = {
         ItemIDs.DRAGONFIRE_SHIELD.value,
         ItemIDs.COMBAT_BRACELET.value,
         ItemIDs.OBSIDIAN_CAPE.value,
-        ItemIDs.BLACK_MASK.value,
+        ItemIDs.SLAYER_HELMET.value,
         ItemIDs.BRIMSTONE_RING.value,
         ItemIDs.DRAGON_BOOTS.value,
         {
@@ -282,7 +273,7 @@ pure_melee = {
         ItemIDs.RUNE_DEFENDER.value,
         ItemIDs.COMBAT_BRACELET.value,
         ItemIDs.OBSIDIAN_CAPE.value,
-        ItemIDs.BLACK_MASK.value,
+        ItemIDs.SLAYER_HELMET.value,
         ItemIDs.BRIMSTONE_RING.value,
         ItemIDs.DRAGON_BOOTS.value,
         {

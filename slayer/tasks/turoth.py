@@ -17,13 +17,13 @@ equipment = gear.slayer_leafbladed_melee['equipment']
 banking_config_equipment = {
     'dump_inv': True,
     'dump_equipment': True,
-    'search': [{'query': 'slayer_melee', 'items': equipment}]
+    'search': [{'query': 'slayer', 'items': equipment}]
 }
 
 banking_config_supplies = {
     'dump_inv': True,
     'dump_equipment': False,
-    'search': [{'query': 'slayer_melee', 'items': [osrs.item_ids.ItemIDs.DRAMEN_STAFF.value, *supplies]}]
+    'search': [{'query': 'slayer', 'items': [osrs.item_ids.ItemIDs.DRAMEN_STAFF.value, *supplies]}]
 }
 
 pot_config = slayer_killer.PotConfig(super_combat=True)
@@ -84,7 +84,7 @@ def main():
         transport_functions.frem_dungeon_turoth()
         task_started = True
         osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.LEAFBLADED_BATTLEAXE.value))
-        success = slayer_killer.main('turoth', pot_config.asdict(), 35, -1, -1, -1, pre_hop=pre_log)
+        success = slayer_killer.main('turoth', pot_config.asdict(), 35, pre_hop=pre_log)
         qh.query_backend()
         osrs.game.cast_spell(varrock_tele_widget_id)
         if success:

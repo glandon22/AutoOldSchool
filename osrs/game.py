@@ -563,9 +563,10 @@ def hop_worlds(pre_hop=False):
     qh.set_world()
     qh.query_backend()
     index = qh.get_world() in world_list and world_list.index(qh.get_world())
+    print('i', index)
     if not index or index == len(world_list) - 1:
         index = -1
-
+    print('ii', index, world_list[index + 1])
     osrs.keeb.press_key('enter')
     if pre_hop:
         pre_hop()

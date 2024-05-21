@@ -35,13 +35,13 @@ equipment = gear.melee_mage_defence['equipment']
 banking_config_equipment = {
     'dump_inv': True,
     'dump_equipment': True,
-    'search': [{'query': 'slayer_melee', 'items': equipment}]
+    'search': [{'query': 'slayer', 'items': equipment}]
 }
 
 banking_config_supplies = {
     'dump_inv': True,
     'dump_equipment': False,
-    'search': [{'query': 'slayer_melee', 'items': supplies}]
+    'search': [{'query': 'slayer', 'items': supplies}]
 }
 
 pot_config = slayer_killer.PotConfig(super_combat=True)
@@ -77,7 +77,7 @@ def main():
         transport_functions.stronghold_slayer_dungeon_bloodvelds()
         qh.query_backend()
         task_started = True
-        success = slayer_killer.main('bloodveld', pot_config.asdict(), 35, 15, -1, -1, -1, hop=True, pre_hop=hop_logic)
+        success = slayer_killer.main('bloodveld', pot_config.asdict(), 35, 15, hop=True, pre_hop=hop_logic)
         qh.query_backend()
         osrs.game.cast_spell(varrock_tele_widget_id)
         if success:

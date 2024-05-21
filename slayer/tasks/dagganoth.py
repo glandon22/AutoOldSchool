@@ -15,13 +15,13 @@ equipment = gear.slayer_melee['equipment']
 banking_config_equipment = {
     'dump_inv': True,
     'dump_equipment': True,
-    'search': [{'query': 'slayer_melee', 'items': equipment}]
+    'search': [{'query': 'slayer', 'items': equipment}]
 }
 
 banking_config_supplies = {
     'dump_inv': True,
     'dump_equipment': False,
-    'search': [{'query': 'slayer_melee', 'items': supplies}]
+    'search': [{'query': 'slayer', 'items': supplies}]
 }
 
 pot_config = slayer_killer.PotConfig(super_combat=True)
@@ -59,7 +59,11 @@ def main():
         qh.query_backend()
         osrs.move.click(qh.get_inventory(ItemIDs.ABYSSAL_WHIP.value))
         task_started = True
-        success = slayer_killer.main('dagannoth', pot_config.asdict(), 35, -1, -1, -1, )
+        success = slayer_killer.main(
+            'dagannoth',
+            pot_config.asdict(), 35,
+            attackable_area={'x_min': 2442, 'x_max': 2487, 'y_min': 10125, 'y_max': 10163}
+        )
         osrs.game.cast_spell(varrock_tele_widget_id)
         if success:
             return True

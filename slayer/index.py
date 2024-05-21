@@ -16,7 +16,7 @@ def main():
         slayer_task = qh.get_slayer() and 'monster' in qh.get_slayer() and qh.get_slayer()['monster']
         if slayer_task:
             if slayer_task == 'Iron Dragons':
-                slayer.iron_dragons.main()
+                slayer.iron_dragons_v2.main()
             elif slayer_task == 'Kalphite':
                 slayer.kalphite.main()
             elif slayer_task == 'Trolls':
@@ -27,12 +27,14 @@ def main():
                 slayer.black_dragons_v2.main()
             elif slayer_task == 'Greater Demons':
                 slayer.greater_demons.main()
+                # Verified
             elif slayer_task == 'Fire Giants':
                 slayer.fire_giants.main()
             elif slayer_task == 'Dagannoth':
                 slayer.dagganoth.main()
             elif slayer_task == 'Hellhounds':
                 slayer.hellhounds.main()
+            # Verified
             elif slayer_task == 'Black Demons':
                 slayer.black_demons.main()
             elif slayer_task == 'Turoth':
@@ -51,6 +53,10 @@ def main():
                 slayer.steel_dragons.main()
             elif slayer_task == 'Spiritual Creatures':
                 slayer.spiritual_creatures.main()
+            elif slayer_task == 'Kurask':
+                slayer.kurask.main()
+            elif slayer_task == 'Mutated Zygomites':
+                slayer.mutated_zygomite.main()
             else:
                 return print(f'Can not parse {slayer_task}')
         else:

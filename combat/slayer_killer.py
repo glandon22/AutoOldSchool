@@ -82,20 +82,31 @@ prayer_map_widgets = {
 }
 
 
-def find_next_target(npcs, min_monster_dist, max_monster_dist, ignore_interacting):
+def find_next_target(npcs, safespot_config, ignore_interacting, attackable_area):
     res = False
     if not npcs:
         return False
     for npc in npcs:
-        # always attack a monster if it is already attacking me and not dead
-        if npc['health'] != 0 and 'interacting' in npc and 'GreazyDonkey' in npc['interacting']:
+        # If I have configured an attackable area, do not attack any NPC outside of this area
+        if attackable_area and (
+                npc['x_coord'] <= attackable_area['x_min'] or npc['x_coord'] >= attackable_area['x_max']
+                or npc['y_coord'] <= attackable_area['y_min'] or npc['y_coord'] >= attackable_area['y_max']
+        ):
+            continue
+        # Ignore any NPC that is already dead!
+        if npc['health'] == 0:
+            continue
+        # Monster location is not suitable for configured safespot
+        if safespot_config and (safespot_config['min_monster_dist'] >= npc['dist'] or safespot_config['max_monster_dist'] <= npc['dist']) :
+            continue
+        # always attack a monster if it is already attacking me
+        if 'interacting' in npc and 'GreazyDonkey' in npc['interacting']:
             print(f'attacking an npc that is already attacking me: {npc}')
             return npc
-        if npc['health'] != 0 \
-                and min_monster_dist <= npc['dist'] <= max_monster_dist \
-                and (ignore_interacting or 'interacting' not in npc):
+        if ignore_interacting or 'interacting' not in npc:
             if not res or npc['dist'] < res['dist']:
                 res = npc
+    print(res)
     return res
 
 
@@ -111,13 +122,6 @@ def prayer_handler(qh: osrs.queryHelper.QueryHelper, prayers):
     osrs.keeb.press_key('esc')
 
 
-script_config = {
-    'intensity': 'high',
-    'login': False,
-    'logout': lambda: osrs.clock.random_sleep(11, 14),
-}
-
-
 def not_in_safe_spot(qh, ss_x, ss_y, ss_z):
     if ss_x == -1 or ss_y == -1 or ss_z == -1:
         return False
@@ -126,14 +130,17 @@ def not_in_safe_spot(qh, ss_x, ss_y, ss_z):
     return True
 
 
-def safe_spot_handler(qh, ss_x, ss_y, ss_z):
+def safe_spot_handler(qh, safespot_config):
+    if not safespot_config:
+        return
     # confirm we are safespotting
     while True:
         qh.query_backend()
-        if not_in_safe_spot(qh, ss_x, ss_y, ss_z):
+        if not_in_safe_spot(qh, safespot_config["x"], safespot_config["y"], safespot_config["z"]):
             print('out of safespot')
-            if qh.get_tiles(f'{ss_x},{ss_y},{ss_z}') and osrs.move.is_clickable(qh.get_tiles(f'{ss_x},{ss_y},{ss_z}')):
-                osrs.move.fast_click(qh.get_tiles(f'{ss_x},{ss_y},{ss_z}'))
+            if qh.get_tiles(f'{safespot_config["x"]},{safespot_config["y"]},{safespot_config["z"]}') \
+                    and osrs.move.is_clickable(qh.get_tiles(f'{safespot_config["x"]},{safespot_config["y"]},{safespot_config["z"]}')):
+                osrs.move.fast_click(qh.get_tiles(f'{safespot_config["x"]},{safespot_config["y"]},{safespot_config["z"]}'))
         else:
             return
 
@@ -202,11 +209,14 @@ def pot_handler(qh: osrs.queryHelper.QueryHelper, pots):
 def hop_handler(qh: osrs.queryHelper.QueryHelper, pre_hop):
     # players is always minimum one since i am included
     if len(qh.get_players()) > 1:
-        print('someone here')
+        print('someone here', qh.get_players())
         osrs.game.hop_worlds(pre_hop)
 
 
-def main(npc_to_kill, pots, min_health, ss_x, ss_y, ss_z, min_monster_dist=0, max_monster_dist=999, hop=False, pre_hop=False, prayers=None, ignore_interacting=False):
+def main(npc_to_kill, pots, min_health, safespot_config=None, hop=False,
+         pre_hop=False, prayers=None, ignore_interacting=False, attackable_area=None):
+    if safespot_config is None:
+        safespot_config = {}
     monster = npc_to_kill if type(npc_to_kill) is list else [npc_to_kill]
     qh = osrs.queryHelper.QueryHelper()
     qh.set_npcs_by_name(monster)
@@ -214,13 +224,24 @@ def main(npc_to_kill, pots, min_health, ss_x, ss_y, ss_z, min_monster_dist=0, ma
     qh.set_inventory()
     qh.set_interating_with()
     qh.set_widgets({'233,0', '541,23', '541,22', '541,21'})
-    qh.set_tiles({f'{ss_x},{ss_y},{ss_z}'})
+    if safespot_config:
+        qh.set_tiles({f'{safespot_config["x"]},{safespot_config["y"]},{safespot_config["z"]}'})
     qh.set_player_world_location()
     qh.set_slayer()
     qh.set_var_player(['102'])
     qh.set_varbit(ANTIFIRE_VARBIT)
     qh.set_players()
     qh.set_active_prayers()
+
+    script_config = {
+        'intensity': 'high',
+        'login': False,
+        'logout': lambda: osrs.clock.random_sleep(11, 14),
+    }
+
+    if pre_hop:
+        script_config['logout'] = pre_hop
+
     while True:
         qh.query_backend()
 
@@ -230,11 +251,11 @@ def main(npc_to_kill, pots, min_health, ss_x, ss_y, ss_z, min_monster_dist=0, ma
 
         if not qh.get_interating_with():
             targets = qh.get_npcs_by_name()
-            c = find_next_target(targets, min_monster_dist, max_monster_dist, ignore_interacting)
+            c = find_next_target(targets, safespot_config, ignore_interacting, attackable_area)
             if c:
                 osrs.move.fast_click(c)
                 # sleep for one tick if i am trying to safespot so im not jumping in and out like a bot
-                if -1 not in [ss_x, ss_y, ss_z]:
+                if safespot_config:
                     osrs.clock.sleep_one_tick()
 
         success = food_handler(qh, min_health)
@@ -243,7 +264,7 @@ def main(npc_to_kill, pots, min_health, ss_x, ss_y, ss_z, min_monster_dist=0, ma
             print('failed to eat')
             return False
 
-        safe_spot_handler(qh, ss_x, ss_y, ss_z)
+        safe_spot_handler(qh, safespot_config)
         pot_success = pot_handler(qh, pots)
         if not pot_success:
             print('failed to pot up')

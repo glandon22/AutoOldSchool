@@ -234,7 +234,6 @@ def taverley_dungeon_black_demons():
     print('running to wall')
     while True:
         qh.query_backend()
-        # I am in the dungeon
         if qh.get_player_world_location('x') <= 2935:
             break
         elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, crumbled_wall_id):
@@ -249,6 +248,7 @@ def taverley_dungeon_black_demons():
             break
         elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, ladder_id):
             osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, ladder_id)[0])
+            osrs.clock.sleep_one_tick()
         else:
             osrs.move.follow_path(qh.get_player_world_location(), {'x': 2884, 'y': 3396, 'z': 0})
     print('running to pipe')
@@ -259,6 +259,7 @@ def taverley_dungeon_black_demons():
             break
         elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, shortcut_id):
             osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, shortcut_id)[0])
+            osrs.clock.sleep_one_tick()
         else:
             osrs.move.follow_path(qh.get_player_world_location(), {'x': 2890, 'y': 9799, 'z': 0})
     while True:
@@ -752,3 +753,68 @@ def godwars_main_room():
             osrs.move.follow_path(qh.get_player_world_location(), {'x': 2914, 'y': 3742, 'z': 0})
 
 
+def frem_dungeon_kurask():
+    dungeon_entrance_id = '2123'
+    shortcut_2_id = '16539'
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_player_world_location()
+    qh.set_objects(
+        {'2797,3614,0'},
+        {dungeon_entrance_id},
+        osrs.queryHelper.ObjectTypes.GAME.value
+    )
+    qh.set_objects(
+        {'2734,10008,0'},
+        {shortcut_2_id},
+        osrs.queryHelper.ObjectTypes.WALL.value
+    )
+    qh.set_tiles({'2774,10003,0', '2769,10002,0'})
+    while True:
+        qh.query_backend()
+        # I am in the dungeon
+        if qh.get_player_world_location('y') > 9000:
+            break
+        elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, dungeon_entrance_id):
+            osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, dungeon_entrance_id)[0])
+            osrs.clock.random_sleep(1, 1.1)
+    print('passing first stage of shortcut 1')
+    while True:
+        qh.query_backend()
+        if qh.get_player_world_location('x') <= 2769:
+            break
+        elif qh.get_tiles('2774,10003,0') and qh.get_player_world_location('x') >= 2775:
+            osrs.move.fast_click(qh.get_tiles('2774,10003,0'))
+        elif qh.get_tiles('2769,10002,0') and 2773 >= qh.get_player_world_location('x') >= 2770:
+            osrs.move.fast_click(qh.get_tiles('2769,10002,0'))
+        else:
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2775, 'y': 10003, 'z': 0})
+    while True:
+        qh.query_backend()
+        if qh.get_player_world_location('x') == 2730:
+            # sleep for a second to finish shortcut animation
+            osrs.clock.random_sleep(2, 2.1)
+            break
+        elif qh.get_objects(osrs.queryHelper.ObjectTypes.WALL.value, shortcut_2_id):
+            osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.WALL.value, shortcut_2_id)[0])
+        else:
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2737, 'y': 10007, 'z': 0})
+    while True:
+        qh.query_backend()
+        if qh.get_player_world_location('x') <= 2700:
+            return
+        else:
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2697, 'y': 9997, 'z': 0})
+
+
+def zanaris_zygomites():
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_player_world_location()
+    qh.set_tiles({'2412,4436,0'})
+    while True:
+        qh.query_backend()
+        if 2409 <= qh.get_player_world_location('x') <= 2420 and 4467 <= qh.get_player_world_location('y') <= 4476:
+            return
+        else:
+            if qh.get_tiles('2412,4436,0'):
+                osrs.move.click(qh.get_tiles('2412,4436,0'))
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2416, 'y': 4471, 'z': 0})

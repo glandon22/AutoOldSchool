@@ -61,7 +61,7 @@ equipment = [
 banking_config = {
     'dump_inv': True,
     'dump_equipment': True,
-    'search': [{'query': 'slayer_ranged', 'items': items}]
+    'search': [{'query': 'slayer', 'items': items}]
 }
 
 pot_config = slayer_killer.PotConfig(ranging=True)
@@ -81,7 +81,7 @@ def main():
         transport_functions.taverley_dungeon()
         qh.query_backend()
         osrs.move.click(qh.get_inventory(ItemIDs.DRAGON_HUNTER_CROSSBOW.value))
-        success = slayer_killer.main('baby black dragon', pot_config.asdict(), 35, -1, -1, -1)
+        success = slayer_killer.main('baby black dragon', pot_config.asdict(), 35)
         osrs.game.cast_spell(varrock_tele_widget_id)
         if success:
             return True

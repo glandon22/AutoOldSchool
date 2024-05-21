@@ -15,13 +15,13 @@ equipment = gear.melee_dragon['equipment']
 banking_config_equipment = {
     'dump_inv': True,
     'dump_equipment': True,
-    'search': [{'query': 'slayer_melee', 'items': equipment}]
+    'search': [{'query': 'slayer', 'items': equipment}]
 }
 
 banking_config_supplies = {
     'dump_inv': True,
     'dump_equipment': False,
-    'search': [{'query': 'slayer_melee', 'items': supplies}]
+    'search': [{'query': 'slayer', 'items': supplies}]
 }
 
 pot_config = slayer_killer.PotConfig(super_combat=True, antifire=True)
@@ -60,7 +60,7 @@ def main():
         qh.query_backend()
         osrs.move.click(qh.get_inventory(ItemIDs.DRAGON_HUNTER_LANCE.value))
         task_started = True
-        success = slayer_killer.main(['blue dragon', 'baby blue dragon'], pot_config.asdict(), 35, 15, -1, -1, -1)
+        success = slayer_killer.main(['blue dragon', 'baby blue dragon'], pot_config.asdict(), 35, 15)
         qh.query_backend()
         osrs.game.cast_spell(varrock_tele_widget_id)
         if success:
