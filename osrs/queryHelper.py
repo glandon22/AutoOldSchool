@@ -487,8 +487,9 @@ class QueryHelper:
 
         :return: {'area': '', 'amount': '35', 'monster': 'Iron Dragons'}
         """
-        #return 'slayer' in self.game_data and self.game_data['slayer']
-        return {'area': '', 'amount': '89', 'monster': 'Trolls'}
+
+        return 'slayer' in self.game_data and self.game_data['slayer']
+        #return {'area': '', 'amount': '89', 'monster': 'Wyrms'}
     def clear_query(self):
         self.query = {}
 

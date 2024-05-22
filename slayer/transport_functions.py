@@ -93,7 +93,7 @@ def south_quidamortem_trolls():
                 osrs.move.follow_path(qh.get_player_world_location(), {'x': 1230, 'y': 3496, 'z': 0})
 
 
-def taverley_dungeon():
+def taverley_dungeon_black_dragons():
     rock_steps_id = '30189'
     rock_steps_tile = '2882,9825,0'
     crumbled_wall_id = '24222'
@@ -111,7 +111,6 @@ def taverley_dungeon():
     print('running to wall')
     while True:
         qh.query_backend()
-        # I am in the dungeon
         if qh.get_player_world_location('x') <= 2935:
             break
         elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, crumbled_wall_id):
@@ -126,6 +125,7 @@ def taverley_dungeon():
             break
         elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, ladder_id):
             osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, ladder_id)[0])
+            osrs.clock.sleep_one_tick()
         else:
             osrs.move.follow_path(qh.get_player_world_location(), {'x': 2884, 'y': 3396, 'z': 0})
     print('running to steps')
@@ -134,7 +134,7 @@ def taverley_dungeon():
         # I am in the dungeon
         if qh.get_player_world_location('z') == 1:
             break
-        elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, rock_steps_id):
+        elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, rock_steps_id) and qh.get_player_world_location('y') > 9803:
             osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, rock_steps_id)[0])
         else:
             osrs.move.follow_path(qh.get_player_world_location(), {'x': 2884, 'y': 9825, 'z': 0})
@@ -202,6 +202,7 @@ def taverley_dungeon_hellhounds():
             break
         elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, ladder_id):
             osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, ladder_id)[0])
+            osrs.clock.sleep_one_tick()
         else:
             osrs.move.follow_path(qh.get_player_world_location(), {'x': 2884, 'y': 3396, 'z': 0})
     print('running to steps')
@@ -542,10 +543,10 @@ def stronghold_slayer_dungeon_spectres():
             break
     while True:
         qh.query_backend()
-        if 2441 <= qh.get_player_world_location('x') <= 2447 and 9773 <= qh.get_player_world_location('y') <= 9787:
+        if 2453 <= qh.get_player_world_location('x') <= 2463 and 9788 <= qh.get_player_world_location('y') <= 9796:
             return
         else:
-            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2444, 'y': 9780, 'z': 0})
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2456, 'y': 9792, 'z': 0})
 
 
 '''

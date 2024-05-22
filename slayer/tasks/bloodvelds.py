@@ -77,13 +77,13 @@ def main():
         transport_functions.stronghold_slayer_dungeon_bloodvelds()
         qh.query_backend()
         task_started = True
-        success = slayer_killer.main('bloodveld', pot_config.asdict(), 35, 15, hop=True, pre_hop=hop_logic)
+        success = slayer_killer.main(
+            'bloodveld',
+            pot_config.asdict(), 35,
+            attackable_area={'x_min': 2481, 'x_max': 2494, 'y_min': 9814, 'y_max': 9832},
+            hop=True, pre_hop=hop_logic
+        )
         qh.query_backend()
         osrs.game.cast_spell(varrock_tele_widget_id)
         if success:
             return True
-
-
-'''
-final tile in bloodveld area 2489,9826,0
-'''

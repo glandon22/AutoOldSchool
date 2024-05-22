@@ -214,7 +214,7 @@ def hop_handler(qh: osrs.queryHelper.QueryHelper, pre_hop):
 
 
 def main(npc_to_kill, pots, min_health, safespot_config=None, hop=False,
-         pre_hop=False, prayers=None, ignore_interacting=False, attackable_area=None):
+         pre_hop=False, prayers=None, ignore_interacting=False, attackable_area=None, post_login=None):
     if safespot_config is None:
         safespot_config = {}
     monster = npc_to_kill if type(npc_to_kill) is list else [npc_to_kill]
@@ -241,6 +241,8 @@ def main(npc_to_kill, pots, min_health, safespot_config=None, hop=False,
 
     if pre_hop:
         script_config['logout'] = pre_hop
+    if post_login:
+        script_config['login'] = post_login
 
     while True:
         qh.query_backend()

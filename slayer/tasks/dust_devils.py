@@ -61,6 +61,10 @@ banking_config_supplies = {
 pot_config = slayer_killer.PotConfig(super_combat=True)
 
 
+def pre_log():
+    osrs.clock.random_sleep(12, 13)
+
+
 def main():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
@@ -88,7 +92,7 @@ def main():
                 osrs.move.click(qh.get_inventory(ItemIDs.DRAMEN_STAFF.value))
                 break
         osrs.game.tele_home()
-        osrs.clock.random_sleep(2, 2.1)
+        osrs.game.click_restore_pool()
         osrs.game.tele_home_fairy_ring('biq')
         transport_functions.smoke_dungeon()
         qh.query_backend()
@@ -98,7 +102,7 @@ def main():
                 osrs.move.click(qh.get_inventory(ItemIDs.ABYSSAL_WHIP.value))
                 break
         task_started = True
-        finished = slayer_killer.main('dust devil', pot_config.asdict(), 35)
+        finished = slayer_killer.main('dust devil', pot_config.asdict(), 35, hop=True, pre_hop=pre_log)
         osrs.game.cast_spell(varrock_tele_widget_id)
         if finished:
             return

@@ -1,3 +1,5 @@
+import datetime
+
 import osrs
 from osrs.item_ids import ItemIDs
 from slayer import transport_functions
@@ -59,6 +61,35 @@ banking_config_supplies = {
 pot_config = slayer_killer.PotConfig(super_combat=True)
 
 
+def pre_log():
+    safe_tile = {
+        'x': 1227,
+        'y': 3480,
+        'z': 0
+    }
+    safe_tile_string = f'{safe_tile["x"]},{safe_tile["y"]},{safe_tile["z"]}'
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_tiles({safe_tile_string})
+    qh.set_player_world_location()
+    last_off_tile = datetime.datetime.now()
+    while True:
+        qh.query_backend()
+        if qh.get_player_world_location('x') != safe_tile["x"] \
+                or qh.get_player_world_location('y') != safe_tile["y"]:
+            last_off_tile = datetime.datetime.now()
+
+        if qh.get_player_world_location('x') == safe_tile["x"] \
+                and qh.get_player_world_location('y') == safe_tile["y"]:
+            if (datetime.datetime.now() - last_off_tile).total_seconds() > 11:
+                return
+            if (datetime.datetime.now() - last_off_tile).total_seconds() > 3:
+                osrs.player.turn_off_all_prayers()
+        elif qh.get_tiles(safe_tile_string):
+            osrs.move.fast_click(qh.get_tiles(safe_tile_string))
+        else:
+            osrs.move.follow_path(qh.get_player_world_location(), safe_tile)
+
+
 def main():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
@@ -86,7 +117,7 @@ def main():
                 osrs.move.click(qh.get_inventory(ItemIDs.DRAMEN_STAFF.value))
                 break
         osrs.game.tele_home()
-        osrs.clock.random_sleep(2, 2.1)
+        osrs.game.click_restore_pool()
         osrs.game.tele_home_fairy_ring('bls')
         transport_functions.south_quidamortem_trolls()
         while True:
@@ -95,7 +126,7 @@ def main():
                 osrs.move.click(qh.get_inventory(ItemIDs.ABYSSAL_WHIP.value))
                 break
         task_started = True
-        success = slayer_killer.main('mountain troll', pot_config.asdict(), 35)
+        success = slayer_killer.main('mountain troll', pot_config.asdict(), 35, hop=True, pre_hop=pre_log)
         osrs.game.cast_spell(varrock_tele_widget_id)
         if success:
             return True

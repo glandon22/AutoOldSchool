@@ -15,46 +15,64 @@ def main():
         qh.query_backend()
         slayer_task = qh.get_slayer() and 'monster' in qh.get_slayer() and qh.get_slayer()['monster']
         if slayer_task:
+            # Verified
             if slayer_task == 'Iron Dragons':
                 slayer.iron_dragons_v2.main()
+            # Verified
             elif slayer_task == 'Kalphite':
                 slayer.kalphite.main()
+            # Verified
             elif slayer_task == 'Trolls':
                 slayer.trolls.main()
+            # Verified
             elif slayer_task == 'Blue Dragons':
                 slayer.blue_dragons_v2.main()
+            # Verified
             elif slayer_task == 'Black Dragons':
                 slayer.black_dragons_v2.main()
+            # Verified
             elif slayer_task == 'Greater Demons':
                 slayer.greater_demons.main()
-                # Verified
+            # Verified
             elif slayer_task == 'Fire Giants':
                 slayer.fire_giants.main()
+            # Verified
             elif slayer_task == 'Dagannoth':
                 slayer.dagganoth.main()
+            # Verified
             elif slayer_task == 'Hellhounds':
                 slayer.hellhounds.main()
             # Verified
             elif slayer_task == 'Black Demons':
                 slayer.black_demons.main()
+            # Verified
             elif slayer_task == 'Turoth':
                 slayer.turoth.main()
+            # Verified
             elif slayer_task == 'Bloodveld':
                 slayer.bloodvelds.main()
+            # Verified
             elif slayer_task == 'Ankou':
                 slayer.ankou.main()
+            # Verified
             elif slayer_task == 'Wyrms':
                 slayer.wyrms.main()
+            # Verified
             elif slayer_task == 'Aberrant Spectres':
                 slayer.aberrant_spectres.main()
+            # Verified
             elif slayer_task == 'Dust Devils':
                 slayer.dust_devils.main()
+            # Verified
             elif slayer_task == 'Steel Dragons':
                 slayer.steel_dragons.main()
+            # Verified
             elif slayer_task == 'Spiritual Creatures':
                 slayer.spiritual_creatures.main()
+            # Verified
             elif slayer_task == 'Kurask':
                 slayer.kurask.main()
+            # Verified
             elif slayer_task == 'Mutated Zygomites':
                 slayer.mutated_zygomite.main()
             else:

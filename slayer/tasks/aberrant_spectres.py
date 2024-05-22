@@ -37,7 +37,7 @@ supplies = [
         },
     ]
 equipment = [
-    ItemIDs.NOSE_PEG.value,
+    ItemIDs.SLAYER_HELMET.value,
     ItemIDs.ABYSSAL_WHIP.value,
     ItemIDs.COMBAT_BRACELET.value,
     ItemIDs.BRIMSTONE_RING.value,
@@ -65,26 +65,33 @@ banking_config_supplies = {
 pot_config = slayer_killer.PotConfig(super_combat=True)
 
 
-def hop_logic():
+def pre_log():
+    safe_tile = {
+        'x': 2447,
+        'y': 9800,
+        'z': 0
+    }
+    safe_tile_string = f'{safe_tile["x"]},{safe_tile["y"]},{safe_tile["z"]}'
     qh = osrs.queryHelper.QueryHelper()
-    qh.set_tiles({'2471,9789,0'})
+    qh.set_tiles({safe_tile_string})
     qh.set_player_world_location()
     last_off_tile = datetime.datetime.now()
     while True:
         qh.query_backend()
-        if qh.get_player_world_location('x') != 2471 \
-                or qh.get_player_world_location('y') != 9789:
+        if qh.get_player_world_location('x') != safe_tile["x"] \
+                or qh.get_player_world_location('y') != safe_tile["y"]:
             last_off_tile = datetime.datetime.now()
-            if qh.get_tiles('2471,9789,0'):
-                osrs.move.fast_click(qh.get_tiles('2471,9789,0'))
 
-        if qh.get_player_world_location('x') == 2471 \
-                and qh.get_player_world_location('y') == 9789:
-            osrs.player.turn_off_all_prayers()
+        if qh.get_player_world_location('x') == safe_tile["x"] \
+                and qh.get_player_world_location('y') == safe_tile["y"]:
             if (datetime.datetime.now() - last_off_tile).total_seconds() > 11:
                 return
+            if (datetime.datetime.now() - last_off_tile).total_seconds() > 3:
+                osrs.player.turn_off_all_prayers()
+        elif qh.get_tiles(safe_tile_string):
+            osrs.move.fast_click(qh.get_tiles(safe_tile_string))
         else:
-            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2471, 'y': 9789, 'z': 0})
+            osrs.move.follow_path(qh.get_player_world_location(), safe_tile)
 
 
 def main():
@@ -116,8 +123,8 @@ def main():
         success = slayer_killer.main(
             'aberrant spectre',
             pot_config.asdict(),
-            35, 15,
-            hop=True, pre_hop=hop_logic,
+            35,
+            hop=True, pre_hop=pre_log,
             prayers=['protect_mage']
         )
         osrs.player.turn_off_all_prayers()

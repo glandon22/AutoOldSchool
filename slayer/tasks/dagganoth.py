@@ -1,4 +1,6 @@
 # 2134,9305,0
+import datetime
+
 import osrs
 from osrs.item_ids import ItemIDs
 from slayer import transport_functions
@@ -25,6 +27,45 @@ banking_config_supplies = {
 }
 
 pot_config = slayer_killer.PotConfig(super_combat=True)
+
+
+def pre_log():
+    stairs_out_id = '8966'
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_player_world_location()
+    qh.set_objects(
+        {'2441,10146,0'},
+        {stairs_out_id},
+        osrs.queryHelper.ObjectTypes.GAME.value
+    )
+    while True:
+        qh.query_backend()
+        if qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, stairs_out_id):
+            osrs.move.click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, stairs_out_id)[0])
+            osrs.clock.sleep_one_tick()
+        elif qh.get_player_world_location('y') < 9000:
+            osrs.clock.random_sleep(11, 12)
+            return
+        else:
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2444, 'y': 10146, 'z': 0})
+
+
+def post_log():
+    stairs_in_id = '8929'
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_player_world_location()
+    qh.set_objects(
+        {'2522,3738,0'},
+        {stairs_in_id},
+        osrs.queryHelper.ObjectTypes.GAME.value
+    )
+    while True:
+        qh.query_backend()
+        if qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, stairs_in_id):
+            osrs.move.click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, stairs_in_id)[0])
+            osrs.clock.sleep_one_tick()
+        elif qh.get_player_world_location('y') > 9000:
+            return
 
 
 def main():
@@ -62,7 +103,9 @@ def main():
         success = slayer_killer.main(
             'dagannoth',
             pot_config.asdict(), 35,
-            attackable_area={'x_min': 2442, 'x_max': 2487, 'y_min': 10125, 'y_max': 10163}
+            attackable_area={'x_min': 2442, 'x_max': 2487, 'y_min': 10125, 'y_max': 10163},
+            pre_hop=pre_log,
+            post_login=post_log
         )
         osrs.game.cast_spell(varrock_tele_widget_id)
         if success:

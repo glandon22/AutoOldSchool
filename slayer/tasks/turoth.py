@@ -30,25 +30,7 @@ pot_config = slayer_killer.PotConfig(super_combat=True)
 
 
 def pre_log():
-    qh = osrs.queryHelper.QueryHelper()
-    qh.set_tiles({'2708,9992,0'})
-    qh.set_player_world_location()
-    last_off_tile = datetime.datetime.now()
-    while True:
-        qh.query_backend()
-        if qh.get_player_world_location('x') != 2708 \
-                or qh.get_player_world_location('y') != '9992':
-            last_off_tile = datetime.datetime.now()
-
-        if qh.get_player_world_location('x') == 2708 \
-                and qh.get_player_world_location('y') == '9992' \
-                and (datetime.datetime.now() - last_off_tile).total_seconds() > 11:
-            osrs.player.turn_off_all_prayers()
-            return
-        elif qh.get_tiles('2708,9992,0'):
-            osrs.move.fast_click(qh.get_tiles('2708,9992,0'))
-        else:
-            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2708, 'y': 9992, 'z': 0})
+    osrs.clock.random_sleep(12, 13)
 
 
 def main():
@@ -84,7 +66,7 @@ def main():
         transport_functions.frem_dungeon_turoth()
         task_started = True
         osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.LEAFBLADED_BATTLEAXE.value))
-        success = slayer_killer.main('turoth', pot_config.asdict(), 35, pre_hop=pre_log)
+        success = slayer_killer.main('turoth', pot_config.asdict(), 35, hop=True, pre_hop=pre_log)
         qh.query_backend()
         osrs.game.cast_spell(varrock_tele_widget_id)
         if success:

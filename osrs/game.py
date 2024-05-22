@@ -542,21 +542,21 @@ def click_restore_pool():
 
 def hop_worlds(pre_hop=False):
     world_list = [
-        '349',
-        '361',
-        '396',
-        '428',
-        '527',
-        '467',
-        '420',
-        '421',
-        '422',
-        '485',
-        '486',
-        '487',
-        '488',
-        '489',
-        '490',
+        349,
+        361,
+        396,
+        428,
+        527,
+        467,
+        420,
+        421,
+        422,
+        485,
+        486,
+        487,
+        488,
+        489,
+        490,
     ]
     qh = osrs.queryHelper.QueryHelper()
     qh.set_game_state()
@@ -564,7 +564,7 @@ def hop_worlds(pre_hop=False):
     qh.query_backend()
     index = qh.get_world() in world_list and world_list.index(qh.get_world())
     print('i', index)
-    if not index or index == len(world_list) - 1:
+    if index is False or index == len(world_list) - 1:
         index = -1
     print('ii', index, world_list[index + 1])
     osrs.keeb.press_key('enter')

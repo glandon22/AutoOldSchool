@@ -1,4 +1,6 @@
 # 2134,9305,0
+import datetime
+
 import osrs
 from osrs.item_ids import ItemIDs
 from slayer import transport_functions
@@ -8,9 +10,43 @@ from slayer.tasks import gear
 varrock_tele_widget_id = '218,23'
 fally_tele_widget_id = '218,29'
 
-supplies = gear.slayer_melee['supplies']
+supplies = [
+    ItemIDs.SUPER_COMBAT_POTION4.value,
+    ItemIDs.SUPER_COMBAT_POTION4.value,
+    ItemIDs.SUPER_COMBAT_POTION4.value,
+    ItemIDs.RUNE_POUCH.value,
+    {
+        'id': [
+            ItemIDs.SLAYER_RING_1.value,
+            ItemIDs.SLAYER_RING_2.value,
+            ItemIDs.SLAYER_RING_3.value,
+            ItemIDs.SLAYER_RING_4.value,
+            ItemIDs.SLAYER_RING_5.value,
+            ItemIDs.SLAYER_RING_6.value,
+            ItemIDs.SLAYER_RING_7.value,
+            ItemIDs.SLAYER_RING_8.value,
+        ],
+        'quantity': '1'
+    },
+    ItemIDs.DRAMEN_STAFF.value,
+    {
+        'id': ItemIDs.MONKFISH.value,
+        'quantity': 'All'
+    }
+]
 
-equipment = gear.slayer_melee['equipment']
+equipment = [
+    ItemIDs.RUNE_DEFENDER.value,
+    ItemIDs.COMBAT_BRACELET.value,
+    ItemIDs.OBSIDIAN_CAPE.value,
+    ItemIDs.SLAYER_HELMET.value,
+    ItemIDs.BRIMSTONE_RING.value,
+    ItemIDs.DRAGON_BOOTS.value,
+    ItemIDs.BANDOS_CHESTPLATE.value,
+    ItemIDs.BANDOS_TASSETS.value,
+    ItemIDs.AMULET_OF_FURY.value,
+    ItemIDs.ABYSSAL_WHIP.value,
+]
 
 banking_config_equipment = {
     'dump_inv': True,
@@ -25,6 +61,35 @@ banking_config_supplies = {
 }
 
 pot_config = slayer_killer.PotConfig(super_combat=True)
+
+
+def pre_log():
+    safe_tile = {
+        'x': 2848,
+        'y': 9832,
+        'z': 0
+    }
+    safe_tile_string = f'{safe_tile["x"]},{safe_tile["y"]},{safe_tile["z"]}'
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_tiles({safe_tile_string})
+    qh.set_player_world_location()
+    last_off_tile = datetime.datetime.now()
+    while True:
+        qh.query_backend()
+        if qh.get_player_world_location('x') != safe_tile["x"] \
+                or qh.get_player_world_location('y') != safe_tile["y"]:
+            last_off_tile = datetime.datetime.now()
+
+        if qh.get_player_world_location('x') == safe_tile["x"] \
+                and qh.get_player_world_location('y') == safe_tile["y"]:
+            if (datetime.datetime.now() - last_off_tile).total_seconds() > 11:
+                return
+            if (datetime.datetime.now() - last_off_tile).total_seconds() > 3:
+                osrs.player.turn_off_all_prayers()
+        elif qh.get_tiles(safe_tile_string):
+            osrs.move.fast_click(qh.get_tiles(safe_tile_string))
+        else:
+            osrs.move.follow_path(qh.get_player_world_location(), safe_tile)
 
 
 def main():
@@ -48,6 +113,11 @@ def main():
         if not success:
             print('failed to withdraw supplies.')
             return False
+        while True:
+            qh.query_backend()
+            if qh.get_inventory(ItemIDs.DRAMEN_STAFF.value):
+                osrs.move.click(qh.get_inventory(ItemIDs.DRAMEN_STAFF.value))
+                break
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
         qh.query_backend()
@@ -56,9 +126,8 @@ def main():
         qh.query_backend()
         osrs.move.click(qh.get_inventory(ItemIDs.ABYSSAL_WHIP.value))
         task_started = True
-        success = slayer_killer.main('hellhound', pot_config.asdict(), 35)
+        success = slayer_killer.main('hellhound', pot_config.asdict(), 35, hop=True, pre_hop=pre_log)
         qh.query_backend()
-        osrs.move.click(qh.get_inventory(ItemIDs.DRAMEN_STAFF.value))
         osrs.game.cast_spell(varrock_tele_widget_id)
         if success:
             return True

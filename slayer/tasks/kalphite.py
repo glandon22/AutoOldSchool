@@ -56,6 +56,10 @@ banking_config_supplies = {
 pot_config = slayer_killer.PotConfig(super_combat=True)
 
 
+def pre_log():
+    osrs.clock.random_sleep(12, 13)
+
+
 def main():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
@@ -89,7 +93,7 @@ def main():
         qh.query_backend()
         osrs.move.click(qh.get_inventory(ItemIDs.ABYSSAL_WHIP.value))
         task_started = True
-        finished = slayer_killer.main('kalphite worker', pot_config.asdict(), 35)
+        finished = slayer_killer.main('kalphite worker', pot_config.asdict(), 35, hop=True, pre_hop=pre_log)
         osrs.game.cast_spell(varrock_tele_widget_id)
         if finished:
             return

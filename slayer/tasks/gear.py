@@ -134,16 +134,7 @@ slayer_leafbladed_melee = {
         ItemIDs.SLAYER_HELMET.value,
         ItemIDs.BRIMSTONE_RING.value,
         ItemIDs.DRAGON_BOOTS.value,
-        {
-            'id': [
-                ItemIDs.TORAGS_PLATEBODY.value,
-                ItemIDs.TORAGS_PLATEBODY_25.value,
-                ItemIDs.TORAGS_PLATEBODY_50.value,
-                ItemIDs.TORAGS_PLATEBODY_75.value,
-                ItemIDs.TORAGS_PLATEBODY_100.value,
-            ],
-            'quantity': 1
-        },
+        ItemIDs.BANDOS_CHESTPLATE.value,
         ItemIDs.BANDOS_TASSETS.value,
         ItemIDs.AMULET_OF_FURY.value,
     ],
@@ -276,16 +267,7 @@ pure_melee = {
         ItemIDs.SLAYER_HELMET.value,
         ItemIDs.BRIMSTONE_RING.value,
         ItemIDs.DRAGON_BOOTS.value,
-        {
-            'id': [
-                ItemIDs.TORAGS_PLATEBODY.value,
-                ItemIDs.TORAGS_PLATEBODY_25.value,
-                ItemIDs.TORAGS_PLATEBODY_50.value,
-                ItemIDs.TORAGS_PLATEBODY_75.value,
-                ItemIDs.TORAGS_PLATEBODY_100.value,
-            ],
-            'quantity': 1
-        },
+        ItemIDs.BANDOS_CHESTPLATE.value,
         ItemIDs.BANDOS_TASSETS.value,
         ItemIDs.AMULET_OF_FURY.value,
     ],
