@@ -1,0 +1,17 @@
+# ladder onto ship
+4977
+'2675,3170,0'
+
+loc when in boat
+x < 2675
+y > 3165
+
+ladder up to deck on boat id 4060
+
+tentacle 10709 npc id
+
+trawler net after game
+2483 '2667,3167,0'
+
+bank all items in loot sack widget
+367,19
