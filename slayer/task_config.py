@@ -7,7 +7,7 @@ task_config = {
             ItemIDs.DRAMEN_STAFF.value,
             ItemIDs.OCCULT_NECKLACE.value,
             ItemIDs.SEERS_RING.value,
-            ItemIDs.OBSIDIAN_CAPE.value,
+            ItemIDs.FIRE_CAPE.value,
             ItemIDs.WIZARD_BOOTS.value,
             ItemIDs.ANTIDRAGON_SHIELD.value,
             ItemIDs.TRIDENT_OF_THE_SWAMP.value,

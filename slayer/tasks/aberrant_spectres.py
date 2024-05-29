@@ -39,7 +39,7 @@ supplies = [
 equipment = [
     ItemIDs.SLAYER_HELMET.value,
     ItemIDs.ABYSSAL_WHIP.value,
-    ItemIDs.COMBAT_BRACELET.value,
+    ItemIDs.DRAGON_GLOVES.value,
     ItemIDs.BRIMSTONE_RING.value,
     ItemIDs.DRAGON_BOOTS.value,
     ItemIDs.MONKS_ROBE.value,
@@ -47,7 +47,7 @@ equipment = [
     ItemIDs.AMULET_OF_FURY.value,
     ItemIDs.RUNE_DEFENDER.value,
     ItemIDs.HOLY_BLESSING.value,
-    ItemIDs.ATTACK_CAPET.value,
+    ItemIDs.FIRE_CAPE.value,
 ]
 
 banking_config_equipment = {

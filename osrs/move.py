@@ -396,6 +396,37 @@ def right_click_v3(item, action):
                 return True
 
 
+# when you right click something in your inventory,
+# the game returns the action ie Drop and some random number
+# but when you click an item on the ground it gives you the
+# item id
+def right_click_v4(item, action, in_inv=False):
+    move_and_click(item['x'], item['y'], 3, 3, 'right')
+    curr_pos = pyautogui.position()
+    qh = queryHelper.QueryHelper()
+    qh.set_right_click_menu()
+    wait_start = datetime.datetime.now()
+    while True:
+        qh.query_backend()
+        if (datetime.datetime.now() - wait_start).total_seconds() > 1:
+            osrs.move.fast_move({'x': pyautogui.position().x, 'y': pyautogui.position().y - 25})
+            return False
+        if qh.get_right_click_menu():
+            entry_data = qh.get_right_click_menu()
+            choose_option_offset = entry_data['height'] - (len(entry_data['entries']) * 15)
+            parsed_entries = reversed(entry_data['entries'])
+            for i, entry in enumerate(parsed_entries):
+                if action.upper() == entry[0].upper() and (in_inv or item['id'] == int(entry[1])):
+                    additional = choose_option_offset + (i * 15)
+                    move_and_click(
+                        curr_pos[0],
+                        curr_pos[1] + additional,
+                        0,
+                        0
+                    )
+                    return True
+
+
 def mac_right_click_menu_select(item, entry_action=None):
     move_and_click(item['x'], item['y'], 3, 3, 'right')
     clock.random_sleep(0.2, 0.3)

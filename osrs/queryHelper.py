@@ -75,6 +75,12 @@ class QueryHelper:
     def get_player_animation(self):
         return 'playerAnimation' in self.game_data and self.game_data['playerAnimation']
 
+    def set_right_click_menu(self):
+        self.query['rightClickV2'] = True
+
+    def get_right_click_menu(self):
+        return 'rightClickV2' in self.game_data and self.game_data['rightClickV2']
+
     def player_world_location(self):
         self.query['playerWorldPoint'] = True
 
@@ -490,6 +496,19 @@ class QueryHelper:
 
         return 'slayer' in self.game_data and self.game_data['slayer']
         #return {'area': '', 'amount': '89', 'monster': 'Wyrms'}
+
+    def set_ground_items(self, tiles):
+        items = []
+        for tile in tiles:
+            items.append({
+                'tile': tile,
+                'object': '20997'
+            })
+        self.query['groundItemsV2'] = items
+
+    def get_ground_items(self):
+        return 'groundItemsV2' in self.game_data and self.game_data['groundItemsV2']
+
     def clear_query(self):
         self.query = {}
 

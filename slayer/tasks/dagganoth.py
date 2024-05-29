@@ -10,9 +10,44 @@ from slayer.tasks import gear
 varrock_tele_widget_id = '218,23'
 
 
-supplies = [ItemIDs.WATERBIRTH_TELEPORT.value, *gear.slayer_melee['supplies']]
+supplies = [
+    ItemIDs.WATERBIRTH_TELEPORT.value,
+    ItemIDs.SUPER_ATTACK4.value,
+    ItemIDs.SUPER_ATTACK4.value,
+    ItemIDs.SUPER_STRENGTH4.value,
+    ItemIDs.SUPER_STRENGTH4.value,
+    ItemIDs.RUNE_POUCH.value,
+    {
+        'id': [
+            ItemIDs.SLAYER_RING_1.value,
+            ItemIDs.SLAYER_RING_2.value,
+            ItemIDs.SLAYER_RING_3.value,
+            ItemIDs.SLAYER_RING_4.value,
+            ItemIDs.SLAYER_RING_5.value,
+            ItemIDs.SLAYER_RING_6.value,
+            ItemIDs.SLAYER_RING_7.value,
+            ItemIDs.SLAYER_RING_8.value,
+        ],
+        'quantity': '1'
+    },
+    {
+        'id': ItemIDs.MONKFISH.value,
+        'quantity': 'All'
+    },
+]
 
-equipment = gear.slayer_melee['equipment']
+equipment = [
+        ItemIDs.RUNE_DEFENDER.value,
+        ItemIDs.DRAGON_GLOVES.value,
+        ItemIDs.FIRE_CAPE.value,
+        ItemIDs.ABYSSAL_WHIP.value,
+        ItemIDs.SLAYER_HELMET.value,
+        ItemIDs.BRIMSTONE_RING.value,
+        ItemIDs.DRAGON_BOOTS.value,
+        ItemIDs.BANDOS_CHESTPLATE.value,
+        ItemIDs.BANDOS_TASSETS.value,
+        ItemIDs.AMULET_OF_FURY.value,
+    ]
 
 banking_config_equipment = {
     'dump_inv': True,
@@ -26,7 +61,7 @@ banking_config_supplies = {
     'search': [{'query': 'slayer', 'items': supplies}]
 }
 
-pot_config = slayer_killer.PotConfig(super_combat=True)
+pot_config = slayer_killer.PotConfig(super_str=True, super_atk=True)
 
 
 def pre_log():
@@ -68,6 +103,27 @@ def post_log():
             return
 
 
+def loot_builder():
+    config = {
+        'inv': [],
+        'loot': []
+    }
+
+    item = osrs.loot.LootConfig(ItemIDs.SNAPE_GRASS_SEED.value, 7)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.SNAPDRAGON_SEED.value, 17)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.TORSTOL_SEED.value, 17)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.WARRIOR_HELM.value, 17)
+    config['loot'].append(item)
+
+    item = osrs.loot.InvConfig(ItemIDs.MONKFISH.value, osrs.loot.monkfish_eval)
+    config['inv'].append(item)
+
+    return config
+
+
 def main():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
@@ -98,17 +154,16 @@ def main():
         osrs.move.click(tab)
         transport_functions.waterbirth_dungeon()
         qh.query_backend()
-        osrs.move.click(qh.get_inventory(ItemIDs.ABYSSAL_WHIP.value))
         task_started = True
         success = slayer_killer.main(
-            'dagannoth',
+            ['dagannoth', 'dagannoth spawn'],
             pot_config.asdict(), 35,
-            attackable_area={'x_min': 2442, 'x_max': 2487, 'y_min': 10125, 'y_max': 10163},
+            attackable_area={'x_min': 2442, 'x_max': 2457, 'y_min': 10125, 'y_max': 10163},
             pre_hop=pre_log,
-            post_login=post_log
+            post_login=post_log,
+            loot_config=loot_builder()
         )
         osrs.game.cast_spell(varrock_tele_widget_id)
         if success:
             return True
         qh.query_backend()
-        osrs.move.click(qh.get_inventory(ItemIDs.DRAMEN_STAFF.value))

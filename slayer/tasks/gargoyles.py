@@ -5,19 +5,24 @@ import osrs
 from osrs.item_ids import ItemIDs
 from slayer import transport_functions
 from combat import slayer_killer
-
 from slayer.tasks import gear
 
 varrock_tele_widget_id = '218,23'
 
+# for this one i dont want a slayer ring with only one charge,
+# bc i tele to the cave, then to nieve after the task is done
 supplies = [
-    ItemIDs.SUPER_COMBAT_POTION4.value,
+    {
+        'id': [
+            ItemIDs.NATURE_RUNE.value
+        ],
+        'quantity': 'All'
+    },
     ItemIDs.SUPER_COMBAT_POTION4.value,
     ItemIDs.SUPER_COMBAT_POTION4.value,
     ItemIDs.RUNE_POUCH.value,
     {
         'id': [
-            ItemIDs.SLAYER_RING_1.value,
             ItemIDs.SLAYER_RING_2.value,
             ItemIDs.SLAYER_RING_3.value,
             ItemIDs.SLAYER_RING_4.value,
@@ -28,25 +33,27 @@ supplies = [
         ],
         'quantity': '1'
     },
-    ItemIDs.DRAMEN_STAFF.value,
+    ItemIDs.ROCK_HAMMER.value,
     {
-        'id': ItemIDs.MONKFISH.value,
-        'quantity': 'All'
+        'id': ItemIDs.PRAYER_POTION4.value,
+        'quantity': 'X',
+        'amount': '6'
     }
 ]
 
 equipment = [
-    ItemIDs.RUNE_DEFENDER.value,
-    ItemIDs.DRAGON_GLOVES.value,
-    ItemIDs.FIRE_CAPE.value,
-    ItemIDs.SLAYER_HELMET.value,
-    ItemIDs.BRIMSTONE_RING.value,
-    ItemIDs.DRAGON_BOOTS.value,
-    ItemIDs.BANDOS_CHESTPLATE.value,
-    ItemIDs.BANDOS_TASSETS.value,
-    ItemIDs.AMULET_OF_FURY.value,
-    ItemIDs.ABYSSAL_WHIP.value,
-]
+        ItemIDs.ZOMBIE_AXE.value,
+        ItemIDs.HOLY_BLESSING.value,
+        ItemIDs.RUNE_DEFENDER.value,
+        ItemIDs.DRAGON_GLOVES.value,
+        ItemIDs.FIRE_CAPE.value,
+        ItemIDs.SLAYER_HELMET.value,
+        ItemIDs.BRIMSTONE_RING.value,
+        ItemIDs.DRAGON_BOOTS.value,
+        ItemIDs.BANDOS_CHESTPLATE.value,
+        ItemIDs.BANDOS_TASSETS.value,
+        ItemIDs.AMULET_OF_FURY.value,
+    ]
 
 banking_config_equipment = {
     'dump_inv': True,
@@ -63,11 +70,52 @@ banking_config_supplies = {
 pot_config = slayer_killer.PotConfig(super_combat=True)
 
 
+def loot_builder():
+    config = {
+        'inv': [],
+        'loot': []
+    }
+
+    item = osrs.loot.LootConfig(ItemIDs.GRANITE_MAUL.value, 10)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.MYSTIC_ROBE_TOP_DARK.value, 10, alch=True)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.ADAMANT_PLATELEGS.value, 5, alch=True)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.RUNE_FULL_HELM.value, 5, alch=True)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.RUNE_2H_SWORD.value, 5, alch=True)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.ADAMANT_BOOTS.value, 5, alch=True)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.RUNE_BATTLEAXE.value, 5, alch=True)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.RUNE_PLATELEGS.value, 5, alch=True)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.CHAOS_RUNE.value, 3)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.DEATH_RUNE.value, 3)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.GOLD_ORE.value + 1, 3)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.STEEL_BAR.value + 1, 3)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.MITHRIL_BAR.value + 1, 3)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.RUNITE_ORE.value, 3)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.COINS_995.value, 3, min_quantity=1000)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.BRITTLE_KEY.value, 99)
+    config['loot'].append(item)
+    return config
+
+
 def pre_log():
     safe_tile = {
-        'x': 2156,
-        'y': 9322,
-        'z': 0
+        'x': 3428,
+        'y': 9940,
+        'z': 3
     }
     safe_tile_string = f'{safe_tile["x"]},{safe_tile["y"]},{safe_tile["z"]}'
     qh = osrs.queryHelper.QueryHelper()
@@ -113,20 +161,16 @@ def main():
         if not success:
             print('failed to withdraw supplies.')
             return False
-        while True:
-            qh.query_backend()
-            if qh.get_inventory(ItemIDs.DRAMEN_STAFF.value):
-                osrs.move.click(qh.get_inventory(ItemIDs.DRAMEN_STAFF.value))
-                break
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
-        osrs.game.tele_home_fairy_ring('bjp')
-        transport_functions.isle_of_souls_dungeon(2166, 9331)
+        transport_functions.morytania_gargoyles()
         qh.query_backend()
-        osrs.move.click(qh.get_inventory(ItemIDs.ABYSSAL_WHIP.value))
         task_started = True
-        success = slayer_killer.main('greater demon', pot_config.asdict(), 35, hop=True, pre_hop=pre_log)
+        success = slayer_killer.main(
+            'gargoyle', pot_config.asdict(), 35, pre_hop=pre_log, prayers=['protect_melee'], loot_config=loot_builder()
+        )
         qh.query_backend()
         osrs.game.cast_spell(varrock_tele_widget_id)
         if success:
             return True
+

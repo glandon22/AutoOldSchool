@@ -2,6 +2,7 @@
 import datetime
 
 import osrs
+from osrs.item_ids import ItemIDs
 from slayer import transport_functions
 from combat import slayer_killer
 from slayer.tasks import gear
@@ -9,7 +10,32 @@ from slayer.tasks import gear
 varrock_tele_widget_id = '218,23'
 fally_tele_widget_id = '218,29'
 
-supplies = gear.melee_prayer['supplies']
+supplies = [
+        ItemIDs.SUPER_ATTACK4.value,
+        ItemIDs.SUPER_ATTACK4.value,
+        ItemIDs.SUPER_STRENGTH4.value,
+        ItemIDs.SUPER_STRENGTH4.value,
+        ItemIDs.RUNE_POUCH.value,
+        {
+            'id': [
+                ItemIDs.SLAYER_RING_1.value,
+                ItemIDs.SLAYER_RING_2.value,
+                ItemIDs.SLAYER_RING_3.value,
+                ItemIDs.SLAYER_RING_4.value,
+                ItemIDs.SLAYER_RING_5.value,
+                ItemIDs.SLAYER_RING_6.value,
+                ItemIDs.SLAYER_RING_7.value,
+                ItemIDs.SLAYER_RING_8.value,
+            ],
+            'quantity': '1'
+        },
+        ItemIDs.MONKFISH.value,
+        ItemIDs.MONKFISH.value,
+        {
+            'id': ItemIDs.PRAYER_POTION4.value,
+            'quantity': 'All'
+        },
+    ]
 
 equipment = gear.melee_prayer['equipment']
 
@@ -25,7 +51,7 @@ banking_config_supplies = {
     'search': [{'query': 'melee_prayer', 'items': supplies}]
 }
 
-pot_config = slayer_killer.PotConfig(super_combat=True)
+pot_config = slayer_killer.PotConfig(super_str=True, super_atk=True)
 
 
 def pre_log():
@@ -45,7 +71,7 @@ def pre_log():
                 return
             if (datetime.datetime.now() - last_off_tile).total_seconds() > 3:
                 osrs.player.turn_off_all_prayers()
-        elif qh.get_tiles('2885,9770,0'):
+        elif qh.get_tiles('2885,9770,0') and osrs.move.is_clickable(qh.get_tiles('2885,9770,0')):
             osrs.move.fast_click(qh.get_tiles('2885,9770,0'))
         else:
             osrs.move.follow_path(qh.get_player_world_location(), {'x': 2885, 'y': 9770, 'z': 0})
@@ -78,7 +104,7 @@ def main():
         osrs.game.cast_spell(fally_tele_widget_id)
         transport_functions.taverley_dungeon_black_demons()
         task_started = True
-        success = slayer_killer.main('black demon', pot_config.asdict(), 35, 15, prayers=['protect_melee'], hop=True, pre_hop=pre_log)
+        success = slayer_killer.main('black demon', pot_config.asdict(), 35, prayers=['protect_melee'], hop=True, pre_hop=pre_log)
         osrs.player.turn_off_all_prayers()
         qh.query_backend()
         osrs.game.cast_spell(varrock_tele_widget_id)

@@ -14,7 +14,8 @@ __all__ = [
     'dax',
     'models',
     'item_ids',
-    'widget_ids'
+    'widget_ids',
+    'loot'
 ]
 
 import osrs.dev
@@ -33,3 +34,4 @@ import osrs.dax
 import osrs.models
 import osrs.item_ids
 import osrs.widget_ids
+import osrs.loot

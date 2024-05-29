@@ -1,3 +1,5 @@
+import datetime
+
 import osrs
 import osrs.move
 from osrs.item_ids import ItemIDs
@@ -819,3 +821,47 @@ def zanaris_zygomites():
             if qh.get_tiles('2412,4436,0'):
                 osrs.move.click(qh.get_tiles('2412,4436,0'))
             osrs.move.follow_path(qh.get_player_world_location(), {'x': 2416, 'y': 4471, 'z': 0})
+
+
+def morytania_gargoyles():
+    basement_ladder_id = '30191'
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_chat_options()
+    qh.set_player_world_location()
+    qh.set_objects(
+        {'3417,3535,0'},
+        {basement_ladder_id},
+        osrs.queryHelper.ObjectTypes.GAME.value
+    )
+    qh.set_tiles({'3433,9937,3'})
+    qh.set_npcs_by_name(['gargoyle'])
+    qh.set_inventory()
+    slayer_rings = [
+        ItemIDs.SLAYER_RING_1.value,
+        ItemIDs.SLAYER_RING_2.value,
+        ItemIDs.SLAYER_RING_3.value,
+        ItemIDs.SLAYER_RING_4.value,
+        ItemIDs.SLAYER_RING_5.value,
+        ItemIDs.SLAYER_RING_6.value,
+        ItemIDs.SLAYER_RING_7.value,
+        ItemIDs.SLAYER_RING_8.value,
+    ]
+    last_ring_click = datetime.datetime.now() - datetime.timedelta(hours=1)
+    while True:
+        qh.query_backend()
+        if qh.get_npcs_by_name():
+            return
+        elif qh.get_chat_options() and 'Teleport' in qh.get_chat_options():
+            osrs.keeb.write('1')
+        elif qh.get_chat_options() and 'Teleport to the Morytania Slayer Tower' in qh.get_chat_options():
+            osrs.keeb.write('2')
+        elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, basement_ladder_id):
+            osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, basement_ladder_id)[0])
+            osrs.clock.sleep_one_tick()
+        elif qh.get_tiles('3433,9937,3') and osrs.move.is_clickable(qh.get_tiles('3433,9937,3')):
+            osrs.move.click(qh.get_tiles('3433,9937,3'))
+        elif qh.get_inventory(slayer_rings) and (datetime.datetime.now() - last_ring_click).total_seconds() > 7:
+            ring = qh.get_inventory(slayer_rings)
+            osrs.move.right_click_v3(ring, 'Rub')
+            last_ring_click = datetime.datetime.now()
+

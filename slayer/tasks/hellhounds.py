@@ -37,8 +37,8 @@ supplies = [
 
 equipment = [
     ItemIDs.RUNE_DEFENDER.value,
-    ItemIDs.COMBAT_BRACELET.value,
-    ItemIDs.OBSIDIAN_CAPE.value,
+    ItemIDs.DRAGON_GLOVES.value,
+    ItemIDs.FIRE_CAPE.value,
     ItemIDs.SLAYER_HELMET.value,
     ItemIDs.BRIMSTONE_RING.value,
     ItemIDs.DRAGON_BOOTS.value,

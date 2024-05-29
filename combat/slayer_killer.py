@@ -4,12 +4,14 @@ from osrs.item_ids import ItemIDs
 
 
 class PotConfig:
-    def __init__(self, super_combat=False, ranging=False, magic=False, antipoision=False, antifire=False):
+    def __init__(self, super_combat=False, ranging=False, magic=False, antipoision=False, antifire=False, super_str=False, super_atk=False):
         self.SUPER_COMBATS = super_combat
         self.RANGING_POTION = ranging
         self.MAGIC_POTION = magic
         self.SUPER_ANTI_POISION = antipoision
         self.EXTENDED_ANTIFIRE = antifire
+        self.SUPER_ATK = super_atk
+        self.SUPER_STR = super_str
 
     def asdict(self):
         return {
@@ -17,7 +19,9 @@ class PotConfig:
             'RANGING_POTION': self.RANGING_POTION,
             'MAGIC_POTION': self.MAGIC_POTION,
             'SUPER_ANTI_POISION': self.SUPER_ANTI_POISION,
-            'EXTENDED_ANTIFIRE': self.EXTENDED_ANTIFIRE
+            'EXTENDED_ANTIFIRE': self.EXTENDED_ANTIFIRE,
+            'SUPER_ATTACK': self.SUPER_ATK,
+            'SUPER_STRENGTH': self.SUPER_STR
         }
 
 
@@ -36,6 +40,18 @@ pot_matcher = {
         ItemIDs.SUPER_COMBAT_POTION3.value,
         ItemIDs.SUPER_COMBAT_POTION2.value,
         ItemIDs.SUPER_COMBAT_POTION1.value
+    ],
+    "SUPER_ATTACK": [
+        ItemIDs.SUPER_ATTACK4.value,
+        ItemIDs.SUPER_ATTACK3.value,
+        ItemIDs.SUPER_ATTACK2.value,
+        ItemIDs.SUPER_ATTACK1.value,
+    ],
+    "SUPER_STRENGTH": [
+        ItemIDs.SUPER_STRENGTH4.value,
+        ItemIDs.SUPER_STRENGTH3.value,
+        ItemIDs.SUPER_STRENGTH2.value,
+        ItemIDs.SUPER_STRENGTH1.value,
     ],
     "RANGING_POTION": [
         ItemIDs.RANGING_POTION4.value,
@@ -164,6 +180,22 @@ def pot_handler(qh: osrs.queryHelper.QueryHelper, pots):
             osrs.move.click(p)
         return True
 
+    if 'SUPER_ATTACK' in pots \
+            and pots['SUPER_ATTACK'] \
+            and qh.get_skills('attack')['boostedLevel'] - qh.get_skills('attack')['level'] < 12:
+        p = osrs.inv.are_items_in_inventory_v2(qh.get_inventory(), pot_matcher['SUPER_ATTACK'])
+        if p:
+            osrs.move.click(p)
+        return True
+
+    if 'SUPER_STRENGTH' in pots \
+            and pots['SUPER_STRENGTH'] \
+            and qh.get_skills('strength')['boostedLevel'] - qh.get_skills('strength')['level'] < 12:
+        p = osrs.inv.are_items_in_inventory_v2(qh.get_inventory(), pot_matcher['SUPER_STRENGTH'])
+        if p:
+            osrs.move.click(p)
+        return True
+
     if 'RANGING_POTION' in pots \
             and pots['RANGING_POTION'] \
             and qh.get_skills('ranged')['boostedLevel'] - qh.get_skills('ranged')['level'] < 7:
@@ -214,7 +246,8 @@ def hop_handler(qh: osrs.queryHelper.QueryHelper, pre_hop):
 
 
 def main(npc_to_kill, pots, min_health, safespot_config=None, hop=False,
-         pre_hop=False, prayers=None, ignore_interacting=False, attackable_area=None, post_login=None):
+         pre_hop=False, prayers=None, ignore_interacting=False, attackable_area=None, post_login=None, loot_config=None
+         ):
     if safespot_config is None:
         safespot_config = {}
     monster = npc_to_kill if type(npc_to_kill) is list else [npc_to_kill]
@@ -244,6 +277,13 @@ def main(npc_to_kill, pots, min_health, safespot_config=None, hop=False,
     if post_login:
         script_config['login'] = post_login
 
+    loot_handler = osrs.loot.Loot()
+    if loot_config:
+        for item in loot_config['inv']:
+            loot_handler.add_inv_config_item(item)
+        for item in loot_config['loot']:
+            loot_handler.add_item(item)
+
     while True:
         qh.query_backend()
 
@@ -252,6 +292,15 @@ def main(npc_to_kill, pots, min_health, safespot_config=None, hop=False,
             return True
 
         if not qh.get_interating_with():
+            # Look for any loot
+            loot_handler.retrieve_loot(6)
+            qh.query_backend()
+
+            osrs.game.break_manager_v4(script_config)
+
+            if hop:
+                hop_handler(qh, pre_hop)
+
             targets = qh.get_npcs_by_name()
             c = find_next_target(targets, safespot_config, ignore_interacting, attackable_area)
             if c:
@@ -273,17 +322,5 @@ def main(npc_to_kill, pots, min_health, safespot_config=None, hop=False,
             return False
 
         prayer_handler(qh, prayers)
-
-        # check if i leveled
-        if qh.get_widgets('233,0'):
-            for i in range(5):
-                osrs.keeb.press_key('space')
-                osrs.clock.sleep_one_tick()
-
-        # dont try to tele unless im in safespot
-        if not qh.get_interating_with():
-            osrs.game.break_manager_v4(script_config)
-            if hop:
-                hop_handler(qh, pre_hop)
 
         osrs.player.toggle_run('on')
