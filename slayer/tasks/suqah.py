@@ -11,13 +11,11 @@ varrock_tele_widget_id = '218,23'
 
 
 supplies = [
-    ItemIDs.DRAMEN_STAFF.value,
+    ItemIDs.MOONCLAN_TELEPORT.value,
     ItemIDs.SUPER_ATTACK4.value,
     ItemIDs.SUPER_ATTACK4.value,
     ItemIDs.SUPER_STRENGTH4.value,
     ItemIDs.SUPER_STRENGTH4.value,
-    ItemIDs.EXTENDED_ANTIFIRE4.value,
-    ItemIDs.EXTENDED_ANTIFIRE4.value,
     ItemIDs.RUNE_POUCH.value,
     {
         'id': [
@@ -34,20 +32,22 @@ supplies = [
     },
     {
         'id': ItemIDs.MONKFISH.value,
-        'quantity': '5'
-    },
-    {
-        'id': ItemIDs.PRAYER_POTION4.value,
-        'quantity': '10'
-    },
-    {
-        'id': ItemIDs.NATURE_RUNE.value,
-        'quantity': 'X',
-        'amount': 50
+        'quantity': 'All'
     },
 ]
 
-equipment = [*gear.melee_dragon['equipment'], ItemIDs.HOLY_BLESSING.value]
+equipment = [
+        ItemIDs.RUNE_DEFENDER.value,
+        ItemIDs.DRAGON_GLOVES.value,
+        ItemIDs.FIRE_CAPE.value,
+        ItemIDs.ABYSSAL_WHIP.value,
+        ItemIDs.SLAYER_HELMET.value,
+        ItemIDs.BRIMSTONE_RING.value,
+        ItemIDs.DRAGON_BOOTS.value,
+        ItemIDs.BANDOS_CHESTPLATE.value,
+        ItemIDs.BANDOS_TASSETS.value,
+        ItemIDs.AMULET_OF_FURY.value,
+    ]
 
 banking_config_equipment = {
     'dump_inv': True,
@@ -61,13 +61,13 @@ banking_config_supplies = {
     'search': [{'query': 'slayer', 'items': supplies}]
 }
 
-pot_config = slayer_killer.PotConfig(super_atk=True, super_str=True, antifire=True)
+pot_config = slayer_killer.PotConfig(super_str=True, super_atk=True)
 
 
 def pre_log():
     safe_tile = {
-        'x': 2140,
-        'y': 9298,
+        'x': 2102,
+        'y': 3852,
         'z': 0
     }
     safe_tile_string = f'{safe_tile["x"]},{safe_tile["y"]},{safe_tile["z"]}'
@@ -93,33 +93,6 @@ def pre_log():
             osrs.move.follow_path(qh.get_player_world_location(), safe_tile)
 
 
-def loot_builder():
-    config = {
-        'inv': [],
-        'loot': []
-    }
-
-    item = osrs.loot.InvConfig(ItemIDs.MONKFISH.value, osrs.loot.monkfish_eval)
-    config['inv'].append(item)
-
-    item = osrs.loot.LootConfig(ItemIDs.DRAGON_PLATELEGS.value, 10, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.DRAGON_PLATESKIRT.value, 10, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.ADAMANT_2H_SWORD.value, 10, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.RUNE_MED_HELM.value, 10, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.RUNE_BATTLEAXE.value, 10, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.RUNITE_LIMBS.value, 10, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.DRACONIC_VISAGE.value, 999)
-    config['loot'].append(item)
-
-    return config
-
-
 def main():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
@@ -141,21 +114,24 @@ def main():
         if not success:
             print('failed to withdraw supplies.')
             return False
-        while True:
-            qh.query_backend()
-            if qh.get_inventory(ItemIDs.DRAMEN_STAFF.value):
-                osrs.move.click(qh.get_inventory(ItemIDs.DRAMEN_STAFF.value))
-                break
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
-        osrs.game.tele_home_fairy_ring('bjp')
-        transport_functions.isle_of_souls_dungeon()
         qh.query_backend()
-        osrs.move.click(qh.get_inventory(ItemIDs.DRAGON_HUNTER_LANCE.value))
+        tab = qh.get_inventory(ItemIDs.MOONCLAN_TELEPORT.value)
+        if not tab:
+            exit('missing tele tab')
+        osrs.move.click(tab)
+        transport_functions.run_to_suqahs()
+        qh.query_backend()
         task_started = True
-        success = slayer_killer.main('iron dragon', pot_config.asdict(), 35, prayers=['protect_melee'], hop=True, pre_hop=pre_log, loot_config=loot_builder())
-        qh.query_backend()
-        osrs.player.turn_off_all_prayers()
+        success = slayer_killer.main(
+            'suqah',
+            pot_config.asdict(), 35,
+            attackable_area={'x_min': 2090, 'x_max': 2111, 'y_min': 3847, 'y_max': 3878},
+            hop=True,
+            pre_hop=pre_log
+        )
         osrs.game.cast_spell(varrock_tele_widget_id)
         if success:
             return True
+        qh.query_backend()

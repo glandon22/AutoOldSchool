@@ -1,4 +1,7 @@
 import datetime
+
+import pyautogui
+
 import osrs
 from osrs.item_ids import ItemIDs
 
@@ -117,7 +120,6 @@ def find_next_target(npcs, safespot_config, ignore_interacting, attackable_area)
             continue
         # always attack a monster if it is already attacking me
         if 'interacting' in npc and 'GreazyDonkey' in npc['interacting']:
-            print(f'attacking an npc that is already attacking me: {npc}')
             return npc
         if ignore_interacting or 'interacting' not in npc:
             if not res or npc['dist'] < res['dist']:
@@ -256,7 +258,7 @@ def main(npc_to_kill, pots, min_health, safespot_config=None, hop=False,
     qh.set_skills({'hitpoints', 'strength', 'ranged', 'magic', 'attack', 'defence', 'prayer'})
     qh.set_inventory()
     qh.set_interating_with()
-    qh.set_widgets({'233,0', '541,23', '541,22', '541,21'})
+    qh.set_widgets({'233,0', '541,23', '541,22', '541,21', '161,62'})
     if safespot_config:
         qh.set_tiles({f'{safespot_config["x"]},{safespot_config["y"]},{safespot_config["z"]}'})
     qh.set_player_world_location()
@@ -284,16 +286,34 @@ def main(npc_to_kill, pots, min_health, safespot_config=None, hop=False,
         for item in loot_config['loot']:
             loot_handler.add_item(item)
 
+    last_xp_received = datetime.datetime.now()
+    hp_exp = 0
     while True:
         qh.query_backend()
+
+        if qh.get_widgets('161,62') and qh.get_widgets('161,62')['spriteID'] != 1030:
+            osrs.keeb.press_key('esc')
 
         if not qh.get_slayer() or not qh.get_slayer()['monster']:
             print('task complete')
             return True
 
+        if qh.get_skills('hitpoints')['xp'] != hp_exp:
+            last_xp_received = datetime.datetime.now()
+            hp_exp = qh.get_skills('hitpoints')['xp']
+
         if not qh.get_interating_with():
+            # sometimes there are secondary monsters in an area that i am not looking to attack
+            # if they are attacking me in single way, i will endlessly click the monster i want to
+            # attack but not be able to attack them. give  a pause here to auto retaliate against
+            # the undesirable monster and kill it
+            if (datetime.datetime.now() - last_xp_received).total_seconds() > 7:
+                print('out of combat 7 seconds')
+                osrs.clock.random_sleep(4.4, 4.5)
+                last_xp_received = datetime.datetime.now()
+                continue
             # Look for any loot
-            loot_handler.retrieve_loot(6)
+            loot_handler.retrieve_loot(12)
             qh.query_backend()
 
             osrs.game.break_manager_v4(script_config)
@@ -305,6 +325,7 @@ def main(npc_to_kill, pots, min_health, safespot_config=None, hop=False,
             c = find_next_target(targets, safespot_config, ignore_interacting, attackable_area)
             if c:
                 osrs.move.fast_click(c)
+                pyautogui.click()
                 # sleep for one tick if i am trying to safespot so im not jumping in and out like a bot
                 if safespot_config:
                     osrs.clock.sleep_one_tick()

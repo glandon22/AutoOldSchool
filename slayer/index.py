@@ -77,6 +77,8 @@ def main():
                 slayer.mutated_zygomite.main()
             elif slayer_task == 'Gargoyles':
                 slayer.gargoyles.main()
+            elif slayer_task == 'Suqahs':
+                slayer.suqah.main()
             else:
                 return print(f'Can not parse {slayer_task}')
         else:

@@ -38,12 +38,12 @@ def isle_of_souls_dungeon(x=2145, y=9296):
     while True:
         qh.query_backend()
         # I am in the dungeon
-        if qh.get_player_world_location('y') > 5000:
+        if qh.get_player_world_location('y') > 9300 and 2155 <= qh.get_player_world_location('x') <= 2174:
             break
         elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, dungeon_entrance_id):
             osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, dungeon_entrance_id)[0])
         else:
-            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2309, 'y': 2918, 'z': 0})
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2310, 'y': 2918, 'z': 0})
     while True:
         qh.query_backend()
         if qh.get_player_world_location('x') == x and qh.get_player_world_location('y') == y:
@@ -772,14 +772,7 @@ def frem_dungeon_kurask():
         osrs.queryHelper.ObjectTypes.WALL.value
     )
     qh.set_tiles({'2774,10003,0', '2769,10002,0'})
-    while True:
-        qh.query_backend()
-        # I am in the dungeon
-        if qh.get_player_world_location('y') > 9000:
-            break
-        elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, dungeon_entrance_id):
-            osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, dungeon_entrance_id)[0])
-            osrs.clock.random_sleep(1, 1.1)
+    tele_to_frem_cave()
     print('passing first stage of shortcut 1')
     while True:
         qh.query_backend()
@@ -865,3 +858,50 @@ def morytania_gargoyles():
             osrs.move.right_click_v3(ring, 'Rub')
             last_ring_click = datetime.datetime.now()
 
+
+def tele_to_frem_cave():
+    basement_ladder_id = '30191'
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_chat_options()
+    qh.set_player_world_location()
+    qh.set_objects(
+        {'3417,3535,0'},
+        {basement_ladder_id},
+        osrs.queryHelper.ObjectTypes.GAME.value
+    )
+    qh.set_tiles({'3433,9937,3'})
+    qh.set_npcs_by_name(['gargoyle'])
+    qh.set_inventory()
+    slayer_rings = [
+        ItemIDs.SLAYER_RING_2.value,
+        ItemIDs.SLAYER_RING_3.value,
+        ItemIDs.SLAYER_RING_4.value,
+        ItemIDs.SLAYER_RING_5.value,
+        ItemIDs.SLAYER_RING_6.value,
+        ItemIDs.SLAYER_RING_7.value,
+        ItemIDs.SLAYER_RING_8.value,
+    ]
+    last_ring_click = datetime.datetime.now() - datetime.timedelta(hours=1)
+    while True:
+        qh.query_backend()
+        if qh.get_player_world_location('y') > 9000:
+            return
+        elif qh.get_chat_options() and 'Teleport' in qh.get_chat_options():
+            osrs.keeb.write('1')
+        elif qh.get_chat_options() and 'Teleport to the Fremennik Slayer Dungeon' in qh.get_chat_options():
+            osrs.keeb.write('3')
+        elif qh.get_inventory(slayer_rings) and (datetime.datetime.now() - last_ring_click).total_seconds() > 7:
+            ring = qh.get_inventory(slayer_rings)
+            osrs.move.right_click_v3(ring, 'Rub')
+            last_ring_click = datetime.datetime.now()
+
+
+def run_to_suqahs():
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_player_world_location()
+    while True:
+        qh.query_backend()
+        if 2090 <= qh.get_player_world_location('x') <= 2110 and 3860 <= qh.get_player_world_location('y') <= 3870:
+            return
+        else:
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2103, 'y': 3865, 'z': 0})

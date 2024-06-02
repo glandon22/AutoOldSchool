@@ -125,7 +125,14 @@ class Loot:
                     osrs.move.right_click_v4(item, 'Take')
                 else:
                     osrs.move.fast_click(item)'''
-                osrs.move.right_click_v4(item, 'Take')
+                start = datetime.datetime.now()
+                while True:
+                    res = osrs.move.right_click_v5(item, 'Take')
+                    if res:
+                        break
+                    elif (datetime.datetime.now() - start).total_seconds() > 10:
+                        print('timeout trying to click item')
+                        break
                 qh1 = osrs.queryHelper.QueryHelper()
                 qh1.set_inventory()
                 qh1.set_player_world_location()

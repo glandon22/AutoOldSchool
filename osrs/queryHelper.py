@@ -99,9 +99,6 @@ class QueryHelper:
         else:
             return 'playerWorldPoint' in self.game_data and self.game_data['playerWorldPoint']
 
-    def inventory(self):
-        self.query['inv'] = True
-
     def set_inventory(self):
         self.query['inv'] = True
 
@@ -496,6 +493,16 @@ class QueryHelper:
 
         return 'slayer' in self.game_data and self.game_data['slayer']
         #return {'area': '', 'amount': '89', 'monster': 'Wyrms'}
+
+    def set_spot_anims(self):
+        self.query['spotAnims'] = True
+
+    def get_spot_anims(self):
+        """
+        :return: False :: [1845, 1846]
+        """
+
+        return 'spotAnims' in self.game_data and self.game_data['spotAnims']
 
     def set_ground_items(self, tiles):
         items = []

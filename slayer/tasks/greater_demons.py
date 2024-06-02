@@ -11,9 +11,10 @@ from slayer.tasks import gear
 varrock_tele_widget_id = '218,23'
 
 supplies = [
-    ItemIDs.SUPER_COMBAT_POTION4.value,
-    ItemIDs.SUPER_COMBAT_POTION4.value,
-    ItemIDs.SUPER_COMBAT_POTION4.value,
+    ItemIDs.SUPER_ATTACK4.value,
+    ItemIDs.SUPER_ATTACK4.value,
+    ItemIDs.SUPER_STRENGTH4.value,
+    ItemIDs.SUPER_STRENGTH4.value,
     ItemIDs.RUNE_POUCH.value,
     {
         'id': [
@@ -60,7 +61,7 @@ banking_config_supplies = {
     'search': [{'query': 'slayer', 'items': supplies}]
 }
 
-pot_config = slayer_killer.PotConfig(super_combat=True)
+pot_config = slayer_killer.PotConfig(super_atk=True, super_str=True)
 
 
 def pre_log():

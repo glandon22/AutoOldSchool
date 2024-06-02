@@ -130,6 +130,14 @@ def fast_click(obj):
     pyautogui.click()
 
 
+def fast_right_click(obj):
+    movement = bezier_movement(obj['x'] - 3, obj['y'] - 3, obj['x'] + 3, obj['y'] + 3)
+    if not movement:
+        print('movement was unsuccessful, target was off screen. Rejecting click.')
+        return
+    pyautogui.click(button='RIGHT')
+
+
 def fast_move(obj):
     bezier_movement(obj['x'] - 3, obj['y'] - 3, obj['x'] + 3, obj['y'] + 3)
 
@@ -409,7 +417,7 @@ def right_click_v4(item, action, in_inv=False):
     while True:
         qh.query_backend()
         if (datetime.datetime.now() - wait_start).total_seconds() > 1:
-            osrs.move.fast_move({'x': pyautogui.position().x, 'y': pyautogui.position().y - 25})
+            pyautogui.click()
             return False
         if qh.get_right_click_menu():
             entry_data = qh.get_right_click_menu()
@@ -425,6 +433,30 @@ def right_click_v4(item, action, in_inv=False):
                         0
                     )
                     return True
+
+
+def right_click_v5(item, action, in_inv=False):
+    move_and_click(item['x'], item['y'], 3, 3, 'right')
+    curr_pos = pyautogui.position()
+    qh = queryHelper.QueryHelper()
+    qh.set_right_click_menu()
+    while True:
+        qh.query_backend()
+        if qh.get_right_click_menu():
+            entry_data = qh.get_right_click_menu()
+            choose_option_offset = entry_data['height'] - (len(entry_data['entries']) * 15)
+            parsed_entries = reversed(entry_data['entries'])
+            for i, entry in enumerate(parsed_entries):
+                if action.upper() == entry[0].upper() and (in_inv or item['id'] == int(entry[1])):
+                    additional = choose_option_offset + (i * 15)
+                    move_and_click(
+                        curr_pos[0],
+                        curr_pos[1] + additional,
+                        0,
+                        0
+                    )
+                    return True
+            return False
 
 
 def mac_right_click_menu_select(item, entry_action=None):
@@ -464,10 +496,15 @@ def follow_path(start, end):
     qh.set_tiles(set(parsed_tiles))
     qh.set_destination_tile()
     qh.set_player_world_location()
-    path_start = datetime.datetime.now()
+    prev_loc = None
+    time_on_same_tile = datetime.datetime.now()
     while True:
-        if (datetime.datetime.now() - path_start).total_seconds() > 30:
+        if (datetime.datetime.now() - time_on_same_tile).total_seconds() > 2.5:
+            print('2.5 seconds on same tile, ending')
             return
+        if qh.get_player_world_location() != prev_loc:
+            prev_loc = qh.get_player_world_location()
+            time_on_same_tile = datetime.datetime.now()
         qh.query_backend()
         dist_to_end = osrs.dev.point_dist(
             qh.get_player_world_location('x'),
@@ -477,8 +514,7 @@ def follow_path(start, end):
         )
         # sometimes the tile i want to end up on has an object on it so i cant actually stand on it,
         # in that case, i still want to break if i am at the end of the path
-        if f"{qh.get_player_world_location('x')},{qh.get_player_world_location('y')},0" == parsed_tiles[-1] or \
-                dist_to_end <= 3:
+        if dist_to_end <= 3:
             break
         for tile in reversed(parsed_tiles):
             if is_clickable(qh.get_tiles(tile)):
