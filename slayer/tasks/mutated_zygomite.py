@@ -8,19 +8,7 @@ varrock_tele_widget_id = '218,23'
 supplies = [
         ItemIDs.SUPER_COMBAT_POTION4.value,
         ItemIDs.RUNE_POUCH.value,
-        {
-            'id': [
-                ItemIDs.SLAYER_RING_1.value,
-                ItemIDs.SLAYER_RING_2.value,
-                ItemIDs.SLAYER_RING_3.value,
-                ItemIDs.SLAYER_RING_4.value,
-                ItemIDs.SLAYER_RING_5.value,
-                ItemIDs.SLAYER_RING_6.value,
-                ItemIDs.SLAYER_RING_7.value,
-                ItemIDs.SLAYER_RING_8.value,
-            ],
-            'quantity': '1'
-        },
+        ItemIDs.KARAMJA_GLOVES_3.value,
         ItemIDs.DRAMEN_STAFF.value,
         {
             'id': ItemIDs.FUNGICIDE_SPRAY_10.value,
@@ -34,7 +22,7 @@ supplies = [
 equipment = [
         ItemIDs.ABYSSAL_WHIP.value,
         ItemIDs.RUNE_DEFENDER.value,
-        ItemIDs.DRAGON_GLOVES.value,
+        ItemIDs.BARROWS_GLOVES.value,
         ItemIDs.FIRE_CAPE.value,
         ItemIDs.SLAYER_HELMET.value,
         ItemIDs.BRIMSTONE_RING.value,

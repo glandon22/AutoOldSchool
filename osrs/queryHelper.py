@@ -139,8 +139,13 @@ class QueryHelper:
     def set_chat_options(self):
         self.query['chatOptions'] = True
 
-    def get_chat_options(self):
-        return 'chatOptions' in self.game_data and self.game_data['chatOptions']
+    def get_chat_options(self, option=False):
+        if not option or not ('chatOptions' in self.game_data and self.game_data['chatOptions']):
+            return 'chatOptions' in self.game_data and self.game_data['chatOptions']
+        for i, stored_option in enumerate(self.game_data['chatOptions']):
+            if stored_option.lower() == option.lower():
+                return i
+        return False
 
     def is_fishing(self):
         self.query['isFishing'] = True
@@ -503,6 +508,12 @@ class QueryHelper:
         """
 
         return 'spotAnims' in self.game_data and self.game_data['spotAnims']
+
+    def set_target_obj(self):
+        self.query['getTargetObj'] = True
+
+    def get_target_obj(self):
+        return 'targetObj' in self.game_data and self.game_data['targetObj']
 
     def set_ground_items(self, tiles):
         items = []

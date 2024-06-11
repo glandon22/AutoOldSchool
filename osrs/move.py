@@ -127,6 +127,7 @@ def fast_click(obj):
     if not movement:
         print('movement was unsuccessful, target was off screen. Rejecting click.')
         return
+    osrs.clock.random_sleep(0.001, 0.002)
     pyautogui.click()
 
 
@@ -456,6 +457,7 @@ def right_click_v5(item, action, in_inv=False):
                         0
                     )
                     return True
+            pyautogui.click()
             return False
 
 

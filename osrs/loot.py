@@ -1,7 +1,9 @@
 import datetime
 import pyautogui
 import osrs.util
-from osrs import queryHelper
+from osrs import queryHelper, item_ids, dev
+
+logger = dev.instantiate_logger()
 
 
 class LootConfig:
@@ -79,10 +81,18 @@ class Loot:
     high_alch_widget_id = '218,44'
 
     def __init__(self):
-        self.config = {}
+        self.add_items(self.default_config())
 
     def add_inv_config_item(self, config: InvConfig):
         self.inv_config[config.asdict()['item_id']] = config.asdict()
+
+    def add_items(self, items: list[LootConfig]):
+        if type(items) is not list:
+            logger.warn('Tried to add loot config items but input was not a list.')
+            return False
+
+        for item in items:
+            self.add_item(item)
 
     def add_item(self, config: LootConfig):
         self.config[config.asdict()['item_id']] = config.asdict()
@@ -125,19 +135,13 @@ class Loot:
                     osrs.move.right_click_v4(item, 'Take')
                 else:
                     osrs.move.fast_click(item)'''
-                start = datetime.datetime.now()
-                while True:
-                    res = osrs.move.right_click_v5(item, 'Take')
-                    if res:
-                        break
-                    elif (datetime.datetime.now() - start).total_seconds() > 10:
-                        print('timeout trying to click item')
-                        break
-                qh1 = osrs.queryHelper.QueryHelper()
-                qh1.set_inventory()
-                qh1.set_player_world_location()
+                res = osrs.move.right_click_v5(item, 'Take')
+                if res:
+                    qh1 = osrs.queryHelper.QueryHelper()
+                    qh1.set_inventory()
+                    qh1.set_player_world_location()
 
-                wait_for_item_in_inv(prev_inv, qh1)
+                    wait_for_item_in_inv(prev_inv, qh1)
 
                 if item_config.get('alch'):
                     self.alch(item, qh)
@@ -162,6 +166,10 @@ class Loot:
             osrs.keeb.press_key('esc')
 
     def handle_full_inv(self, qh, loot_item_config):
+        if qh.get_inventory(loot_item_config['item_id']) and loot_item_config['stackable']:
+            print('inv is full but item is stackable and in inv, no need to drop anything.')
+            return True
+        # check if item is stackable and in inv, if so exit true
         for item in qh.get_inventory():
             if item['id'] not in self.inv_config:
                 continue
@@ -182,3 +190,30 @@ class Loot:
                         break
         return False
 
+    def default_config(self):
+        config = [
+            # Alchable Armor and Weapons
+            LootConfig(item_ids.ItemIDs.RUNE_MED_HELM.value, 11, alch=True),
+            LootConfig(item_ids.ItemIDs.RUNE_DAGGER.value, 4, alch=True),
+            LootConfig(item_ids.ItemIDs.RUNE_BATTLEAXE.value, 24, alch=True),
+
+            # Elemental Runes
+            LootConfig(item_ids.ItemIDs.FIRE_RUNE.value, 1, stackable=True, min_quantity=250),
+            LootConfig(item_ids.ItemIDs.AIR_RUNE.value, 1, stackable=True, min_quantity=250),
+            LootConfig(item_ids.ItemIDs.EARTH_RUNE.value, 1, stackable=True, min_quantity=250),
+            LootConfig(item_ids.ItemIDs.WATER_RUNE.value, 1, stackable=True, min_quantity=250),
+
+            # Combat Runes and Odd Runes
+            LootConfig(item_ids.ItemIDs.BLOOD_RUNE.value, 3, stackable=True, min_quantity=6),
+            LootConfig(item_ids.ItemIDs.SOUL_RUNE.value, 3, stackable=True, min_quantity=10),
+
+            # Catacombs Drops
+            LootConfig(item_ids.ItemIDs.ANCIENT_SHARD.value, 9, stackable=True),
+            LootConfig(item_ids.ItemIDs.DARK_TOTEM_TOP.value, 9),
+            LootConfig(item_ids.ItemIDs.DARK_TOTEM_BASE.value, 9),
+            LootConfig(item_ids.ItemIDs.DARK_TOTEM_MIDDLE.value, 9),
+
+            # Misc
+            LootConfig(item_ids.ItemIDs.COINS_995.value, 6, stackable=True, min_quantity=1000),
+        ]
+        return config

@@ -291,12 +291,7 @@ def tempoross_handler():
             logger.info('Heading to ship to shoot fish at tempoross')
             shoot_fish(important_area_tiles)
             continue
-        if qh.get_inventory() \
-                and len(qh.get_inventory()) != 28 \
-                and qh.get_widgets(energy_widget_id) \
-                and ': 0%' not in qh.get_widgets(energy_widget_id) \
-                and not qh.get_is_fishing() and tempoross_state['essence'] and tempoross_state['essence'] > 0 and \
-                (not qh.get_interating_with() or 'Fishing spot' not in qh.get_interating_with()):
+        if (not qh.get_interating_with() or 'Fishing spot' not in qh.get_interating_with()) and (tempoross_state['essence'] and tempoross_state['essence'] != 0):
             logger.info('Need to fish - looking for spot')
             if qh.get_npcs_by_name():
                 closest = osrs.util.find_closest_target(qh.get_npcs_by_name())

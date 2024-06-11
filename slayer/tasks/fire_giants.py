@@ -13,19 +13,7 @@ supplies = [
     ItemIDs.SUPER_COMBAT_POTION4.value,
     ItemIDs.SUPER_COMBAT_POTION4.value,
     ItemIDs.RUNE_POUCH.value,
-    {
-        'id': [
-            ItemIDs.SLAYER_RING_1.value,
-            ItemIDs.SLAYER_RING_2.value,
-            ItemIDs.SLAYER_RING_3.value,
-            ItemIDs.SLAYER_RING_4.value,
-            ItemIDs.SLAYER_RING_5.value,
-            ItemIDs.SLAYER_RING_6.value,
-            ItemIDs.SLAYER_RING_7.value,
-            ItemIDs.SLAYER_RING_8.value,
-        ],
-        'quantity': '1'
-    },
+    ItemIDs.KARAMJA_GLOVES_3.value,
     ItemIDs.DRAMEN_STAFF.value,
     {
         'id': ItemIDs.MONKFISH.value,
@@ -36,7 +24,7 @@ supplies = [
 equipment = [
     ItemIDs.SLAYER_HELMET.value,
     ItemIDs.ABYSSAL_WHIP.value,
-    ItemIDs.DRAGON_GLOVES.value,
+    ItemIDs.BARROWS_GLOVES.value,
     ItemIDs.BRIMSTONE_RING.value,
     ItemIDs.DRAGON_BOOTS.value,
     ItemIDs.BANDOS_TASSETS.value,

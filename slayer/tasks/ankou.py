@@ -12,8 +12,10 @@ varrock_tele_widget_id = '218,23'
 # for this one i dont want a slayer ring with only one charge,
 # bc i tele to the cave, then to nieve after the task is done
 supplies = [
-        ItemIDs.SUPER_COMBAT_POTION4.value,
-        ItemIDs.SUPER_COMBAT_POTION4.value,
+        ItemIDs.SUPER_ATTACK4.value,
+        ItemIDs.SUPER_ATTACK4.value,
+        ItemIDs.SUPER_STRENGTH4.value,
+        ItemIDs.SUPER_STRENGTH4.value,
         ItemIDs.RUNE_POUCH.value,
         {
             'id': [
@@ -27,6 +29,7 @@ supplies = [
             ],
             'quantity': '1'
         },
+        ItemIDs.KARAMJA_GLOVES_3.value,
         {
             'id': ItemIDs.MONKFISH.value,
             'quantity': 'All'
@@ -46,7 +49,7 @@ banking_config_supplies = {
     'search': [{'query': 'slayer', 'items': supplies}]
 }
 
-pot_config = slayer_killer.PotConfig(super_combat=True)
+pot_config = slayer_killer.PotConfig(super_atk=True, super_str=True)
 
 
 def pre_log():

@@ -7,7 +7,8 @@ from osrs.item_ids import ItemIDs
 
 
 class PotConfig:
-    def __init__(self, super_combat=False, ranging=False, magic=False, antipoision=False, antifire=False, super_str=False, super_atk=False):
+    def __init__(self, super_combat=False, ranging=False, magic=False, antipoision=False, antifire=False,
+                 super_str=False, super_atk=False):
         self.SUPER_COMBATS = super_combat
         self.RANGING_POTION = ranging
         self.MAGIC_POTION = magic
@@ -116,7 +117,9 @@ def find_next_target(npcs, safespot_config, ignore_interacting, attackable_area)
         if npc['health'] == 0:
             continue
         # Monster location is not suitable for configured safespot
-        if safespot_config and (safespot_config['min_monster_dist'] >= npc['dist'] or safespot_config['max_monster_dist'] <= npc['dist']) :
+        if safespot_config and (
+                safespot_config['min_monster_dist'] >= npc['dist'] or safespot_config['max_monster_dist'] <= npc[
+            'dist']):
             continue
         # always attack a monster if it is already attacking me
         if 'interacting' in npc and 'GreazyDonkey' in npc['interacting']:
@@ -157,8 +160,10 @@ def safe_spot_handler(qh, safespot_config):
         if not_in_safe_spot(qh, safespot_config["x"], safespot_config["y"], safespot_config["z"]):
             print('out of safespot')
             if qh.get_tiles(f'{safespot_config["x"]},{safespot_config["y"]},{safespot_config["z"]}') \
-                    and osrs.move.is_clickable(qh.get_tiles(f'{safespot_config["x"]},{safespot_config["y"]},{safespot_config["z"]}')):
-                osrs.move.fast_click(qh.get_tiles(f'{safespot_config["x"]},{safespot_config["y"]},{safespot_config["z"]}'))
+                    and osrs.move.is_clickable(
+                qh.get_tiles(f'{safespot_config["x"]},{safespot_config["y"]},{safespot_config["z"]}')):
+                osrs.move.fast_click(
+                    qh.get_tiles(f'{safespot_config["x"]},{safespot_config["y"]},{safespot_config["z"]}'))
         else:
             return
 
@@ -240,16 +245,26 @@ def pot_handler(qh: osrs.queryHelper.QueryHelper, pots):
     return True
 
 
-def hop_handler(qh: osrs.queryHelper.QueryHelper, pre_hop):
+def hop_handler(qh: osrs.queryHelper.QueryHelper, pre_hop, last_seen, post_login=None):
     # players is always minimum one since i am included
-    if len(qh.get_players()) > 1:
+    if qh.get_players() and len(qh.get_players()) > 1:
         print('someone here', qh.get_players())
-        osrs.game.hop_worlds(pre_hop)
+        if last_seen is None:
+            return datetime.datetime.now()
+        elif (datetime.datetime.now() - last_seen).total_seconds() > 10:
+            osrs.game.hop_worlds(pre_hop)
+            if post_login:
+                post_login()
+            return None
+        else:
+            return last_seen
+    return None
 
 
 def main(npc_to_kill, pots, min_health, safespot_config=None, hop=False,
          pre_hop=False, prayers=None, ignore_interacting=False, attackable_area=None, post_login=None, loot_config=None
          ):
+    player_last_seen = None
     if safespot_config is None:
         safespot_config = {}
     monster = npc_to_kill if type(npc_to_kill) is list else [npc_to_kill]
@@ -312,14 +327,19 @@ def main(npc_to_kill, pots, min_health, safespot_config=None, hop=False,
                 osrs.clock.random_sleep(4.4, 4.5)
                 last_xp_received = datetime.datetime.now()
                 continue
-            # Look for any loot
+
+            # Look for any loot, and we dont want to count time looking for loot as time out of combat bc it
+            # leads to weird behavior
+            start_loot = datetime.datetime.now()
             loot_handler.retrieve_loot(12)
+            end_loot = datetime.datetime.now()
+            last_xp_received += datetime.timedelta((end_loot - start_loot).total_seconds())
             qh.query_backend()
 
             osrs.game.break_manager_v4(script_config)
 
             if hop:
-                hop_handler(qh, pre_hop)
+                player_last_seen = hop_handler(qh, pre_hop, player_last_seen, post_login)
 
             targets = qh.get_npcs_by_name()
             c = find_next_target(targets, safespot_config, ignore_interacting, attackable_area)

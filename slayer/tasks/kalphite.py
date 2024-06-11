@@ -6,23 +6,10 @@ from slayer.tasks import gear
 
 varrock_tele_widget_id = '218,23'
 supplies = [
-        ItemIDs.SUPER_COMBAT_POTION4.value,
-        ItemIDs.SUPER_COMBAT_POTION4.value,
-        ItemIDs.SUPER_COMBAT_POTION4.value,
+        ItemIDs.SUPER_ATTACK4.value,
+        ItemIDs.SUPER_STRENGTH4.value,
         ItemIDs.RUNE_POUCH.value,
-        {
-            'id': [
-                ItemIDs.SLAYER_RING_1.value,
-                ItemIDs.SLAYER_RING_2.value,
-                ItemIDs.SLAYER_RING_3.value,
-                ItemIDs.SLAYER_RING_4.value,
-                ItemIDs.SLAYER_RING_5.value,
-                ItemIDs.SLAYER_RING_6.value,
-                ItemIDs.SLAYER_RING_7.value,
-                ItemIDs.SLAYER_RING_8.value,
-            ],
-            'quantity': '1'
-        },
+        ItemIDs.KARAMJA_GLOVES_3.value,
         ItemIDs.DRAMEN_STAFF.value,
         {
             'id': ItemIDs.MONKFISH.value,
@@ -32,7 +19,7 @@ supplies = [
 equipment = [
         ItemIDs.ABYSSAL_WHIP.value,
         ItemIDs.RUNE_DEFENDER.value,
-        ItemIDs.DRAGON_GLOVES.value,
+        ItemIDs.BARROWS_GLOVES.value,
         ItemIDs.FIRE_CAPE.value,
         ItemIDs.SLAYER_HELMET.value,
         ItemIDs.BRIMSTONE_RING.value,
@@ -87,7 +74,7 @@ def main():
                 osrs.move.click(qh.get_inventory(ItemIDs.DRAMEN_STAFF.value))
                 break
         osrs.game.tele_home()
-        osrs.clock.random_sleep(2, 2.1)
+        osrs.game.click_restore_pool()
         osrs.game.tele_home_fairy_ring('biq')
         transport_functions.kalphite_layer()
         qh.query_backend()

@@ -19,7 +19,7 @@ slayer task boolean
 '''
 # yak SUPER COMBATS 10 20
 
-npc_to_kill = 'yak'
+npc_to_kill = 'jungle spider'
 pot = 'RANGING_POTION'
 pot_interval = 10
 min_health = 12

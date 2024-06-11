@@ -11,23 +11,16 @@ supplies = [
             'quantity': 'X',
             'amount': '200'
         },
-        ItemIDs.SUPER_COMBAT_POTION4.value,
-        ItemIDs.SUPER_COMBAT_POTION4.value,
-        ItemIDs.SUPER_COMBAT_POTION4.value,
-        ItemIDs.RUNE_POUCH.value,
         {
-            'id': [
-                ItemIDs.SLAYER_RING_1.value,
-                ItemIDs.SLAYER_RING_2.value,
-                ItemIDs.SLAYER_RING_3.value,
-                ItemIDs.SLAYER_RING_4.value,
-                ItemIDs.SLAYER_RING_5.value,
-                ItemIDs.SLAYER_RING_6.value,
-                ItemIDs.SLAYER_RING_7.value,
-                ItemIDs.SLAYER_RING_8.value,
-            ],
-            'quantity': '1'
+            'id': ItemIDs.NATURE_RUNE.value,
+            'quantity': 'All'
         },
+        ItemIDs.SUPER_ATTACK4.value,
+        ItemIDs.SUPER_ATTACK4.value,
+        ItemIDs.SUPER_STRENGTH4.value,
+        ItemIDs.SUPER_STRENGTH4.value,
+        ItemIDs.RUNE_POUCH.value,
+        ItemIDs.KARAMJA_GLOVES_3.value,
         ItemIDs.DRAMEN_STAFF.value,
         {
             'id': ItemIDs.MONKFISH.value,
@@ -37,7 +30,7 @@ supplies = [
 equipment = [
         ItemIDs.ABYSSAL_WHIP.value,
         ItemIDs.RUNE_DEFENDER.value,
-        ItemIDs.DRAGON_GLOVES.value,
+        ItemIDs.BARROWS_GLOVES.value,
         ItemIDs.FIRE_CAPE.value,
         ItemIDs.SLAYER_HELMET.value,
         ItemIDs.BRIMSTONE_RING.value,
@@ -58,7 +51,54 @@ banking_config_supplies = {
     'search': [{'query': 'slayer', 'items': supplies}]
 }
 
-pot_config = slayer_killer.PotConfig(super_combat=True)
+pot_config = slayer_killer.PotConfig(super_atk=True, super_str=True)
+
+
+def loot_builder():
+    config = {
+        'inv': [],
+        'loot': []
+    }
+
+    item = osrs.loot.InvConfig(ItemIDs.MONKFISH.value, osrs.loot.monkfish_eval)
+    config['inv'].append(item)
+
+    item = osrs.loot.LootConfig(ItemIDs.RUNE_DAGGER.value, 6, alch=True)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.AIR_BATTLESTAFF.value, 6, alch=True)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.EARTH_BATTLESTAFF.value, 6, alch=True)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.BLACK_DHIDE_VAMBRACES.value, 6, alch=True)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.MYSTIC_AIR_STAFF.value, 6, alch=True)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.MYSTIC_EARTH_STAFF.value, 6, alch=True)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.DRAGON_DAGGER.value, 6, alch=True)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.DUST_BATTLESTAFF.value, 6)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.DRAGON_CHAINBODY.value, 8)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.DUST_RUNE.value, 8)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.EARTH_RUNE.value, 8)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.FIRE_RUNE.value, 8)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.CHAOS_RUNE.value, 8)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.SOUL_RUNE.value, 8)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.MITHRIL_BAR.value + 1, 8, stackable=True)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.COINS_995.value, 8, min_quantity=1000)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.ADAMANTITE_BAR.value + 1, 8)
+    config['loot'].append(item)
+
+    return config
 
 
 def pre_log():
@@ -102,19 +142,7 @@ def main():
                 osrs.move.click(qh.get_inventory(ItemIDs.ABYSSAL_WHIP.value))
                 break
         task_started = True
-        finished = slayer_killer.main('dust devil', pot_config.asdict(), 35, hop=True, pre_hop=pre_log)
+        finished = slayer_killer.main('dust devil', pot_config.asdict(), 35, hop=True, pre_hop=pre_log, loot_config=loot_builder())
         osrs.game.cast_spell(varrock_tele_widget_id)
         if finished:
             return
-
-'''
-run from fairy ring biq to 3309,3105,0
-find npc id 17 and click need 200 gp for this carpet ride smh
-click optino 3 to polli
-in polli when coords 334 x 3366 :  2994 y 3012
-click esc key
-run to 3310,2959,0
-find obj 6279 on tile 3310,2962,0
-i dungeon when y greater than 9k
-end func
-'''

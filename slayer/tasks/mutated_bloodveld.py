@@ -1,6 +1,4 @@
 # 2134,9305,0
-import datetime
-
 import osrs
 from osrs.item_ids import ItemIDs
 from slayer import transport_functions
@@ -12,28 +10,18 @@ varrock_tele_widget_id = '218,23'
 # for this one i dont want a slayer ring with only one charge,
 # bc i tele to the cave, then to nieve after the task is done
 supplies = [
-        ItemIDs.SUPER_COMBAT_POTION4.value,
-        ItemIDs.SUPER_COMBAT_POTION4.value,
+        ItemIDs.SUPER_ATTACK4.value,
+        ItemIDs.SUPER_ATTACK4.value,
+        ItemIDs.SUPER_STRENGTH4.value,
+        ItemIDs.SUPER_STRENGTH4.value,
         ItemIDs.RUNE_POUCH.value,
         ItemIDs.KARAMJA_GLOVES_3.value,
         {
-            'id': [
-                ItemIDs.SLAYER_RING_2.value,
-                ItemIDs.SLAYER_RING_3.value,
-                ItemIDs.SLAYER_RING_4.value,
-                ItemIDs.SLAYER_RING_5.value,
-                ItemIDs.SLAYER_RING_6.value,
-                ItemIDs.SLAYER_RING_7.value,
-                ItemIDs.SLAYER_RING_8.value,
-            ],
-            'quantity': '1'
-        },
-        {
-            'id': ItemIDs.MONKFISH.value,
-            'quantity': '5'
-        },
-        {
             'id': ItemIDs.PRAYER_POTION4.value,
+            'quantity': '10'
+        },
+        {
+            'id': ItemIDs.NATURE_RUNE.value,
             'quantity': 'All'
         },
     ]
@@ -54,7 +42,7 @@ equipment = [
 banking_config_equipment = {
     'dump_inv': True,
     'dump_equipment': True,
-    'search': [{'query': 'slayer', 'items': equipment}]
+    'search': [{'query': 'slayer', 'items': list(equipment)}]
 }
 
 banking_config_supplies = {
@@ -63,36 +51,12 @@ banking_config_supplies = {
     'search': [{'query': 'slayer', 'items': supplies}]
 }
 
-pot_config = slayer_killer.PotConfig(super_combat=True)
+pot_config = slayer_killer.PotConfig(super_atk=True, super_str=True)
 
 
-def pre_log():
-    safe_tile = {
-        'x': 2447,
-        'y': 9800,
-        'z': 0
-    }
-    safe_tile_string = f'{safe_tile["x"]},{safe_tile["y"]},{safe_tile["z"]}'
-    qh = osrs.queryHelper.QueryHelper()
-    qh.set_tiles({safe_tile_string})
-    qh.set_player_world_location()
-    last_off_tile = datetime.datetime.now()
-    while True:
-        qh.query_backend()
-        if qh.get_player_world_location('x') != safe_tile["x"] \
-                or qh.get_player_world_location('y') != safe_tile["y"]:
-            last_off_tile = datetime.datetime.now()
-
-        if qh.get_player_world_location('x') == safe_tile["x"] \
-                and qh.get_player_world_location('y') == safe_tile["y"]:
-            if (datetime.datetime.now() - last_off_tile).total_seconds() > 11:
-                return
-            if (datetime.datetime.now() - last_off_tile).total_seconds() > 3:
-                osrs.player.turn_off_all_prayers()
-        elif qh.get_tiles(safe_tile_string):
-            osrs.move.fast_click(qh.get_tiles(safe_tile_string))
-        else:
-            osrs.move.follow_path(qh.get_player_world_location(), safe_tile)
+def hop_logic():
+    osrs.player.turn_off_all_prayers()
+    osrs.clock.random_sleep(11, 11.1)
 
 
 def main():
@@ -118,18 +82,16 @@ def main():
             return False
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
-        transport_functions.stronghold_slayer_dungeon_spectres()
+        transport_functions.catacombs(1693, 10015)
         qh.query_backend()
         task_started = True
         success = slayer_killer.main(
-            'aberrant spectre',
-            pot_config.asdict(),
-            35,
-            hop=True, pre_hop=pre_log,
-            prayers=['protect_mage']
+            'mutated bloodveld',
+            pot_config.asdict(), 35,
+            hop=True, pre_hop=hop_logic, prayers=['protect_melee']
         )
-        osrs.player.turn_off_all_prayers()
         qh.query_backend()
+        osrs.player.turn_off_all_prayers()
         osrs.game.cast_spell(varrock_tele_widget_id)
         if success:
             return True

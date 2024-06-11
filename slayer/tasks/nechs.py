@@ -7,13 +7,13 @@ from slayer import transport_functions
 from combat import slayer_killer
 from slayer.tasks import gear
 
-
 varrock_tele_widget_id = '218,23'
-fally_tele_widget_id = '218,29'
 
 supplies = [
     {
-        'id': ItemIDs.NATURE_RUNE.value,
+        'id': [
+            ItemIDs.NATURE_RUNE.value
+        ],
         'quantity': 'All'
     },
     ItemIDs.SUPER_ATTACK4.value,
@@ -24,6 +24,7 @@ supplies = [
     ItemIDs.KARAMJA_GLOVES_3.value,
     {
         'id': [
+            ItemIDs.SLAYER_RING_1.value,
             ItemIDs.SLAYER_RING_2.value,
             ItemIDs.SLAYER_RING_3.value,
             ItemIDs.SLAYER_RING_4.value,
@@ -34,14 +35,28 @@ supplies = [
         ],
         'quantity': '1'
     },
+    ItemIDs.MONKFISH.value,
+    ItemIDs.MONKFISH.value,
     {
-        'id': ItemIDs.MONKFISH.value,
+        'id': ItemIDs.PRAYER_POTION4.value,
         'quantity': 'X',
-        'amount': '17'
-    },
+        'amount': '8'
+    }
 ]
 
-equipment = gear.slayer_leafbladed_melee['equipment']
+equipment = [
+        ItemIDs.ABYSSAL_WHIP.value,
+        ItemIDs.HOLY_BLESSING.value,
+        ItemIDs.RUNE_DEFENDER.value,
+        ItemIDs.BARROWS_GLOVES.value,
+        ItemIDs.FIRE_CAPE.value,
+        ItemIDs.SLAYER_HELMET.value,
+        ItemIDs.BRIMSTONE_RING.value,
+        ItemIDs.DRAGON_BOOTS.value,
+        ItemIDs.BANDOS_CHESTPLATE.value,
+        ItemIDs.BANDOS_TASSETS.value,
+        ItemIDs.AMULET_OF_FURY.value,
+    ]
 
 banking_config_equipment = {
     'dump_inv': True,
@@ -58,11 +73,42 @@ banking_config_supplies = {
 pot_config = slayer_killer.PotConfig(super_atk=True, super_str=True)
 
 
+def loot_builder():
+    config = {
+        'inv': [],
+        'loot': []
+    }
+
+    item = osrs.loot.LootConfig(ItemIDs.ADAMANT_PLATELEGS.value, 5, alch=True)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.RUNE_FULL_HELM.value, 5, alch=True)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.RUNE_2H_SWORD.value, 5, alch=True)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.RUNE_BOOTS.value, 5, alch=True)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.CHAOS_RUNE.value, 3)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.LAW_RUNE.value, 3)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.BLOOD_RUNE.value, 3)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.SNAPDRAGON_SEED.value, 3)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.SNAPE_GRASS_SEED.value, 3)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.DEATH_RUNE.value, 3, min_quantity=10)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.COINS_995.value, 3, min_quantity=1000)
+    config['loot'].append(item)
+    return config
+
+
 def pre_log():
     safe_tile = {
-        'x': 2710,
-        'y': 9993,
-        'z': 0
+        'x': 3428,
+        'y': 9940,
+        'z': 3
     }
     safe_tile_string = f'{safe_tile["x"]},{safe_tile["y"]},{safe_tile["z"]}'
     qh = osrs.queryHelper.QueryHelper()
@@ -85,45 +131,6 @@ def pre_log():
             osrs.move.fast_click(qh.get_tiles(safe_tile_string))
         else:
             osrs.move.follow_path(qh.get_player_world_location(), safe_tile)
-
-
-def loot_builder():
-    config = {
-        'inv': [],
-        'loot': []
-    }
-
-    item = osrs.loot.InvConfig(ItemIDs.MONKFISH.value, osrs.loot.monkfish_eval)
-    config['inv'].append(item)
-
-    item = osrs.loot.LootConfig(ItemIDs.RUNE_LONGSWORD.value, 6, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.ADAMANT_PLATEBODY.value, 6, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.RUNE_AXE.value, 6, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.LEAFBLADED_SWORD.value, 6, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.MYSTIC_ROBE_TOP_LIGHT.value, 6, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.LEAFBLADED_BATTLEAXE.value, 6, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.NATURE_RUNE.value, 6, min_quantity=15)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.SNAPDRAGON_SEED.value, 8, stackable=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.SNAPE_GRASS_SEED.value, 8, stackable=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.COINS_995.value, 8, min_quantity=1000)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.PAPAYA_FRUIT.value + 1, 8)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.COCONUT.value + 1, 8)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.KURASK_HEAD.value, 8)
-    config['loot'].append(item)
-
-    return config
 
 
 def main():
@@ -149,11 +156,14 @@ def main():
             return False
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
+        transport_functions.morytania_nechs()
         qh.query_backend()
-        transport_functions.frem_dungeon_kurask()
         task_started = True
-        success = slayer_killer.main('kurask', pot_config.asdict(), 35, hop=True, pre_hop=pre_log, loot_config=loot_builder())
+        success = slayer_killer.main(
+            'nechryael', pot_config.asdict(), 35, pre_hop=pre_log, prayers=['protect_melee'], loot_config=loot_builder()
+        )
         qh.query_backend()
+        osrs.player.turn_off_all_prayers()
         osrs.game.cast_spell(varrock_tele_widget_id)
         if success:
             return True

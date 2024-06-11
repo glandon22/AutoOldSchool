@@ -25,6 +25,7 @@ supplies = [
             ],
             'quantity': '1'
         },
+        ItemIDs.KARAMJA_GLOVES_3.value,
         {
             'id': ItemIDs.MONKFISH.value,
             'quantity': 'All'

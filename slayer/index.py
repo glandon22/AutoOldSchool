@@ -2,6 +2,7 @@ import osrs
 import slayer
 from osrs.item_ids import ItemIDs
 import transport_functions
+
 varrock_tele_widget_id = '218,23'
 
 
@@ -27,6 +28,7 @@ def main():
             # Verified
             elif slayer_task == 'Blue Dragons':
                 slayer.blue_dragons_v2.main()
+                # slayer.brutal_blue_drag.main()
             # Verified
             elif slayer_task == 'Black Dragons':
                 slayer.black_dragons_v2.main()
@@ -38,7 +40,8 @@ def main():
                 slayer.fire_giants.main()
             # Verified
             elif slayer_task == 'Dagannoth':
-                slayer.dagganoth.main()
+                # slayer.dagganoth.main()
+                slayer.dagannoth_catacombs.main()
             # Verified
             elif slayer_task == 'Hellhounds':
                 slayer.hellhounds.main()
@@ -50,7 +53,8 @@ def main():
                 slayer.turoth.main()
             # Verified
             elif slayer_task == 'Bloodveld':
-                slayer.bloodvelds.main()
+                #slayer.bloodvelds.main()
+                slayer.mutated_bloodveld.main()
             # Verified
             elif slayer_task == 'Ankou':
                 slayer.ankou.main()
@@ -79,37 +83,22 @@ def main():
                 slayer.gargoyles.main()
             elif slayer_task == 'Suqahs':
                 slayer.suqah.main()
+            elif slayer_task == 'Nechryael':
+                slayer.nechs.main()
+            elif slayer_task == 'Drakes':
+                slayer.drakes.main()
             else:
                 return print(f'Can not parse {slayer_task}')
         else:
             while True:
                 qh.query_backend()
-                if 3195 <= qh.get_player_world_location('x') <= 3226:
+                # in varrock center
+                if 3195 <= qh.get_player_world_location('x') <= 3226 and 3419 <= qh.get_player_world_location(
+                        'y') <= 3438:
                     osrs.clock.sleep_one_tick()
                     osrs.clock.sleep_one_tick()
                     break
-            while True:
-                qh.query_backend()
-                slayer_ring = qh.get_inventory([
-                    ItemIDs.SLAYER_RING_1.value,
-                    ItemIDs.SLAYER_RING_2.value,
-                    ItemIDs.SLAYER_RING_3.value,
-                    ItemIDs.SLAYER_RING_4.value,
-                    ItemIDs.SLAYER_RING_5.value,
-                    ItemIDs.SLAYER_RING_6.value,
-                    ItemIDs.SLAYER_RING_7.value,
-                    ItemIDs.SLAYER_RING_8.value,
-                ])
-                if not slayer_ring:
-                    return print('need new task, no slayer ring in inv')
-                if osrs.move.right_click_v3(slayer_ring, 'Rub'):
-                    osrs.clock.sleep_one_tick()
-                    osrs.keeb.write('1')
-                    osrs.clock.sleep_one_tick()
-                    osrs.keeb.write('1')
-                    break
-            transport_functions.nieve()
-            osrs.clock.sleep_one_tick()
+            transport_functions.duradel()
             osrs.game.cast_spell(varrock_tele_widget_id)
 
 

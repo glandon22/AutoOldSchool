@@ -215,6 +215,7 @@ def taverley_dungeon_hellhounds():
             return
         elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, shortcut_id):
             osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, shortcut_id)[0])
+            osrs.clock.sleep_one_tick()
         else:
             osrs.move.follow_path(qh.get_player_world_location(), {'x': 2882, 'y': 9813, 'z': 0})
 
@@ -905,3 +906,213 @@ def run_to_suqahs():
             return
         else:
             osrs.move.follow_path(qh.get_player_world_location(), {'x': 2103, 'y': 3865, 'z': 0})
+
+
+def duradel():
+    gem_mine_ladder_id = '23584'
+    duradel_ladder_id = '16683'
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_inventory()
+    qh.set_player_world_location()
+    qh.set_objects(
+        {'2838,9388,0', '2871,2971,0'},
+        {duradel_ladder_id, gem_mine_ladder_id},
+        osrs.queryHelper.ObjectTypes.GAME.value
+    )
+    qh.set_npcs_by_name(['duradel'])
+    qh.set_slayer()
+    glove_click = datetime.datetime.now() - datetime.timedelta(hours=1)
+    while True:
+        qh.query_backend()
+        if qh.get_inventory() and qh.get_inventory(osrs.item_ids.ItemIDs.KARAMJA_GLOVES_3.value)\
+                and (datetime.datetime.now() - glove_click).total_seconds() > 10:
+            osrs.move.right_click_v5(qh.get_inventory(osrs.item_ids.ItemIDs.KARAMJA_GLOVES_3.value), 'Gem Mine', in_inv=True)
+            glove_click = datetime.datetime.now()
+        elif 2830 <= qh.get_player_world_location('x') <= 2845 and 9383 <= qh.get_player_world_location('y') <= 9394:
+            break
+    ladder_click = datetime.datetime.now() - datetime.timedelta(hours=1)
+    while True:
+        qh.query_backend()
+        if qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, gem_mine_ladder_id) and (datetime.datetime.now() - ladder_click).total_seconds() > 6:
+            osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, gem_mine_ladder_id)[0])
+            osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, gem_mine_ladder_id)[0])
+            ladder_click = datetime.datetime.now()
+        elif 2819 <= qh.get_player_world_location('x') <= 2831 and 2994 <= qh.get_player_world_location('y') <= 3003:
+            break
+    while True:
+        qh.query_backend()
+        if 2863 <= qh.get_player_world_location('x') <= 2876 and 2963 <= qh.get_player_world_location('y') <= 2972:
+            break
+        else:
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2870, 'y': 2968, 'z': 0})
+    ladder_click2 = datetime.datetime.now() - datetime.timedelta(hours=1)
+    while True:
+        qh.query_backend()
+        if qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, duradel_ladder_id) and (datetime.datetime.now() - ladder_click2).total_seconds() > 6:
+            osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, duradel_ladder_id)[0])
+            ladder_click2 = datetime.datetime.now()
+        elif qh.get_player_world_location('z') == 1:
+            break
+    while True:
+        qh.query_backend()
+        if qh.get_slayer() and qh.get_slayer()['monster']:
+            print('got a new task')
+            return True
+        elif qh.get_npcs_by_name():
+            closest = osrs.util.find_closest_target(qh.get_npcs_by_name())
+            if closest:
+                osrs.move.fast_click(closest)
+
+
+def morytania_nechs():
+    basement_ladder_id = '30191'
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_chat_options()
+    qh.set_player_world_location()
+    qh.set_objects(
+        {'3417,3535,0'},
+        {basement_ladder_id},
+        osrs.queryHelper.ObjectTypes.GAME.value
+    )
+    qh.set_tiles({'3412,9967,3'})
+    qh.set_npcs_by_name(['Nechryael'])
+    qh.set_inventory()
+    slayer_rings = [
+        ItemIDs.SLAYER_RING_1.value,
+        ItemIDs.SLAYER_RING_2.value,
+        ItemIDs.SLAYER_RING_3.value,
+        ItemIDs.SLAYER_RING_4.value,
+        ItemIDs.SLAYER_RING_5.value,
+        ItemIDs.SLAYER_RING_6.value,
+        ItemIDs.SLAYER_RING_7.value,
+        ItemIDs.SLAYER_RING_8.value,
+    ]
+    last_ring_click = datetime.datetime.now() - datetime.timedelta(hours=1)
+    while True:
+        qh.query_backend()
+        if qh.get_npcs_by_name():
+            return
+        elif qh.get_chat_options() and 'Teleport' in qh.get_chat_options():
+            osrs.keeb.write('1')
+        elif qh.get_chat_options() and 'Teleport to the Morytania Slayer Tower' in qh.get_chat_options():
+            osrs.keeb.write('2')
+        elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, basement_ladder_id):
+            osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, basement_ladder_id)[0])
+            osrs.clock.sleep_one_tick()
+        elif qh.get_tiles('3412,9967,3') and osrs.move.is_clickable(qh.get_tiles('3412,9967,3')):
+            osrs.move.click(qh.get_tiles('3412,9967,3'))
+        elif qh.get_inventory(slayer_rings) and (datetime.datetime.now() - last_ring_click).total_seconds() > 7:
+            ring = qh.get_inventory(slayer_rings)
+            osrs.move.right_click_v3(ring, 'Rub')
+            last_ring_click = datetime.datetime.now()
+        elif qh.get_player_world_location('z') == 3:
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': 3412, 'y': 9967, 'z': 3})
+
+
+def catacombs(x, y):
+    dungeon_entrance_id = '27785'
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_objects(
+        {'1636,3673,0'},
+        {dungeon_entrance_id},
+        osrs.queryHelper.ObjectTypes.GAME.value
+    )
+    qh.set_player_world_location()
+    last_tele_cast = datetime.datetime.now() - datetime.timedelta(hours=1)
+    while True:
+        qh.query_backend()
+        if 1623 <= qh.get_player_world_location('x') <= 1656 and 3664 <= qh.get_player_world_location('y') <= 3684:
+            break
+        elif (datetime.datetime.now() - last_tele_cast).total_seconds() > 10:
+            osrs.game.cast_spell('218,36')
+            last_tele_cast = datetime.datetime.now()
+    while True:
+        qh.query_backend()
+        if 1658 <= qh.get_player_world_location('x') <= 1670 and qh.get_player_world_location('y') > 10000:
+            break
+        elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, dungeon_entrance_id):
+            osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, dungeon_entrance_id)[0])
+    while True:
+        qh.query_backend()
+        if osrs.dev.point_dist(qh.get_player_world_location('x'), qh.get_player_world_location('y'), x, y) < 5:
+            break
+        else:
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': x, 'y': y, 'z': 0})
+
+
+def mount_karuulm_drakes():
+    shortcut_1_id = '34397'
+    shortcut_2_id = '34396'
+    obstacle_1_id = '34544'
+    stairs_to_drakes_id = '34530'
+    tunnel_to_final_room_id = '34516'
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_player_world_location()
+    qh.set_objects(
+        {'1324,3778,0', '1324,3788,0', '1321,10205,0', '1272,10174,0', '1330,10206,0', '1332,10239,1'},
+        {shortcut_1_id, shortcut_2_id, obstacle_1_id, stairs_to_drakes_id, tunnel_to_final_room_id},
+        osrs.queryHelper.ObjectTypes.GAME.value
+    )
+    qh.set_tiles({'1311,3807,0'})
+    while True:
+        qh.query_backend()
+        s1 = qh.get_objects(
+            osrs.queryHelper.ObjectTypes.GAME.value,
+            shortcut_1_id
+        )
+        if qh.get_player_world_location('y') > 3778 and 1275 <= qh.get_player_world_location('x') <= 1350:
+            break
+        elif s1:
+            osrs.move.fast_click(s1[0])
+        else:
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': 1324, 'y': 3776, 'z': 0})
+    while True:
+        qh.query_backend()
+        s2 = qh.get_objects(
+            osrs.queryHelper.ObjectTypes.GAME.value,
+            shortcut_2_id
+        )
+        if qh.get_player_world_location('y') > 3788 and 1275 <= qh.get_player_world_location('x') <= 1350:
+            break
+        elif s2:
+            osrs.move.fast_click(s2[0])
+    while True:
+        qh.query_backend()
+        if qh.get_player_world_location('y') > 9000:
+            break
+        elif qh.get_tiles('1311,3807,0'):
+            # clicking this constantly stalls the animation
+            # so i have to cool down after a click
+            osrs.move.fast_click(qh.get_tiles('1311,3807,0'))
+            osrs.clock.sleep_one_tick()
+    while True:
+        qh.query_backend()
+        o1 = qh.get_objects(
+            osrs.queryHelper.ObjectTypes.GAME.value,
+            obstacle_1_id
+        )
+        if qh.get_player_world_location('x') > 1321:
+            break
+        elif o1:
+            osrs.move.fast_click(o1[0])
+        else:
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': 1303, 'y': 10204, 'z': 0})
+    while True:
+        qh.query_backend()
+        g1 = qh.get_objects(
+            osrs.queryHelper.ObjectTypes.GAME.value,
+            stairs_to_drakes_id
+        )
+        if qh.get_player_world_location('z') == 1:
+            osrs.clock.sleep_one_tick()
+            break
+        elif g1:
+            osrs.move.fast_click(g1[0])
+    while True:
+        qh.query_backend()
+        if 1335 <= qh.get_player_world_location('x') <= 1361 and 10225 <= qh.get_player_world_location('y') <= 10251:
+            return
+        elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, tunnel_to_final_room_id):
+            osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, tunnel_to_final_room_id)[0])
+        else:
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': 1311, 'y': 10239, 'z': 1})

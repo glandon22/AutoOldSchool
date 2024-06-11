@@ -24,19 +24,7 @@ supplies = [
     ItemIDs.SUPER_COMBAT_POTION4.value,
     ItemIDs.RUNE_POUCH.value,
     ItemIDs.SUPER_RESTORE4.value,
-    {
-        'id': [
-            ItemIDs.SLAYER_RING_1.value,
-            ItemIDs.SLAYER_RING_2.value,
-            ItemIDs.SLAYER_RING_3.value,
-            ItemIDs.SLAYER_RING_4.value,
-            ItemIDs.SLAYER_RING_5.value,
-            ItemIDs.SLAYER_RING_6.value,
-            ItemIDs.SLAYER_RING_7.value,
-            ItemIDs.SLAYER_RING_8.value,
-        ],
-        'quantity': '1'
-    },
+    ItemIDs.KARAMJA_GLOVES_3.value,
     {
         'id': ItemIDs.MONKFISH.value,
         'quantity': 'X',

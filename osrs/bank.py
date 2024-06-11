@@ -178,14 +178,23 @@ def search_and_withdraw(searches, game_state: osrs.queryHelper.QueryHelper):
         osrs.keeb.press_key('enter')
         osrs.clock.sleep_one_tick()
         game_state.query_backend()
-        quantities = Counter([item for item in search['items'] if type(item) is not dict])
+        filtered_items = [item for item in search['items'] if type(item) is not dict]
+        print('o', filtered_items)
+        # if there are no dicts in this list it will return a nested list
+        # if that happens i have to flatten it
+        if len(filtered_items) > 0 and type(filtered_items[0]) is list:
+            filtered_items = sum(filtered_items, [])
+        print('u', filtered_items)
+        quantities = Counter(filtered_items)
         for item in search['items']:
+            print(item, type(search['items']), search['items'])
             if type(item) is dict:
                 success = withdraw_configured_items(item, game_state)
                 if not success:
                     return False
                 if 'quantity' in item and item['quantity'] == 'X':
                     osrs.move.click(game_state.get_widgets_v2(WidgetIDs.BANK_SEARCH_BUTTON_BACKGROUND.value))
+                    osrs.clock.random_sleep(0.1, 0.2)
                     osrs.keeb.write(search['query'])
                     osrs.keeb.press_key('enter')
             else:
@@ -265,19 +274,20 @@ def banking_handler(params):
     # Deposit desired items
     while True:
         qh.query_backend()
-        if params['dump_inv'] \
+        if 'dump_inv' in params and params['dump_inv'] \
                 and qh.get_widgets_v2(WidgetIDs.BANK_DEPOSIT_INVENTORY.value) and not dumped_inv:
             osrs.move.click(qh.get_widgets_v2(WidgetIDs.BANK_DEPOSIT_INVENTORY.value))
             dumped_inv = True
 
-        if params['dump_equipment'] \
+        if 'dump_equipment' in params and params['dump_equipment'] \
                 and qh.get_widgets_v2(
             WidgetIDs.BANK_DEPOSIT_EQUIPMENT.value
         ) and not dumped_equipment:
             osrs.move.click(qh.get_widgets_v2(WidgetIDs.BANK_DEPOSIT_EQUIPMENT.value))
             dumped_equipment = True
 
-        if (not params['dump_inv'] or dumped_inv) and (not params['dump_equipment'] or dumped_equipment):
+        if ('dump_inv' not in params or not params['dump_inv'] or dumped_inv) \
+                and ('dump_equipment' not in params or not params['dump_equipment'] or dumped_equipment):
             break
     # sleep for a second so that all the items i deposited will register and be return on query
     osrs.clock.random_sleep(1, 1.1)

@@ -5,13 +5,11 @@ import osrs
 from osrs.item_ids import ItemIDs
 from slayer import transport_functions
 from combat import slayer_killer
-from slayer.tasks import gear
 
 varrock_tele_widget_id = '218,23'
 
 
 supplies = [
-    ItemIDs.MOONCLAN_TELEPORT.value,
     ItemIDs.SUPER_ATTACK4.value,
     ItemIDs.SUPER_ATTACK4.value,
     ItemIDs.SUPER_STRENGTH4.value,
@@ -19,8 +17,8 @@ supplies = [
     ItemIDs.RUNE_POUCH.value,
     ItemIDs.KARAMJA_GLOVES_3.value,
     {
-        'id': ItemIDs.MONKFISH.value,
-        'quantity': 'All'
+        'id': ItemIDs.PRAYER_POTION4.value,
+        'quantity': '10'
     },
 ]
 
@@ -53,32 +51,51 @@ pot_config = slayer_killer.PotConfig(super_str=True, super_atk=True)
 
 
 def pre_log():
-    safe_tile = {
-        'x': 2102,
-        'y': 3852,
-        'z': 0
-    }
-    safe_tile_string = f'{safe_tile["x"]},{safe_tile["y"]},{safe_tile["z"]}'
+    osrs.player.turn_off_all_prayers()
     qh = osrs.queryHelper.QueryHelper()
-    qh.set_tiles({safe_tile_string})
     qh.set_player_world_location()
-    last_off_tile = datetime.datetime.now()
+    last_tele_cast = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
         qh.query_backend()
-        if qh.get_player_world_location('x') != safe_tile["x"] \
-                or qh.get_player_world_location('y') != safe_tile["y"]:
-            last_off_tile = datetime.datetime.now()
+        if 1623 <= qh.get_player_world_location('x') <= 1656 and 3664 <= qh.get_player_world_location('y') <= 3684:
+            break
+        elif (datetime.datetime.now() - last_tele_cast).total_seconds() > 10:
+            osrs.game.cast_spell('218,36')
+            last_tele_cast = datetime.datetime.now()
+    osrs.clock.random_sleep(10, 11)
 
-        if qh.get_player_world_location('x') == safe_tile["x"] \
-                and qh.get_player_world_location('y') == safe_tile["y"]:
-            if (datetime.datetime.now() - last_off_tile).total_seconds() > 11:
-                return
-            if (datetime.datetime.now() - last_off_tile).total_seconds() > 3:
-                osrs.player.turn_off_all_prayers()
-        elif qh.get_tiles(safe_tile_string):
-            osrs.move.fast_click(qh.get_tiles(safe_tile_string))
-        else:
-            osrs.move.follow_path(qh.get_player_world_location(), safe_tile)
+
+def post_log():
+    transport_functions.catacombs(1667, 9996)
+
+
+def loot_builder():
+    config = {
+        'inv': [],
+        'loot': []
+    }
+
+    item = osrs.loot.LootConfig(ItemIDs.SNAPE_GRASS_SEED.value, 7)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.SNAPDRAGON_SEED.value, 17)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.TORSTOL_SEED.value, 17)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.WARRIOR_HELM.value, 17)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.ANCIENT_SHARD.value, 9)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.DARK_TOTEM_TOP.value, 9)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.DARK_TOTEM_BASE.value, 9)
+    config['loot'].append(item)
+    item = osrs.loot.LootConfig(ItemIDs.DARK_TOTEM_MIDDLE.value, 9)
+    config['loot'].append(item)
+
+    item = osrs.loot.InvConfig(ItemIDs.MONKFISH.value, osrs.loot.monkfish_eval)
+    config['inv'].append(item)
+
+    return config
 
 
 def main():
@@ -105,20 +122,19 @@ def main():
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
         qh.query_backend()
-        tab = qh.get_inventory(ItemIDs.MOONCLAN_TELEPORT.value)
-        if not tab:
-            exit('missing tele tab')
-        osrs.move.click(tab)
-        transport_functions.run_to_suqahs()
+        transport_functions.catacombs(1667, 9996)
         qh.query_backend()
         task_started = True
         success = slayer_killer.main(
-            'suqah',
+            ['dagannoth', 'dagannoth spawn'],
             pot_config.asdict(), 35,
-            attackable_area={'x_min': 2090, 'x_max': 2111, 'y_min': 3847, 'y_max': 3878},
+            pre_hop=pre_log,
             hop=True,
-            pre_hop=pre_log
+            loot_config=loot_builder(),
+            post_login=post_log,
+            prayers=['protect_melee']
         )
+        osrs.player.turn_off_all_prayers()
         osrs.game.cast_spell(varrock_tele_widget_id)
         if success:
             return True

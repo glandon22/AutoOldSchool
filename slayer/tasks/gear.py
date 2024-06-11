@@ -3,7 +3,7 @@ from osrs.item_ids import ItemIDs
 slayer_melee = {
     'equipment': [
         ItemIDs.RUNE_DEFENDER.value,
-        ItemIDs.DRAGON_GLOVES.value,
+        ItemIDs.BARROWS_GLOVES.value,
         ItemIDs.FIRE_CAPE.value,
         ItemIDs.DRAMEN_STAFF.value,
         ItemIDs.SLAYER_HELMET.value,
@@ -87,7 +87,7 @@ melee_prayer = {
     'equipment': [
         ItemIDs.SLAYER_HELMET.value,
         ItemIDs.ABYSSAL_WHIP.value,
-        ItemIDs.DRAGON_GLOVES.value,
+        ItemIDs.BARROWS_GLOVES.value,
         ItemIDs.BRIMSTONE_RING.value,
         ItemIDs.DRAGON_BOOTS.value,
         ItemIDs.MONKS_ROBE.value,
@@ -128,7 +128,7 @@ slayer_leafbladed_melee = {
     'equipment': [
         ItemIDs.LEAFBLADED_BATTLEAXE.value,
         ItemIDs.RUNE_DEFENDER.value,
-        ItemIDs.DRAGON_GLOVES.value,
+        ItemIDs.BARROWS_GLOVES.value,
         ItemIDs.FIRE_CAPE.value,
         ItemIDs.SLAYER_HELMET.value,
         ItemIDs.BRIMSTONE_RING.value,
@@ -142,19 +142,7 @@ slayer_leafbladed_melee = {
         ItemIDs.SUPER_COMBAT_POTION4.value,
         ItemIDs.SUPER_COMBAT_POTION4.value,
         ItemIDs.RUNE_POUCH.value,
-        {
-            'id': [
-                ItemIDs.SLAYER_RING_1.value,
-                ItemIDs.SLAYER_RING_2.value,
-                ItemIDs.SLAYER_RING_3.value,
-                ItemIDs.SLAYER_RING_4.value,
-                ItemIDs.SLAYER_RING_5.value,
-                ItemIDs.SLAYER_RING_6.value,
-                ItemIDs.SLAYER_RING_7.value,
-                ItemIDs.SLAYER_RING_8.value,
-            ],
-            'quantity': '1'
-        },
+        ItemIDs.KARAMJA_GLOVES_3.value,
         {
             'id': ItemIDs.MONKFISH.value,
             'quantity': 'All'
@@ -165,7 +153,7 @@ slayer_leafbladed_melee = {
 melee_dragon = {
     'equipment': [
         ItemIDs.DRAGONFIRE_SHIELD.value,
-        ItemIDs.DRAGON_GLOVES.value,
+        ItemIDs.BARROWS_GLOVES.value,
         ItemIDs.FIRE_CAPE.value,
         ItemIDs.SLAYER_HELMET.value,
         ItemIDs.BRIMSTONE_RING.value,
@@ -174,6 +162,7 @@ melee_dragon = {
         ItemIDs.BANDOS_TASSETS.value,
         ItemIDs.AMULET_OF_FURY.value,
         ItemIDs.DRAGON_HUNTER_LANCE.value,
+        ItemIDs.HOLY_BLESSING.value,
     ],
     'supplies': [
         ItemIDs.SUPER_COMBAT_POTION4.value,
@@ -182,19 +171,7 @@ melee_dragon = {
         ItemIDs.EXTENDED_ANTIFIRE4.value,
         ItemIDs.EXTENDED_ANTIFIRE4.value,
         ItemIDs.RUNE_POUCH.value,
-        {
-            'id': [
-                ItemIDs.SLAYER_RING_1.value,
-                ItemIDs.SLAYER_RING_2.value,
-                ItemIDs.SLAYER_RING_3.value,
-                ItemIDs.SLAYER_RING_4.value,
-                ItemIDs.SLAYER_RING_5.value,
-                ItemIDs.SLAYER_RING_6.value,
-                ItemIDs.SLAYER_RING_7.value,
-                ItemIDs.SLAYER_RING_8.value,
-            ],
-            'quantity': '1'
-        },
+        ItemIDs.KARAMJA_GLOVES_3.value,
         {
             'id': ItemIDs.MONKFISH.value,
             'quantity': 'All'
@@ -205,7 +182,7 @@ melee_dragon = {
 melee_mage_defence = {
     'equipment': [
         ItemIDs.DRAGONFIRE_SHIELD.value,
-        ItemIDs.DRAGON_GLOVES.value,
+        ItemIDs.BARROWS_GLOVES.value,
         ItemIDs.FIRE_CAPE.value,
         ItemIDs.SLAYER_HELMET.value,
         ItemIDs.BRIMSTONE_RING.value,
@@ -261,7 +238,7 @@ pure_melee = {
     'equipment': [
         ItemIDs.ABYSSAL_WHIP.value,
         ItemIDs.RUNE_DEFENDER.value,
-        ItemIDs.DRAGON_GLOVES.value,
+        ItemIDs.BARROWS_GLOVES.value,
         ItemIDs.FIRE_CAPE.value,
         ItemIDs.SLAYER_HELMET.value,
         ItemIDs.BRIMSTONE_RING.value,
