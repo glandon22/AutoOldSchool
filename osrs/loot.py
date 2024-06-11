@@ -193,9 +193,49 @@ class Loot:
     def default_config(self):
         config = [
             # Alchable Armor and Weapons
+            ## Addy
+            LootConfig(item_ids.ItemIDs.ADAMANT_2H_SWORD.value, 3, alch=True),
+            ## Rune
+            LootConfig(item_ids.ItemIDs.RUNE_AXE.value, 2, alch=True),
+            LootConfig(item_ids.ItemIDs.RUNE_LONGSWORD.value, 18, alch=True),
+            LootConfig(item_ids.ItemIDs.RUNE_MACE.value, 8, alch=True),
+            LootConfig(item_ids.ItemIDs.RUNE_CHAINBODY.value, 29, alch=True),
+            LootConfig(item_ids.ItemIDs.RUNE_SCIMITAR.value, 15, alch=True),
+            LootConfig(item_ids.ItemIDs.RUNE_FULL_HELM.value, 20, alch=True),
+            LootConfig(item_ids.ItemIDs.RUNE_SPEAR.value, 11, alch=True),
+            LootConfig(item_ids.ItemIDs.RUNE_SQ_SHIELD.value, 22, alch=True),
+            LootConfig(item_ids.ItemIDs.RUNE_KITESHIELD.value, 31, alch=True),
+            LootConfig(item_ids.ItemIDs.RUNITE_LIMBS.value, 11, alch=True),
             LootConfig(item_ids.ItemIDs.RUNE_MED_HELM.value, 11, alch=True),
             LootConfig(item_ids.ItemIDs.RUNE_DAGGER.value, 4, alch=True),
             LootConfig(item_ids.ItemIDs.RUNE_BATTLEAXE.value, 24, alch=True),
+            LootConfig(item_ids.ItemIDs.RUNE_2H_SWORD.value, 24, alch=True),
+            ## Dragon
+            LootConfig(item_ids.ItemIDs.DRAGON_BOOTS.value, 59),
+            LootConfig(item_ids.ItemIDs.DRAGON_CHAINBODY.value, 198),
+            LootConfig(item_ids.ItemIDs.DRAGON_KNIFE.value, 400),
+            LootConfig(item_ids.ItemIDs.DRAGON_THROWNAXE.value, 26),
+            LootConfig(item_ids.ItemIDs.DRAGON_HARPOON.value, 1900),
+            LootConfig(item_ids.ItemIDs.DRAGON_SWORD.value, 70),
+            LootConfig(item_ids.ItemIDs.DRAGON_DAGGER.value, 17, alch=True),
+            LootConfig(item_ids.ItemIDs.DRAGON_SPEAR.value, 37, alch=True),
+            LootConfig(item_ids.ItemIDs.DRAGON_MED_HELM.value, 58, alch=True),
+            LootConfig(item_ids.ItemIDs.DRAGON_PLATELEGS.value, 161, alch=True),
+            LootConfig(item_ids.ItemIDs.DRAGON_PLATESKIRT.value, 161, alch=True),
+            ## Staves and Such
+            LootConfig(item_ids.ItemIDs.DUST_BATTLESTAFF.value, 9),
+            LootConfig(item_ids.ItemIDs.FIRE_BATTLESTAFF.value, 9, alch=True),
+            LootConfig(item_ids.ItemIDs.EARTH_BATTLESTAFF.value, 9, alch=True),
+            LootConfig(item_ids.ItemIDs.LAVA_BATTLESTAFF.value, 9, alch=True),
+            LootConfig(item_ids.ItemIDs.AIR_BATTLESTAFF.value, 9, alch=True),
+            LootConfig(item_ids.ItemIDs.MYSTIC_EARTH_STAFF.value, 25, alch=True),
+            LootConfig(item_ids.ItemIDs.MYSTIC_AIR_STAFF.value, 25, alch=True),
+            ## Misc Alchable Weapons and Armor
+            LootConfig(item_ids.ItemIDs.LEAFBLADED_BATTLEAXE.value, 58, alch=True),
+            LootConfig(item_ids.ItemIDs.LEAFBLADED_SWORD.value, 40, alch=True),
+            LootConfig(item_ids.ItemIDs.MYSTIC_ROBE_BOTTOM_LIGHT.value, 48, alch=True),
+            LootConfig(item_ids.ItemIDs.MYSTIC_ROBE_TOP_LIGHT.value, 71, alch=True),
+            LootConfig(item_ids.ItemIDs.MYSTIC_ROBE_BOTTOM_DARK.value, 48, alch=True),
 
             # Elemental Runes
             LootConfig(item_ids.ItemIDs.FIRE_RUNE.value, 1, stackable=True, min_quantity=250),
@@ -206,6 +246,11 @@ class Loot:
             # Combat Runes and Odd Runes
             LootConfig(item_ids.ItemIDs.BLOOD_RUNE.value, 3, stackable=True, min_quantity=6),
             LootConfig(item_ids.ItemIDs.SOUL_RUNE.value, 3, stackable=True, min_quantity=10),
+            LootConfig(item_ids.ItemIDs.NATURE_RUNE.value, 3, stackable=True, min_quantity=10),
+            LootConfig(item_ids.ItemIDs.LAW_RUNE.value, 3, stackable=True, min_quantity=10),
+            LootConfig(item_ids.ItemIDs.CHAOS_RUNE.value, 3, stackable=True, min_quantity=15),
+            LootConfig(item_ids.ItemIDs.DUST_RUNE.value, 3, stackable=True, min_quantity=200),
+            LootConfig(item_ids.ItemIDs.MUD_RUNE.value, 3, stackable=True, min_quantity=200),
 
             # Catacombs Drops
             LootConfig(item_ids.ItemIDs.ANCIENT_SHARD.value, 9, stackable=True),
@@ -215,5 +260,22 @@ class Loot:
 
             # Misc
             LootConfig(item_ids.ItemIDs.COINS_995.value, 6, stackable=True, min_quantity=1000),
+            LootConfig(item_ids.ItemIDs.PAPAYA_FRUIT.value + 1, 6, stackable=True, min_quantity=10),
+            LootConfig(item_ids.ItemIDs.COCONUT.value + 1, 6, stackable=True, min_quantity=10),
+            LootConfig(item_ids.ItemIDs.BIG_BONES.value + 1, 6, stackable=True, min_quantity=10),
+            LootConfig(item_ids.ItemIDs.CRYSTAL_SHARD, 10, stackable=True),
+            LootConfig(item_ids.ItemIDs.DRACONIC_VISAGE.value, 3167),
+            LootConfig(item_ids.ItemIDs.SMOULDERING_STONE.value, 3600),
+
+            # Seeds
+            LootConfig(item_ids.ItemIDs.SNAPDRAGON_SEED.value, 36, stackable=True),
+            LootConfig(item_ids.ItemIDs.SNAPE_GRASS_SEED.value, 12, stackable=True, min_quantity=3),
+            LootConfig(item_ids.ItemIDs.CADANTINE_SEED.value, 11, stackable=True),
+            LootConfig(item_ids.ItemIDs.RANARR_SEED.value, 25, stackable=True),
+
+            # Bars and Ores
+            LootConfig(item_ids.ItemIDs.MITHRIL_BAR.value + 1, 4, stackable=True, min_quantity=5),
+            LootConfig(item_ids.ItemIDs.RUNITE_BAR.value, 11),
+            LootConfig(item_ids.ItemIDs.RUNITE_BAR.value + 1, 11, stackable=True),
         ]
         return config
