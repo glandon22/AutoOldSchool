@@ -11,6 +11,10 @@ from slayer.tasks import gear
 varrock_tele_widget_id = '218,23'
 
 supplies = [
+    {
+        'id': ItemIDs.NATURE_RUNE.value,
+        'quantity': 'All'
+    },
     ItemIDs.SUPER_ATTACK4.value,
     ItemIDs.SUPER_ATTACK4.value,
     ItemIDs.SUPER_STRENGTH4.value,
@@ -28,7 +32,7 @@ equipment = [
     ItemIDs.RUNE_DEFENDER.value,
     ItemIDs.BARROWS_GLOVES.value,
     ItemIDs.FIRE_CAPE.value,
-    ItemIDs.SLAYER_HELMET.value,
+    ItemIDs.SLAYER_HELMET_I.value,
     ItemIDs.BRIMSTONE_RING.value,
     ItemIDs.DRAGON_BOOTS.value,
     ItemIDs.BANDOS_CHESTPLATE.value,

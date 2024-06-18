@@ -27,7 +27,7 @@ equipment = [
         ItemIDs.BARROWS_GLOVES.value,
         ItemIDs.FIRE_CAPE.value,
         ItemIDs.ABYSSAL_WHIP.value,
-        ItemIDs.SLAYER_HELMET.value,
+        ItemIDs.SLAYER_HELMET_I.value,
         ItemIDs.BRIMSTONE_RING.value,
         ItemIDs.DRAGON_BOOTS.value,
         ItemIDs.BANDOS_CHESTPLATE.value,

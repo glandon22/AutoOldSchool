@@ -5,50 +5,40 @@ import osrs
 from osrs.item_ids import ItemIDs
 from slayer import transport_functions
 from combat import slayer_killer
+
 from slayer.tasks import gear
 
 varrock_tele_widget_id = '218,23'
 
-# for this one i dont want a slayer ring with only one charge,
-# bc i tele to the cave, then to nieve after the task is done
 supplies = [
-        ItemIDs.SUPER_COMBAT_POTION4.value,
-        ItemIDs.SUPER_COMBAT_POTION4.value,
-        ItemIDs.RUNE_POUCH.value,
-        ItemIDs.KARAMJA_GLOVES_3.value,
-        {
-            'id': [
-                ItemIDs.SLAYER_RING_2.value,
-                ItemIDs.SLAYER_RING_3.value,
-                ItemIDs.SLAYER_RING_4.value,
-                ItemIDs.SLAYER_RING_5.value,
-                ItemIDs.SLAYER_RING_6.value,
-                ItemIDs.SLAYER_RING_7.value,
-                ItemIDs.SLAYER_RING_8.value,
-            ],
-            'quantity': '1'
-        },
-        {
-            'id': ItemIDs.MONKFISH.value,
-            'quantity': '5'
-        },
-        {
-            'id': ItemIDs.PRAYER_POTION4.value,
-            'quantity': 'All'
-        },
-    ]
+    {
+        'id': ItemIDs.NATURE_RUNE.value,
+        'quantity': 'All'
+    },
+    ItemIDs.SUPER_ATTACK4.value,
+    ItemIDs.SUPER_ATTACK4.value,
+    ItemIDs.SUPER_STRENGTH4.value,
+    ItemIDs.SUPER_STRENGTH4.value,
+    ItemIDs.RUNE_POUCH.value,
+    ItemIDs.KARAMJA_GLOVES_3.value,
+    ItemIDs.DRAMEN_STAFF.value,
+    {
+        'id': ItemIDs.MONKFISH.value,
+        'quantity': 'All'
+    }
+]
+
 equipment = [
-    ItemIDs.SLAYER_HELMET_I.value,
-    ItemIDs.ABYSSAL_WHIP.value,
+    ItemIDs.RUNE_DEFENDER.value,
     ItemIDs.BARROWS_GLOVES.value,
+    ItemIDs.FIRE_CAPE.value,
+    ItemIDs.SLAYER_HELMET_I.value,
     ItemIDs.BRIMSTONE_RING.value,
     ItemIDs.DRAGON_BOOTS.value,
-    ItemIDs.MONKS_ROBE.value,
-    ItemIDs.MONKS_ROBE_TOP.value,
+    ItemIDs.BANDOS_CHESTPLATE.value,
+    ItemIDs.BANDOS_TASSETS.value,
     ItemIDs.AMULET_OF_FURY.value,
-    ItemIDs.RUNE_DEFENDER.value,
-    ItemIDs.HOLY_BLESSING.value,
-    ItemIDs.FIRE_CAPE.value,
+    ItemIDs.ABYSSAL_WHIP.value,
 ]
 
 banking_config_equipment = {
@@ -63,13 +53,13 @@ banking_config_supplies = {
     'search': [{'query': 'slayer', 'items': supplies}]
 }
 
-pot_config = slayer_killer.PotConfig(super_combat=True)
+pot_config = slayer_killer.PotConfig(super_atk=True, super_str=True)
 
 
 def pre_log():
     safe_tile = {
-        'x': 2447,
-        'y': 9800,
+        'x': 2156,
+        'y': 9322,
         'z': 0
     }
     safe_tile_string = f'{safe_tile["x"]},{safe_tile["y"]},{safe_tile["z"]}'
@@ -116,20 +106,26 @@ def main():
         if not success:
             print('failed to withdraw supplies.')
             return False
+        while True:
+            qh.query_backend()
+            if qh.get_inventory(ItemIDs.DRAMEN_STAFF.value):
+                osrs.move.click(qh.get_inventory(ItemIDs.DRAMEN_STAFF.value))
+                break
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
-        transport_functions.stronghold_slayer_dungeon_spectres()
+        osrs.game.tele_home_fairy_ring('bjp')
+        transport_functions.isle_of_souls_dungeon(2166, 9331)
         qh.query_backend()
+        osrs.move.click(qh.get_inventory(ItemIDs.ABYSSAL_WHIP.value))
         task_started = True
-        success = slayer_killer.main(
-            'aberrant spectre',
-            pot_config.asdict(),
-            35,
-            hop=True, pre_hop=pre_log,
-            prayers=['protect_mage']
-        )
-        osrs.player.turn_off_all_prayers()
+        success = slayer_killer.main('greater demon', pot_config.asdict(), 35, hop=True, pre_hop=pre_log)
         qh.query_backend()
         osrs.game.cast_spell(varrock_tele_widget_id)
         if success:
             return True
+
+''''
+cave entrance ground item 28920 1696,3865,0
+vine out 28898 1719,10102,0
+good room - 1719,10101,0
+'''

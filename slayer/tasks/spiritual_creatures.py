@@ -42,7 +42,7 @@ equipment = [
     ItemIDs.RUNE_DEFENDER.value,
     ItemIDs.ARMADYL_BRACERS.value,
     ItemIDs.ZAMORAK_CLOAK.value,
-    ItemIDs.SLAYER_HELMET.value,
+    ItemIDs.SLAYER_HELMET_I.value,
     ItemIDs.BRIMSTONE_RING.value,
     ItemIDs.DRAGON_BOOTS.value,
     ItemIDs.BANDOS_CHESTPLATE.value,

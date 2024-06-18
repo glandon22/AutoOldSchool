@@ -38,7 +38,7 @@ equipment = [
     ItemIDs.DRAGONFIRE_SHIELD.value,
     ItemIDs.BARROWS_GLOVES.value,
     ItemIDs.FIRE_CAPE.value,
-    ItemIDs.SLAYER_HELMET.value,
+    ItemIDs.SLAYER_HELMET_I.value,
     ItemIDs.BRIMSTONE_RING.value,
     ItemIDs.BOOTS_OF_BRIMSTONE.value,
     ItemIDs.BANDOS_CHESTPLATE.value,
@@ -175,7 +175,7 @@ def main():
         qh.query_backend()
         osrs.move.click(qh.get_inventory(ItemIDs.DRAGON_HUNTER_LANCE.value))
         task_started = True
-        success = slayer_killer.main('drake', pot_config.asdict(), 35, prayers=['protect_range'], hop=True, pre_hop=pre_log, loot_config=loot_builder())
+        success = slayer_killer.main('drake', pot_config.asdict(), 35, prayers=['protect_range'], pre_hop=pre_log, loot_config=loot_builder())
         qh.query_backend()
         osrs.player.turn_off_all_prayers()
         osrs.game.cast_spell(varrock_tele_widget_id)

@@ -46,7 +46,7 @@ def isle_of_souls_dungeon(x=2145, y=9296):
             osrs.move.follow_path(qh.get_player_world_location(), {'x': 2310, 'y': 2918, 'z': 0})
     while True:
         qh.query_backend()
-        if qh.get_player_world_location('x') == x and qh.get_player_world_location('y') == y:
+        if osrs.dev.point_dist(qh.get_player_world_location('x'), qh.get_player_world_location('y'), x, y) < 5:
             return
         elif qh.get_tiles(f'{x},{y},0'):
             osrs.move.fast_click(qh.get_tiles(f'{x},{y},0'))
@@ -860,6 +860,51 @@ def morytania_gargoyles():
             last_ring_click = datetime.datetime.now()
 
 
+def morytania_abby_demons():
+    basement_ladder_id = '30191'
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_chat_options()
+    qh.set_player_world_location()
+    qh.set_objects(
+        {'3417,3535,0'},
+        {basement_ladder_id},
+        osrs.queryHelper.ObjectTypes.GAME.value
+    )
+    qh.set_tiles({'3433,9950,3', '3438,9967,3'})
+    qh.set_npcs_by_name(['abyssal demon'])
+    qh.set_inventory()
+    slayer_rings = [
+        ItemIDs.SLAYER_RING_1.value,
+        ItemIDs.SLAYER_RING_2.value,
+        ItemIDs.SLAYER_RING_3.value,
+        ItemIDs.SLAYER_RING_4.value,
+        ItemIDs.SLAYER_RING_5.value,
+        ItemIDs.SLAYER_RING_6.value,
+        ItemIDs.SLAYER_RING_7.value,
+        ItemIDs.SLAYER_RING_8.value,
+    ]
+    last_ring_click = datetime.datetime.now() - datetime.timedelta(hours=1)
+    while True:
+        qh.query_backend()
+        if qh.get_npcs_by_name():
+            return
+        elif qh.get_chat_options() and 'Teleport' in qh.get_chat_options():
+            osrs.keeb.write('1')
+        elif qh.get_chat_options() and 'Teleport to the Morytania Slayer Tower' in qh.get_chat_options():
+            osrs.keeb.write('2')
+        elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, basement_ladder_id):
+            osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, basement_ladder_id)[0])
+            osrs.clock.sleep_one_tick()
+        elif qh.get_tiles('3438,9967,3') and osrs.move.is_clickable(qh.get_tiles('3438,9967,3')):
+            osrs.move.click(qh.get_tiles('3438,9967,3'))
+        elif qh.get_tiles('3433,9950,3') and osrs.move.is_clickable(qh.get_tiles('3433,9950,3')):
+            osrs.move.click(qh.get_tiles('3433,9950,3'))
+        elif qh.get_inventory(slayer_rings) and (datetime.datetime.now() - last_ring_click).total_seconds() > 7:
+            ring = qh.get_inventory(slayer_rings)
+            osrs.move.right_click_v3(ring, 'Rub')
+            last_ring_click = datetime.datetime.now()
+
+
 def tele_to_frem_cave():
     basement_ladder_id = '30191'
     qh = osrs.queryHelper.QueryHelper()
@@ -1110,9 +1155,15 @@ def mount_karuulm_drakes():
             osrs.move.fast_click(g1[0])
     while True:
         qh.query_backend()
+        if 1299 <= qh.get_player_world_location('x') <= 1325 and 10225 <= qh.get_player_world_location('y') <= 10251:
+            return
+        else:
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': 1311, 'y': 10239, 'z': 1})
+    '''while True:
+        qh.query_backend()
         if 1335 <= qh.get_player_world_location('x') <= 1361 and 10225 <= qh.get_player_world_location('y') <= 10251:
             return
         elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, tunnel_to_final_room_id):
             osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, tunnel_to_final_room_id)[0])
         else:
-            osrs.move.follow_path(qh.get_player_world_location(), {'x': 1311, 'y': 10239, 'z': 1})
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': 1311, 'y': 10239, 'z': 1})'''

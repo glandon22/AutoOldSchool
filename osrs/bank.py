@@ -272,8 +272,11 @@ def banking_handler(params):
     dumped_equipment = False
     osrs.clock.random_sleep(1, 1.1)
     # Deposit desired items
+    wait_time = datetime.datetime.now()
     while True:
         qh.query_backend()
+        if (datetime.datetime.now() - wait_time).total_seconds() > 15:
+            return banking_handler(params)
         if 'dump_inv' in params and params['dump_inv'] \
                 and qh.get_widgets_v2(WidgetIDs.BANK_DEPOSIT_INVENTORY.value) and not dumped_inv:
             osrs.move.click(qh.get_widgets_v2(WidgetIDs.BANK_DEPOSIT_INVENTORY.value))

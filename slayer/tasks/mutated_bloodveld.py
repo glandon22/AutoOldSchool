@@ -26,7 +26,7 @@ supplies = [
         },
     ]
 equipment = [
-    ItemIDs.SLAYER_HELMET.value,
+    ItemIDs.SLAYER_HELMET_I.value,
     ItemIDs.ABYSSAL_WHIP.value,
     ItemIDs.BARROWS_GLOVES.value,
     ItemIDs.BRIMSTONE_RING.value,

@@ -48,6 +48,19 @@ def turn_off_all_prayers():
             osrs.clock.random_sleep(1, 1.1)
 
 
+def flick_all_prayers():
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_active_prayers()
+    qh.set_widgets({'160,21'})
+    while True:
+        qh.query_backend()
+        if qh.get_widgets('160,21'):
+            osrs.move.fast_click(qh.get_widgets('160,21'))
+            osrs.clock.random_sleep(0.2, 0.3)
+            osrs.move.fast_click(qh.get_widgets('160,21'))
+            return
+
+
 def toggle_run(desired_state, port='56799'):
     """
     :param desired_state: string : 'on' : 'off'

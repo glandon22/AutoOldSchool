@@ -20,6 +20,10 @@ supplies = [
         ItemIDs.MONKFISH.value,
         ItemIDs.MONKFISH.value,
         {
+            'id': ItemIDs.NATURE_RUNE.value,
+            'quantity': 'All'
+        },
+        {
             'id': ItemIDs.PRAYER_POTION4.value,
             'quantity': 'All'
         },

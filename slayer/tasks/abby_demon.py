@@ -18,8 +18,12 @@ supplies = [
         ],
         'quantity': 'All'
     },
-    ItemIDs.SUPER_COMBAT_POTION4.value,
-    ItemIDs.SUPER_COMBAT_POTION4.value,
+    ItemIDs.SUPER_ATTACK4.value,
+    ItemIDs.SUPER_ATTACK4.value,
+    ItemIDs.SUPER_ATTACK4.value,
+    ItemIDs.SUPER_STRENGTH4.value,
+    ItemIDs.SUPER_STRENGTH4.value,
+    ItemIDs.SUPER_STRENGTH4.value,
     ItemIDs.RUNE_POUCH.value,
     ItemIDs.KARAMJA_GLOVES_3.value,
     {
@@ -34,7 +38,6 @@ supplies = [
         ],
         'quantity': '1'
     },
-    ItemIDs.ROCK_HAMMER.value,
     {
         'id': ItemIDs.PRAYER_POTION4.value,
         'quantity': '10'
@@ -42,7 +45,7 @@ supplies = [
 ]
 
 equipment = [
-        ItemIDs.ZOMBIE_AXE.value,
+        ItemIDs.ABYSSAL_WHIP.value,
         ItemIDs.HOLY_BLESSING.value,
         ItemIDs.RUNE_DEFENDER.value,
         ItemIDs.BARROWS_GLOVES.value,
@@ -50,8 +53,8 @@ equipment = [
         ItemIDs.SLAYER_HELMET_I.value,
         ItemIDs.BRIMSTONE_RING.value,
         ItemIDs.DRAGON_BOOTS.value,
-        ItemIDs.BANDOS_CHESTPLATE.value,
-        ItemIDs.BANDOS_TASSETS.value,
+        ItemIDs.PROSELYTE_HAUBERK.value,
+        ItemIDs.PROSELYTE_CUISSE.value,
         ItemIDs.AMULET_OF_FURY.value,
     ]
 
@@ -67,7 +70,7 @@ banking_config_supplies = {
     'search': [{'query': 'slayer', 'items': supplies}]
 }
 
-pot_config = slayer_killer.PotConfig(super_combat=True)
+pot_config = slayer_killer.PotConfig(super_atk=True, super_str=True)
 
 
 def loot_builder():
@@ -76,45 +79,17 @@ def loot_builder():
         'loot': []
     }
 
-    item = osrs.loot.LootConfig(ItemIDs.GRANITE_MAUL.value, 10)
+    item = osrs.loot.LootConfig(ItemIDs.ABYSSAL_WHIP.value, 1700)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.MYSTIC_ROBE_TOP_DARK.value, 10, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.ADAMANT_PLATELEGS.value, 5, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.RUNE_FULL_HELM.value, 5, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.RUNE_2H_SWORD.value, 5, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.ADAMANT_BOOTS.value, 5, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.RUNE_BATTLEAXE.value, 5, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.RUNE_PLATELEGS.value, 5, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.CHAOS_RUNE.value, 3)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.DEATH_RUNE.value, 3)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.GOLD_ORE.value + 1, 3)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.STEEL_BAR.value + 1, 3)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.MITHRIL_BAR.value + 1, 3)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.RUNITE_ORE.value, 3)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.COINS_995.value, 3, min_quantity=1000)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.BRITTLE_KEY.value, 99)
+    item = osrs.loot.LootConfig(ItemIDs.ABYSSAL_DAGGER.value, 3600)
     config['loot'].append(item)
     return config
 
 
 def pre_log():
     safe_tile = {
-        'x': 3428,
-        'y': 9940,
+        'x': 3443,
+        'y': 9975,
         'z': 3
     }
     safe_tile_string = f'{safe_tile["x"]},{safe_tile["y"]},{safe_tile["z"]}'
@@ -163,11 +138,12 @@ def main():
             return False
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
-        transport_functions.morytania_gargoyles()
+        transport_functions.morytania_abby_demons()
         qh.query_backend()
         task_started = True
         success = slayer_killer.main(
-            'gargoyle', pot_config.asdict(), 35, pre_hop=pre_log, prayers=['protect_melee'], loot_config=loot_builder()
+            'abyssal demon', pot_config.asdict(), 35, pre_hop=pre_log, prayers=['protect_melee'], loot_config=loot_builder(),
+            attackable_area={'x_min': 3433, 'x_max': 3447, 'y_min': 9963, 'y_max': 9975}
         )
         qh.query_backend()
         osrs.player.turn_off_all_prayers()

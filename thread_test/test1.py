@@ -2,13 +2,16 @@
 import datetime
 
 import osrs
-from osrs.item_ids import ItemIDs
+'''from osrs.item_ids import ItemIDs
 from combat import slayer_killer
 
 
 
+loot = osrs.loot.Loot()
+loot.retrieve_loot()'''
+
 qh = osrs.queryHelper.QueryHelper()
-qh.set_npcs_by_name([])
+qh.set_active_prayers()
 while True:
     qh.query_backend()
-    print('p', qh.get_npcs_by_name())
+    print(qh.get_active_prayers())

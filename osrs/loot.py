@@ -45,10 +45,10 @@ def wait_for_item_in_inv(prev_inv, qh1):
         qh1.query_backend()
         if qh1.get_inventory() != prev_inv:
             print('got item')
-            break
+            return True
         elif (datetime.datetime.now() - time_on_same_tile).total_seconds() > 1.5:
             print('err: timeout getting item')
-            break
+            return False
         elif qh1.get_player_world_location() != prev_loc:
             prev_loc = qh1.get_player_world_location()
             time_on_same_tile = datetime.datetime.now()
@@ -82,9 +82,18 @@ class Loot:
 
     def __init__(self):
         self.add_items(self.default_config())
+        self.add_inv_config_items(self.default_inv_config())
 
     def add_inv_config_item(self, config: InvConfig):
         self.inv_config[config.asdict()['item_id']] = config.asdict()
+
+    def add_inv_config_items(self, items: list[InvConfig]):
+        if type(items) is not list:
+            logger.warn('Tried to add loot inv config items but input was not a list.')
+            return False
+
+        for item in items:
+            self.inv_config[item.asdict()['item_id']] = item.asdict()
 
     def add_items(self, items: list[LootConfig]):
         if type(items) is not list:
@@ -101,7 +110,11 @@ class Loot:
         self.config = {}
 
     def retrieve_loot(self, dist=10):
+        time_since_last_loot = datetime.datetime.now()
         while True:
+            if (datetime.datetime.now() - time_since_last_loot).total_seconds() > 15:
+                logger.warn('Looter timed out trying to get an item.')
+                return False
             found_loot = False
             qh = queryHelper.QueryHelper()
             qh.set_player_world_location()
@@ -141,8 +154,9 @@ class Loot:
                     qh1.set_inventory()
                     qh1.set_player_world_location()
 
-                    wait_for_item_in_inv(prev_inv, qh1)
-
+                    received_item = wait_for_item_in_inv(prev_inv, qh1)
+                    if received_item:
+                        time_since_last_loot = datetime.datetime.now()
                 if item_config.get('alch'):
                     self.alch(item, qh)
                 break
@@ -275,7 +289,15 @@ class Loot:
 
             # Bars and Ores
             LootConfig(item_ids.ItemIDs.MITHRIL_BAR.value + 1, 4, stackable=True, min_quantity=5),
+            LootConfig(item_ids.ItemIDs.ADAMANTITE_BAR.value + 1, 8, stackable=True, min_quantity=3),
             LootConfig(item_ids.ItemIDs.RUNITE_BAR.value, 11),
             LootConfig(item_ids.ItemIDs.RUNITE_BAR.value + 1, 11, stackable=True),
         ]
+        return config
+
+    def default_inv_config(self):
+        config = [
+            InvConfig(osrs.item_ids.ItemIDs.MONKFISH.value, osrs.loot.monkfish_eval)
+        ]
+
         return config

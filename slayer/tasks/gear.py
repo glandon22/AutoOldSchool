@@ -6,7 +6,7 @@ slayer_melee = {
         ItemIDs.BARROWS_GLOVES.value,
         ItemIDs.FIRE_CAPE.value,
         ItemIDs.DRAMEN_STAFF.value,
-        ItemIDs.SLAYER_HELMET.value,
+        ItemIDs.SLAYER_HELMET_I.value,
         ItemIDs.BRIMSTONE_RING.value,
         ItemIDs.DRAGON_BOOTS.value,
         ItemIDs.BANDOS_CHESTPLATE.value,
@@ -85,7 +85,7 @@ slayer_ranged = {
 
 melee_prayer = {
     'equipment': [
-        ItemIDs.SLAYER_HELMET.value,
+        ItemIDs.SLAYER_HELMET_I.value,
         ItemIDs.ABYSSAL_WHIP.value,
         ItemIDs.BARROWS_GLOVES.value,
         ItemIDs.BRIMSTONE_RING.value,
@@ -130,7 +130,7 @@ slayer_leafbladed_melee = {
         ItemIDs.RUNE_DEFENDER.value,
         ItemIDs.BARROWS_GLOVES.value,
         ItemIDs.FIRE_CAPE.value,
-        ItemIDs.SLAYER_HELMET.value,
+        ItemIDs.SLAYER_HELMET_I.value,
         ItemIDs.BRIMSTONE_RING.value,
         ItemIDs.DRAGON_BOOTS.value,
         ItemIDs.BANDOS_CHESTPLATE.value,
@@ -155,7 +155,7 @@ melee_dragon = {
         ItemIDs.DRAGONFIRE_SHIELD.value,
         ItemIDs.BARROWS_GLOVES.value,
         ItemIDs.FIRE_CAPE.value,
-        ItemIDs.SLAYER_HELMET.value,
+        ItemIDs.SLAYER_HELMET_I.value,
         ItemIDs.BRIMSTONE_RING.value,
         ItemIDs.DRAGON_BOOTS.value,
         ItemIDs.BANDOS_CHESTPLATE.value,
@@ -184,7 +184,7 @@ melee_mage_defence = {
         ItemIDs.DRAGONFIRE_SHIELD.value,
         ItemIDs.BARROWS_GLOVES.value,
         ItemIDs.FIRE_CAPE.value,
-        ItemIDs.SLAYER_HELMET.value,
+        ItemIDs.SLAYER_HELMET_I.value,
         ItemIDs.BRIMSTONE_RING.value,
         ItemIDs.DRAGON_BOOTS.value,
         {
@@ -240,7 +240,7 @@ pure_melee = {
         ItemIDs.RUNE_DEFENDER.value,
         ItemIDs.BARROWS_GLOVES.value,
         ItemIDs.FIRE_CAPE.value,
-        ItemIDs.SLAYER_HELMET.value,
+        ItemIDs.SLAYER_HELMET_I.value,
         ItemIDs.BRIMSTONE_RING.value,
         ItemIDs.DRAGON_BOOTS.value,
         ItemIDs.BANDOS_CHESTPLATE.value,

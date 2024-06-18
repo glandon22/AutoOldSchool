@@ -32,7 +32,7 @@ equipment = [
         ItemIDs.RUNE_DEFENDER.value,
         ItemIDs.BARROWS_GLOVES.value,
         ItemIDs.FIRE_CAPE.value,
-        ItemIDs.SLAYER_HELMET.value,
+        ItemIDs.SLAYER_HELMET_I.value,
         ItemIDs.BRIMSTONE_RING.value,
         ItemIDs.DRAGON_BOOTS.value,
         ItemIDs.BANDOS_CHESTPLATE.value,
@@ -52,53 +52,6 @@ banking_config_supplies = {
 }
 
 pot_config = slayer_killer.PotConfig(super_atk=True, super_str=True)
-
-
-def loot_builder():
-    config = {
-        'inv': [],
-        'loot': []
-    }
-
-    item = osrs.loot.InvConfig(ItemIDs.MONKFISH.value, osrs.loot.monkfish_eval)
-    config['inv'].append(item)
-
-    item = osrs.loot.LootConfig(ItemIDs.RUNE_DAGGER.value, 6, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.AIR_BATTLESTAFF.value, 6, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.EARTH_BATTLESTAFF.value, 6, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.BLACK_DHIDE_VAMBRACES.value, 6, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.MYSTIC_AIR_STAFF.value, 6, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.MYSTIC_EARTH_STAFF.value, 6, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.DRAGON_DAGGER.value, 6, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.DUST_BATTLESTAFF.value, 6)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.DRAGON_CHAINBODY.value, 8)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.DUST_RUNE.value, 8)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.EARTH_RUNE.value, 8)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.FIRE_RUNE.value, 8)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.CHAOS_RUNE.value, 8)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.SOUL_RUNE.value, 8)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.MITHRIL_BAR.value + 1, 8, stackable=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.COINS_995.value, 8, min_quantity=1000)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.ADAMANTITE_BAR.value + 1, 8)
-    config['loot'].append(item)
-
-    return config
 
 
 def pre_log():
@@ -142,7 +95,7 @@ def main():
                 osrs.move.click(qh.get_inventory(ItemIDs.ABYSSAL_WHIP.value))
                 break
         task_started = True
-        finished = slayer_killer.main('dust devil', pot_config.asdict(), 35, hop=True, pre_hop=pre_log, loot_config=loot_builder())
+        finished = slayer_killer.main('dust devil', pot_config.asdict(), 35, pre_hop=pre_log)
         osrs.game.cast_spell(varrock_tele_widget_id)
         if finished:
             return

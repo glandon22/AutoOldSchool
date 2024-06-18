@@ -301,16 +301,3 @@ def main():
 
 
 main()
-
-
-'''
-
-
-zapper
-26256
-
-
- power surge
- 26264
-pot to exit 26276 i think
-'''

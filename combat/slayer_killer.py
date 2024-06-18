@@ -185,7 +185,6 @@ def pot_handler(qh: osrs.queryHelper.QueryHelper, pots):
         p = osrs.inv.are_items_in_inventory_v2(qh.get_inventory(), pot_matcher['SUPER_COMBATS'])
         if p:
             osrs.move.click(p)
-        return True
 
     if 'SUPER_ATTACK' in pots \
             and pots['SUPER_ATTACK'] \
@@ -193,7 +192,6 @@ def pot_handler(qh: osrs.queryHelper.QueryHelper, pots):
         p = osrs.inv.are_items_in_inventory_v2(qh.get_inventory(), pot_matcher['SUPER_ATTACK'])
         if p:
             osrs.move.click(p)
-        return True
 
     if 'SUPER_STRENGTH' in pots \
             and pots['SUPER_STRENGTH'] \
@@ -201,7 +199,6 @@ def pot_handler(qh: osrs.queryHelper.QueryHelper, pots):
         p = osrs.inv.are_items_in_inventory_v2(qh.get_inventory(), pot_matcher['SUPER_STRENGTH'])
         if p:
             osrs.move.click(p)
-        return True
 
     if 'RANGING_POTION' in pots \
             and pots['RANGING_POTION'] \
@@ -209,7 +206,6 @@ def pot_handler(qh: osrs.queryHelper.QueryHelper, pots):
         p = osrs.inv.are_items_in_inventory_v2(qh.get_inventory(), pot_matcher['RANGING_POTION'])
         if p:
             osrs.move.click(p)
-        return True
 
     if 'MAGIC_POTION' in pots \
             and pots['MAGIC_POTION'] \
@@ -217,7 +213,6 @@ def pot_handler(qh: osrs.queryHelper.QueryHelper, pots):
         p = osrs.inv.are_items_in_inventory_v2(qh.get_inventory(), pot_matcher['MAGIC_POTION'])
         if p:
             osrs.move.click(p)
-        return True
 
     if 'SUPER_ANTI_POISION' in pots \
             and pots['SUPER_ANTI_POISION'] \

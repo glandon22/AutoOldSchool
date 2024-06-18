@@ -17,23 +17,27 @@ supplies = [
     ItemIDs.RUNE_POUCH.value,
     ItemIDs.KARAMJA_GLOVES_3.value,
     {
+        'id': ItemIDs.NATURE_RUNE.value,
+        'quantity': 'All'
+    },
+    {
         'id': ItemIDs.PRAYER_POTION4.value,
         'quantity': '10'
     },
 ]
 
 equipment = [
-        ItemIDs.RUNE_DEFENDER.value,
-        ItemIDs.BARROWS_GLOVES.value,
-        ItemIDs.FIRE_CAPE.value,
-        ItemIDs.ABYSSAL_WHIP.value,
-        ItemIDs.SLAYER_HELMET_I.value,
-        ItemIDs.BRIMSTONE_RING.value,
-        ItemIDs.DRAGON_BOOTS.value,
-        ItemIDs.BANDOS_CHESTPLATE.value,
-        ItemIDs.BANDOS_TASSETS.value,
-        ItemIDs.AMULET_OF_FURY.value,
-    ]
+    ItemIDs.SLAYER_HELMET_I.value,
+    ItemIDs.ABYSSAL_WHIP.value,
+    ItemIDs.BARROWS_GLOVES.value,
+    ItemIDs.BRIMSTONE_RING.value,
+    ItemIDs.DRAGON_BOOTS.value,
+    ItemIDs.BANDOS_TASSETS.value,
+    ItemIDs.BANDOS_CHESTPLATE.value,
+    ItemIDs.AMULET_OF_FURY.value,
+    ItemIDs.RUNE_DEFENDER.value,
+    ItemIDs.FIRE_CAPE.value,
+]
 
 banking_config_equipment = {
     'dump_inv': True,
@@ -47,7 +51,7 @@ banking_config_supplies = {
     'search': [{'query': 'slayer', 'items': supplies}]
 }
 
-pot_config = slayer_killer.PotConfig(super_str=True, super_atk=True)
+pot_config = slayer_killer.PotConfig(super_atk=True, super_str=True)
 
 
 def pre_log():
@@ -66,36 +70,7 @@ def pre_log():
 
 
 def post_log():
-    transport_functions.catacombs(1667, 9996)
-
-
-def loot_builder():
-    config = {
-        'inv': [],
-        'loot': []
-    }
-
-    item = osrs.loot.LootConfig(ItemIDs.SNAPE_GRASS_SEED.value, 7)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.SNAPDRAGON_SEED.value, 17)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.TORSTOL_SEED.value, 17)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.WARRIOR_HELM.value, 17)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.ANCIENT_SHARD.value, 9)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.DARK_TOTEM_TOP.value, 9)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.DARK_TOTEM_BASE.value, 9)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.DARK_TOTEM_MIDDLE.value, 9)
-    config['loot'].append(item)
-
-    item = osrs.loot.InvConfig(ItemIDs.MONKFISH.value, osrs.loot.monkfish_eval)
-    config['inv'].append(item)
-
-    return config
+    transport_functions.catacombs(1633, 10054)
 
 
 def main():
@@ -121,21 +96,15 @@ def main():
             return False
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
-        qh.query_backend()
-        transport_functions.catacombs(1667, 9996)
+        transport_functions.catacombs(1633, 10054)
         qh.query_backend()
         task_started = True
-        success = slayer_killer.main(
-            ['dagannoth', 'dagannoth spawn'],
-            pot_config.asdict(), 35,
-            pre_hop=pre_log,
-            hop=True,
-            loot_config=loot_builder(),
-            post_login=post_log,
-            prayers=['protect_melee']
-        )
+        success = slayer_killer.main('fire giant', pot_config.asdict(), 35, pre_hop=pre_log, post_login=post_log, prayers=['protect_melee'])
         osrs.player.turn_off_all_prayers()
         osrs.game.cast_spell(varrock_tele_widget_id)
         if success:
             return True
-        qh.query_backend()
+
+'''
+1633, 10054
+'''

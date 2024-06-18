@@ -37,7 +37,8 @@ def main():
                 slayer.greater_demons.main()
             # Verified
             elif slayer_task == 'Fire Giants':
-                slayer.fire_giants.main()
+                # slayer.fire_giants.main()
+                slayer.fire_giants_catacombs.main()
             # Verified
             elif slayer_task == 'Dagannoth':
                 # slayer.dagganoth.main()
@@ -87,6 +88,8 @@ def main():
                 slayer.nechs.main()
             elif slayer_task == 'Drakes':
                 slayer.drakes.main()
+            elif slayer_task == 'Abyssal Demons':
+                slayer.abby_demon.main()
             else:
                 return print(f'Can not parse {slayer_task}')
         else:
