@@ -17,6 +17,10 @@ supplies = [
         ItemIDs.RUNE_POUCH.value,
         ItemIDs.KARAMJA_GLOVES_3.value,
         {
+            'id': ItemIDs.NATURE_RUNE.value,
+            'quantity': 'All'
+        },
+        {
             'id': [
                 ItemIDs.SLAYER_RING_2.value,
                 ItemIDs.SLAYER_RING_3.value,
@@ -29,12 +33,9 @@ supplies = [
             'quantity': '1'
         },
         {
-            'id': ItemIDs.MONKFISH.value,
-            'quantity': '5'
-        },
-        {
             'id': ItemIDs.PRAYER_POTION4.value,
-            'quantity': 'All'
+            'quantity': 'X',
+            'amount': '12'
         },
     ]
 equipment = [
@@ -43,8 +44,8 @@ equipment = [
     ItemIDs.BARROWS_GLOVES.value,
     ItemIDs.BRIMSTONE_RING.value,
     ItemIDs.DRAGON_BOOTS.value,
-    ItemIDs.MONKS_ROBE.value,
-    ItemIDs.MONKS_ROBE_TOP.value,
+    ItemIDs.PROSELYTE_CUISSE.value,
+    ItemIDs.PROSELYTE_HAUBERK.value,
     ItemIDs.AMULET_OF_FURY.value,
     ItemIDs.RUNE_DEFENDER.value,
     ItemIDs.HOLY_BLESSING.value,
