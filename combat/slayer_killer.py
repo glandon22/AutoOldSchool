@@ -1,14 +1,14 @@
 import datetime
 
 import pyautogui
-
+from matplotlib.path import Path
 import osrs
 from osrs.item_ids import ItemIDs
 
 
 class PotConfig:
     def __init__(self, super_combat=False, ranging=False, magic=False, antipoision=False, antifire=False,
-                 super_str=False, super_atk=False):
+                 super_str=False, super_atk=False, super_def=False):
         self.SUPER_COMBATS = super_combat
         self.RANGING_POTION = ranging
         self.MAGIC_POTION = magic
@@ -16,6 +16,7 @@ class PotConfig:
         self.EXTENDED_ANTIFIRE = antifire
         self.SUPER_ATK = super_atk
         self.SUPER_STR = super_str
+        self.SUPER_DEF = super_def
 
     def asdict(self):
         return {
@@ -25,7 +26,8 @@ class PotConfig:
             'SUPER_ANTI_POISION': self.SUPER_ANTI_POISION,
             'EXTENDED_ANTIFIRE': self.EXTENDED_ANTIFIRE,
             'SUPER_ATTACK': self.SUPER_ATK,
-            'SUPER_STRENGTH': self.SUPER_STR
+            'SUPER_STRENGTH': self.SUPER_STR,
+            'SUPER_DEFENCE': self.SUPER_DEF
         }
 
 
@@ -56,6 +58,12 @@ pot_matcher = {
         ItemIDs.SUPER_STRENGTH3.value,
         ItemIDs.SUPER_STRENGTH2.value,
         ItemIDs.SUPER_STRENGTH1.value,
+    ],
+    "SUPER_DEFENCE": [
+        ItemIDs.SUPER_DEFENCE4.value,
+        ItemIDs.SUPER_DEFENCE3.value,
+        ItemIDs.SUPER_DEFENCE2.value,
+        ItemIDs.SUPER_DEFENCE1.value,
     ],
     "RANGING_POTION": [
         ItemIDs.RANGING_POTION4.value,
@@ -102,33 +110,81 @@ prayer_map_widgets = {
 }
 
 
-def find_next_target(npcs, safespot_config, ignore_interacting, attackable_area):
-    res = False
-    if not npcs:
-        return False
-    for npc in npcs:
-        # If I have configured an attackable area, do not attack any NPC outside of this area
-        if attackable_area and (
-                npc['x_coord'] <= attackable_area['x_min'] or npc['x_coord'] >= attackable_area['x_max']
-                or npc['y_coord'] <= attackable_area['y_min'] or npc['y_coord'] >= attackable_area['y_max']
-        ):
-            continue
+random_event_npcs_to_ignore = [
+    6747, # beekeeper
+    5426, # arnav
+    12551, 12552, # count check
+    307, 314, # jekyll
+    322, # drunken dwarf
+    6749, # dunce
+    390, 6754, # evil bob
+    6744, # flippa
+    6748, # forester
+    5429, 5430, 5431, 5432, 312, 5434, 5435, # frogs
+    326, 327, # genie
+    5438, 5441, # giles
+    6746, # leo
+    5437, 5440, # miles
+    6750, 6751, 6752, 6753, # mys old man
+    5436, 5439, # niles
+    380, # pillory
+    6738, # postie
+    6755, # quiz master
+    375, 376, # turpentine
+    5510, # sandwich
+    6743, # sargeant damien
+    10, # Death spawn from nechryael. not a random but whatever
+]
+
+
+def find_next_target(npcs, monster, ignore_interacting, attackable_area):
+    def target_filter_function(npc):
+        if int(npc['id']) in random_event_npcs_to_ignore:
+            return False
+        # If an attackable area is configured, ensure that this monster is within it
+        if attackable_area:
+            in_area = Path([
+                (attackable_area['x_max'], attackable_area['y_max']),
+                (attackable_area['x_max'], attackable_area['y_min']),
+                (attackable_area['x_min'], attackable_area['y_max']),
+                (attackable_area['x_min'], attackable_area['y_min'])
+            ], closed=True).contains_point((npc['x_coord'], npc['y_coord']))
+            if not in_area:
+                print(
+                    (attackable_area['x_max'], attackable_area['y_max']),
+                    (attackable_area['x_max'], attackable_area['y_min']),
+                    (attackable_area['x_min'], attackable_area['y_max']),
+                    (attackable_area['x_min'], attackable_area['y_min'])
+                )
+                print(npc)
+            if not in_area:
+                return False
         # Ignore any NPC that is already dead!
         if npc['health'] == 0:
-            continue
-        # Monster location is not suitable for configured safespot
-        if safespot_config and (
-                safespot_config['min_monster_dist'] >= npc['dist'] or safespot_config['max_monster_dist'] <= npc[
-            'dist']):
-            continue
-        # always attack a monster if it is already attacking me
-        if 'interacting' in npc and 'GreazyDonkey' in npc['interacting']:
-            return npc
-        if ignore_interacting or 'interacting' not in npc:
-            if not res or npc['dist'] < res['dist']:
-                res = npc
-    print(res)
-    return res
+            return False
+        # If this monster is already interacting with someone other than me,
+        # check to see if i have ignore_interacting set. If not, ignore this monster
+        if 'interacting' in npc and 'GreazyDonkey' not in npc['interacting']:
+            if not ignore_interacting:
+
+                return False
+        return True
+    # remove monsters that are out of bounds, dead, fighting someone else or not what i want to kill
+    filtered_npcs = list(filter(target_filter_function, npcs))
+    if len(filtered_npcs) == 0:
+        print('could not find a suitable monster on first pass')
+        return False
+    monster_attacking_me = list(filter(lambda npc: 'interacting' in npc and 'GreazyDonkey' in npc['interacting'], filtered_npcs))
+    # there is a monster already attacking me - kill it
+    if len(monster_attacking_me) > 0:
+        print('there is a monster already attacking - targeting it')
+        return sorted(monster_attacking_me, key=lambda npc: npc['dist'])[0]
+    # now filter out any monsters that are not my task since i have confirmed no other monsters are attacking me
+    final_filter_list = list(filter(lambda npc: npc['name'].lower() in monster, filtered_npcs))
+    if len(final_filter_list) == 0:
+        return False
+    sorted_npcs = sorted(final_filter_list, key=lambda npc: npc['dist'])
+    return sorted_npcs[0]
 
 
 def prayer_handler(qh: osrs.queryHelper.QueryHelper, prayers):
@@ -141,31 +197,6 @@ def prayer_handler(qh: osrs.queryHelper.QueryHelper, prayers):
             qh.query_backend()
             osrs.move.fast_click(qh.get_widgets(prayer_map_widgets[prayer]))
     osrs.keeb.press_key('esc')
-
-
-def not_in_safe_spot(qh, ss_x, ss_y, ss_z):
-    if ss_x == -1 or ss_y == -1 or ss_z == -1:
-        return False
-    if qh.get_player_world_location('x') == ss_x and qh.get_player_world_location('y') == ss_y:
-        return False
-    return True
-
-
-def safe_spot_handler(qh, safespot_config):
-    if not safespot_config:
-        return
-    # confirm we are safespotting
-    while True:
-        qh.query_backend()
-        if not_in_safe_spot(qh, safespot_config["x"], safespot_config["y"], safespot_config["z"]):
-            print('out of safespot')
-            if qh.get_tiles(f'{safespot_config["x"]},{safespot_config["y"]},{safespot_config["z"]}') \
-                    and osrs.move.is_clickable(
-                qh.get_tiles(f'{safespot_config["x"]},{safespot_config["y"]},{safespot_config["z"]}')):
-                osrs.move.fast_click(
-                    qh.get_tiles(f'{safespot_config["x"]},{safespot_config["y"]},{safespot_config["z"]}'))
-        else:
-            return
 
 
 def food_handler(qh, min_health):
@@ -197,6 +228,13 @@ def pot_handler(qh: osrs.queryHelper.QueryHelper, pots):
             and pots['SUPER_STRENGTH'] \
             and qh.get_skills('strength')['boostedLevel'] - qh.get_skills('strength')['level'] < 12:
         p = osrs.inv.are_items_in_inventory_v2(qh.get_inventory(), pot_matcher['SUPER_STRENGTH'])
+        if p:
+            osrs.move.click(p)
+
+    if 'SUPER_DEFENCE' in pots \
+            and pots['SUPER_DEFENCE'] \
+            and qh.get_skills('defence')['boostedLevel'] - qh.get_skills('defence')['level'] < 12:
+        p = osrs.inv.are_items_in_inventory_v2(qh.get_inventory(), pot_matcher['SUPER_DEFENCE'])
         if p:
             osrs.move.click(p)
 
@@ -256,21 +294,21 @@ def hop_handler(qh: osrs.queryHelper.QueryHelper, pre_hop, last_seen, post_login
     return None
 
 
-def main(npc_to_kill, pots, min_health, safespot_config=None, hop=False,
-         pre_hop=False, prayers=None, ignore_interacting=False, attackable_area=None, post_login=None, loot_config=None
-         ):
+def main(
+    npc_to_kill, pots, min_health, hop=False,
+    pre_hop=False, prayers=None, ignore_interacting=False,
+    attackable_area=None,
+    post_login=None, loot_config=None
+):
     player_last_seen = None
-    if safespot_config is None:
-        safespot_config = {}
     monster = npc_to_kill if type(npc_to_kill) is list else [npc_to_kill]
+    monster = [item.lower() for item in monster]
     qh = osrs.queryHelper.QueryHelper()
-    qh.set_npcs_by_name(monster)
+    qh.set_npcs_by_name([])
     qh.set_skills({'hitpoints', 'strength', 'ranged', 'magic', 'attack', 'defence', 'prayer'})
     qh.set_inventory()
     qh.set_interating_with()
     qh.set_widgets({'233,0', '541,23', '541,22', '541,21', '161,62'})
-    if safespot_config:
-        qh.set_tiles({f'{safespot_config["x"]},{safespot_config["y"]},{safespot_config["z"]}'})
     qh.set_player_world_location()
     qh.set_slayer()
     qh.set_var_player(['102'])
@@ -296,39 +334,23 @@ def main(npc_to_kill, pots, min_health, safespot_config=None, hop=False,
         for item in loot_config['loot']:
             loot_handler.add_item(item)
 
-    last_xp_received = datetime.datetime.now()
-    hp_exp = 0
+    last_interacting = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
         qh.query_backend()
 
+        # Pull up inv if i am on another tab
         if qh.get_widgets('161,62') and qh.get_widgets('161,62')['spriteID'] != 1030:
+            print('jere', qh.get_widgets('161,62'))
             osrs.keeb.press_key('esc')
 
         if not qh.get_slayer() or not qh.get_slayer()['monster']:
             print('task complete')
             return True
 
-        if qh.get_skills('hitpoints')['xp'] != hp_exp:
-            last_xp_received = datetime.datetime.now()
-            hp_exp = qh.get_skills('hitpoints')['xp']
-
         if not qh.get_interating_with():
-            # sometimes there are secondary monsters in an area that i am not looking to attack
-            # if they are attacking me in single way, i will endlessly click the monster i want to
-            # attack but not be able to attack them. give  a pause here to auto retaliate against
-            # the undesirable monster and kill it
-            if (datetime.datetime.now() - last_xp_received).total_seconds() > 7:
-                print('out of combat 7 seconds')
-                osrs.clock.random_sleep(4.4, 4.5)
-                last_xp_received = datetime.datetime.now()
-                continue
-
             # Look for any loot, and we dont want to count time looking for loot as time out of combat bc it
             # leads to weird behavior
-            start_loot = datetime.datetime.now()
             loot_handler.retrieve_loot(12)
-            end_loot = datetime.datetime.now()
-            last_xp_received += datetime.timedelta((end_loot - start_loot).total_seconds())
             qh.query_backend()
 
             osrs.game.break_manager_v4(script_config)
@@ -336,14 +358,24 @@ def main(npc_to_kill, pots, min_health, safespot_config=None, hop=False,
             if hop:
                 player_last_seen = hop_handler(qh, pre_hop, player_last_seen, post_login)
 
-            targets = qh.get_npcs_by_name()
-            c = find_next_target(targets, safespot_config, ignore_interacting, attackable_area)
-            if c:
-                osrs.move.fast_click(c)
-                pyautogui.click()
-                # sleep for one tick if i am trying to safespot so im not jumping in and out like a bot
-                if safespot_config:
-                    osrs.clock.sleep_one_tick()
+            if (datetime.datetime.now() - last_interacting).total_seconds() > 2:
+                monster_search_start = datetime.datetime.now()
+                qh2 = osrs.queryHelper.QueryHelper()
+                qh2.set_npcs_by_name([])
+                qh2.set_interating_with()
+                while True:
+                    qh2.query_backend()
+                    if qh2.get_interating_with():
+                        last_interacting = datetime.datetime.now()
+                        break
+                    targets = qh2.get_npcs_by_name()
+                    c = find_next_target(targets, monster, ignore_interacting, attackable_area)
+                    if c:
+                        osrs.move.fast_click(c)
+                        pyautogui.click()
+                    elif (datetime.datetime.now() - monster_search_start).total_seconds() > 7:
+                        break
+                continue
 
         success = food_handler(qh, min_health)
         # Ran out of food, exit script
@@ -351,7 +383,6 @@ def main(npc_to_kill, pots, min_health, safespot_config=None, hop=False,
             print('failed to eat')
             return False
 
-        safe_spot_handler(qh, safespot_config)
         pot_success = pot_handler(qh, pots)
         if not pot_success:
             print('failed to pot up')

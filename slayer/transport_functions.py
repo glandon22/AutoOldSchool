@@ -136,7 +136,8 @@ def taverley_dungeon_black_dragons():
         # I am in the dungeon
         if qh.get_player_world_location('z') == 1:
             break
-        elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, rock_steps_id) and qh.get_player_world_location('y') > 9803:
+        elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, rock_steps_id) and qh.get_player_world_location(
+                'y') > 9803:
             osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, rock_steps_id)[0])
         else:
             osrs.move.follow_path(qh.get_player_world_location(), {'x': 2884, 'y': 9825, 'z': 0})
@@ -732,8 +733,8 @@ def godwars_main_room():
         if qh.get_player_world_location('y') >= 3717:
             break
         elif qh.get_objects(
-            osrs.queryHelper.ObjectTypes.GAME.value,
-            boulder_id
+                osrs.queryHelper.ObjectTypes.GAME.value,
+                boulder_id
         ) and qh.get_player_world_location('y') > 3700:
             osrs.move.fast_click(qh.get_objects(
                 osrs.queryHelper.ObjectTypes.GAME.value,
@@ -746,8 +747,8 @@ def godwars_main_room():
         if qh.get_player_world_location('y') >= 5200:
             break
         elif qh.get_objects(
-            osrs.queryHelper.ObjectTypes.GAME.value,
-            gwd_entrance_id
+                osrs.queryHelper.ObjectTypes.GAME.value,
+                gwd_entrance_id
         ):
             osrs.move.fast_click(qh.get_objects(
                 osrs.queryHelper.ObjectTypes.GAME.value,
@@ -886,7 +887,7 @@ def morytania_abby_demons():
     last_ring_click = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
         qh.query_backend()
-        if qh.get_npcs_by_name():
+        if 3432 <= qh.get_player_world_location('x') <= 3443 and 9962 <= qh.get_player_world_location('y') <= 9973:
             return
         elif qh.get_chat_options() and 'Teleport' in qh.get_chat_options():
             osrs.keeb.write('1')
@@ -895,10 +896,8 @@ def morytania_abby_demons():
         elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, basement_ladder_id):
             osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, basement_ladder_id)[0])
             osrs.clock.sleep_one_tick()
-        elif qh.get_tiles('3438,9967,3') and osrs.move.is_clickable(qh.get_tiles('3438,9967,3')):
-            osrs.move.click(qh.get_tiles('3438,9967,3'))
-        elif qh.get_tiles('3433,9950,3') and osrs.move.is_clickable(qh.get_tiles('3433,9950,3')):
-            osrs.move.click(qh.get_tiles('3433,9950,3'))
+        elif qh.get_player_world_location('z') == 3:
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': 3438, 'y': 9966, 'z': 3})
         elif qh.get_inventory(slayer_rings) and (datetime.datetime.now() - last_ring_click).total_seconds() > 7:
             ring = qh.get_inventory(slayer_rings)
             osrs.move.right_click_v3(ring, 'Rub')
@@ -969,16 +968,18 @@ def duradel():
     glove_click = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
         qh.query_backend()
-        if qh.get_inventory() and qh.get_inventory(osrs.item_ids.ItemIDs.KARAMJA_GLOVES_3.value)\
+        if qh.get_inventory() and qh.get_inventory(osrs.item_ids.ItemIDs.KARAMJA_GLOVES_3.value) \
                 and (datetime.datetime.now() - glove_click).total_seconds() > 10:
-            osrs.move.right_click_v5(qh.get_inventory(osrs.item_ids.ItemIDs.KARAMJA_GLOVES_3.value), 'Gem Mine', in_inv=True)
+            osrs.move.right_click_v5(qh.get_inventory(osrs.item_ids.ItemIDs.KARAMJA_GLOVES_3.value), 'Gem Mine',
+                                     in_inv=True)
             glove_click = datetime.datetime.now()
         elif 2830 <= qh.get_player_world_location('x') <= 2845 and 9383 <= qh.get_player_world_location('y') <= 9394:
             break
     ladder_click = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
         qh.query_backend()
-        if qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, gem_mine_ladder_id) and (datetime.datetime.now() - ladder_click).total_seconds() > 6:
+        if qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, gem_mine_ladder_id) and (
+                datetime.datetime.now() - ladder_click).total_seconds() > 6:
             osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, gem_mine_ladder_id)[0])
             osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, gem_mine_ladder_id)[0])
             ladder_click = datetime.datetime.now()
@@ -993,7 +994,8 @@ def duradel():
     ladder_click2 = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
         qh.query_backend()
-        if qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, duradel_ladder_id) and (datetime.datetime.now() - ladder_click2).total_seconds() > 6:
+        if qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, duradel_ladder_id) and (
+                datetime.datetime.now() - ladder_click2).total_seconds() > 6:
             osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, duradel_ladder_id)[0])
             ladder_click2 = datetime.datetime.now()
         elif qh.get_player_world_location('z') == 1:
@@ -1159,11 +1161,54 @@ def mount_karuulm_drakes():
             return
         else:
             osrs.move.follow_path(qh.get_player_world_location(), {'x': 1311, 'y': 10239, 'z': 1})
-    '''while True:
+
+
+def kraken_cove_private():
+    cove_entrance = '30177'
+    private_entrance = '537'
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_canvas()
+    qh.set_chat_options()
+    qh.set_tiles({'2315,3613,0'})
+    qh.set_objects(
+        {'2278,3612,0'},
+        {cove_entrance},
+        osrs.queryHelper.ObjectTypes.GAME.value
+    )
+    qh.set_objects(
+        {'2280,10017,0'},
+        {private_entrance},
+        osrs.queryHelper.ObjectTypes.WALL.value
+    )
+    qh.set_player_world_location()
+    qh.set_npcs(['496', '494'])
+    last_successful_instance_entrance_click = datetime.datetime.now() - datetime.timedelta(hours=1)
+    while True:
         qh.query_backend()
-        if 1335 <= qh.get_player_world_location('x') <= 1361 and 10225 <= qh.get_player_world_location('y') <= 10251:
+        # In my private instance
+        if len(qh.get_npcs()) > 0:
             return
-        elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, tunnel_to_final_room_id):
-            osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, tunnel_to_final_room_id)[0])
-        else:
-            osrs.move.follow_path(qh.get_player_world_location(), {'x': 1311, 'y': 10239, 'z': 1})'''
+        # cave entrance visible
+        elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, cove_entrance):
+            osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, cove_entrance)[0])
+        # between fairy ring and cave entrance
+        elif 2267 <= qh.get_player_world_location('x') <= 2334 and 3597 <= qh.get_player_world_location('y') <= 3640:
+            # I'm on the fairy ring and the dax pathing always breaks
+            if qh.get_player_world_location('x') == 2319 and qh.get_player_world_location('y') == 3619 and qh.get_tiles('2315,3613,0'):
+                osrs.move.fast_click(qh.get_tiles('2315,3613,0'))
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2282, 'y': 3610, 'z': 0})
+        # Chat option is up to go into the instance
+        elif qh.get_chat_options('Yes, pay 25,000 x Coins.'):
+            osrs.keeb.write(str(qh.get_chat_options('Yes, pay 25,000 x Coins.')))
+        # Entrance to the private instance is in view
+        elif qh.get_objects(osrs.queryHelper.ObjectTypes.WALL.value, private_entrance) \
+                and (datetime.datetime.now() - last_successful_instance_entrance_click).total_seconds() > 15:
+            result = osrs.move.right_click_v6(
+                qh.get_objects(osrs.queryHelper.ObjectTypes.WALL.value, private_entrance)[0], 'Private', qh.get_canvas()
+            )
+            if result:
+                last_successful_instance_entrance_click = datetime.datetime.now()
+        # im in the cave but i cant see the instance entrance yet
+        elif 2242 <= qh.get_player_world_location('x') <= 2300 and 9977 <= qh.get_player_world_location('y') <= 10015 \
+                and (datetime.datetime.now() - last_successful_instance_entrance_click).total_seconds() > 15:
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2270, 'y': 10003, 'z': 0})

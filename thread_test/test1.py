@@ -1,17 +1,13 @@
 # 2134,9305,0
 import datetime
 
+import pyautogui
+
 import osrs
-'''from osrs.item_ids import ItemIDs
 from combat import slayer_killer
-
-
-
-loot = osrs.loot.Loot()
-loot.retrieve_loot()'''
-
-qh = osrs.queryHelper.QueryHelper()
-qh.set_active_prayers()
-while True:
-    qh.query_backend()
-    print(qh.get_active_prayers())
+pot_config = slayer_killer.PotConfig(super_str=True)
+slayer_killer.main(
+    'suqah',
+    pot_config.asdict(), 35,
+    attackable_area={'x_min': 2090, 'x_max': 2111, 'y_min': 3847, 'y_max': 3878},
+)

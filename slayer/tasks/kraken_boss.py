@@ -1,46 +1,72 @@
 # 2134,9305,0
+import datetime
+
 import osrs
 from osrs.item_ids import ItemIDs
 from slayer import transport_functions
 from combat import slayer_killer
 from slayer.tasks import gear
 
+from combat import cave_kraken
+
 varrock_tele_widget_id = '218,23'
 
 
 supplies = [
     ItemIDs.DRAMEN_STAFF.value,
-    ItemIDs.SUPER_COMBAT_POTION4.value,
-    ItemIDs.SUPER_COMBAT_POTION4.value,
     ItemIDs.RUNE_POUCH.value,
+    ItemIDs.SUPER_DEFENCE4.value,
+    ItemIDs.SUPER_DEFENCE4.value,
+    {
+        'id': [
+            ItemIDs.NATURE_RUNE.value
+        ],
+        'quantity': 'All'
+    },
     ItemIDs.KARAMJA_GLOVES_3.value,
     {
         'id': [
-            ItemIDs.PRAYER_POTION4.value
+            ItemIDs.FISHING_EXPLOSIVE_6664.value
         ],
-        'quantity': '5'
-    },
-    {
-        'id': ItemIDs.NATURE_RUNE.value,
         'quantity': 'All'
     },
     {
-        'id': ItemIDs.MONKFISH.value,
+        'id': [
+            ItemIDs.SHARK.value
+        ],
         'quantity': 'All'
     },
 ]
 
 equipment = [
-    ItemIDs.DRAGON_HUNTER_LANCE.value,
-    ItemIDs.RUNE_DEFENDER.value,
-    ItemIDs.BARROWS_GLOVES.value,
-    ItemIDs.FIRE_CAPE.value,
     ItemIDs.SLAYER_HELMET_I.value,
+    ItemIDs.FIRE_CAPE.value,
+    ItemIDs.OCCULT_NECKLACE.value,
+    ItemIDs.TRIDENT_OF_THE_SWAMP.value,
+    {
+        'id': [
+            ItemIDs.KARILS_LEATHERTOP.value,
+            ItemIDs.KARILS_LEATHERTOP_25.value,
+            ItemIDs.KARILS_LEATHERTOP_50.value,
+            ItemIDs.KARILS_LEATHERTOP_75.value,
+            ItemIDs.KARILS_LEATHERTOP_100.value,
+        ],
+        'quantity': 1
+    },
+    {
+        'id': [
+            ItemIDs.KARILS_LEATHERSKIRT.value,
+            ItemIDs.KARILS_LEATHERSKIRT_25.value,
+            ItemIDs.KARILS_LEATHERSKIRT_50.value,
+            ItemIDs.KARILS_LEATHERSKIRT_75.value,
+            ItemIDs.KARILS_LEATHERSKIRT_100.value,
+        ],
+        'quantity': 1
+    },
+    ItemIDs.MALEDICTION_WARD.value,
+    ItemIDs.BARROWS_GLOVES.value,
+    ItemIDs.ETERNAL_BOOTS.value,
     ItemIDs.BRIMSTONE_RING.value,
-    ItemIDs.BOOTS_OF_BRIMSTONE.value,
-    ItemIDs.BANDOS_CHESTPLATE.value,
-    ItemIDs.BANDOS_TASSETS.value,
-    ItemIDs.AMULET_OF_FURY.value,
 ]
 
 banking_config_equipment = {
@@ -55,12 +81,11 @@ banking_config_supplies = {
     'search': [{'query': 'slayer', 'items': supplies}]
 }
 
-pot_config = slayer_killer.PotConfig(super_combat=True)
+pot_config = slayer_killer.PotConfig(super_def=True)
 
 
 def pre_log():
-    osrs.player.turn_off_all_prayers()
-    osrs.clock.random_sleep(12, 12.1)
+    osrs.clock.random_sleep(10,11)
 
 
 def main():
@@ -91,17 +116,14 @@ def main():
                 break
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
-        osrs.game.tele_home_fairy_ring('cir')
-        transport_functions.mount_karuulm_wyrms()
+        osrs.game.tele_home_fairy_ring('akq')
+        transport_functions.kraken_cove_private()
         qh.query_backend()
-        osrs.move.click(qh.get_inventory(ItemIDs.DRAGON_HUNTER_LANCE.value))
+        osrs.move.click(qh.get_inventory(ItemIDs.TRIDENT_OF_THE_SWAMP.value))
         task_started = True
-        success = slayer_killer.main(
-            'wyrm', pot_config.asdict(), 35, hop=True, pre_hop=pre_log, prayers=['protect_mage'],
-            attackable_area={'x_min': 1251, 'x_max': 1276, 'y_min': 10147, 'y_max': 10161},
-        )
+        success = cave_kraken.main()
         qh.query_backend()
-        osrs.player.turn_off_all_prayers()
         osrs.game.cast_spell(varrock_tele_widget_id)
         if success:
             return True
+

@@ -461,6 +461,39 @@ def right_click_v5(item, action, in_inv=False):
             return False
 
 
+def right_click_v6(item, action, canvas, in_inv=False):
+    osrs.move.move_and_click(item['x'], item['y'], 3, 3, 'right')
+    curr_pos = pyautogui.position()
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_right_click_menu()
+    max_canvas_y = canvas['yMax'] - canvas['yMin']
+    print('mcy', max_canvas_y)
+    # if i right click something that is low on the screen, the menu would open off the screen so the game pushes it up
+    additional_offset = 0
+    while True:
+        qh.query_backend()
+        if qh.get_right_click_menu():
+            if curr_pos[1] + qh.get_right_click_menu()['height'] > max_canvas_y:
+                print('too big')
+                # the extra "- 15" is because this doesnt account for the menu header, which is 15px on a 1080p screen
+                additional_offset = qh.get_right_click_menu()['y'] + 40 - curr_pos[1] - 15
+            entry_data = qh.get_right_click_menu()
+            choose_option_offset = entry_data['height'] - (len(entry_data['entries']) * 15)
+            parsed_entries = reversed(entry_data['entries'])
+            for i, entry in enumerate(parsed_entries):
+                if action.upper() == entry[0].upper() and (in_inv or item['id'] == int(entry[1])):
+                    additional = choose_option_offset + (i * 15)
+                    osrs.move.move_and_click(
+                        curr_pos[0],
+                        curr_pos[1] + additional + additional_offset,
+                        0,
+                        0
+                    )
+                    return True
+            pyautogui.click()
+            return False
+
+
 def mac_right_click_menu_select(item, entry_action=None):
     move_and_click(item['x'], item['y'], 3, 3, 'right')
     clock.random_sleep(0.2, 0.3)

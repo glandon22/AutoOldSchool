@@ -24,6 +24,10 @@ supplies = [
     ItemIDs.SUPER_COMBAT_POTION4.value,
     ItemIDs.RUNE_POUCH.value,
     ItemIDs.SUPER_RESTORE4.value,
+    {
+        'id': ItemIDs.NATURE_RUNE.value,
+        'quantity': 'All'
+    },
     ItemIDs.KARAMJA_GLOVES_3.value,
     {
         'id': ItemIDs.MONKFISH.value,
@@ -127,7 +131,7 @@ def main():
                 osrs.move.fast_click(qh.get_inventory(ItemIDs.SUPER_RESTORE4.value))
             else:
                 break
-        success = slayer_killer.main('spiritual warrior', pot_config.asdict(), 35, prayers=['protect_melee'], ignore_interacting=True, pre_hop=pre_log)
+        success = slayer_killer.main('spiritual mage', pot_config.asdict(), 35, prayers=['protect_mage'], ignore_interacting=True, pre_hop=pre_log)
         osrs.player.turn_off_all_prayers()
         osrs.game.cast_spell(varrock_tele_widget_id)
         if success:

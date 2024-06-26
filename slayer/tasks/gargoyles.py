@@ -18,8 +18,12 @@ supplies = [
         ],
         'quantity': 'All'
     },
-    ItemIDs.SUPER_COMBAT_POTION4.value,
-    ItemIDs.SUPER_COMBAT_POTION4.value,
+    ItemIDs.SUPER_ATTACK4.value,
+    ItemIDs.SUPER_ATTACK4.value,
+    ItemIDs.SUPER_ATTACK4.value,
+    ItemIDs.SUPER_STRENGTH4.value,
+    ItemIDs.SUPER_STRENGTH4.value,
+    ItemIDs.SUPER_STRENGTH4.value,
     ItemIDs.RUNE_POUCH.value,
     ItemIDs.KARAMJA_GLOVES_3.value,
     {
@@ -37,7 +41,8 @@ supplies = [
     ItemIDs.ROCK_HAMMER.value,
     {
         'id': ItemIDs.PRAYER_POTION4.value,
-        'quantity': '10'
+        'quantity': 'X',
+        'amount': '12'
     }
 ]
 
@@ -67,48 +72,7 @@ banking_config_supplies = {
     'search': [{'query': 'slayer', 'items': supplies}]
 }
 
-pot_config = slayer_killer.PotConfig(super_combat=True)
-
-
-def loot_builder():
-    config = {
-        'inv': [],
-        'loot': []
-    }
-
-    item = osrs.loot.LootConfig(ItemIDs.GRANITE_MAUL.value, 10)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.MYSTIC_ROBE_TOP_DARK.value, 10, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.ADAMANT_PLATELEGS.value, 5, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.RUNE_FULL_HELM.value, 5, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.RUNE_2H_SWORD.value, 5, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.ADAMANT_BOOTS.value, 5, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.RUNE_BATTLEAXE.value, 5, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.RUNE_PLATELEGS.value, 5, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.CHAOS_RUNE.value, 3)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.DEATH_RUNE.value, 3)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.GOLD_ORE.value + 1, 3)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.STEEL_BAR.value + 1, 3)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.MITHRIL_BAR.value + 1, 3)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.RUNITE_ORE.value, 3)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.COINS_995.value, 3, min_quantity=1000)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.BRITTLE_KEY.value, 99)
-    config['loot'].append(item)
-    return config
+pot_config = slayer_killer.PotConfig(super_str=True, super_atk=True)
 
 
 def pre_log():
@@ -167,7 +131,7 @@ def main():
         qh.query_backend()
         task_started = True
         success = slayer_killer.main(
-            'gargoyle', pot_config.asdict(), 35, pre_hop=pre_log, prayers=['protect_melee'], loot_config=loot_builder()
+            'gargoyle', pot_config.asdict(), 35, pre_hop=pre_log, prayers=['protect_melee']
         )
         qh.query_backend()
         osrs.player.turn_off_all_prayers()

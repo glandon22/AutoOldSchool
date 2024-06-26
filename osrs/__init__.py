@@ -15,7 +15,8 @@ __all__ = [
     'models',
     'item_ids',
     'widget_ids',
-    'loot'
+    'loot',
+    'combat_utils'
 ]
 
 import osrs.dev
@@ -35,3 +36,4 @@ import osrs.models
 import osrs.item_ids
 import osrs.widget_ids
 import osrs.loot
+import osrs.combat_utils

@@ -90,6 +90,8 @@ def main():
                 slayer.drakes.main()
             elif slayer_task == 'Abyssal Demons':
                 slayer.abby_demon.main()
+            elif slayer_task == 'Cave Kraken':
+                slayer.kraken_boss.main()
             else:
                 return print(f'Can not parse {slayer_task}')
         else:

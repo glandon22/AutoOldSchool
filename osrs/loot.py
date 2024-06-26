@@ -7,12 +7,13 @@ logger = dev.instantiate_logger()
 
 
 class LootConfig:
-    def __init__(self, item_id, priority, stackable=False, min_quantity=1, alch=False):
+    def __init__(self, item_id, priority, stackable=False, min_quantity=1, alch=False, consume=False):
         self.item_id = item_id
         self.priority = priority
         self.stackable = stackable
         self.min_quantity = min_quantity
         self.alch = alch
+        self.consume = consume
 
     def asdict(self):
         return {
@@ -61,6 +62,17 @@ def monkfish_eval(loot_priority):
     qh.set_skills({'hitpoints'})
     qh.query_backend()
     if qh.get_skills('hitpoints')['level'] - qh.get_skills('hitpoints')['boostedLevel'] > 12:
+        return True
+    return False
+
+
+def shark_eval(loot_priority):
+    if loot_priority > 6:
+        return True
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_skills({'hitpoints'})
+    qh.query_backend()
+    if qh.get_skills('hitpoints')['level'] - qh.get_skills('hitpoints')['boostedLevel'] > 15:
         return True
     return False
 
@@ -120,6 +132,7 @@ class Loot:
             qh.set_player_world_location()
             qh.set_inventory()
             qh.query_backend()
+            qh.set_canvas()
             tiles = osrs.util.generate_surrounding_tiles_from_point(dist, qh.get_player_world_location())
             qh.set_ground_items(tiles)
             qh.set_widgets({self.high_alch_widget_id})
@@ -148,7 +161,7 @@ class Loot:
                     osrs.move.right_click_v4(item, 'Take')
                 else:
                     osrs.move.fast_click(item)'''
-                res = osrs.move.right_click_v5(item, 'Take')
+                res = osrs.move.right_click_v6(item, 'Take', qh.get_canvas())
                 if res:
                     qh1 = osrs.queryHelper.QueryHelper()
                     qh1.set_inventory()
@@ -211,6 +224,7 @@ class Loot:
             LootConfig(item_ids.ItemIDs.ADAMANT_2H_SWORD.value, 3, alch=True),
             ## Rune
             LootConfig(item_ids.ItemIDs.RUNE_AXE.value, 2, alch=True),
+            LootConfig(item_ids.ItemIDs.RUNE_WARHAMMER.value, 24, alch=True),
             LootConfig(item_ids.ItemIDs.RUNE_LONGSWORD.value, 18, alch=True),
             LootConfig(item_ids.ItemIDs.RUNE_MACE.value, 8, alch=True),
             LootConfig(item_ids.ItemIDs.RUNE_CHAINBODY.value, 29, alch=True),
@@ -237,12 +251,15 @@ class Loot:
             LootConfig(item_ids.ItemIDs.DRAGON_PLATELEGS.value, 161, alch=True),
             LootConfig(item_ids.ItemIDs.DRAGON_PLATESKIRT.value, 161, alch=True),
             ## Staves and Such
+            LootConfig(item_ids.ItemIDs.KRAKEN_TENTACLE.value, 838),
             LootConfig(item_ids.ItemIDs.DUST_BATTLESTAFF.value, 9),
+            LootConfig(item_ids.ItemIDs.TRIDENT_OF_THE_SEAS_FULL.value, 676),
             LootConfig(item_ids.ItemIDs.FIRE_BATTLESTAFF.value, 9, alch=True),
             LootConfig(item_ids.ItemIDs.EARTH_BATTLESTAFF.value, 9, alch=True),
             LootConfig(item_ids.ItemIDs.LAVA_BATTLESTAFF.value, 9, alch=True),
             LootConfig(item_ids.ItemIDs.AIR_BATTLESTAFF.value, 9, alch=True),
             LootConfig(item_ids.ItemIDs.MYSTIC_EARTH_STAFF.value, 25, alch=True),
+            LootConfig(item_ids.ItemIDs.MYSTIC_WATER_STAFF.value, 25, alch=True),
             LootConfig(item_ids.ItemIDs.MYSTIC_AIR_STAFF.value, 25, alch=True),
             ## Misc Alchable Weapons and Armor
             LootConfig(item_ids.ItemIDs.LEAFBLADED_BATTLEAXE.value, 58, alch=True),
@@ -250,6 +267,9 @@ class Loot:
             LootConfig(item_ids.ItemIDs.MYSTIC_ROBE_BOTTOM_LIGHT.value, 48, alch=True),
             LootConfig(item_ids.ItemIDs.MYSTIC_ROBE_TOP_LIGHT.value, 71, alch=True),
             LootConfig(item_ids.ItemIDs.MYSTIC_ROBE_BOTTOM_DARK.value, 48, alch=True),
+            LootConfig(item_ids.ItemIDs.MYSTIC_ROBE_TOP.value, 71, alch=True),
+            LootConfig(item_ids.ItemIDs.MYSTIC_ROBE_BOTTOM.value, 47, alch=True),
+            LootConfig(item_ids.ItemIDs.BATTLESTAFF.value + 1, 8, stackable=True),
 
             # Elemental Runes
             LootConfig(item_ids.ItemIDs.FIRE_RUNE.value, 1, stackable=True, min_quantity=250),
@@ -259,6 +279,7 @@ class Loot:
 
             # Combat Runes and Odd Runes
             LootConfig(item_ids.ItemIDs.BLOOD_RUNE.value, 3, stackable=True, min_quantity=6),
+            LootConfig(item_ids.ItemIDs.DEATH_RUNE.value, 3, stackable=True, min_quantity=6),
             LootConfig(item_ids.ItemIDs.SOUL_RUNE.value, 3, stackable=True, min_quantity=10),
             LootConfig(item_ids.ItemIDs.NATURE_RUNE.value, 3, stackable=True, min_quantity=10),
             LootConfig(item_ids.ItemIDs.LAW_RUNE.value, 3, stackable=True, min_quantity=10),
@@ -280,24 +301,44 @@ class Loot:
             LootConfig(item_ids.ItemIDs.CRYSTAL_SHARD, 10, stackable=True),
             LootConfig(item_ids.ItemIDs.DRACONIC_VISAGE.value, 3167),
             LootConfig(item_ids.ItemIDs.SMOULDERING_STONE.value, 3600),
+            LootConfig(item_ids.ItemIDs.CRYSTAL_KEY.value, 20),
+            LootConfig(item_ids.ItemIDs.JAR_OF_DIRT.value, 24),
+            LootConfig(item_ids.ItemIDs.DRAGONSTONE_RING.value, 11, alch=True),
+            LootConfig(item_ids.ItemIDs.OAK_PLANK.value + 1, 5, stackable=True, min_quantity=2),
+            LootConfig(item_ids.ItemIDs.RAW_SHARK.value + 1, 10, stackable=True, min_quantity=2),
+            LootConfig(item_ids.ItemIDs.RAW_MONKFISH.value + 1, 8, stackable=True, min_quantity=7),
 
             # Seeds
             LootConfig(item_ids.ItemIDs.SNAPDRAGON_SEED.value, 36, stackable=True),
             LootConfig(item_ids.ItemIDs.SNAPE_GRASS_SEED.value, 12, stackable=True, min_quantity=3),
             LootConfig(item_ids.ItemIDs.CADANTINE_SEED.value, 11, stackable=True),
             LootConfig(item_ids.ItemIDs.RANARR_SEED.value, 25, stackable=True),
+            LootConfig(item_ids.ItemIDs.TORSTOL_SEED.value, 4, stackable=True),
+            LootConfig(item_ids.ItemIDs.MAGIC_SEED.value, 64, stackable=True),
 
             # Bars and Ores
             LootConfig(item_ids.ItemIDs.MITHRIL_BAR.value + 1, 4, stackable=True, min_quantity=5),
             LootConfig(item_ids.ItemIDs.ADAMANTITE_BAR.value + 1, 8, stackable=True, min_quantity=3),
+            LootConfig(item_ids.ItemIDs.RUNITE_ORE.value, 11),
             LootConfig(item_ids.ItemIDs.RUNITE_BAR.value, 11),
             LootConfig(item_ids.ItemIDs.RUNITE_BAR.value + 1, 11, stackable=True),
+            LootConfig(item_ids.ItemIDs.GOLD_ORE.value + 1, 2, stackable=True, min_quantity=10),
+
+            # Herbs
+            LootConfig(item_ids.ItemIDs.GRIMY_SNAPDRAGON.value + 1, 5, stackable=True, min_quantity=2),
+
+            # Potions
+            LootConfig(item_ids.ItemIDs.SANFEW_SERUM4.value, 22),
+
+            # Food
+            LootConfig(item_ids.ItemIDs.SHARK.value, 1),
         ]
         return config
 
     def default_inv_config(self):
         config = [
-            InvConfig(osrs.item_ids.ItemIDs.MONKFISH.value, osrs.loot.monkfish_eval)
+            InvConfig(osrs.item_ids.ItemIDs.MONKFISH.value, osrs.loot.monkfish_eval),
+            InvConfig(osrs.item_ids.ItemIDs.SHARK.value, osrs.loot.shark_eval)
         ]
 
         return config
