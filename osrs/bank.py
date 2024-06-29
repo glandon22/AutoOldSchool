@@ -12,6 +12,8 @@ import osrs.queryHelper as queryHelper
 from osrs.widget_ids import WidgetIDs
 from collections import Counter
 
+withdraw_item_widget = '12,22'
+withdraw_noted_widget = '12,24'
 
 def deposit_all_of_x(items, port='56799'):
     while True:
@@ -148,8 +150,11 @@ def withdraw_configured_items(item, game_state: osrs.queryHelper.QueryHelper):
     if item['quantity'] not in ['All', 'X', 'x'] and banked_item['quantity'] < int(item['quantity']):
         print(f'not enough {ItemIDs(item).name} to satisfy request')
         return False
-
+    if 'noted' in item and item['noted']:
+        osrs.move.fast_click(game_state.get_widgets(withdraw_noted_widget))
     osrs.move.right_click_v3(banked_item, f'Withdraw-{item["quantity"]}')
+    if 'noted' in item and item['noted']:
+        osrs.move.fast_click(game_state.get_widgets(withdraw_item_widget))
 
     if item['quantity'] == 'X':
         osrs.clock.sleep_one_tick()
@@ -168,6 +173,27 @@ def withdraw_items(item, quantities, game_state: osrs.queryHelper.QueryHelper):
         return False
 
     osrs.move.click(game_state.get_bank(item))
+    return True
+
+
+def withdraw(searches, game_state: osrs.queryHelper.QueryHelper):
+    for search in searches:
+        filtered_items = [item for item in search['items'] if type(item) is not dict]
+        # if there are no dicts in this list it will return a nested list
+        # if that happens i have to flatten it
+        if len(filtered_items) > 0 and type(filtered_items[0]) is list:
+            filtered_items = sum(filtered_items, [])
+        print('u', filtered_items)
+        quantities = Counter(filtered_items)
+        for item in search['items']:
+            if type(item) is dict:
+                success = withdraw_configured_items(item, game_state)
+                if not success:
+                    return False
+            else:
+                success = withdraw_items(item, quantities, game_state)
+                if not success:
+                    return False
     return True
 
 
@@ -227,6 +253,10 @@ def banking_handler(params):
     ]
     crafting_guild_bank_tile = '2936,3280,0'
     crafting_guild_bank_id = 14886
+    lum_top_floor_bank_tile = '3208,3221,2'
+    lum_top_floor_bank_id = 18491
+    draynor_bank_tile = '3091,3245,0'
+    draynor_bank_id = 10355
     c_wars_bank_tile = '2444,3083,0'
     c_wars_bank_id = 4483
     v_west_bank_tile_1 = '3186,3436,0'
@@ -234,8 +264,8 @@ def banking_handler(params):
     qh = osrs.queryHelper.QueryHelper()
     qh.set_npcs([*ge_banker_npc_ids, *varr_banker_npc_ids, *fally_banker_npc_ids])
     qh.set_objects(
-        {crafting_guild_bank_tile, c_wars_bank_tile, v_west_bank_tile_1},
-        {crafting_guild_bank_id, c_wars_bank_id, v_west_bank_id_1},
+        {crafting_guild_bank_tile, c_wars_bank_tile, v_west_bank_tile_1, lum_top_floor_bank_tile, draynor_bank_tile},
+        {crafting_guild_bank_id, c_wars_bank_id, v_west_bank_id_1, lum_top_floor_bank_id, draynor_bank_id},
         osrs.queryHelper.ObjectTypes.GAME.value
     )
     qh.set_player_world_location()
@@ -245,6 +275,7 @@ def banking_handler(params):
         WidgetIDs.BANK_DEPOSIT_EQUIPMENT.value,
         WidgetIDs.BANK_SEARCH_BUTTON_BACKGROUND.value
     })
+    qh.set_widgets({withdraw_item_widget, withdraw_noted_widget})
     qh.set_bank()
     last_banker_click = datetime.datetime.now() - datetime.timedelta(hours=1)
     banker_search_duration = datetime.datetime.now()
@@ -300,7 +331,7 @@ def banking_handler(params):
         # TODO!
         print('not implemented')
     if 'withdraw' in params:
-        success = search_and_withdraw(params['withdraw'], qh)
+        success = withdraw(params['withdraw'], qh)
         if not success:
             print('Failed to withdraw items successfully.')
             return False
