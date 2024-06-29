@@ -139,6 +139,7 @@ random_event_npcs_to_ignore = [
 
 def find_next_target(npcs, monster, ignore_interacting, attackable_area):
     def target_filter_function(npc):
+        print('cblvl', npc['cbLvl'])
         if int(npc['id']) in random_event_npcs_to_ignore:
             return False
         # If an attackable area is configured, ensure that this monster is within it
@@ -161,6 +162,8 @@ def find_next_target(npcs, monster, ignore_interacting, attackable_area):
                 return False
         # Ignore any NPC that is already dead!
         if npc['health'] == 0:
+            return False
+        if not npc['cbLvl'] or npc['cbLvl'] <= 0:
             return False
         # If this monster is already interacting with someone other than me,
         # check to see if i have ignore_interacting set. If not, ignore this monster
@@ -353,7 +356,7 @@ def main(
             loot_handler.retrieve_loot(12)
             qh.query_backend()
 
-            osrs.game.break_manager_v4(script_config)
+            config = osrs.game.break_manager_v4(script_config)
 
             if hop:
                 player_last_seen = hop_handler(qh, pre_hop, player_last_seen, post_login)

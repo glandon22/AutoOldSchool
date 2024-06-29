@@ -97,7 +97,7 @@ def main():
         osrs.move.click(qh.get_inventory(ItemIDs.DRAGON_HUNTER_LANCE.value))
         task_started = True
         success = slayer_killer.main(
-            'wyrm', pot_config.asdict(), 35, hop=True, pre_hop=pre_log, prayers=['protect_mage'],
+            'wyrm', pot_config.asdict(), 35, pre_hop=pre_log, prayers=['protect_mage'],
             attackable_area={'x_min': 1251, 'x_max': 1276, 'y_min': 10147, 'y_max': 10161},
         )
         qh.query_backend()

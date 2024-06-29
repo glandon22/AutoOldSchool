@@ -965,13 +965,18 @@ def duradel():
     )
     qh.set_npcs_by_name(['duradel'])
     qh.set_slayer()
+    qh.set_canvas()
     glove_click = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
         qh.query_backend()
         if qh.get_inventory() and qh.get_inventory(osrs.item_ids.ItemIDs.KARAMJA_GLOVES_3.value) \
                 and (datetime.datetime.now() - glove_click).total_seconds() > 10:
-            osrs.move.right_click_v5(qh.get_inventory(osrs.item_ids.ItemIDs.KARAMJA_GLOVES_3.value), 'Gem Mine',
-                                     in_inv=True)
+            osrs.move.right_click_v6(
+                qh.get_inventory(osrs.item_ids.ItemIDs.KARAMJA_GLOVES_3.value),
+                'Gem Mine',
+                qh.get_canvas(),
+                in_inv=True
+            )
             glove_click = datetime.datetime.now()
         elif 2830 <= qh.get_player_world_location('x') <= 2845 and 9383 <= qh.get_player_world_location('y') <= 9394:
             break

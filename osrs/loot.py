@@ -267,9 +267,12 @@ class Loot:
             LootConfig(item_ids.ItemIDs.MYSTIC_ROBE_BOTTOM_LIGHT.value, 48, alch=True),
             LootConfig(item_ids.ItemIDs.MYSTIC_ROBE_TOP_LIGHT.value, 71, alch=True),
             LootConfig(item_ids.ItemIDs.MYSTIC_ROBE_BOTTOM_DARK.value, 48, alch=True),
+            LootConfig(item_ids.ItemIDs.MYSTIC_ROBE_TOP_DARK.value, 79, alch=True),
             LootConfig(item_ids.ItemIDs.MYSTIC_ROBE_TOP.value, 71, alch=True),
             LootConfig(item_ids.ItemIDs.MYSTIC_ROBE_BOTTOM.value, 47, alch=True),
             LootConfig(item_ids.ItemIDs.BATTLESTAFF.value + 1, 8, stackable=True),
+
+            LootConfig(item_ids.ItemIDs.GRANITE_MAUL.value, 300),
 
             # Elemental Runes
             LootConfig(item_ids.ItemIDs.FIRE_RUNE.value, 1, stackable=True, min_quantity=250),
