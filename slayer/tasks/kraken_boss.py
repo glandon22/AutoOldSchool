@@ -5,7 +5,6 @@ import osrs
 from osrs.item_ids import ItemIDs
 from slayer import transport_functions
 from combat import slayer_killer
-from slayer.tasks import gear
 
 from combat import cave_kraken
 
@@ -38,11 +37,38 @@ supplies = [
     },
 ]
 
+initial = [
+    ItemIDs.TRIDENT_OF_THE_SWAMP.value,
+    {
+        'id': [
+            ItemIDs.FIRE_RUNE.value,
+        ],
+        'quantity': 'All'
+    },
+    {
+        'id': [
+            ItemIDs.CHAOS_RUNE.value,
+        ],
+        'quantity': 'All'
+    },
+    {
+        'id': [
+            ItemIDs.DEATH_RUNE.value,
+        ],
+        'quantity': 'All'
+    },
+    {
+        'id': [
+            ItemIDs.ZULRAHS_SCALES.value,
+        ],
+        'quantity': 'All'
+    },
+]
+
 equipment = [
     ItemIDs.SLAYER_HELMET_I.value,
     ItemIDs.FIRE_CAPE.value,
     ItemIDs.OCCULT_NECKLACE.value,
-    ItemIDs.TRIDENT_OF_THE_SWAMP.value,
     {
         'id': [
             ItemIDs.KARILS_LEATHERTOP.value,
@@ -69,9 +95,15 @@ equipment = [
     ItemIDs.BRIMSTONE_RING.value,
 ]
 
-banking_config_equipment = {
+initial_weapon_setup = {
     'dump_inv': True,
     'dump_equipment': True,
+    'search': [{'query': 'slayer', 'items': initial}]
+}
+
+banking_config_equipment = {
+    'dump_inv': True,
+    'dump_equipment': False,
     'search': [{'query': 'slayer', 'items': equipment}]
 }
 
@@ -96,6 +128,17 @@ def main():
         qh.query_backend()
         print('starting function')
         if not task_started:
+            success = osrs.bank.banking_handler(initial_weapon_setup)
+            if not success:
+                print('failed to weapon and runes')
+                return False
+            qh.query_backend()
+            fire_rune = qh.get_inventory(ItemIDs.FIRE_RUNE.value)
+            trident = qh.get_inventory(ItemIDs.TRIDENT_OF_THE_SWAMP)
+            osrs.move.click(fire_rune)
+            osrs.move.click(trident)
+            osrs.clock.sleep_one_tick()
+            osrs.keeb.write('2500')
             success = osrs.bank.banking_handler(banking_config_equipment)
             if not success:
                 print('failed to withdraw equipment.')
@@ -127,3 +170,9 @@ def main():
         if success:
             return True
 
+'''
+pick up and eat edible seaweed
+toggle on and off auto retaliate
+rechare trident at start of trip
+
+'''

@@ -1,3 +1,5 @@
+import datetime
+
 import osrs.move as move
 import osrs.queryHelper
 import osrs.server as server
@@ -83,3 +85,29 @@ def get_run_energy():
         if run_orb:
             logging.info('got run energy: {}'.format(run_orb))
             return int(run_orb['text'])
+
+
+def toggle_auto_retaliate(state):
+    auto_retaliate_widget = '593,33'
+    desired_outcome = {
+        'on': 1749,
+        'off': 1748
+    }[state]
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_widgets({auto_retaliate_widget})
+    last_key_press = datetime.datetime.now() - datetime.timedelta(hours=1)
+    last_widget_click = datetime.datetime.now() - datetime.timedelta(hours=1)
+    while True:
+        qh.query_backend()
+        if (not qh.get_widgets(auto_retaliate_widget) or qh.get_widgets(auto_retaliate_widget)['isHidden']) and \
+                (datetime.datetime.now() - last_key_press).total_seconds() > 0.8:
+            osrs.keeb.press_key('f1')
+            last_key_press = datetime.datetime.now()
+        elif qh.get_widgets(auto_retaliate_widget) and qh.get_widgets(auto_retaliate_widget)['spriteID'] == desired_outcome:
+            osrs.keeb.press_key('esc')
+            return
+        elif qh.get_widgets(auto_retaliate_widget) and (datetime.datetime.now() - last_widget_click).total_seconds() > 1.3:
+            osrs.move.click(qh.get_widgets(auto_retaliate_widget))
+            last_widget_click = datetime.datetime.now()
+
+toggle_auto_retaliate('off')

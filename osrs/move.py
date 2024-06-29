@@ -522,6 +522,16 @@ def move_around_center_screen(x1=800, y1=400, x2=1000, y2=600):
 
 
 def follow_path(start, end):
+    # selected = 3053
+    all_chat_widget = '162,5'
+    game_chat_widget = '162,8'
+    pub_chat_widget = '162,12'
+    priv_chat_widget = '162,16'
+    chan_chat_widget = '162,20'
+    clan_chat_widget = '162,24'
+    trade_chat_widget = '162,28'
+    report_player_widget = '875,22'
+
     path = dax.generate_path(start, end)
     if not path:
         osrs.clock.sleep_one_tick()
@@ -531,6 +541,7 @@ def follow_path(start, end):
     qh.set_tiles(set(parsed_tiles))
     qh.set_destination_tile()
     qh.set_player_world_location()
+    qh.set_widgets({game_chat_widget, all_chat_widget, pub_chat_widget, priv_chat_widget, chan_chat_widget, clan_chat_widget, trade_chat_widget, report_player_widget})
     prev_loc = None
     time_on_same_tile = datetime.datetime.now()
     while True:
@@ -541,6 +552,13 @@ def follow_path(start, end):
             prev_loc = qh.get_player_world_location()
             time_on_same_tile = datetime.datetime.now()
         qh.query_backend()
+        # ensure that the chat box isnt open bc it blocks my clicks
+        if qh.get_widgets(report_player_widget):
+            osrs.keeb.press_key('esc')
+        for key in qh.get_widgets():
+            if qh.get_widgets(key)['spriteID'] == 3053:
+                osrs.move.fast_click(qh.get_widgets(key))
+                break
         dist_to_end = osrs.dev.point_dist(
             qh.get_player_world_location('x'),
             qh.get_player_world_location('y'),
