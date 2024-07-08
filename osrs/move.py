@@ -123,7 +123,7 @@ def click(obj):
 
 
 def fast_click(obj):
-    movement = bezier_movement(obj['x'] - 3, obj['y'] - 3, obj['x'] + 3, obj['y'] + 3)
+    movement = bezier_movement(obj['x'], obj['y'], obj['x'], obj['y'])
     if not movement:
         print('movement was unsuccessful, target was off screen. Rejecting click.')
         return
@@ -521,7 +521,7 @@ def move_around_center_screen(x1=800, y1=400, x2=1000, y2=600):
     clock.random_sleep(0.15, 0.25)
 
 
-def follow_path(start, end):
+def follow_path(start, end, right_click=False):
     # selected = 3053
     all_chat_widget = '162,5'
     game_chat_widget = '162,8'
@@ -541,6 +541,7 @@ def follow_path(start, end):
     qh.set_tiles(set(parsed_tiles))
     qh.set_destination_tile()
     qh.set_player_world_location()
+    qh.set_canvas()
     qh.set_widgets({game_chat_widget, all_chat_widget, pub_chat_widget, priv_chat_widget, chan_chat_widget, clan_chat_widget, trade_chat_widget, report_player_widget})
     prev_loc = None
     time_on_same_tile = datetime.datetime.now()
@@ -571,7 +572,10 @@ def follow_path(start, end):
             break
         for tile in reversed(parsed_tiles):
             if is_clickable(qh.get_tiles(tile)):
-                osrs.move.fast_click(qh.get_tiles(tile))
+                if right_click:
+                    osrs.move.right_click_v6(qh.get_tiles(tile), 'Walk here', qh.get_canvas(), in_inv=True)
+                else:
+                    osrs.move.fast_click(qh.get_tiles(tile))
                 break
 
 
@@ -598,3 +602,60 @@ def is_clickable(target):
                             'yMax']
     return target_on_canvas and not target_on_inv and not target_on_minimap and not target_on_chat_buttons
 
+
+def interact_with_object(
+        door_id, coord_type, coord_value, greater_than, obj_dist=15,
+        intermediate_tile=None, obj_type='game', timeout=0.1, custom_exit_function=None, custom_exit_function_arg=None,
+        pre_interact=None, obj_tile=None, right_click_option=None
+):
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_player_world_location()
+    qh.set_canvas()
+    qh.set_objects_v2(obj_type, {door_id})
+    last_click = datetime.datetime.now() - datetime.timedelta(hours=1)
+    if intermediate_tile:
+        qh.set_tiles({intermediate_tile})
+    while True:
+        qh.query_backend()
+        target_obj = qh.get_objects_v2(obj_type, door_id, obj_dist)
+        if target_obj and obj_tile:
+            target_obj = list(
+                filter(lambda obj: obj['x_coord'] == obj_tile['x'] and obj['y_coord'] == obj_tile['y'], target_obj)
+            )
+        if not custom_exit_function:
+            if greater_than and qh.get_player_world_location(coord_type) >= coord_value:
+                return
+            elif not greater_than and qh.get_player_world_location(coord_type) <= coord_value:
+                return
+        else:
+            if custom_exit_function_arg is not None and custom_exit_function(custom_exit_function_arg):
+                return True
+            elif custom_exit_function_arg is None and custom_exit_function():
+                return True
+
+        if target_obj and (datetime.datetime.now() - last_click).total_seconds() > timeout:
+            if pre_interact:
+                pre_interact()
+            if right_click_option is None:
+                osrs.move.fast_click(target_obj[0])
+            else:
+                osrs.move.right_click_v6(target_obj[0], right_click_option, qh.get_canvas(), in_inv=True)
+            last_click = datetime.datetime.now()
+        elif intermediate_tile and qh.get_tiles(intermediate_tile) and not target_obj:
+            osrs.move.fast_click(qh.get_tiles(intermediate_tile))
+
+
+def go_to_loc(dest_x, dest_y, dest_z=0, right_click=False):
+    x_min = dest_x - 2
+    y_min = dest_y - 2
+    x_max = dest_x + 2
+    y_max = dest_y + 2
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_player_world_location()
+    qh.set_canvas()
+    while True:
+        qh.query_backend()
+        if x_min <= qh.get_player_world_location('x') <= x_max and y_min <= qh.get_player_world_location('y') <= y_max:
+            break
+        else:
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': dest_x, 'y': dest_y, 'z': dest_z}, right_click=right_click)

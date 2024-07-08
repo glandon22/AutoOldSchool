@@ -19,24 +19,48 @@ def find_house():
         # portal is up, not lets search for names
         if qh.get_widgets(player_house_name_widget):
             qh1 = osrs.queryHelper.QueryHelper()
-            for i in range(1,10):
-                qh1.set_widgets({f'52,9,{i}'})
-                qh1.query_backend()
-                for key in qh1.get_widgets():
-                    widget = qh1.get_widgets(key)
-                    if widget['text'] != '':
-                        osrs.keeb.press_key('esc')
-                        return widget['text']
+            for i in range(1, 10):
+                qh1.set_widgets({f'52,9,{i}', f'52,13,{i}'})
+            qh1.query_backend()
+            for i in range(1, 10):
+                if qh1.get_widgets(f'52,9,{i}')['text'] != '' and qh1.get_widgets(f'52,13,{i}')['text'] == 'Y':
+                    osrs.keeb.press_key('esc')
+                    return qh1.get_widgets(f'52,9,{i}')['text']
         elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, post_id) and (
                 datetime.datetime.now() - last_click).total_seconds() > 7:
             osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, post_id)[0])
             last_click = datetime.datetime.now()
 
 
+def leave_house():
+    house_portal_id = 4525
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_player_world_location()
+    qh.set_canvas()
+    qh.set_objects_v2('game', {house_portal_id})
+    while True:
+        qh.query_backend()
+        if qh.get_player_world_location('x') < 5000:
+            return
+        elif qh.get_objects_v2('game', house_portal_id):
+            osrs.move.fast_click(qh.get_objects_v2('game', house_portal_id)[0])
+
+
 def use_bones():
+    gilded_id = 13197
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.set_player_world_location()
+    qh.set_canvas()
+    qh.set_objects_v2('game', {gilded_id})
+    while True:
+        qh.query_backend()
+        if not qh.get_inventory(osrs.item_ids.ItemIDs.DRAGON_BONES.value) or qh.get_player_world_location('x') < 5000:
+            return
+        elif qh.get_inventory(osrs.item_ids.ItemIDs.DRAGON_BONES.value) and qh.get_objects_v2('game', gilded_id):
+            osrs.move.fast_click(qh.get_inventory(osrs.item_ids.ItemIDs.DRAGON_BONES.value))
+            res = osrs.move.right_click_v6(qh.get_objects_v2('game', gilded_id)[0], 'Use', qh.get_canvas())
+
 
 def offer_bones(house):
     chat_input_widget = '162,42'
@@ -89,6 +113,11 @@ def offer_bones(house):
             osrs.keeb.write(str(house))
             osrs.clock.sleep_one_tick()
             osrs.keeb.press_key('enter')
+        elif qh.get_player_world_location('x') > 7500:
+            if qh.get_inventory(osrs.item_ids.ItemIDs.DRAGON_BONES.value):
+                use_bones()
+            else:
+                leave_house()
 
 
 def main():
@@ -99,6 +128,3 @@ def main():
         print(player_name)
         offer_bones(player_name)
         return
-
-
-main()

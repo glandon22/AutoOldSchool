@@ -102,7 +102,13 @@ prayer_map_widgets = {
 }
 
 
-def prayer_handler(qh: osrs.queryHelper.QueryHelper, prayers):
+def prayer_handler(qh: osrs.queryHelper.QueryHelper or None, prayers):
+    if qh is None:
+        qh = osrs.queryHelper.QueryHelper()
+        qh.set_skills({'hitpoints', 'strength', 'ranged', 'magic', 'attack', 'defence', 'prayer'})
+        qh.set_widgets({'233,0', '541,23', '541,22', '541,21', '161,62'})
+        qh.set_active_prayers()
+        qh.query_backend()
     if not prayers:
         return
     for prayer in prayers:
@@ -124,7 +130,16 @@ def food_handler(qh, min_health):
     return True
 
 
-def pot_handler(qh: osrs.queryHelper.QueryHelper, pots):
+def pot_handler(qh: osrs.queryHelper.QueryHelper or None, pots):
+    ANTIFIRE_VARBIT = '3981'
+    if not qh:
+        qh = osrs.queryHelper.QueryHelper()
+        qh.set_skills({'hitpoints', 'strength', 'ranged', 'magic', 'attack', 'defence', 'prayer'})
+        qh.set_inventory()
+        qh.set_widgets({'233,0', '541,23', '541,22', '541,21', '161,62'})
+        qh.set_varbit(ANTIFIRE_VARBIT)
+        qh.set_active_prayers()
+        qh.query_backend()
     if 'SUPER_COMBATS' in pots \
             and pots['SUPER_COMBATS'] \
             and qh.get_skills('strength')['boostedLevel'] - qh.get_skills('strength')['level'] < 12:

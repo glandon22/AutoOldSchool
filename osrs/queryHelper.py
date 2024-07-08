@@ -466,7 +466,7 @@ class QueryHelper:
         value = f'type{object_type}ObjectsV2'
         self.query.get(value, None)
 
-    def get_objects(self, object_type: ObjectTypes, game_object=False,):
+    def get_objects(self, object_type: ObjectTypes, game_object=False, ):
         """
 
         :param object_type: ObjectTypes - 'wall'
@@ -529,6 +529,58 @@ class QueryHelper:
 
     def clear_query(self):
         self.query = {}
+
+    def set_objects_v2(self, object_type: str, objects):
+        object_type = object_type.lower()
+        if type(objects) is not set:
+            raise Exception('objects must be a set, {} is not a valid value.'.format(objects))
+        # dont keep adding the same tiles/ objects to the query over and over
+        # for a long running script, this could be thousands of dupes
+        if 'allObjects' in self.query:
+            self.query['allObjects'][object_type] = list(
+                set(
+                    self.query['allObjects'][object_type]).union(
+                    set(
+                        # coerce any strings to ints
+                        map(int, objects)
+                    )
+                )
+            )
+        else:
+            self.query['allObjects'] = {
+                'game': [],
+                'wall': [],
+                'decorative': [],
+                'ground': [],
+                'ground_items': []
+            }
+            self.query['allObjects'][object_type] = list(objects)
+
+    def get_objects_v2(self, object_type: str, game_object=False, dist=104):
+        """
+
+        :param object_type: 'wall' || 'game' || 'ground' || 'decorative' || 'ground_items'
+        :param game_object: string - '30920'
+        :return: [{'x': 836, 'y': 189, 'dist': 13, 'x_coord': 3765, 'y_coord': 3880, 'id': 30920}] || []
+        """
+        object_type = object_type.lower()
+        if 'allObjects' not in self.game_data:
+            return []
+
+        selected_object_type = self.game_data['allObjects'][object_type]
+        if game_object:
+            selected_object_type = list(
+                filter(
+                    lambda obj: obj['id'] == int(game_object) and obj['dist'] <= dist, selected_object_type
+                )
+            )
+        if selected_object_type and len(selected_object_type) > 0:
+            return selected_object_type
+        else:
+            return []
+
+    def set_yaw(self, value):
+        self.query['setYaw'] = value
 
     def query_backend(self):
         '''print("\t«{}»\tLine number in which the function is defined.".
