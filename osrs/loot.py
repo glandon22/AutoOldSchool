@@ -238,6 +238,8 @@ class Loot:
             LootConfig(item_ids.ItemIDs.RUNE_DAGGER.value, 4, alch=True),
             LootConfig(item_ids.ItemIDs.RUNE_BATTLEAXE.value, 24, alch=True),
             LootConfig(item_ids.ItemIDs.RUNE_2H_SWORD.value, 24, alch=True),
+            LootConfig(item_ids.ItemIDs.RUNE_PLATELEGS.value, 24, alch=True),
+            LootConfig(item_ids.ItemIDs.RUNE_PLATEBODY.value, 40, alch=True),
             ## Dragon
             LootConfig(item_ids.ItemIDs.DRAGON_BOOTS.value, 59),
             LootConfig(item_ids.ItemIDs.DRAGON_CHAINBODY.value, 198),
@@ -304,6 +306,7 @@ class Loot:
             LootConfig(item_ids.ItemIDs.CRYSTAL_SHARD, 10, stackable=True),
             LootConfig(item_ids.ItemIDs.DRACONIC_VISAGE.value, 3167),
             LootConfig(item_ids.ItemIDs.SMOULDERING_STONE.value, 3600),
+            LootConfig(item_ids.ItemIDs.WATER_ORB.value + 1, 5, min_quantity=4, stackable=True),
             LootConfig(item_ids.ItemIDs.CRYSTAL_KEY.value, 20),
             LootConfig(item_ids.ItemIDs.JAR_OF_DIRT.value, 24),
             LootConfig(item_ids.ItemIDs.DRAGONSTONE_RING.value, 11, alch=True),

@@ -36,7 +36,7 @@ def main():
             result = osrs.combat_utils.food_handler(qh, 40)
             if not result:
                 return False
-        elif qh.get_interating_with():
+        elif qh.get_interating_with() and awake_kraken:
             logger.info('In combat with Kraken.')
         elif len(awake_kraken) > 0 and awake_kraken[0]['health'] != 0:
             logger.info('Attacking a vulnerable kraken')

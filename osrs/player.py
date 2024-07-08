@@ -104,10 +104,9 @@ def toggle_auto_retaliate(state):
             osrs.keeb.press_key('f1')
             last_key_press = datetime.datetime.now()
         elif qh.get_widgets(auto_retaliate_widget) and qh.get_widgets(auto_retaliate_widget)['spriteID'] == desired_outcome:
+            osrs.clock.sleep_one_tick()
             osrs.keeb.press_key('esc')
             return
         elif qh.get_widgets(auto_retaliate_widget) and (datetime.datetime.now() - last_widget_click).total_seconds() > 1.3:
             osrs.move.click(qh.get_widgets(auto_retaliate_widget))
             last_widget_click = datetime.datetime.now()
-
-toggle_auto_retaliate('off')

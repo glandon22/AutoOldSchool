@@ -547,10 +547,10 @@ def stronghold_slayer_dungeon_spectres():
             break
     while True:
         qh.query_backend()
-        if 2453 <= qh.get_player_world_location('x') <= 2463 and 9788 <= qh.get_player_world_location('y') <= 9796:
+        if 2456 <= qh.get_player_world_location('x') <= 2462 and 9773 <= qh.get_player_world_location('y') <= 9780:
             return
         else:
-            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2456, 'y': 9792, 'z': 0})
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2459, 'y': 9778, 'z': 0})
 
 
 '''
@@ -663,10 +663,10 @@ def brimhaven_dungeon_steels():
             osrs.move.follow_path(qh.get_player_world_location(), {'x': 2699, 'y': 9436, 'z': 0})
     while True:
         qh.query_backend()
-        if qh.get_player_world_location('x') <= 2667:
+        if qh.get_player_world_location('x') <= 2655:
             return
         else:
-            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2662, 'y': 9425, 'z': 0})
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2650, 'y': 9425, 'z': 0})
 
 
 def godwars_main_room():
@@ -844,7 +844,7 @@ def morytania_gargoyles():
     last_ring_click = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
         qh.query_backend()
-        if qh.get_npcs_by_name():
+        if qh.get_npcs_by_name() and qh.get_player_world_location('y') > 7500:
             return
         elif qh.get_chat_options() and 'Teleport' in qh.get_chat_options():
             osrs.keeb.write('1')
@@ -1217,3 +1217,31 @@ def kraken_cove_private():
         elif 2242 <= qh.get_player_world_location('x') <= 2300 and 9977 <= qh.get_player_world_location('y') <= 10015 \
                 and (datetime.datetime.now() - last_successful_instance_entrance_click).total_seconds() > 15:
             osrs.move.follow_path(qh.get_player_world_location(), {'x': 2270, 'y': 10003, 'z': 0})
+
+
+def kraken_cove_waterfiends():
+    cove_entrance = '30177'
+    private_entrance = '537'
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_tiles({'2315,3613,0'})
+    qh.set_objects(
+        {'2278,3612,0'},
+        {cove_entrance},
+        osrs.queryHelper.ObjectTypes.GAME.value
+    )
+    qh.set_player_world_location()
+    qh.set_npcs_by_name(['waterfiend'])
+    while True:
+        qh.query_backend()
+        # In cove
+        if len(qh.get_npcs()) > 0:
+            return
+        # cave entrance visible
+        elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, cove_entrance):
+            osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, cove_entrance)[0])
+        # between fairy ring and cave entrance
+        elif 2267 <= qh.get_player_world_location('x') <= 2334 and 3597 <= qh.get_player_world_location('y') <= 3640:
+            # I'm on the fairy ring and the dax pathing always breaks
+            if qh.get_player_world_location('x') == 2319 and qh.get_player_world_location('y') == 3619 and qh.get_tiles('2315,3613,0'):
+                osrs.move.fast_click(qh.get_tiles('2315,3613,0'))
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2282, 'y': 3610, 'z': 0})

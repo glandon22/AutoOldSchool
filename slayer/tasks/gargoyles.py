@@ -20,8 +20,6 @@ supplies = [
     },
     ItemIDs.SUPER_ATTACK4.value,
     ItemIDs.SUPER_ATTACK4.value,
-    ItemIDs.SUPER_ATTACK4.value,
-    ItemIDs.SUPER_STRENGTH4.value,
     ItemIDs.SUPER_STRENGTH4.value,
     ItemIDs.SUPER_STRENGTH4.value,
     ItemIDs.RUNE_POUCH.value,
