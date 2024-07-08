@@ -339,6 +339,7 @@ def banking_handler(params):
         success = search_and_withdraw(params['search'], qh)
         if not success:
             print('Failed to search and withdraw items successfully.')
+            exit('failed')
             return False
     osrs.keeb.press_key('esc')
     return True

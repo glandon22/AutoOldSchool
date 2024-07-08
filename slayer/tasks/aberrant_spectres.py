@@ -69,8 +69,8 @@ pot_config = slayer_killer.PotConfig(super_combat=True)
 
 def pre_log():
     safe_tile = {
-        'x': 2447,
-        'y': 9800,
+        'x': 2451,
+        'y': 9778,
         'z': 0
     }
     safe_tile_string = f'{safe_tile["x"]},{safe_tile["y"]},{safe_tile["z"]}'

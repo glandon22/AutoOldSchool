@@ -96,7 +96,7 @@ def main():
             return False
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
-        transport_functions.catacombs(1633, 10054)
+        transport_functions.catacombs(1633, 10066)
         qh.query_backend()
         task_started = True
         success = slayer_killer.main('fire giant', pot_config.asdict(), 35, pre_hop=pre_log, post_login=post_log, prayers=['protect_melee'])
