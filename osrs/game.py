@@ -540,15 +540,8 @@ def click_restore_pool():
             return
 
 
-def hop_worlds(pre_hop=False):
+def hop_worlds(pre_hop=False, total_level_worlds=True):
     world_list = [
-        349,
-        361,
-        396,
-        428,
-        527,
-        467,
-        420,
         421,
         422,
         485,
@@ -558,6 +551,17 @@ def hop_worlds(pre_hop=False):
         489,
         490,
     ]
+
+    if total_level_worlds:
+        world_list.append([
+            420,
+            467,
+            349,
+            361,
+            396,
+            428,
+            527,
+        ])
     qh = osrs.queryHelper.QueryHelper()
     qh.set_game_state()
     qh.set_world()
