@@ -241,7 +241,10 @@ def dye_goblin_mail():
 
 def talk_to_npc(name, right_click=False):
     qh = osrs.queryHelper.QueryHelper()
-    qh.set_npcs_by_name([name])
+    if type(name) is str:
+        qh.set_npcs_by_name([name])
+    elif type(name) is int:
+        qh.set_npcs([str(name)])
     qh.set_chat_options()
     qh.set_widgets({main_chat_widget})
     qh.set_canvas()
@@ -252,6 +255,11 @@ def talk_to_npc(name, right_click=False):
         elif qh.get_npcs_by_name():
             if right_click:
                 osrs.move.right_click_v6(qh.get_npcs_by_name()[0], 'Talk-to', qh.get_canvas(), in_inv=True)
+            else:
+                osrs.move.fast_click(qh.get_npcs_by_name()[0])
+        elif qh.get_npcs():
+            if right_click:
+                osrs.move.right_click_v6(qh.get_npcs()[0], 'Talk-to', qh.get_canvas(), in_inv=True)
             else:
                 osrs.move.fast_click(qh.get_npcs_by_name()[0])
 

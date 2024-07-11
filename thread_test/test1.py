@@ -4,8 +4,7 @@ import time
 import pyautogui
 import osrs
 
-import osrs
 qh = osrs.queryHelper.QueryHelper()
-qh.set_equipment()
+qh.set_npcs_by_name(['sir vyvin'])
 qh.query_backend()
-print(qh.get_equipment(osrs.item_ids.ItemIDs.EARTH_TIARA.value + 1))
+print(qh.get_npcs_by_name())

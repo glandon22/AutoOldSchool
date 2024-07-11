@@ -777,3 +777,22 @@ def walk_out_of_c_wars():
             return
         elif qh.get_tiles('2446,3090,0'):
             osrs.move.fast_click(qh.get_tiles('2446,3090,0'))
+
+
+def tab_to_ardy():
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_inventory()
+    qh.set_player_world_location()
+    last_tab = datetime.datetime.now() - datetime.timedelta(hours=1)
+    while True:
+        qh.query_backend()
+        # in lum center
+        if 2651 <= qh.get_player_world_location('x') <= 2672 and 3294 <= qh.get_player_world_location(
+                'y') <= 3318:
+            osrs.clock.sleep_one_tick()
+            osrs.clock.sleep_one_tick()
+            return
+        elif qh.get_inventory(osrs.item_ids.ItemIDs.ARDOUGNE_TELEPORT.value) and (
+                datetime.datetime.now() - last_tab).total_seconds() > 10:
+            osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.ARDOUGNE_TELEPORT.value))
+            last_tab = datetime.datetime.now()

@@ -6,6 +6,7 @@ import imp_catcher
 import osrs
 import witchs_potion
 from prayer import gilded_v2
+from firemaking import burn_logs_varrock
 import romeo_and_juliet
 import vampire_slayer
 import dorics_quest
@@ -19,6 +20,8 @@ from agility import gnome_v2
 import grand_tree
 import tree_gnome_village
 import monks_friend
+import plague_city
+import sea_slug
 
 '''cooks_assistant.main()
 transport_functions.bank_in_lumby()
@@ -107,13 +110,13 @@ romeo_and_juliet.main()
 transport_functions.walk_to_ge()
 util_functions.get_quest_items([])
 osrs.bank.ge_handler([
-    {'id': osrs.item_ids.ItemIDs(osrs.item_ids.ItemIDs.GOBLIN_MAIL.value), 'quantity': 3},
-    {'id': osrs.item_ids.ItemIDs(osrs.item_ids.ItemIDs.BLUE_DYE.value), 'quantity': 1},
-    {'id': osrs.item_ids.ItemIDs(osrs.item_ids.ItemIDs.ORANGE_DYE.value), 'quantity': 1},
-    {'id': osrs.item_ids.ItemIDs(osrs.item_ids.ItemIDs.CLAY.value), 'quantity': 6},
-    {'id': osrs.item_ids.ItemIDs(osrs.item_ids.ItemIDs.IRON_ORE.value), 'quantity': 2},
-    {'id': osrs.item_ids.ItemIDs(osrs.item_ids.ItemIDs.FALADOR_TELEPORT.value), 'quantity': 10},
-    {'id': osrs.item_ids.ItemIDs(osrs.item_ids.ItemIDs.COPPER_ORE.value), 'quantity': 4},
+    {'id': osrs.item_ids.ItemIDs.GOBLIN_MAIL.value, 'quantity': 3},
+    {'id': osrs.item_ids.ItemIDs.BLUE_DYE.value, 'quantity': 1},
+    {'id': osrs.item_ids.ItemIDs.ORANGE_DYE.value, 'quantity': 1},
+    {'id': osrs.item_ids.ItemIDs.CLAY.value, 'quantity': 6},
+    {'id': osrs.item_ids.ItemIDs.IRON_ORE.value, 'quantity': 2},
+    {'id': osrs.item_ids.ItemIDs.FALADOR_TELEPORT.value, 'quantity': 10},
+    {'id': osrs.item_ids.ItemIDs.COPPER_ORE.value, 'quantity': 4},
 ])
 util_functions.get_quest_items([
     {
@@ -342,7 +345,84 @@ osrs.move.interact_with_object(2186, 'y', 3160, False, obj_type='wall', timeout=
 util_functions.talk_to_npc('elkoy')
 util_functions.dialogue_handler([])
 osrs.move.go_to_loc(2606, 3220)
-monks_friend.main()'''
-
-# prob need to go back to varrock and buy shit to do plague city, possibly biohazard, sea slug, knights sword, fishing contest,
+monks_friend.main()
+osrs.move.go_to_loc(2643,3283)
+quest_items = [
+    osrs.item_ids.ItemIDs.DWELLBERRIES.value,
+    osrs.item_ids.ItemIDs.SPADE.value,
+    osrs.item_ids.ItemIDs.ROPE.value,
+    osrs.item_ids.ItemIDs.BUCKET_OF_MILK.value,
+    osrs.item_ids.ItemIDs.CHOCOLATE_DUST.value,
+    osrs.item_ids.ItemIDs.SNAPE_GRASS.value,
+    osrs.item_ids.ItemIDs.VARROCK_TELEPORT.value,
+    {
+        'id': [
+            osrs.item_ids.ItemIDs.BUCKET_OF_WATER.value,
+        ],
+        'quantity': 'All'
+    },
+]
+osrs.bank.banking_handler({
+    'dump_inv': True,
+    'dump_equipment': True,
+    'search': [{'query': '', 'items': quest_items}]
+})
+osrs.move.go_to_loc(2567, 3333)
+plague_city.main()
+util_functions.tab_to_varrock()
+transport_functions.walk_to_ge()
+osrs.bank.ge_handler([
+    {'id': osrs.item_ids.ItemIDs.TINDERBOX.value, 'quantity': 1},
+    {'id': osrs.item_ids.ItemIDs.LOGS.value, 'quantity': 75},
+    {'id': osrs.item_ids.ItemIDs.OAK_LOGS.value, 'quantity': 200    },
+])
+burn_logs_varrock.main(15, osrs.item_ids.ItemIDs.LOGS.value)
+burn_logs_varrock.main(30, osrs.item_ids.ItemIDs.OAK_LOGS.value)
+# prob need to go back to varrock and buy shit to do sea slug, knights sword,
 # a quest for some thiving xp, farming xp, and dnetering the abyss mini quest
+transport_functions.walk_to_ge()
+osrs.bank.ge_handler([
+    {'id': osrs.item_ids.ItemIDs.SWAMP_PASTE.value, 'quantity': 1},
+    {'id': osrs.item_ids.ItemIDs.UNLIT_TORCH.value, 'quantity': 1},
+    {'id': osrs.item_ids.ItemIDs.BLACK_PICKAXE.value, 'quantity': 1},
+    {'id': osrs.item_ids.ItemIDs.REDBERRY_PIE.value, 'quantity': 1},
+    {'id_override': 'prayer potion(4)', 'quantity': 1},
+    {'id': osrs.item_ids.ItemIDs.IRON_BAR.value, 'quantity': 2},
+    {'id': osrs.item_ids.ItemIDs.ARDOUGNE_TELEPORT.value, 'quantity': 5},
+])
+quest_items = [
+    osrs.item_ids.ItemIDs.SWAMP_PASTE.value,
+    osrs.item_ids.ItemIDs.UNLIT_TORCH.value,
+    osrs.item_ids.ItemIDs.BLACK_PICKAXE.value,
+    osrs.item_ids.ItemIDs.REDBERRY_PIE.value,
+    osrs.item_ids.ItemIDs.PRAYER_POTION4.value,
+    osrs.item_ids.ItemIDs.VARROCK_TELEPORT.value,
+    {
+        'id': [
+            osrs.item_ids.ItemIDs.FALADOR_TELEPORT.value,
+        ],
+        'quantity': '5'
+    },
+    {
+        'id': [
+            osrs.item_ids.ItemIDs.IRON_BAR.value,
+        ],
+        'quantity': 'All'
+    },
+{
+        'id': [
+            osrs.item_ids.ItemIDs.ARDOUGNE_TELEPORT.value,
+        ],
+        'quantity': 'All'
+    },
+]
+osrs.bank.banking_handler({
+    'dump_inv': True,
+    'dump_equipment': True,
+    'search': [{'query': '', 'items': quest_items}]
+})
+transport_functions.tab_to_ardy()
+osrs.move.go_to_loc(2710, 3306)
+sea_slug.main()
+transport_functions.tab_to_fally()'''
+osrs.move.go_to_loc(2970, 3341, right_click=True)

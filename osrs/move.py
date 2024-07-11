@@ -521,7 +521,7 @@ def move_around_center_screen(x1=800, y1=400, x2=1000, y2=600):
     clock.random_sleep(0.15, 0.25)
 
 
-def follow_path(start, end, right_click=False):
+def follow_path(start, end, right_click=False, exact_tile=False):
     # selected = 3053
     all_chat_widget = '162,5'
     game_chat_widget = '162,8'
@@ -568,7 +568,7 @@ def follow_path(start, end, right_click=False):
         )
         # sometimes the tile i want to end up on has an object on it so i cant actually stand on it,
         # in that case, i still want to break if i am at the end of the path
-        if dist_to_end <= 3:
+        if dist_to_end <= 3 and not exact_tile:
             break
         for tile in reversed(parsed_tiles):
             if is_clickable(qh.get_tiles(tile)):
@@ -645,7 +645,7 @@ def interact_with_object(
             osrs.move.fast_click(qh.get_tiles(intermediate_tile))
 
 
-def go_to_loc(dest_x, dest_y, dest_z=0, right_click=False):
+def go_to_loc(dest_x, dest_y, dest_z=0, right_click=False, exact_tile=False):
     x_min = dest_x - 2
     y_min = dest_y - 2
     x_max = dest_x + 2
@@ -655,7 +655,32 @@ def go_to_loc(dest_x, dest_y, dest_z=0, right_click=False):
     qh.set_canvas()
     while True:
         qh.query_backend()
-        if x_min <= qh.get_player_world_location('x') <= x_max and y_min <= qh.get_player_world_location('y') <= y_max:
+        if (x_min <= qh.get_player_world_location('x') <= x_max
+                and y_min <= qh.get_player_world_location('y') <= y_max
+                and not exact_tile):
+            break
+        elif exact_tile and qh.get_player_world_location('x') == dest_x and qh.get_player_world_location('y') == dest_y:
             break
         else:
-            osrs.move.follow_path(qh.get_player_world_location(), {'x': dest_x, 'y': dest_y, 'z': dest_z}, right_click=right_click)
+            osrs.move.follow_path(
+                qh.get_player_world_location(), {'x': dest_x, 'y': dest_y, 'z': dest_z},
+                right_click=right_click, exact_tile=exact_tile
+            )
+
+
+def tab_to_varrock():
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_inventory()
+    qh.set_player_world_location()
+    last_tab = datetime.datetime.now() - datetime.timedelta(hours=1)
+    while True:
+        qh.query_backend()
+        # in varrock center
+        if 3195 <= qh.get_player_world_location('x') <= 3226 and 3419 <= qh.get_player_world_location(
+                'y') <= 3438:
+            osrs.clock.sleep_one_tick()
+            osrs.clock.sleep_one_tick()
+            return
+        elif qh.get_inventory(osrs.item_ids.ItemIDs.VARROCK_TELEPORT.value) and (datetime.datetime.now() - last_tab).total_seconds() > 10:
+            osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.VARROCK_TELEPORT.value))
+            last_tab = datetime.datetime.now()

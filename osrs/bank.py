@@ -422,6 +422,7 @@ def purchase_item(item, quantity, prev_price=0):
         qh1.query_backend()
         if not qh1.get_widgets(f'{offer_slot},0'):
             continue
+        # this is randomly clicking far in the corner TODO!!
         osrs.move.fast_click(qh1.get_widgets(f'{offer_slot},0'))
         logger.info('clicked on buy an item widget')
         while True:
@@ -459,6 +460,7 @@ def purchase_item(item, quantity, prev_price=0):
         value = int(qh.get_widgets(default_item_value)['text'].split(' ')[0].replace(',', ''))
         if prev_price > 0:
             value = prev_price
+        value = math.ceil(value * 1.2)
         logger.info('clicking on the custom price three dots')
         while True:
             qh.query_backend()
@@ -470,7 +472,7 @@ def purchase_item(item, quantity, prev_price=0):
             qh.query_backend()
             if qh.get_widgets(chat_input_widget) and not qh.get_widgets(chat_input_widget)['isHidden']:
                 break
-        osrs.keeb.write(str(math.floor(value * 1.2)))
+        osrs.keeb.write(str(value))
         osrs.keeb.press_key('enter')
         if quantity != 1:
             logger.info('clicking on the custom quantity three dots')
@@ -510,7 +512,8 @@ def purchase_item(item, quantity, prev_price=0):
 
             if (datetime.datetime.now() - wait_time).total_seconds() > 5:
                 abort_offer(offer_slot)
-                return purchase_item(item, quantity, math.floor(value * 1.2))
+                osrs.clock.sleep_one_tick()
+                return purchase_item(item, quantity, value)
         print('jj', qh.get_widgets(collect_widget))
         osrs.move.click(qh.get_widgets(collect_widget))
         return
