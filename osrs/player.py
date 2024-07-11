@@ -110,3 +110,50 @@ def toggle_auto_retaliate(state):
         elif qh.get_widgets(auto_retaliate_widget) and (datetime.datetime.now() - last_widget_click).total_seconds() > 1.3:
             osrs.move.click(qh.get_widgets(auto_retaliate_widget))
             last_widget_click = datetime.datetime.now()
+
+
+def dialogue_handler(desired_replies=None):
+    main_chat_widget = '162,34'
+    npc_chat_head_widget = '231,4'
+    player_chat_widget = '217,6'
+    chat_holder_widget = '231,0'
+    chat_holder2_widget = '217,1'
+    click_to_continue_widget = '229,2'
+    click_to_continue_level_widget = '233,2'
+    click_to_continue_other_widget = '193,0,2'
+    #
+    # quest_complete_widget = '153,4'
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_chat_options()
+    qh.set_widgets({
+        npc_chat_head_widget, player_chat_widget,
+        chat_holder_widget, chat_holder2_widget,
+        click_to_continue_widget, main_chat_widget, click_to_continue_level_widget,
+        click_to_continue_other_widget
+    })
+    had_dialogue = False
+    dialogue_last_seen = datetime.datetime.now()
+    while True:
+        qh.query_backend()
+        if (
+                not qh.get_widgets(main_chat_widget)
+                or (qh.get_widgets(main_chat_widget) and qh.get_widgets(main_chat_widget)['isHidden'])
+        ):
+            if (datetime.datetime.now() - dialogue_last_seen).total_seconds() > 3:
+                return had_dialogue
+        else:
+            print('here')
+            dialogue_last_seen = datetime.datetime.now()
+
+        if desired_replies:
+            for reply in desired_replies:
+                if qh.get_chat_options(reply):
+                    osrs.keeb.write(str(qh.get_chat_options(reply)))
+                    had_dialogue = True
+        if (qh.get_widgets(player_chat_widget)
+                or qh.get_widgets(npc_chat_head_widget)
+                or qh.get_widgets(click_to_continue_level_widget)
+                or qh.get_widgets(click_to_continue_other_widget)
+                or qh.get_widgets(click_to_continue_widget)):
+            osrs.keeb.press_key('space')
+            had_dialogue = True
