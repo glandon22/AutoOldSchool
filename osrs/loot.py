@@ -338,6 +338,7 @@ class Loot:
             LootConfig(item_ids.ItemIDs.MAGIC_LOGS.value + 1, 5, stackable=True, min_quantity=5),
             LootConfig(item_ids.ItemIDs.DIAMOND.value + 1, 5, stackable=True, min_quantity=3),
             LootConfig(item_ids.ItemIDs.ONYX_BOLT_TIPS.value, 5, stackable=True),
+            LootConfig(item_ids.ItemIDs.MARK_OF_GRACE.value, 11, stackable=True),
 
             # Seeds
             LootConfig(item_ids.ItemIDs.SNAPDRAGON_SEED.value, 36, stackable=True),
