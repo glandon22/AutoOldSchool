@@ -7,15 +7,20 @@ def burn_logs(log):
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.set_skills({'firemaking'})
+    qh.set_player_animation()
     time_since_last_burn = datetime.datetime.now()
     last_xp_count = -1
     while True:
         qh.query_backend()
-        if not qh.get_inventory(log):
+        if qh.get_player_animation() == 733:
+            time_since_last_burn = datetime.datetime.now()
+
+        if not qh.get_inventory(log) and qh.get_player_animation() != 733:
             return
-        elif (datetime.datetime.now() - time_since_last_burn).total_seconds() > 30:
+        elif (datetime.datetime.now() - time_since_last_burn).total_seconds() > 12:
             osrs.game.hop_worlds(total_level_worlds=False)
             time_since_last_burn = datetime.datetime.now()
+            last_xp_count = -1
         elif qh.get_skills('firemaking') and qh.get_skills('firemaking')['xp'] != last_xp_count:
             last_xp_count = qh.get_skills('firemaking')['xp']
             time_since_last_burn = datetime.datetime.now()

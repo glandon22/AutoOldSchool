@@ -133,13 +133,13 @@ def quiz_handler(i):
 
 
 def main():
-    util_functions.talk_to_npc('orlando smith')
+    '''util_functions.talk_to_npc('orlando smith')
     util_functions.dialogue_handler(dialogue)
     transport_functions.walk_to_loc(1741, 1743, 4959, 4962, 1742, 4960)
     quiz_handler(0)
     transport_functions.walk_to_loc(1760, 1762, 4976, 4978, 1761, 4977)
-    quiz_handler(1)
-    transport_functions.walk_to_loc(1772, 1774, 4956, 4960, 1773, 4948)
+    quiz_handler(1)'''
+    osrs.move.go_to_loc(1767, 4960)
     quiz_handler(2)
     transport_functions.walk_to_loc(1757, 1759, 4944, 4946, 1758, 4945)
     quiz_handler(3)

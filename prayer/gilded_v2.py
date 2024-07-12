@@ -126,5 +126,6 @@ def main():
         if not player_name:
             player_name = find_house()
         print(player_name)
+        osrs.keeb.press_key('esc')
         offer_bones(player_name)
         return

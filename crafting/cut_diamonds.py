@@ -93,6 +93,3 @@ def main():
                     break
         elif qh.get_widgets('233,0'):
             last_click = datetime.datetime.now() - datetime.timedelta(hours=1)
-
-
-main()

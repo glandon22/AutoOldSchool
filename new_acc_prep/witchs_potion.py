@@ -4,21 +4,11 @@ import osrs
 import util_functions
 import transport_functions
 
-def start():
-    chat_holder_widget = '231,0'
-    qh = osrs.queryHelper.QueryHelper()
-    qh.set_player_world_location()
-    qh.set_npcs_by_name(['hetty'])
-    qh.set_chat_options()
-    qh.set_widgets({chat_holder_widget})
-    while True:
-        qh.query_backend()
-        if not qh.get_chat_options() and not qh.get_widgets(chat_holder_widget) and len(qh.get_npcs_by_name()) > 0:
-            osrs.move.fast_click(qh.get_npcs_by_name()[0])
-        else:
-            success = util_functions.dialogue_handler(["I am in search of a quest.", "Yes, help me become one with my darker side.", "Yes."])
-            if success:
-                return
+
+dialogue = [
+    "I am in search of a quest.", "Yes.",
+    "Yes, help me become one with my darker side."
+]
 
 
 def kill_rat_and_get_tail():
@@ -87,9 +77,26 @@ def drink_from_cauldron():
 
 
 def main():
-    start()
-    transport_functions.leave_hettys_house()
+    osrs.move.interact_with_object(
+        1535, 'x', 2965, True, obj_type='wall',
+        obj_tile={'x': 2964, 'y': 3206}, intermediate_tile='2967,3205,0'
+    )
+    util_functions.talk_to_npc('hetty')
+    util_functions.dialogue_handler(dialogue)
+    osrs.move.interact_with_object(
+        1535, 'x', 2964, False, obj_type='wall',
+        obj_tile={'x': 2964, 'y': 3206}, intermediate_tile='2962,3205,0'
+    )
     kill_rat_and_get_tail()
-    transport_functions.walk_to_rimmington()
-    give_ingredients()
+    osrs.move.go_to_loc(2959, 3209)
+    osrs.move.interact_with_object(
+        1535, 'x', 2965, True, obj_type='wall',
+        obj_tile={'x': 2964, 'y': 3206}, intermediate_tile='2967,3205,0'
+    )
+    util_functions.talk_to_npc('hetty')
+    util_functions.dialogue_handler(dialogue)
     drink_from_cauldron()
+    osrs.move.interact_with_object(
+        1535, 'x', 2964, False, obj_type='wall',
+        obj_tile={'x': 2964, 'y': 3206}, intermediate_tile='2962,3205,0'
+    )
