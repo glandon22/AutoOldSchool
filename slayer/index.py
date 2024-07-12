@@ -6,6 +6,54 @@ import transport_functions
 varrock_tele_widget_id = '218,23'
 
 
+def skip_task():
+    skip_list = [
+        'cave kraken',
+        'cave horror',
+        'cave horrors',
+        'waterfiends',
+        'dagannoth'
+    ]
+    task_widget = '426,12,6'
+    cancel_widget = '426,26,1'
+    confirm_widget = '426,8'
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_npcs_by_name(['duradel'])
+    qh.set_slayer()
+    qh.set_canvas()
+    qh.set_widgets({task_widget, cancel_widget, confirm_widget})
+    while True:
+        qh.query_backend()
+        if qh.get_slayer():
+            if qh.get_slayer()['monster'].lower() not in skip_list:
+                return
+            else:
+                break
+    while True:
+        qh.query_backend()
+        if not qh.get_slayer():
+            osrs.clock.sleep_one_tick()
+            osrs.keeb.press_key('esc')
+            break
+        elif qh.get_widgets(confirm_widget) and not qh.get_widgets(confirm_widget)['isHidden']:
+            osrs.move.click(qh.get_widgets(confirm_widget))
+            osrs.clock.sleep_one_tick()
+        elif qh.get_widgets(cancel_widget) and not qh.get_widgets(cancel_widget)['isHidden']:
+            osrs.move.click(qh.get_widgets(cancel_widget))
+            osrs.clock.sleep_one_tick()
+        elif qh.get_widgets(task_widget) and not qh.get_widgets(task_widget)['isHidden']:
+            osrs.move.click(qh.get_widgets(task_widget))
+            osrs.clock.sleep_one_tick()
+        elif qh.get_npcs_by_name():
+            osrs.move.right_click_v6(
+                qh.get_npcs_by_name()[0],
+                'Rewards',
+                qh.get_canvas(),
+                in_inv=True
+            )
+
+
+
 def main():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_slayer()
@@ -24,6 +72,7 @@ def main():
                 slayer.kalphite.main()
             # Verified
             elif slayer_task == 'Trolls':
+                # this task is constantly misclicking on trees. need to do this in a different location
                 slayer.trolls.main()
             # Verified
             elif slayer_task == 'Blue Dragons':
@@ -106,6 +155,7 @@ def main():
                     osrs.clock.sleep_one_tick()
                     break
             transport_functions.duradel()
+            skip_task()
             osrs.game.cast_spell(varrock_tele_widget_id)
 
 

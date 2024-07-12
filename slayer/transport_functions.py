@@ -851,7 +851,12 @@ def morytania_gargoyles():
         elif qh.get_chat_options() and 'Teleport to the Morytania Slayer Tower' in qh.get_chat_options():
             osrs.keeb.write('2')
         elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, basement_ladder_id):
-            osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, basement_ladder_id)[0])
+            osrs.move.right_click_v6(
+                qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, basement_ladder_id)[0],
+                 'Climb-down',
+                 qh.get_canvas(),
+                 in_inv=True
+            )
             osrs.clock.sleep_one_tick()
         elif qh.get_tiles('3433,9937,3') and osrs.move.is_clickable(qh.get_tiles('3433,9937,3')):
             osrs.move.click(qh.get_tiles('3433,9937,3'))
@@ -894,7 +899,12 @@ def morytania_abby_demons():
         elif qh.get_chat_options() and 'Teleport to the Morytania Slayer Tower' in qh.get_chat_options():
             osrs.keeb.write('2')
         elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, basement_ladder_id):
-            osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, basement_ladder_id)[0])
+            osrs.move.right_click_v6(
+                qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, basement_ladder_id)[0],
+                'Climb-down',
+                qh.get_canvas(),
+                in_inv=True
+            )
             osrs.clock.sleep_one_tick()
         elif qh.get_player_world_location('z') == 3:
             osrs.move.follow_path(qh.get_player_world_location(), {'x': 3438, 'y': 9966, 'z': 3})
@@ -1049,7 +1059,12 @@ def morytania_nechs():
         elif qh.get_chat_options() and 'Teleport to the Morytania Slayer Tower' in qh.get_chat_options():
             osrs.keeb.write('2')
         elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, basement_ladder_id):
-            osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, basement_ladder_id)[0])
+            osrs.move.right_click_v6(
+                qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, basement_ladder_id)[0],
+                'Climb-down',
+                qh.get_canvas(),
+                in_inv=True
+            )
             osrs.clock.sleep_one_tick()
         elif qh.get_tiles('3412,9967,3') and osrs.move.is_clickable(qh.get_tiles('3412,9967,3')):
             osrs.move.click(qh.get_tiles('3412,9967,3'))

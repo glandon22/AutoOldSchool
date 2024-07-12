@@ -121,7 +121,14 @@ class Loot:
     def clear_config(self):
         self.config = {}
 
-    def retrieve_loot(self, dist=10):
+    def retrieve_loot(self, dist=10, min_val_to_loot_other_players=20):
+        '''
+
+        :param dist:
+        :param min_val_to_loot_other_players: minimum loot value to allow looting of other players drops. this makes
+        me look more bot like and has me running all over the place
+        :return:
+        '''
         time_since_last_loot = datetime.datetime.now()
         while True:
             if (datetime.datetime.now() - time_since_last_loot).total_seconds() > 15:
@@ -133,15 +140,17 @@ class Loot:
             qh.set_inventory()
             qh.query_backend()
             qh.set_canvas()
-            tiles = osrs.util.generate_surrounding_tiles_from_point(dist, qh.get_player_world_location())
-            qh.set_ground_items(tiles)
+            qh.set_objects_v2('ground_items', set())
             qh.set_widgets({self.high_alch_widget_id})
             qh.query_backend()
-            if not qh.get_ground_items():
+            if not qh.get_objects_v2('ground_items'):
                 return True
-            for item in qh.get_ground_items():
+            sorted_items = sorted(qh.get_objects_v2('ground_items'), key=lambda obj: obj['dist'])
+            for item in sorted_items:
                 # dont pick up items i havent specified
-                if item['id'] not in self.config:
+                if item['id'] not in self.config or (
+                    item['ownership'] != 1 and self.config[item['id']]['priority'] < min_val_to_loot_other_players
+                ):
                     continue
                 item_config = self.config[item['id']]
                 # dont pick up small amouts of something, i.e. coins

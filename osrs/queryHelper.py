@@ -412,18 +412,20 @@ class QueryHelper:
             return 'bankItems' in self.game_data and self.game_data['bankItems']
 
     def set_equipment(self):
-        self.query['equipmentInv'] = True
+        self.query['equipment'] = True
 
     def get_equipment(self, item=False):
         if item:
-            if 'equipmentInv' in self.game_data:
-                for equipment in self.game_data['equipmentInv']:
-                    if equipment['id'] == int(item):
-                        return equipment
+            if 'equipment' in self.game_data:
+                for equipment in self.game_data['equipment']:
+                    if equipment - 512 == int(item):
+                        return True
                 return False
             else:
                 return False
-        return 'equipmentInv' in self.game_data and self.game_data['equipmentInv']
+        return 'equipment' in self.game_data \
+               and self.game_data['equipment'] \
+               and [item - 512 for item in self.game_data['equipment']]
 
     def set_canvas(self):
         self.query['canvas'] = True
