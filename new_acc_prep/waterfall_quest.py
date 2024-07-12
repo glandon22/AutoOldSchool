@@ -196,6 +196,7 @@ def remove_amulet():
     while True:
         qh.query_backend()
         if qh.get_inventory(osrs.item_ids.ItemIDs.GLARIALS_AMULET.value):
+            osrs.keeb.press_key('esc')
             return True
         elif qh.get_widgets('387,17'):
             osrs.move.click(qh.get_widgets('387,17'))
@@ -211,6 +212,11 @@ def consume_amulet():
     qh.set_inventory()
     qh.query_backend()
     if qh.get_inventory() and not qh.get_inventory(osrs.item_ids.ItemIDs.GLARIALS_AMULET.value):
+        osrs.clock.random_sleep(5, 5.1)
+        osrs.keeb.press_key('space')
+        osrs.keeb.press_key('space')
+        osrs.keeb.press_key('space')
+        osrs.keeb.press_key('space')
         return True
 
 

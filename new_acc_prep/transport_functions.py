@@ -378,7 +378,7 @@ def find_and_talk_to_npc(npc, x, y):
                 and not (qh.get_widgets(main_chat_widget) and not qh.get_widgets(main_chat_widget)['isHidden'])):
             osrs.move.fast_click(qh.get_npcs_by_name()[0])
         elif not qh.get_npcs_by_name():
-            osrs.move.follow_path(qh.get_player_world_location(), {'x': x, 'y': y, 'z': 0})
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': x, 'y': y, 'z': 0}, right_click=True)
 
 
 def enter_morgans_house():
@@ -760,8 +760,8 @@ def dueling_to_c_wars():
         qh.query_backend()
         if 2434 <= qh.get_player_world_location('x') <= 2447 and 3081 <= qh.get_player_world_location('y') <= 3098:
             return
-        elif qh.get_chat_options("castle wars arena."):
-            osrs.keeb.write(str(qh.get_chat_options("castle wars arena.")))
+        elif qh.get_chat_options("castle wars", fuzzy=True):
+            osrs.keeb.write(str(qh.get_chat_options("castle wars", fuzzy=True)))
         elif qh.get_inventory(necklace_ids) and (datetime.datetime.now() - click).total_seconds() > 10:
             osrs.move.right_click_v6(qh.get_inventory(necklace_ids), 'Rub', qh.get_canvas(), in_inv=True)
             click = datetime.datetime.now()

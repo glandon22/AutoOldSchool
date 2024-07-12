@@ -318,6 +318,7 @@ class Loot:
             LootConfig(item_ids.ItemIDs.WATER_ORB.value + 1, 5, min_quantity=4, stackable=True),
             LootConfig(item_ids.ItemIDs.CRYSTAL_KEY.value, 20),
             LootConfig(item_ids.ItemIDs.JAR_OF_DIRT.value, 24),
+            LootConfig(item_ids.ItemIDs.MARK_OF_GRACE.value, 11, stackable=True),
             LootConfig(item_ids.ItemIDs.DRAGONSTONE_RING.value, 11, alch=True),
             LootConfig(item_ids.ItemIDs.OAK_PLANK.value + 1, 5, stackable=True, min_quantity=2),
             LootConfig(item_ids.ItemIDs.RAW_SHARK.value + 1, 10, stackable=True, min_quantity=2),

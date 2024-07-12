@@ -57,4 +57,5 @@ def finish_quest():
 
 def main():
     start_quest()
+    print('finishing quest')
     finish_quest()

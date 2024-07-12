@@ -1,7 +1,7 @@
 import cooks_assistant
 import transport_functions
 import util_functions
-import sheep_shearer
+import sheep_shearer_v2
 import imp_catcher
 import osrs
 import witchs_potion
@@ -22,6 +22,10 @@ import tree_gnome_village
 import monks_friend
 import plague_city
 import sea_slug
+import knights_sword
+import fight_arena
+from thieving import steal_tea_and_make_arrow_shafts
+from crafting import blow_glass_v3
 
 '''cooks_assistant.main()
 transport_functions.bank_in_lumby()
@@ -45,7 +49,7 @@ util_functions.get_quest_items([
 ])
 transport_functions.bank_to_lumby_ground()
 transport_functions.walk_to_sheep_shearer()
-sheep_shearer.main()
+sheep_shearer_v2.main()
 transport_functions.leave_farmer_freds_house()
 transport_functions.walk_to_wizards_tower()
 imp_catcher.main()
@@ -68,11 +72,13 @@ util_functions.get_quest_items([
     osrs.item_ids.ItemIDs.BURNT_MEAT.value,
     osrs.item_ids.ItemIDs.ONION.value
 ])
+osrs.move.go_to_loc(2959, 3209)
 witchs_potion.main()
 transport_functions.leave_hettys_house()
 util_functions.hop_to(330)
 gilded_v2.main()
 util_functions.hop_to(337)
+osrs.move.go_to_loc(3095, 3248)
 util_functions.get_quest_items([
     osrs.item_ids.ItemIDs.STAFF_OF_AIR.value,
     osrs.item_ids.ItemIDs.GARLIC.value,
@@ -104,6 +110,7 @@ util_functions.get_quest_items([
     },
 ])
 util_functions.equip_air_staff_and_earth_strike()
+osrs.move.go_to_loc(3092,3271)
 vampire_slayer.main()
 util_functions.tab_to_varrock()
 romeo_and_juliet.main()
@@ -234,7 +241,7 @@ osrs.bank.ge_handler([
     {'id_override': 'Skills necklace(6)', 'quantity': 1},
     {'id_override': 'Ring of dueling(8)', 'quantity': 1},
     # grand tree
-    {'id': osrs.item_ids.ItemIDs.FIRE_RUNE.value, 'quantity': 1000},
+    {'id': osrs.item_ids.ItemIDs.FIRE_RUNE.value, 'quantity': 2000},
     {'id': osrs.item_ids.ItemIDs.KHAZARD_TELEPORT.value, 'quantity': 2},
     # plague city
     {'id': osrs.item_ids.ItemIDs.DWELLBERRIES.value, 'quantity': 1},
@@ -339,14 +346,15 @@ osrs.move.go_to_loc(2520, 3158)
 osrs.move.interact_with_object(2186, 'y', 3161, True, obj_type='wall', timeout=5, right_click_option='Squeeze-through')
 osrs.move.go_to_loc(2536, 3166)
 tree_gnome_village.main()
-osrs.move.go_to_loc(2517, 3163)
+osrs.move.go_to_loc(2517, 3163, right_click=True)
 osrs.move.interact_with_object(2186, 'y', 3160, False, obj_type='wall', timeout=5,
                                right_click_option='Squeeze-through')
 util_functions.talk_to_npc('elkoy')
 util_functions.dialogue_handler([])
-osrs.move.go_to_loc(2606, 3220)
+osrs.move.go_to_loc(2606, 3220, right_click=True)
 monks_friend.main()
-osrs.move.go_to_loc(2643,3283)
+osrs.move.go_to_loc(2643, 3283)
+osrs.clock.random_sleep(2, 2.1)
 quest_items = [
     osrs.item_ids.ItemIDs.DWELLBERRIES.value,
     osrs.item_ids.ItemIDs.SPADE.value,
@@ -371,10 +379,11 @@ osrs.move.go_to_loc(2567, 3333)
 plague_city.main()
 util_functions.tab_to_varrock()
 transport_functions.walk_to_ge()
+util_functions.equip_item(osrs.item_ids.ItemIDs.ARDOUGNE_TELEPORT_SCROLL.value)
 osrs.bank.ge_handler([
     {'id': osrs.item_ids.ItemIDs.TINDERBOX.value, 'quantity': 1},
     {'id': osrs.item_ids.ItemIDs.LOGS.value, 'quantity': 75},
-    {'id': osrs.item_ids.ItemIDs.OAK_LOGS.value, 'quantity': 200    },
+    {'id': osrs.item_ids.ItemIDs.OAK_LOGS.value, 'quantity': 200},
 ])
 burn_logs_varrock.main(15, osrs.item_ids.ItemIDs.LOGS.value)
 burn_logs_varrock.main(30, osrs.item_ids.ItemIDs.OAK_LOGS.value)
@@ -386,7 +395,7 @@ osrs.bank.ge_handler([
     {'id': osrs.item_ids.ItemIDs.UNLIT_TORCH.value, 'quantity': 1},
     {'id': osrs.item_ids.ItemIDs.BLACK_PICKAXE.value, 'quantity': 1},
     {'id': osrs.item_ids.ItemIDs.REDBERRY_PIE.value, 'quantity': 1},
-    {'id_override': 'prayer potion(4)', 'quantity': 1},
+    {'id_override': 'prayer potion(4)', 'quantity': 5},
     {'id': osrs.item_ids.ItemIDs.IRON_BAR.value, 'quantity': 2},
     {'id': osrs.item_ids.ItemIDs.ARDOUGNE_TELEPORT.value, 'quantity': 5},
 ])
@@ -424,5 +433,132 @@ osrs.bank.banking_handler({
 transport_functions.tab_to_ardy()
 osrs.move.go_to_loc(2710, 3306)
 sea_slug.main()
-transport_functions.tab_to_fally()'''
+transport_functions.tab_to_fally()
 osrs.move.go_to_loc(2970, 3341, right_click=True)
+knights_sword.main()
+transport_functions.tab_to_ardy()
+osrs.move.go_to_loc(2653, 3281)
+osrs.clock.random_sleep(4, 4.1)
+quest_items = [
+    osrs.item_ids.ItemIDs.VARROCK_TELEPORT.value,
+    osrs.item_ids.ItemIDs.STAFF_OF_AIR.value,
+    {
+        'id': [
+            osrs.item_ids.ItemIDs.MIND_RUNE.value,
+        ],
+        'quantity': 'All'
+    },
+    {
+        'id': [
+            osrs.item_ids.ItemIDs.FIRE_RUNE.value,
+        ],
+        'quantity': 'All'
+    },
+    {
+        'id': [
+            osrs.item_ids.ItemIDs.PRAYER_POTION4.value,
+            osrs.item_ids.ItemIDs.PRAYER_POTION3.value,
+            osrs.item_ids.ItemIDs.PRAYER_POTION2.value,
+            osrs.item_ids.ItemIDs.PRAYER_POTION1.value,
+        ],
+        'quantity': 'All'
+    },
+
+    {
+        'id': [
+            osrs.item_ids.ItemIDs.COINS_995.value,
+        ],
+        'quantity': 'X',
+        'amount': '1000'
+    },
+]
+osrs.bank.banking_handler({
+    'dump_inv': True,
+    'dump_equipment': True,
+    'search': [{'query': '', 'items': quest_items}]
+})
+util_functions.equip_staff_and_set_autocast(osrs.item_ids.ItemIDs.STAFF_OF_AIR.value, '201,1,4')
+osrs.move.go_to_loc(2606, 3210)
+util_functions.recharge_prayer_at_alter()
+osrs.move.go_to_loc(2565, 3201)
+fight_arena.main()
+osrs.move.tab_to_varrock()
+transport_functions.walk_to_ge()
+osrs.bank.ge_handler([
+    {'id': osrs.item_ids.ItemIDs.ARROW_SHAFT.value, 'quantity': 7000},
+    {'id': osrs.item_ids.ItemIDs.FEATHER.value, 'quantity': 7000},
+])
+osrs.bank.banking_handler({
+    'dump_inv': True,
+    'dump_equipment': True,
+    'search': [{'query': '', 'items': [
+        {
+            'id': [
+                osrs.item_ids.ItemIDs.FEATHER.value,
+            ],
+            'quantity': 'All'
+        },
+        {
+            'id': [
+                osrs.item_ids.ItemIDs.ARROW_SHAFT.value,
+            ],
+            'quantity': 'All'
+        },
+    ]}]
+})
+osrs.move.go_to_loc(3265, 3415)
+steal_tea_and_make_arrow_shafts.main(29)
+transport_functions.walk_to_ge()
+osrs.bank.banking_handler({
+    'dump_inv': True
+})
+osrs.bank.ge_handler([
+    {'id_override': 'guam potion (unf)', 'quantity': 887},
+    {'id': osrs.item_ids.ItemIDs.EYE_OF_NEWT.value, 'quantity': 887},
+    {'id': osrs.item_ids.ItemIDs.MOLTEN_GLASS.value, 'quantity': 1000},
+    {'id': osrs.item_ids.ItemIDs.IRON_DART.value, 'quantity': 2000},
+    {'id': osrs.item_ids.ItemIDs.RAW_SARDINE.value, 'quantity': 600},
+    {'id': osrs.item_ids.ItemIDs.STEEL_NAILS.value, 'quantity': 1000},
+    {'id': osrs.item_ids.ItemIDs.HAMMER.value, 'quantity': 1},
+    {'id': osrs.item_ids.ItemIDs.SAW.value, 'quantity': 1},
+    {'id': osrs.item_ids.ItemIDs.BAGGED_DEAD_TREE.value, 'quantity': 653},
+    {'id': osrs.item_ids.ItemIDs.WATERING_CAN.value, 'quantity': 3},
+    {'id': osrs.item_ids.ItemIDs.PURE_ESSENCE.value, 'quantity': 1000},
+    {'id': osrs.item_ids.ItemIDs.FALADOR_TELEPORT.value, 'quantity': 45},
+    {'id': osrs.item_ids.ItemIDs.AIR_TIARA.value, 'quantity': 1},
+    {'id': osrs.item_ids.ItemIDs.GLASSBLOWING_PIPE.value, 'quantity': 1},
+])
+osrs.bank.banking_handler({
+    'dump_inv': True,
+    'withdraw': [{'items': [
+        {
+            'id': osrs.item_ids.ItemIDs.GLASSBLOWING_PIPE.value,
+            'quantity': '1'
+        },
+        {
+            'id': osrs.item_ids.ItemIDs.MOLTEN_GLASS.value,
+            'quantity': 'All'
+        },
+    ]}]
+})'''
+blow_glass_v3.main(33)
+osrs.bank.banking_handler({
+    'dump_inv': True,
+    'withdraw': [{'items': [
+        {
+            'id': osrs.item_ids.ItemIDs.EYE_OF_NEWT.value,
+            'quantity': 'X',
+            'amount': '14'
+        },
+        {
+            'id': osrs.item_ids.ItemIDs.GUAM_POTION_UNF.value,
+            'quantity': 'X',
+            'amount': '14'
+        },
+    ]}]
+})
+
+'''
+SHOULD probably just add an option to set the withdraw and deposit amount in the bank so i can just left click and go faster. 
+for herblore where u are withdrawing 14 every time its a pain in the ass
+'''

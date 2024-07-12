@@ -14,6 +14,38 @@ molten_glass_id = '1775'
 pipe_id = '1785'
 
 
+deposit_query = [
+    {
+        'id': osrs.item_ids.ItemIDs.BEER_GLASS.value,
+        'quantity': 'All'
+    },
+    {
+        'id': osrs.item_ids.ItemIDs.EMPTY_CANDLE_LANTERN.value,
+        'quantity': 'All'
+    },
+    {
+        'id': osrs.item_ids.ItemIDs.EMPTY_OIL_LAMP.value,
+        'quantity': 'All'
+    },
+    {
+        'id': osrs.item_ids.ItemIDs.EMPTY_OIL_LANTERN.value,
+        'quantity': 'All'
+    },
+    {
+        'id': osrs.item_ids.ItemIDs.EMPTY_VIAL.value,
+        'quantity': 'All'
+    },
+    {
+        'id': osrs.item_ids.ItemIDs.EMPTY_FISHBOWL.value,
+        'quantity': 'All'
+    },
+    {
+        'id': osrs.item_ids.ItemIDs.UNPOWERED_ORB.value,
+        'quantity': 'All'
+    },
+]
+
+
 def determine_item_to_make(lvl):
     if lvl < 4:
         return '1'
@@ -70,7 +102,7 @@ script_config = {
 }
 
 
-def main():
+def main(goal_level=99):
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.set_bank()
@@ -78,21 +110,25 @@ def main():
     qh.set_widgets({'233,0', '270,14'})
     qh.set_npcs(bankers_ids)
     last_click = datetime.datetime.now() - datetime.timedelta(hours=1)
+    last_banked = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
-        updated_config = osrs.game.break_manager_v4(script_config)
+        osrs.game.break_manager_v4(script_config)
         qh.query_backend()
+        if qh.get_skills('crafting') and qh.get_skills('crafting')['level'] >= goal_level:
+            return
+
         glass = qh.get_inventory(molten_glass_id)
         pipe = qh.get_inventory(pipe_id)
         if not pipe:
             qh.set_script_stats({'status': 'ERROR: Could not find pipe.'})
             exit('no pipe')
-        if not glass:
-            qh.set_script_stats({'status': 'Banking.'})
-            open_bank_interface(qh)
-            # click the second item in inv
-            osrs.move.click({'x': pipe['x'] + 30, 'y': pipe['y']})
-            withdraw_materials_v3(qh)
+        if not glass and (datetime.datetime.now() - last_banked).total_seconds() > 3:
+            osrs.bank.banking_handler({
+                'deposit': deposit_query,
+                'withdraw': [{'items': [{'id': osrs.item_ids.ItemIDs.MOLTEN_GLASS.value, 'quantity': 'All'}]}]
+            })
             last_click = datetime.datetime.now() - datetime.timedelta(hours=1)
+            last_banked = datetime.datetime.now()
         elif glass and (datetime.datetime.now() - last_click).total_seconds() > 60:
             qh.set_script_stats({'status': 'Crafting items.'})
             osrs.move.click(pipe)
@@ -112,6 +148,3 @@ def main():
         elif qh.get_widgets('233,0'):
             qh.set_script_stats({'status': 'Leveled up!'})
             last_click = datetime.datetime.now() - datetime.timedelta(hours=1)
-
-
-main()

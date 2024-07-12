@@ -47,6 +47,7 @@ def go_to_basement():
     qh.set_objects_v2('game', {ladder_id})
     qh.set_player_world_location()
     qh.set_tiles({inter_tile})
+    qh.set_canvas()
     while True:
         qh.query_backend()
         if qh.get_player_world_location('y') >= 5500:
@@ -58,8 +59,9 @@ def go_to_basement():
         elif (2901 <= qh.get_player_world_location('x') <= 2907
               and 3475 <= qh.get_player_world_location('y') <= 3476
               and qh.get_objects_v2('game', ladder_id)):
-            osrs.move.fast_click(qh.get_objects_v2('game', ladder_id)[0])
-
+            osrs.move.right_click_v6(
+                qh.get_objects_v2('game', ladder_id)[0], 'Climb-down', qh.get_canvas()
+            )
 
 def enter_gate_area():
     door_id = 2865
@@ -118,6 +120,7 @@ def return_to_ground_floor():
     qh.set_objects_v2('game', {ladder_id})
     qh.set_player_world_location()
     qh.set_tiles({inter_tile})
+    qh.set_canvas()
     while True:
         qh.query_backend()
         if 2901 <= qh.get_player_world_location('x') <= 2907 and 3468 <= qh.get_player_world_location('y') <= 3474:
@@ -131,7 +134,7 @@ def return_to_ground_floor():
             osrs.move.fast_click(qh.get_tiles(inter_tile))
         elif (qh.get_player_world_location('y') >= 5500
               and qh.get_objects_v2('game', ladder_id)):
-            osrs.move.fast_click(qh.get_objects_v2('game', ladder_id)[0])
+            osrs.move.right_click_v6(qh.get_objects_v2('game', ladder_id)[0], 'Climb-up', qh.get_canvas())
 
 
 def enter_mouse_room():
@@ -349,6 +352,7 @@ def take_ball():
             osrs.move.fast_click(qh.get_objects_v2('game', ball_id)[0])
 
 def main():
+    '''
     start()
     transport_functions.walk_to_loc(2894, 2898, 3470, 3474, 2896, 3472)
     search_plant()
@@ -371,9 +375,10 @@ def main():
     kill_experiments()
     osrs.player.turn_off_all_prayers()
     take_ball()
+    osrs.player.toggle_run('off')
     transport_functions.tab_to_fally()
     transport_functions.walk_to_loc(2940, 2948, 3449, 3454, 2948, 3451)
-    transport_functions.fally_to_tav_gate()
+    transport_functions.fally_to_tav_gate()'''
     start()
     util_functions.dialogue_handler()
     util_functions.wait_for_quest_complete_screen()

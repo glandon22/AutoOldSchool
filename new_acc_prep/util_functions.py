@@ -17,7 +17,7 @@ def get_quest_items(items):
         return print('failed to bank in lum')
 
 
-def dialogue_handler(desired_replies=None):
+def dialogue_handler(desired_replies=None, timeout=3):
 
     npc_chat_head_widget = '231,4'
     player_chat_widget = '217,6'
@@ -44,7 +44,7 @@ def dialogue_handler(desired_replies=None):
                 not qh.get_widgets(main_chat_widget)
                 or (qh.get_widgets(main_chat_widget) and qh.get_widgets(main_chat_widget)['isHidden'])
         ):
-            if (datetime.datetime.now() - dialogue_last_seen).total_seconds() > 3:
+            if (datetime.datetime.now() - dialogue_last_seen).total_seconds() > timeout:
                 return had_dialogue
         else:
             print('here')
@@ -70,9 +70,11 @@ def hop_to(world):
     qh.set_game_state()
     while True:
         qh.query_backend()
-        if qh.get_world() == world:
+        if qh.get_world() == world and qh.get_game_state() == 'LOGGED_IN':
             osrs.keeb.press_key('esc')
             return
+        elif qh.get_game_state() == 'LOGIN_SCREEN':
+            osrs.game.login_v4()
         elif qh.get_game_state() != 'HOPPING':
             osrs.keeb.press_key('enter')
             osrs.keeb.write(f'::hop {world}')
@@ -117,22 +119,18 @@ def equip_staff_and_set_autocast(staff, spell_widget_id):
     earth_strike_widget = spell_widget_id
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
+    qh.set_equipment()
     qh.set_widgets({configured_spell_widget, earth_strike_widget})
     osrs.keeb.press_key('f1')
     osrs.keeb.press_key('esc')
+    last_config_click = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
         qh.query_backend()
         if qh.get_inventory(staff):
+            osrs.keeb.press_key('esc')
+            osrs.keeb.press_key('esc')
             osrs.move.click(qh.get_inventory(staff))
-            osrs.clock.sleep_one_tick()
-            osrs.clock.sleep_one_tick()
-            break
-    last_config_click = datetime.datetime.now() - datetime.timedelta(hours=1)
-    while True:
-        osrs.keeb.press_key('f1')
-        osrs.clock.sleep_one_tick()
-        qh.query_backend()
-        if (qh.get_widgets(configured_spell_widget)
+        elif (qh.get_widgets(configured_spell_widget)
                 and not qh.get_widgets(configured_spell_widget)['isHidden']
                 and (datetime.datetime.now() - last_config_click).total_seconds() > 3):
             osrs.move.click(qh.get_widgets(configured_spell_widget))
@@ -141,6 +139,8 @@ def equip_staff_and_set_autocast(staff, spell_widget_id):
             osrs.move.click(qh.get_widgets(earth_strike_widget))
             osrs.keeb.press_key('esc')
             return
+        else:
+            osrs.keeb.press_key('f1')
 
 
 def tab_to_varrock():
@@ -406,15 +406,16 @@ def interact_with_object(
 
 def recharge_prayer_at_alter():
     altar = 14860
+    altar1 = 409
     qh = osrs.queryHelper.QueryHelper()
-    qh.set_objects_v2('game', {altar})
+    qh.set_objects_v2('game', {altar, altar1})
     qh.set_skills({'prayer'})
     while True:
         qh.query_backend()
         if qh.get_skills('prayer') and qh.get_skills('prayer')['level'] == qh.get_skills('prayer')['boostedLevel']:
             return
-        elif qh.get_objects_v2('game', altar):
-            osrs.move.fast_click(qh.get_objects_v2('game', altar)[0])
+        elif qh.get_objects_v2('game'):
+            osrs.move.fast_click(qh.get_objects_v2('game')[0])
 
 
 def help_femi():
@@ -449,3 +450,11 @@ def kill_single_npc(npc, prayers, pots):
         elif not qh.get_npcs_by_name() and fought:
             return
         osrs.keeb.press_key('space')
+
+
+def check_for_item_in_inv(item):
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_inventory()
+    qh.query_backend()
+    if qh.get_inventory(item):
+        return True

@@ -16,6 +16,7 @@ dialogue = [
     "Okay, I'll look for it."
 ]
 
+
 def get_picture():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
@@ -67,12 +68,14 @@ def click_rope():
             in_inv=True
         )
 
+
 def click_mask():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
     if qh.get_inventory(osrs.item_ids.ItemIDs.GAS_MASK.value):
         osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.GAS_MASK.value))
+
 
 def use_all_water():
     qh = osrs.queryHelper.QueryHelper()
@@ -92,17 +95,18 @@ def make_cure():
             osrs.keeb.press_key('space')
             return
         elif (qh.get_inventory(osrs.item_ids.ItemIDs.CHOCOLATE_DUST.value)
-            and qh.get_inventory(osrs.item_ids.ItemIDs.BUCKET_OF_MILK.value)):
+              and qh.get_inventory(osrs.item_ids.ItemIDs.BUCKET_OF_MILK.value)):
             osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.CHOCOLATE_DUST.value))
             osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.BUCKET_OF_MILK.value))
             osrs.clock.sleep_one_tick()
             osrs.clock.sleep_one_tick()
         elif (qh.get_inventory(osrs.item_ids.ItemIDs.SNAPE_GRASS.value)
-            and qh.get_inventory(osrs.item_ids.ItemIDs.CHOCOLATEY_MILK.value)):
+              and qh.get_inventory(osrs.item_ids.ItemIDs.CHOCOLATEY_MILK.value)):
             osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.SNAPE_GRASS.value))
             osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.CHOCOLATEY_MILK.value))
             osrs.clock.sleep_one_tick()
             osrs.clock.sleep_one_tick()
+
 
 def open_cover():
     qh = osrs.queryHelper.QueryHelper()
@@ -125,6 +129,7 @@ def read_scroll():
         elif qh.get_inventory(osrs.item_ids.ItemIDs.ARDOUGNE_TELEPORT_SCROLL.value):
             osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.ARDOUGNE_TELEPORT_SCROLL.value))
             osrs.clock.random_sleep(1, 1.1)
+
 
 def main():
     util_functions.talk_to_npc('edmond')
@@ -186,15 +191,17 @@ def main():
     util_functions.talk_to_npc('bravek')
     util_functions.dialogue_handler(dialogue)
     make_cure()
-    util_functions.talk_to_npc('bravek')
-    util_functions.dialogue_handler(dialogue)
+    util_functions.talk_to_npc('bravek', right_click=True)
+    util_functions.dialogue_handler(dialogue, timeout=15)
     osrs.move.interact_with_object(2528, 'x', 2529, False, obj_type='wall')
     osrs.move.interact_with_object(
         2546, 'y', 3311, False, obj_type='wall', intermediate_tile='2525,3310,0'
     )
     osrs.move.go_to_loc(2540, 3275)
-    osrs.move.interact_with_object(37321, 'y', 3272, False, obj_type='wall',
-                                   custom_exit_function=util_functions.check_for_dialogue)
+    osrs.move.interact_with_object(
+        37321, 'y', 3272, False, obj_type='wall',
+        timeout=10, custom_exit_function=util_functions.check_for_dialogue, obj_tile={'x': 2540, 'y': 3273}
+    )
     util_functions.dialogue_handler(dialogue)
     osrs.move.interact_with_object(2522, 'y', 5500, True, timeout=4, right_click_option='Walk-down')
     osrs.move.interact_with_object(
