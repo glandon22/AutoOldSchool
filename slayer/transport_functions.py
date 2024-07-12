@@ -831,6 +831,7 @@ def morytania_gargoyles():
     qh.set_tiles({'3433,9937,3'})
     qh.set_npcs_by_name(['gargoyle'])
     qh.set_inventory()
+    qh.set_canvas()
     slayer_rings = [
         ItemIDs.SLAYER_RING_1.value,
         ItemIDs.SLAYER_RING_2.value,
@@ -878,6 +879,7 @@ def morytania_abby_demons():
     )
     qh.set_tiles({'3433,9950,3', '3438,9967,3'})
     qh.set_npcs_by_name(['abyssal demon'])
+    qh.set_canvas()
     qh.set_inventory()
     slayer_rings = [
         ItemIDs.SLAYER_RING_1.value,
@@ -1030,6 +1032,7 @@ def morytania_nechs():
     basement_ladder_id = '30191'
     qh = osrs.queryHelper.QueryHelper()
     qh.set_chat_options()
+    qh.set_canvas()
     qh.set_player_world_location()
     qh.set_objects(
         {'3417,3535,0'},

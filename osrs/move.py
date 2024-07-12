@@ -638,9 +638,11 @@ def interact_with_object(
                 pre_interact()
             if right_click_option is None:
                 osrs.move.fast_click(target_obj[0])
+                last_click = datetime.datetime.now()
             else:
-                osrs.move.right_click_v6(target_obj[0], right_click_option, qh.get_canvas(), in_inv=True)
-            last_click = datetime.datetime.now()
+                success = osrs.move.right_click_v6(target_obj[0], right_click_option, qh.get_canvas(), in_inv=True)
+                if success:
+                    last_click = datetime.datetime.now()
         elif intermediate_tile and qh.get_tiles(intermediate_tile) and not target_obj:
             osrs.move.fast_click(qh.get_tiles(intermediate_tile))
 

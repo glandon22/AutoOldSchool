@@ -249,6 +249,8 @@ class Loot:
             LootConfig(item_ids.ItemIDs.RUNE_2H_SWORD.value, 24, alch=True),
             LootConfig(item_ids.ItemIDs.RUNE_PLATELEGS.value, 24, alch=True),
             LootConfig(item_ids.ItemIDs.RUNE_PLATEBODY.value, 40, alch=True),
+            LootConfig(item_ids.ItemIDs.RUNE_KNIFEP_5660.value, 6, alch=True, min_quantity=25),
+            LootConfig(item_ids.ItemIDs.RUNE_KNIFEP_5667.value, 12, stackable=True, min_quantity=25),
             ## Dragon
             LootConfig(item_ids.ItemIDs.DRAGON_BOOTS.value, 59),
             LootConfig(item_ids.ItemIDs.DRAGON_CHAINBODY.value, 198),
@@ -261,6 +263,8 @@ class Loot:
             LootConfig(item_ids.ItemIDs.DRAGON_MED_HELM.value, 58, alch=True),
             LootConfig(item_ids.ItemIDs.DRAGON_PLATELEGS.value, 161, alch=True),
             LootConfig(item_ids.ItemIDs.DRAGON_PLATESKIRT.value, 161, alch=True),
+            LootConfig(item_ids.ItemIDs.DRAGON_SCIMITAR.value, 59, alch=True),
+            LootConfig(item_ids.ItemIDs.DRAGON_CHAINBODY.value, 190),
             ## Staves and Such
             LootConfig(item_ids.ItemIDs.KRAKEN_TENTACLE.value, 838),
             LootConfig(item_ids.ItemIDs.DUST_BATTLESTAFF.value, 9),
@@ -272,6 +276,9 @@ class Loot:
             LootConfig(item_ids.ItemIDs.MYSTIC_EARTH_STAFF.value, 25, alch=True),
             LootConfig(item_ids.ItemIDs.MYSTIC_WATER_STAFF.value, 25, alch=True),
             LootConfig(item_ids.ItemIDs.MYSTIC_AIR_STAFF.value, 25, alch=True),
+            LootConfig(item_ids.ItemIDs.MYSTIC_FIRE_STAFF.value, 25, alch=True),
+            LootConfig(item_ids.ItemIDs.SMOKE_BATTLESTAFF.value, 1200),
+            LootConfig(item_ids.ItemIDs.ANCIENT_STAFF.value, 80),
             ## Misc Alchable Weapons and Armor
             LootConfig(item_ids.ItemIDs.LEAFBLADED_BATTLEAXE.value, 58, alch=True),
             LootConfig(item_ids.ItemIDs.LEAFBLADED_SWORD.value, 40, alch=True),
@@ -282,6 +289,8 @@ class Loot:
             LootConfig(item_ids.ItemIDs.MYSTIC_ROBE_TOP.value, 71, alch=True),
             LootConfig(item_ids.ItemIDs.MYSTIC_ROBE_BOTTOM.value, 47, alch=True),
             LootConfig(item_ids.ItemIDs.BATTLESTAFF.value + 1, 8, stackable=True),
+            LootConfig(item_ids.ItemIDs.RED_DHIDE_BODY.value, 6, alch=True),
+            LootConfig(item_ids.ItemIDs.OCCULT_NECKLACE.value, 800,),
 
             LootConfig(item_ids.ItemIDs.GRANITE_MAUL.value, 300),
 
@@ -300,6 +309,7 @@ class Loot:
             LootConfig(item_ids.ItemIDs.CHAOS_RUNE.value, 3, stackable=True, min_quantity=15),
             LootConfig(item_ids.ItemIDs.DUST_RUNE.value, 3, stackable=True, min_quantity=200),
             LootConfig(item_ids.ItemIDs.MUD_RUNE.value, 3, stackable=True, min_quantity=200),
+            LootConfig(item_ids.ItemIDs.SMOKE_RUNE.value, 3, stackable=True, min_quantity=100),
 
             # Catacombs Drops
             LootConfig(item_ids.ItemIDs.ANCIENT_SHARD.value, 9, stackable=True),
@@ -318,11 +328,17 @@ class Loot:
             LootConfig(item_ids.ItemIDs.WATER_ORB.value + 1, 5, min_quantity=4, stackable=True),
             LootConfig(item_ids.ItemIDs.CRYSTAL_KEY.value, 20),
             LootConfig(item_ids.ItemIDs.JAR_OF_DIRT.value, 24),
-            LootConfig(item_ids.ItemIDs.MARK_OF_GRACE.value, 11, stackable=True),
+            LootConfig(item_ids.ItemIDs.JAR_OF_SMOKE.value, 58),
             LootConfig(item_ids.ItemIDs.DRAGONSTONE_RING.value, 11, alch=True),
             LootConfig(item_ids.ItemIDs.OAK_PLANK.value + 1, 5, stackable=True, min_quantity=2),
             LootConfig(item_ids.ItemIDs.RAW_SHARK.value + 1, 10, stackable=True, min_quantity=2),
             LootConfig(item_ids.ItemIDs.RAW_MONKFISH.value + 1, 8, stackable=True, min_quantity=7),
+            LootConfig(item_ids.ItemIDs.RUNE_ARROW.value, 8, stackable=True, min_quantity=50),
+            LootConfig(item_ids.ItemIDs.MOLTEN_GLASS.value + 1, 5, stackable=True, min_quantity=50),
+            LootConfig(item_ids.ItemIDs.MAGIC_LOGS.value + 1, 5, stackable=True, min_quantity=5),
+            LootConfig(item_ids.ItemIDs.DIAMOND.value + 1, 5, stackable=True, min_quantity=3),
+            LootConfig(item_ids.ItemIDs.ONYX_BOLT_TIPS.value, 5, stackable=True),
+            LootConfig(item_ids.ItemIDs.MARK_OF_GRACE.value, 11, stackable=True),
 
             # Seeds
             LootConfig(item_ids.ItemIDs.SNAPDRAGON_SEED.value, 36, stackable=True),
@@ -339,15 +355,21 @@ class Loot:
             LootConfig(item_ids.ItemIDs.RUNITE_BAR.value, 11),
             LootConfig(item_ids.ItemIDs.RUNITE_BAR.value + 1, 11, stackable=True),
             LootConfig(item_ids.ItemIDs.GOLD_ORE.value + 1, 2, stackable=True, min_quantity=10),
+            LootConfig(item_ids.ItemIDs.COAL.value + 1, 5, stackable=True, min_quantity=30),
 
             # Herbs
             LootConfig(item_ids.ItemIDs.GRIMY_SNAPDRAGON.value + 1, 5, stackable=True, min_quantity=2),
+            LootConfig(item_ids.ItemIDs.GRIMY_TOADFLAX.value + 1, 5, stackable=True, min_quantity=2),
+            LootConfig(item_ids.ItemIDs.GRIMY_TORSTOL.value + 1, 5, stackable=True, min_quantity=2),
 
             # Potions
             LootConfig(item_ids.ItemIDs.SANFEW_SERUM4.value, 22),
+            LootConfig(item_ids.ItemIDs.PRAYER_POTION4.value, 11),
 
             # Food
             LootConfig(item_ids.ItemIDs.SHARK.value, 1),
+            LootConfig(item_ids.ItemIDs.UGTHANKI_KEBAB.value, 1),
+            LootConfig(item_ids.ItemIDs.TUNA_POTATO.value, 1),
         ]
         return config
 

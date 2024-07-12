@@ -1,6 +1,8 @@
 import osrs
 
 
+pot_handler_required_prayer_widgets = {'233,0', '541,23', '541,22', '541,21', '161,62', '541,25'}
+pot_handler_required_skills = {'hitpoints', 'strength', 'ranged', 'magic', 'attack', 'defence', 'prayer'}
 class PotConfig:
     def __init__(self, super_combat=False, ranging=False, magic=False, antipoision=False, antifire=False,
                  super_str=False, super_atk=False, super_def=False):
@@ -86,37 +88,49 @@ pot_matcher = {
         osrs.item_ids.ItemIDs.PRAYER_POTION3.value,
         osrs.item_ids.ItemIDs.PRAYER_POTION2.value,
         osrs.item_ids.ItemIDs.PRAYER_POTION1.value,
+        osrs.item_ids.ItemIDs.SUPER_RESTORE1.value,
+        osrs.item_ids.ItemIDs.SUPER_RESTORE2.value,
+        osrs.item_ids.ItemIDs.SUPER_RESTORE3.value,
+        osrs.item_ids.ItemIDs.SUPER_RESTORE4.value,
     ]
 }
 
 prayer_map = {
     'protect_melee': 4118,
     'protect_range': 4117,
-    'protect_mage': 4116
+    'protect_mage': 4116,
+    'redemption': 4120
 }
 
 prayer_map_widgets = {
     'protect_melee': '541,23',
     'protect_range': '541,22',
-    'protect_mage': '541,21'
+    'protect_mage': '541,21',
+    'redemption': '541,25'
 }
 
 
 def prayer_handler(qh: osrs.queryHelper.QueryHelper or None, prayers):
+    # pre load the prayer widget locations
+    osrs.keeb.press_key('f5')
+    osrs.keeb.press_key('esc')
     if qh is None:
         qh = osrs.queryHelper.QueryHelper()
-        qh.set_skills({'hitpoints', 'strength', 'ranged', 'magic', 'attack', 'defence', 'prayer'})
-        qh.set_widgets({'233,0', '541,23', '541,22', '541,21', '161,62'})
+        qh.set_skills({'prayer'})
+        qh.set_widgets(pot_handler_required_prayer_widgets)
         qh.set_active_prayers()
         qh.query_backend()
     if not prayers:
         return
+    if qh.get_skills('prayer') and qh.get_skills('prayer')['boostedLevel'] == 0:
+        print('tried to turn on prayer but i have no prayer points!')
+        return False
     for prayer in prayers:
         if prayer_map[prayer] not in qh.get_active_prayers():
             osrs.keeb.press_key('f5')
-            osrs.clock.sleep_one_tick()
             qh.query_backend()
-            osrs.move.fast_click(qh.get_widgets(prayer_map_widgets[prayer]))
+            if qh.get_widgets(prayer_map_widgets[prayer]):
+                osrs.move.fast_click(qh.get_widgets(prayer_map_widgets[prayer]))
     osrs.keeb.press_key('esc')
 
 

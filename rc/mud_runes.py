@@ -112,21 +112,26 @@ def click_water_rune():
         osrs.move.fast_click(qh.get_inventory(osrs.item_ids.ItemIDs.WATER_RUNE.value))
 
 
-def crafted_runes(prev_inv):
+def crafted_runes():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if qh.get_inventory() != prev_inv:
+    if not qh.get_inventory(osrs.item_ids.ItemIDs.PURE_ESSENCE.value):
         return True
 
 
-def make_muds(qh):
-    prev_inv = qh.get_inventory()
+def make_muds(qh, final_run=False):
     osrs.move.interact_with_object(
         34763, 'y', 4800, True, pre_interact=click_water_rune,
-        right_click_option='Use', custom_exit_function=crafted_runes, timeout=8, custom_exit_function_arg=prev_inv
+        custom_exit_function=crafted_runes
     )
-    click_pouches(qh, True)
+    # wait until my ess is back in inv before leaving
+    if not final_run:
+        click_pouches(qh, True)
+        while True:
+            qh.query_backend()
+            if qh.get_inventory(osrs.item_ids.ItemIDs.PURE_ESSENCE.value):
+                return
 
 
 def main(goal_lvl=99):
@@ -172,7 +177,7 @@ def main(goal_lvl=99):
     # cast magic imbue then use the water runes on altar
     make_muds(qh)
     make_muds(qh)
-    make_muds(qh)
+    make_muds(qh, True)
     # need to update the bank function to be able to deposit singular items, shouldnt be that hard
 
 
