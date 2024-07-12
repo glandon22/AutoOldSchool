@@ -14,39 +14,56 @@ quest_dialogue = [
     "Ok, thanks."
 ]
 
-
-def start_quest():
-    qh = osrs.queryHelper.QueryHelper()
-    qh.set_npcs_by_name(['romeo'])
-    qh.set_chat_options()
-    qh.set_widgets({main_chat_widget})
-    while True:
-        qh.query_backend()
-        if qh.get_npcs_by_name() and (qh.get_widgets(main_chat_widget) and qh.get_widgets(main_chat_widget)['isHidden']):
-            osrs.move.fast_click(qh.get_npcs_by_name()[0])
-        elif qh.get_widgets(main_chat_widget) and not qh.get_widgets(main_chat_widget)['isHidden']:
-            complete = util_functions.dialogue_handler(quest_dialogue)
-            if complete:
-                return
-
 def main():
-    start_quest()
-    transport_functions.go_up_to_juliet()
+    util_functions.talk_to_npc('romeo', right_click=True)
+    util_functions.dialogue_handler(quest_dialogue)
+    osrs.move.go_to_loc(3166,3433)
+    osrs.move.interact_with_object(
+        11773, 'x', 3164, False,
+        obj_type='wall', intermediate_tile='3162,3433,0', obj_tile={'x': 3165, 'y': 3433}
+    )
+    osrs.move.interact_with_object(
+        11797, 'z', 1, True, right_click_option='Climb-up'
+    )
+    osrs.move.interact_with_object(
+        11773, 'y', 3430, False,
+        obj_type='wall', intermediate_tile='3156,3428,1', obj_tile={'x': 3157, 'y': 3430}
+    )
+    osrs.move.interact_with_object(
+        11773, 'y', 3426, False,
+        obj_type='wall', intermediate_tile='3156,3425,1', obj_tile={'x': 3158, 'y': 3426}
+    )
+    util_functions.talk_to_npc('juliet')
     util_functions.dialogue_handler(quest_dialogue)
     util_functions.tab_to_varrock()
-    start_quest()
-    transport_functions.go_to_father_lawrence()
+    util_functions.talk_to_npc('romeo', right_click=True)
     util_functions.dialogue_handler(quest_dialogue)
-    transport_functions.find_and_talk_to_npc('apothecary', 3190, 3403)
+    osrs.move.go_to_loc(3248, 3479)
+    util_functions.talk_to_npc('father lawrence')
     util_functions.dialogue_handler(quest_dialogue)
-    transport_functions.go_up_to_juliet()
+    osrs.move.go_to_loc(3190, 3403),
+    util_functions.talk_to_npc('apothecary')
     util_functions.dialogue_handler(quest_dialogue)
-    util_functions.wait_for_dialogue()
-    util_functions.dialogue_handler(quest_dialogue)
+    osrs.move.go_to_loc(3166, 3433)
+    osrs.move.interact_with_object(
+        11773, 'x', 3164, False,
+        obj_type='wall', intermediate_tile='3162,3433,0', obj_tile={'x': 3165, 'y': 3433}
+    )
+    osrs.move.interact_with_object(
+        11797, 'z', 1, True, right_click_option='Climb-up'
+    )
+    osrs.move.interact_with_object(
+        11773, 'y', 3430, False,
+        obj_type='wall', intermediate_tile='3156,3428,1', obj_tile={'x': 3157, 'y': 3430}
+    )
+    osrs.move.interact_with_object(
+        11773, 'y', 3426, False,
+        obj_type='wall', intermediate_tile='3156,3425,1', obj_tile={'x': 3158, 'y': 3426}
+    )
+    util_functions.talk_to_npc('juliet')
+    util_functions.dialogue_handler(quest_dialogue, timeout=15)
     util_functions.tab_to_varrock()
-    start_quest()
-    util_functions.wait_for_dialogue()
-    util_functions.dialogue_handler(quest_dialogue)
-    util_functions.wait_for_dialogue()
-    util_functions.dialogue_handler(quest_dialogue)
+    util_functions.talk_to_npc('romeo', right_click=True)
+    util_functions.dialogue_handler(quest_dialogue, timeout=60)
     util_functions.wait_for_quest_complete_screen()
+

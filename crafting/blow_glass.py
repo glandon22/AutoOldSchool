@@ -106,5 +106,3 @@ def main():
                 craft()
                 crafting_level = data['craftingLevel']
                 osrs.move.click_off_screen()
-
-main()

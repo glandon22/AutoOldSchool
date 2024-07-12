@@ -139,11 +139,11 @@ class QueryHelper:
     def set_chat_options(self):
         self.query['chatOptions'] = True
 
-    def get_chat_options(self, option=False):
+    def get_chat_options(self, option=False, fuzzy=False):
         if not option or not ('chatOptions' in self.game_data and self.game_data['chatOptions']):
             return 'chatOptions' in self.game_data and self.game_data['chatOptions']
         for i, stored_option in enumerate(self.game_data['chatOptions']):
-            if stored_option.lower() == option.lower():
+            if stored_option.lower() == option.lower() or (fuzzy and option.lower() in stored_option.lower()):
                 return i
         return False
 

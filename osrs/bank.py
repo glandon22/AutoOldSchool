@@ -235,6 +235,55 @@ def search_and_withdraw(searches, game_state: osrs.queryHelper.QueryHelper):
     return True
 
 
+def deposit_items(items: list):
+    input_widget = '162,42'
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_inventory()
+    qh.set_widgets({input_widget})
+    qh.set_canvas()
+    if type(items) is not list:
+        logger.error('non list passed to banking deposit function')
+        return False
+    for item in items:
+        if 'id' not in item:
+            logger.warn('deposit item missing id')
+            continue
+        if 'quantity' not in item:
+            logger.warn('deposit item missing quantity')
+            continue
+        qh.query_backend()
+        inventory = list(filter(lambda inv_item: inv_item['id'] == item['id'], qh.get_inventory()))
+        if not inventory:
+            logger.warn('requested item to deposit was not found in inventory.')
+            continue
+        target_item = qh.get_inventory(item['id'])
+        success = osrs.move.right_click_v6(
+            target_item,
+            f'Deposit-{item["quantity"]}',
+            qh.get_canvas(),
+            in_inv=True
+        )
+        # we are depositing X amount, tell the bank what that amount is
+        if success and 'amount' in item:
+            while True:
+                qh.query_backend()
+                if qh.get_widgets(input_widget) and not qh.get_widgets(input_widget)['isHidden']:
+                    osrs.clock.sleep_one_tick()
+                    osrs.keeb.write(str(item['amount']))
+                    osrs.keeb.press_key('enter')
+                    break
+        # wait for item to be deposited
+        while True:
+            qh.query_backend()
+            deposited = True
+            for new_item in qh.get_inventory():
+                if new_item == target_item:
+                    deposited = False
+                    break
+            if deposited:
+                break
+
+
 def banking_handler(params):
     """
     Supports banking in GE, Varrock, Fally, C Wars, Crafting Guild, Camelot
@@ -337,8 +386,7 @@ def banking_handler(params):
     qh.query_backend()
     # Withdraw desired items
     if 'deposit' in params:
-        # TODO!
-        print('not implemented')
+        deposit_items(params['deposit'])
     if 'withdraw' in params:
         success = withdraw(params['withdraw'], qh)
         if not success:
@@ -366,6 +414,7 @@ def abort_offer(slot):
             res = osrs.move.right_click_v6(qh.get_widgets(slot), 'Abort offer', qh.get_canvas(), in_inv=True)
             if res:
                 break
+    osrs.clock.sleep_one_tick()
     osrs.clock.sleep_one_tick()
     while True:
         qh.query_backend()
@@ -517,7 +566,6 @@ def purchase_item(item, quantity, prev_price=0):
         print('jj', qh.get_widgets(collect_widget))
         osrs.move.click(qh.get_widgets(collect_widget))
         return
-
 
 def ge_handler(items):
     '''

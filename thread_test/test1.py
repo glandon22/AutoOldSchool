@@ -4,7 +4,6 @@ import time
 import pyautogui
 import osrs
 
-qh = osrs.queryHelper.QueryHelper()
-qh.set_active_prayers()
-qh.query_backend()
-print(qh.get_active_prayers())
+osrs.bank.banking_handler({
+
+})

@@ -43,6 +43,9 @@ def get_journal():
     qh.set_inventory()
     qh.query_backend()
     if qh.get_inventory(osrs.item_ids.ItemIDs.GLOUGHS_JOURNAL.value):
+        osrs.clock.random_sleep(1, 1.1)
+        osrs.keeb.press_key('space')
+        osrs.keeb.press_key('esc')
         return True
 
 
@@ -285,6 +288,7 @@ def click_roots():
         qh = osrs.queryHelper.QueryHelper()
         qh.set_inventory()
         qh.set_player_animation()
+        qh.set_canvas()
         qh.set_objects(
             {root['tile']},
             {root['id']},
@@ -305,7 +309,12 @@ def click_roots():
             elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, root['id']):
                 osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, root['id'])[0])
             elif 'walk_to' in root and qh.get_tiles(root['walk_to']):
-                osrs.move.fast_click(qh.get_tiles(root['walk_to']))
+                osrs.move.right_click_v6(
+                    qh.get_tiles(root['walk_to']),
+                    'Walk here',
+                    qh.get_canvas(),
+                    in_inv=True
+                )
 
 
 def main():
@@ -358,6 +367,9 @@ def main():
     })
     transport_functions.dueling_to_c_wars()
     walk_out_of_c_wars()
+    osrs.move.go_to_loc(2526, 3095)
+    osrs.move.interact_with_object(17091, 'x', 2533, True, obj_type='wall', obj_tile={'x': 2532, 'y': 3092}, intermediate_tile='2534,3092,0')
+    osrs.move.interact_with_object(17091, 'x', 2539, True, obj_type='wall', obj_tile={'x': 2539, 'y': 3091}, intermediate_tile='2549,3098,0')
     osrs.move.go_to_loc(2669, 3111)
     osrs.player.toggle_run('on')
     osrs.move.go_to_loc(2677, 3094)
@@ -405,6 +417,7 @@ def main():
     util_functions.talk_to_npc('captain errdo', right_click=True)
     util_functions.dialogue_handler(dialogue)
     osrs.move.go_to_loc(2944, 3042)
+    osrs.clock.random_sleep(3, 3.1)
     osrs.move.interact_with_object(2439, 'a', 1, True, obj_type='wall', custom_exit_function=enter_gate)
     util_functions.dialogue_handler(dialogue)
     osrs.player.toggle_run('off')
@@ -471,10 +484,11 @@ def main():
     osrs.move.interact_with_object(16683, 'z', 1, True, timeout=6, obj_dist=7)
     osrs.move.interact_with_object(2447, 'z', 2, True, timeout=6)
     pyautogui.scroll(15)
-    osrs.move.interact_with_object(2440, 'z', 2, True, pre_interact=click_t, custom_exit_function=place_t, timeout=5)
-    osrs.move.interact_with_object(2441, 'z', 2, True, pre_interact=click_u, custom_exit_function=place_u, timeout=5)
-    osrs.move.interact_with_object(2442, 'z', 2, True, pre_interact=click_z, custom_exit_function=place_z, timeout=5)
-    osrs.move.interact_with_object(2443, 'z', 2, True, pre_interact=click_o, custom_exit_function=place_o, timeout=5)
+    osrs.clock.random_sleep(2, 2.1)
+    osrs.move.interact_with_object(2440, 'z', 2, True, pre_interact=click_t, custom_exit_function=place_t, timeout=5, right_click_option='Use')
+    osrs.move.interact_with_object(2441, 'z', 2, True, pre_interact=click_u, custom_exit_function=place_u, timeout=5, right_click_option='Use')
+    osrs.move.interact_with_object(2442, 'z', 2, True, pre_interact=click_z, custom_exit_function=place_z, timeout=5, right_click_option='Use')
+    osrs.move.interact_with_object(2443, 'z', 2, True, pre_interact=click_o, custom_exit_function=place_o, timeout=5, right_click_option='Use')
     pyautogui.scroll(-50)
     util_functions.equip_staff_and_set_autocast(osrs.item_ids.ItemIDs.STAFF_OF_AIR.value, '201,1,4')
     osrs.player.toggle_run('on')
