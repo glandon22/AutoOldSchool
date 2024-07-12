@@ -5,6 +5,6 @@ import pyautogui
 import osrs
 
 qh = osrs.queryHelper.QueryHelper()
-qh.set_npcs_by_name(['sir vyvin'])
+qh.set_active_prayers()
 qh.query_backend()
-print(qh.get_npcs_by_name())
+print(qh.get_active_prayers())
