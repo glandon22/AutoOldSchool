@@ -553,7 +553,7 @@ def hop_worlds(pre_hop=False, total_level_worlds=True):
     ]
 
     if total_level_worlds:
-        world_list.append([
+        world_list += [
             420,
             467,
             349,
@@ -561,7 +561,7 @@ def hop_worlds(pre_hop=False, total_level_worlds=True):
             396,
             428,
             527,
-        ])
+        ]
     qh = osrs.queryHelper.QueryHelper()
     qh.set_game_state()
     qh.set_world()
@@ -574,7 +574,9 @@ def hop_worlds(pre_hop=False, total_level_worlds=True):
     osrs.keeb.press_key('enter')
     if pre_hop:
         pre_hop()
-    osrs.keeb.write(f'::hop {world_list[index + 1]}')
+    command = f'::hop {world_list[index + 1]}'
+    print('entering command: ', command)
+    osrs.keeb.write(command)
     osrs.keeb.press_key('enter')
     osrs.clock.random_sleep(2, 2.1)
     while True:

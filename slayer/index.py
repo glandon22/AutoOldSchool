@@ -143,6 +143,8 @@ def main():
                 slayer.kraken_boss.main()
             elif slayer_task == 'Waterfiends':
                 slayer.waterfiends.main()
+            elif slayer_task == 'Smoke Devils':
+                slayer.thermonucler_smoke_devil.main()
             else:
                 return print(f'Can not parse {slayer_task}')
         else:

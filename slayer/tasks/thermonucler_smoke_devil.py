@@ -3,13 +3,10 @@ import datetime
 
 import osrs
 from osrs.item_ids import ItemIDs
-from slayer import transport_functions
+from combat import thermo_smoke_boss
 from combat import slayer_killer
 
-from combat import cave_kraken
-
 varrock_tele_widget_id = '218,23'
-
 
 supplies = [
     {
@@ -33,12 +30,6 @@ supplies = [
         'quantity': 'All'
     },
     ItemIDs.KARAMJA_GLOVES_3.value,
-    {
-        'id': [
-            ItemIDs.FISHING_EXPLOSIVE_6664.value
-        ],
-        'quantity': 'All'
-    },
     {
         'id': [
             ItemIDs.SUPER_RESTORE4.value,
@@ -84,7 +75,7 @@ equipment = [
 
 banking_config_equipment = {
     'dump_inv': True,
-    'dump_equipment': False,
+    'dump_equipment': True,
     'search': [{'query': 'slayer', 'items': equipment}]
 }
 
@@ -104,34 +95,30 @@ def pre_log():
 def main():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
-    while True:
-        qh.query_backend()
-        print('starting function')
-        success = osrs.bank.banking_handler(banking_config_equipment)
-        if not success:
-            print('failed to withdraw equipment.')
-            return False
-        osrs.clock.sleep_one_tick()
-        qh.query_backend()
-        for item in qh.get_inventory():
-            osrs.move.click(item)
-        success = osrs.bank.banking_handler(banking_config_supplies)
-        if not success:
-            print('failed to withdraw supplies.')
-            return False
-        while True:
-            qh.query_backend()
-            if qh.get_inventory(ItemIDs.DRAMEN_STAFF.value):
-                osrs.move.click(qh.get_inventory(ItemIDs.DRAMEN_STAFF.value))
-                break
-        osrs.game.tele_home()
-        osrs.game.click_restore_pool()
-        osrs.game.tele_home_fairy_ring('akq')
-        transport_functions.kraken_cove_private()
-        qh.query_backend()
-        success = cave_kraken.main()
-        qh.query_backend()
-        osrs.game.cast_spell(varrock_tele_widget_id)
-        if success:
-            return True
+    qh.query_backend()
+    print('starting function')
+    success = osrs.bank.banking_handler(banking_config_equipment)
+    if not success:
+        print('failed to withdraw equipment.')
+        return False
+    osrs.clock.sleep_one_tick()
+    qh.query_backend()
+    for item in qh.get_inventory():
+        osrs.move.click(item)
+    success = osrs.bank.banking_handler(banking_config_supplies)
+    if not success:
+        print('failed to withdraw supplies.')
+        return False
+    osrs.game.tele_home()
+    osrs.game.click_restore_pool()
+    osrs.transport.dueling_to_c_wars()
+    osrs.transport.walk_out_of_c_wars()
+    osrs.move.go_to_loc(2414, 3060)
+    osrs.move.interact_with_object(30176, 'y', 5500, True)
+    osrs.move.go_to_loc(2381, 9452, right_click=True)
+    osrs.move.interact_with_object(535, 'x', 2376, False, obj_type='wall')
+    osrs.move.go_to_loc(2367, 9447, right_click=True)
+    thermo_smoke_boss.main()
+    qh.query_backend()
+    osrs.game.cast_spell(varrock_tele_widget_id)
 
