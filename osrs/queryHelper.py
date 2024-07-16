@@ -102,7 +102,7 @@ class QueryHelper:
     def set_inventory(self):
         self.query['inv'] = True
 
-    def get_inventory(self, item=False):
+    def get_inventory(self, item=False, quantity=False):
         """
 
         :param item: None, String, List<String>
@@ -112,7 +112,9 @@ class QueryHelper:
         """
         if item:
             if 'inv' in self.game_data:
-                if type(item) is list:
+                if quantity:
+                    return inv.get_item_quantity_in_inv(self.game_data['inv'], item)
+                elif type(item) is list:
                     return inv.are_items_in_inventory_v2(self.game_data['inv'], item)
                 else:
                     return inv.is_item_in_inventory_v2(self.game_data['inv'], item)

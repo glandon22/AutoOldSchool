@@ -150,5 +150,3 @@ def main():
                 if c and osrs.move.is_clickable(c):
                     osrs.move.fast_click(c)
 
-
-main()

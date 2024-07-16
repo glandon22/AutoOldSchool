@@ -183,6 +183,7 @@ def withdraw_items(item, quantities, game_state: osrs.queryHelper.QueryHelper):
 
 def withdraw(searches, game_state: osrs.queryHelper.QueryHelper):
     for search in searches:
+        game_state.query_backend()
         filtered_items = [item for item in search['items'] if type(item) is not dict]
         # if there are no dicts in this list it will return a nested list
         # if that happens i have to flatten it
@@ -284,6 +285,49 @@ def deposit_items(items: list):
                 break
 
 
+def set_withdrawl_and_deposit_quantity(value):
+    one_widget = '12,29'
+    five_widget = '12,31'
+    ten_widget = '12,33'
+    x_widget = '12,35'
+    all_widget = '12,37'
+    input_widget = '162,42'
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_canvas()
+    qh.set_widgets({one_widget, five_widget, ten_widget, x_widget, all_widget, input_widget})
+    while True:
+        qh.query_backend()
+        # setting a custom quantity
+        if str(value).lower() not in ['1', '5', '10', 'all'] and qh.get_widgets(x_widget):
+            success = osrs.move.right_click_v6(
+                qh.get_widgets(x_widget), 'Set custom quantity',
+                qh.get_canvas(),
+                in_inv=True
+            )
+            if success:
+                wait_start = datetime.datetime.now()
+                while True:
+                    qh.query_backend()
+                    if qh.get_widgets(input_widget):
+                        osrs.keeb.write(str(value))
+                        osrs.keeb.press_key('enter')
+                        return
+                    elif (datetime.datetime.now() - wait_start).total_seconds() > 5:
+                        break
+        elif str(value) == '1' and qh.get_widgets(one_widget):
+            osrs.move.click(qh.get_widgets(one_widget))
+            return
+        elif str(value) == '5' and qh.get_widgets(five_widget):
+            osrs.move.click(qh.get_widgets(five_widget))
+            return
+        elif str(value) == '10' and qh.get_widgets(ten_widget):
+            osrs.move.click(qh.get_widgets(ten_widget))
+            return
+        elif str(value).lower() == 'all' and qh.get_widgets(all_widget):
+            osrs.move.click(qh.get_widgets(all_widget))
+            return
+
+
 def banking_handler(params):
     """
     Supports banking in GE, Varrock, Fally, C Wars, Crafting Guild, Camelot
@@ -319,11 +363,13 @@ def banking_handler(params):
     barb_assault_bank_id = '19051'
     gnome_strong_bank_tile = '2449,3481,1'
     gnome_strong_bank_id = '10355'
+    ferox_bank_tile = '3130,3632,0'
+    ferox_bank_id = '26711'
     qh = osrs.queryHelper.QueryHelper()
     qh.set_npcs([*ge_banker_npc_ids, *varr_banker_npc_ids, *fally_banker_npc_ids])
     qh.set_objects(
-        {crafting_guild_bank_tile, c_wars_bank_tile, v_west_bank_tile_1, lum_top_floor_bank_tile, draynor_bank_tile, barb_assault_bank_tile, gnome_strong_bank_tile},
-        {crafting_guild_bank_id, c_wars_bank_id, v_west_bank_id_1, lum_top_floor_bank_id, draynor_bank_id, barb_assault_bank_id, gnome_strong_bank_id},
+        {crafting_guild_bank_tile, c_wars_bank_tile, v_west_bank_tile_1, lum_top_floor_bank_tile, draynor_bank_tile, barb_assault_bank_tile, gnome_strong_bank_tile, ferox_bank_tile},
+        {crafting_guild_bank_id, c_wars_bank_id, v_west_bank_id_1, lum_top_floor_bank_id, draynor_bank_id, barb_assault_bank_id, gnome_strong_bank_id, ferox_bank_id},
         osrs.queryHelper.ObjectTypes.GAME.value
     )
     qh.set_player_world_location()
@@ -384,6 +430,9 @@ def banking_handler(params):
     # sleep for a second so that all the items i deposited will register and be return on query
     osrs.clock.random_sleep(1, 1.1)
     qh.query_backend()
+    # set the default withdrawal and deposit value for banking
+    if 'set_quantity' in params:
+        set_withdrawl_and_deposit_quantity(params['set_quantity'])
     # Withdraw desired items
     if 'deposit' in params:
         deposit_items(params['deposit'])
@@ -402,18 +451,56 @@ def banking_handler(params):
     return True
 
 
-def abort_offer(slot):
+def abort_offer(slot=None, item_name=None):
     collect_widget = '465,6,1'
+    slot_1_item_name = '465,7,19'
+    slot_2_item_name = '465,8,19'
+    slot_3_item_name = '465,9,19'
+    slot_4_item_name = '465,10,19'
+    slot_5_item_name = '465,11,19'
+    slot_6_item_name = '465,12,19'
+    slot_7_item_name = '465,13,19'
+    slot_8_item_name = '465,14,19'
+    slot_scan = [
+        slot_1_item_name,
+        slot_2_item_name,
+        slot_3_item_name,
+        slot_4_item_name,
+        slot_5_item_name,
+        slot_6_item_name,
+        slot_7_item_name,
+        slot_8_item_name,
+    ]
     qh = osrs.queryHelper.QueryHelper()
-    qh.set_widgets({slot, collect_widget})
+    qh.set_widgets({
+        collect_widget,
+        slot_1_item_name,
+        slot_2_item_name,
+        slot_3_item_name,
+        slot_4_item_name,
+        slot_5_item_name,
+        slot_6_item_name,
+        slot_7_item_name,
+        slot_8_item_name,
+    })
     qh.set_right_click_menu()
     qh.set_canvas()
-    while True:
-        qh.query_backend()
-        if qh.get_widgets(slot):
-            res = osrs.move.right_click_v6(qh.get_widgets(slot), 'Abort offer', qh.get_canvas(), in_inv=True)
-            if res:
+    if not slot:
+        while True:
+            found = False
+            qh.query_backend()
+            for widget in slot_scan:
+                if qh.get_widgets(widget) and qh.get_widgets(widget)['text'].lower() == item_name.lower():
+                    slot = qh.get_widgets(widget)
+                    found = True
+                    break
+            if found:
                 break
+    while True:
+        res = osrs.move.right_click_v6(slot, 'Abort offer', qh.get_canvas(), in_inv=True)
+        if res:
+            break
+
     osrs.clock.sleep_one_tick()
     osrs.clock.sleep_one_tick()
     while True:
@@ -471,7 +558,6 @@ def purchase_item(item, quantity, prev_price=0):
         qh1.query_backend()
         if not qh1.get_widgets(f'{offer_slot},0'):
             continue
-        # this is randomly clicking far in the corner TODO!!
         osrs.move.fast_click(qh1.get_widgets(f'{offer_slot},0'))
         logger.info('clicked on buy an item widget')
         while True:
@@ -567,6 +653,157 @@ def purchase_item(item, quantity, prev_price=0):
         osrs.move.click(qh.get_widgets(collect_widget))
         return
 
+
+def search_ge_inv(item):
+    slots = [
+        '467,0,0',
+        '467,0,1',
+        '467,0,2',
+        '467,0,3',
+        '467,0,4',
+        '467,0,5',
+        '467,0,6',
+        '467,0,7',
+        '467,0,8',
+        '467,0,9',
+        '467,0,10',
+        '467,0,11',
+        '467,0,12'
+        '467,0,13',
+        '467,0,14',
+        '467,0,15',
+        '467,0,16',
+        '467,0,17',
+        '467,0,18',
+        '467,0,19',
+        '467,0,20',
+        '467,0,21',
+        '467,0,22',
+        '467,0,23',
+        '467,0,24',
+        '467,0,25',
+        '467,0,26',
+        '467,0,27',
+    ]
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_widgets(set(slots))
+    qh.query_backend()
+    for widget in qh.get_widgets():
+        if qh.get_widgets(widget)['itemID'] == item:
+            return qh.get_widgets(widget)
+
+
+def sell_item(item, quantity, custom_name, value=0):
+    sell_price = '465,25,41'
+    first_search_result = '162,50,0'
+    default_item_value = '465,25,41'
+    default_item_quantity = '465,25,51'
+    three_dots_offer_screen = '465,25,12'
+    booth_id = 10061
+    chat_input_widget = '162,42'
+    confirm_offer_widget = '465,29'
+    ge_widget = '465,0'
+    box_1_widget = '465,7'
+    box_2_widget = '465,8'
+    box_3_widget = '465,9'
+    box_4_widget = '465,10'
+    box_5_widget = '465,11'
+    box_6_widget = '465,12'
+    box_7_widget = '465,13'
+    box_8_widget = '465,14'
+    collect_widget = '465,6,1'
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_widgets({
+        ge_widget,
+        box_1_widget,
+        box_2_widget,
+        box_3_widget,
+        box_4_widget,
+        box_5_widget,
+        box_6_widget,
+        box_7_widget,
+        box_8_widget,
+        chat_input_widget,
+        first_search_result,
+        default_item_value,
+        three_dots_offer_screen,
+        confirm_offer_widget,
+        default_item_quantity,
+        sell_price
+    })
+    qh.set_inventory()
+    while True:
+        qh.query_backend()
+        if qh.get_widgets(three_dots_offer_screen) and not qh.get_widgets(three_dots_offer_screen)['isHidden']:
+            break
+        elif search_ge_inv(item):
+            osrs.move.click(search_ge_inv(item))
+    logger.info('fetching default sell price')
+    if value == 0:
+        while True:
+            qh.query_backend()
+            if qh.get_widgets(default_item_value) and qh.get_widgets(default_item_value)['text']:
+                value = int(qh.get_widgets(default_item_value)['text'].split(' ')[0])
+                break
+    logger.info('clicking on the custom price three dots')
+    while True:
+        qh.query_backend()
+        if qh.get_widgets(three_dots_offer_screen):
+            break
+    osrs.move.click(qh.get_widgets(three_dots_offer_screen))
+    logger.info('item price input up. entering desired price')
+    while True:
+        qh.query_backend()
+        if qh.get_widgets(chat_input_widget) and not qh.get_widgets(chat_input_widget)['isHidden']:
+            break
+    osrs.keeb.write(str(value))
+    osrs.keeb.press_key('enter')
+    if quantity != 'All':
+        logger.info('clicking on the custom quantity three dots')
+        while True:
+            qh.query_backend()
+            if qh.get_widgets(default_item_quantity):
+                break
+        osrs.move.click(qh.get_widgets(default_item_quantity))
+        logger.info('item price input up. entering desired quantity')
+        while True:
+            qh.query_backend()
+            if qh.get_widgets(chat_input_widget) and not qh.get_widgets(chat_input_widget)['isHidden']:
+                break
+        osrs.keeb.write(str(quantity))
+        osrs.keeb.press_key('enter')
+    logger.info('click on confirm offer')
+    while True:
+        qh.query_backend()
+        if qh.get_widgets(confirm_offer_widget):
+            break
+    osrs.move.click(qh.get_widgets(confirm_offer_widget))
+    logger.info('clicking on collect items')
+    wait_time = datetime.datetime.now()
+    qh.set_widgets({collect_widget})
+    # sometimes clicks when the widget isnt there. make sure its actually there
+    time_widget_up = datetime.datetime.now() - datetime.timedelta(hours=1)
+    while True:
+        qh.query_backend()
+        if qh.get_widgets(collect_widget):
+            if (datetime.datetime.now() - time_widget_up).total_seconds() > 1.3:
+                print('here', qh.get_widgets(collect_widget))
+                osrs.clock.sleep_one_tick()
+                break
+        else:
+            time_widget_up = datetime.datetime.now()
+        # this offer isnt buying. up the price!
+
+        if (datetime.datetime.now() - wait_time).total_seconds() > 5:
+            item_to_search_for = custom_name if custom_name else item
+            abort_offer(item_name=item_to_search_for)
+            osrs.clock.sleep_one_tick()
+            return sell_item(item, quantity, custom_name, math.floor(value * 0.8))
+    print('jj', qh.get_widgets(collect_widget))
+    osrs.move.click(qh.get_widgets(collect_widget))
+    return
+
+
 def ge_handler(items):
     '''
     items: {'id': 123, 'quantity': 10, 'id_override': 'prayer potion(4)'}
@@ -624,6 +861,9 @@ def ge_handler(items):
             osrs.move.fast_click(c[0])
     for item in items:
         search_id = item['id'] if 'id_override' not in item else item['id_override']
+        if 'sell' in item:
+            sell_item(item['id'], item['quantity'], search_id)
+            continue
         purchase_item(search_id, item['quantity'])
     osrs.keeb.press_key('esc')
     return

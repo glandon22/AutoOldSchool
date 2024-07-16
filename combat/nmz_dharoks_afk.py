@@ -208,15 +208,14 @@ def get_absorps_and_overloads():
             osrs.keeb.press_key('enter')
 
 
-
-
-while True:
-    osrs.game.break_manager_v4({
-        'intensity': 'low',
-        'login': False,
-        'logout': False
-    })
-    create_dream()
-    get_absorps_and_overloads()
-    enter_dream()
-    kill_monsters()
+def main():
+    while True:
+        osrs.game.break_manager_v4({
+            'intensity': 'low',
+            'login': False,
+            'logout': False
+        })
+        create_dream()
+        get_absorps_and_overloads()
+        enter_dream()
+        kill_monsters()

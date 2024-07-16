@@ -96,4 +96,3 @@ def make_pots(port):
         else:
             make_pot('56799')
 
-make_pots('56799')

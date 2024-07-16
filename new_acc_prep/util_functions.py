@@ -114,8 +114,8 @@ def equip_air_staff_and_earth_strike():
             return
 
 
-def equip_staff_and_set_autocast(staff, spell_widget_id):
-    configured_spell_widget = '593,26'
+def equip_staff_and_set_autocast(staff, spell_widget_id, defensive=False):
+    configured_spell_widget = '593,26' if not defensive else '593,21'
     earth_strike_widget = spell_widget_id
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
@@ -141,6 +141,7 @@ def equip_staff_and_set_autocast(staff, spell_widget_id):
             return
         else:
             osrs.keeb.press_key('f1')
+
 
 
 def tab_to_varrock():
@@ -458,3 +459,41 @@ def check_for_item_in_inv(item):
     qh.query_backend()
     if qh.get_inventory(item):
         return True
+
+
+def turn_off_doors_in_house():
+    options_widget = '161,47'
+    house_widget = '116,31'
+    no_doors_widget = '370,19'
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_widgets({options_widget, house_widget, no_doors_widget})
+    while True:
+        qh.query_backend()
+        if qh.get_widgets(no_doors_widget) and not qh.get_widgets(no_doors_widget)['isHidden']:
+            if qh.get_widgets(no_doors_widget)['spriteID'] == 699:
+                osrs.clock.sleep_one_tick()
+                osrs.keeb.press_key('esc')
+                osrs.keeb.press_key('esc')
+                return
+            osrs.move.click(qh.get_widgets(no_doors_widget))
+        elif qh.get_widgets(house_widget) and not qh.get_widgets(house_widget)['isHidden']:
+            osrs.move.click(qh.get_widgets(house_widget))
+        elif qh.get_widgets(options_widget) and not qh.get_widgets(options_widget)['isHidden']:
+            osrs.move.click(qh.get_widgets(options_widget))
+
+
+def drop_hammer_and_saw():
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_inventory()
+    qh.set_canvas()
+    while True:
+        qh.query_backend()
+        if qh.get_inventory([osrs.item_ids.ItemIDs.SAW.value, osrs.item_ids.ItemIDs.HAMMER.value]):
+            osrs.move.right_click_v6(
+                qh.get_inventory([osrs.item_ids.ItemIDs.SAW.value, osrs.item_ids.ItemIDs.HAMMER.value]),
+                'Drop',
+                qh.get_canvas(),
+                in_inv=True
+            )
+        else:
+            return

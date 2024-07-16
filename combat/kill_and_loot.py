@@ -68,5 +68,3 @@ def main():
                 osrs.clock.sleep_one_tick()
 
 
-
-main()

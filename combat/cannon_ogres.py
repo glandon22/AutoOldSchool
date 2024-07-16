@@ -15,6 +15,3 @@ def main():
         elif qh.get_game_objects('14916'):
             osrs.move.click(qh.get_game_objects('14916')[0])
 
-main()
-
-#14916

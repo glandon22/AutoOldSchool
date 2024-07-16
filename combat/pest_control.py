@@ -80,14 +80,3 @@ def main():
                     )
                 continue
 
-
-main()
-
-# 2657, 2610
-# east portal area 2677, 2588, 0
-
-# se portal 2670, 2574, 0
-
-# sw portal 2646, 2572, 0
-
-# west portal 2633, 2592, 0

@@ -160,6 +160,3 @@ def main():
                     break
             last_click = datetime.datetime.now()
 
-
-
-main()

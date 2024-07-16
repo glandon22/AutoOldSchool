@@ -825,6 +825,3 @@ def vork_loop():
         tele_home()
         drink_from_pool()
         tele_to_lunar_isle()
-
-
-vork_loop()

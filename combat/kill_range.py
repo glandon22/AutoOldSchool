@@ -67,6 +67,3 @@ def main():
                 osrs.keeb.press_key('space')
                 osrs.clock.sleep_one_tick()
 
-
-
-main()

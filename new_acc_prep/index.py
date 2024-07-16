@@ -1,3 +1,5 @@
+import random
+
 import cooks_assistant
 import transport_functions
 import util_functions
@@ -26,8 +28,15 @@ import knights_sword
 import fight_arena
 from thieving import steal_tea_and_make_arrow_shafts
 from crafting import blow_glass_v3
+from herblore import make_pots_v2
+from combat import early_acc_cow_killer
+from rc import airs_v2
+from cooking import rogues_den_cooker
+from construction import wooden_chairs_v2, plant_dead_trees
+from construction.utils import build_study, build_oak_lectern
 
-'''cooks_assistant.main()
+'''
+cooks_assistant.main()
 transport_functions.bank_in_lumby()
 util_functions.get_quest_items([
     {
@@ -518,15 +527,18 @@ osrs.bank.ge_handler([
     {'id': osrs.item_ids.ItemIDs.MOLTEN_GLASS.value, 'quantity': 1000},
     {'id': osrs.item_ids.ItemIDs.IRON_DART.value, 'quantity': 2000},
     {'id': osrs.item_ids.ItemIDs.RAW_SARDINE.value, 'quantity': 600},
-    {'id': osrs.item_ids.ItemIDs.STEEL_NAILS.value, 'quantity': 1000},
+    {'id': osrs.item_ids.ItemIDs.STEEL_NAILS.value, 'quantity': 2000},
     {'id': osrs.item_ids.ItemIDs.HAMMER.value, 'quantity': 1},
     {'id': osrs.item_ids.ItemIDs.SAW.value, 'quantity': 1},
     {'id': osrs.item_ids.ItemIDs.BAGGED_DEAD_TREE.value, 'quantity': 653},
+    {'id': osrs.item_ids.ItemIDs.PLANK.value, 'quantity': 588},
+    {'id': osrs.item_ids.ItemIDs.PLANK.value, 'quantity': 588},
     {'id': osrs.item_ids.ItemIDs.WATERING_CAN.value, 'quantity': 3},
     {'id': osrs.item_ids.ItemIDs.PURE_ESSENCE.value, 'quantity': 1000},
     {'id': osrs.item_ids.ItemIDs.FALADOR_TELEPORT.value, 'quantity': 45},
     {'id': osrs.item_ids.ItemIDs.AIR_TIARA.value, 'quantity': 1},
     {'id': osrs.item_ids.ItemIDs.GLASSBLOWING_PIPE.value, 'quantity': 1},
+    {'id': osrs.item_ids.ItemIDs.TROUT.value, 'quantity': 50},
 ])
 osrs.bank.banking_handler({
     'dump_inv': True,
@@ -540,25 +552,164 @@ osrs.bank.banking_handler({
             'quantity': 'All'
         },
     ]}]
-})'''
-blow_glass_v3.main(33)
+})
+blow_glass_v3.main(random.randint(33, 36))
+make_pots_v2.main(osrs.item_ids.ItemIDs.GUAM_POTION_UNF.value, osrs.item_ids.ItemIDs.EYE_OF_NEWT.value, random.randint(32, 34))
 osrs.bank.banking_handler({
+    'set_quantity': '1',
+    'dump_equipment': True,
     'dump_inv': True,
     'withdraw': [{'items': [
+        osrs.item_ids.ItemIDs.STAFF_OF_AIR.value,
+        osrs.item_ids.ItemIDs.LUMBRIDGE_TELEPORT.value,
+        osrs.item_ids.ItemIDs.VARROCK_TELEPORT.value,
         {
-            'id': osrs.item_ids.ItemIDs.EYE_OF_NEWT.value,
-            'quantity': 'X',
-            'amount': '14'
+            'id': osrs.item_ids.ItemIDs.IRON_DART.value,
+            'quantity': 'All'
         },
         {
-            'id': osrs.item_ids.ItemIDs.GUAM_POTION_UNF.value,
+            'id': osrs.item_ids.ItemIDs.MIND_RUNE.value,
+            'quantity': 'All'
+        },
+        {
+            'id': osrs.item_ids.ItemIDs.FIRE_RUNE.value,
+            'quantity': 'All'
+        },
+        {
+            'id': osrs.item_ids.ItemIDs.COINS_995.value,
             'quantity': 'X',
-            'amount': '14'
+            'amount': '10000'
+        },
+        {
+            'id': osrs.item_ids.ItemIDs.TROUT.value,
+            'quantity': 'All'
         },
     ]}]
 })
-
-'''
-SHOULD probably just add an option to set the withdraw and deposit amount in the bank so i can just left click and go faster. 
-for herblore where u are withdrawing 14 every time its a pain in the ass
-'''
+util_functions.equip_staff_and_set_autocast(
+    osrs.item_ids.ItemIDs.STAFF_OF_AIR.value, '201,1,4', defensive=True
+)
+transport_functions.tab_to_lumby()
+osrs.move.go_to_loc(3250, 3266)
+osrs.move.interact_with_object(1560, 'x', 3253, True, obj_type='wall', intermediate_tile='3261,3266,0')
+early_acc_cow_killer.main([
+    {'id': osrs.item_ids.ItemIDs.FIRE_RUNE.value, 'quantity': 3},
+    {'id': osrs.item_ids.ItemIDs.MIND_RUNE.value, 'quantity': 1},
+], osrs.item_ids.ItemIDs.IRON_DART.value)
+util_functions.tab_to_varrock()
+osrs.move.go_to_loc(3243, 3473)
+util_functions.talk_to_npc('estate agent', right_click=True)
+util_functions.dialogue_handler(['How can I get a house?', 'Yes please!'])
+transport_functions.walk_to_ge()
+osrs.bank.ge_handler([
+    {'id_override': 'ring of dueling(8)', 'quantity': 5},
+    {'id_override': 'teleport to house', 'quantity': 50}
+])
+osrs.bank.banking_handler({
+    'dump_inv': True,
+    'dump_equipment': True,
+    'withdraw': [{
+        'items': [
+            {'id': osrs.item_ids.ItemIDs.AIR_TIARA.value, 'quantity': '1'},
+        ]
+    }]
+})
+util_functions.equip_item(osrs.item_ids.ItemIDs.AIR_TIARA.value)
+osrs.bank.banking_handler({
+    'withdraw': [{
+        'items': [
+            {'id': osrs.item_ids.ItemIDs.TELEPORT_TO_HOUSE.value, 'quantity': 'All'},
+            osrs.item_ids.ItemIDs.RING_OF_DUELING8.value
+        ]
+    }]
+})
+osrs.clock.random_sleep(1, 1.1)
+airs_v2.main(20)
+osrs.bank.banking_handler({
+    'dump_inv': True,
+    'dump_equipment': True,
+    'withdraw': [{
+        'items': [
+            {'id': [
+                osrs.item_ids.ItemIDs.GAMES_NECKLACE8.value,
+                osrs.item_ids.ItemIDs.GAMES_NECKLACE7.value,
+                osrs.item_ids.ItemIDs.GAMES_NECKLACE6.value,
+                osrs.item_ids.ItemIDs.GAMES_NECKLACE5.value,
+                osrs.item_ids.ItemIDs.GAMES_NECKLACE4.value,
+                osrs.item_ids.ItemIDs.GAMES_NECKLACE3.value,
+                osrs.item_ids.ItemIDs.GAMES_NECKLACE2.value,
+                osrs.item_ids.ItemIDs.GAMES_NECKLACE1.value,
+            ], 'quantity': '1'},
+        ]
+    }]
+})
+transport_functions.games_neck_to_burthorpe()
+osrs.move.go_to_loc(2907, 3545)
+osrs.move.interact_with_object(
+    1540, 'y', 3543, False,
+    obj_type='wall', obj_tile={'x': 2907, 'y': 3544}, intermediate_tile='2907,3542,0'
+)
+osrs.move.interact_with_object(7257, 'z', 1, True, obj_type='ground')
+osrs.move.interact_with_object(
+    7259, 'y', 4983, False, obj_type='wall', intermediate_tile='3061,4980,1'
+)
+osrs.move.go_to_loc(3041,4969, 1)
+osrs.player.toggle_run('off')
+rogues_den_cooker.main(osrs.item_ids.ItemIDs.RAW_SARDINE.value, 32)
+osrs.game.talk_to_npc('emerald benedict', right_click=True)
+osrs.game.dialogue_handler(['Yes actually, can you help?'], timeout=1)
+osrs.bank.banking_handler({
+    'dump_inv': True,
+    'withdraw': [{
+        'items': [
+            {'id': osrs.item_ids.ItemIDs.WATERING_CAN.value, 'quantity': 'All'},
+            {'id': osrs.item_ids.ItemIDs.TELEPORT_TO_HOUSE.value, 'quantity': '1'},
+            {'id': osrs.item_ids.ItemIDs.HAMMER.value, 'quantity': '1'},
+            {'id': osrs.item_ids.ItemIDs.STEEL_NAILS.value, 'quantity': 'All'},
+            {'id': osrs.item_ids.ItemIDs.COINS_995.value, 'quantity': 'All'},
+            {'id': osrs.item_ids.ItemIDs.SAW.value, 'quantity': '1'},
+            {'id': osrs.item_ids.ItemIDs.PLANK.value, 'quantity': 'All', 'noted': True},
+            {'id': osrs.item_ids.ItemIDs.BAGGED_DEAD_TREE.value, 'quantity': 'All', 'noted': True},
+        ]
+    }]
+})
+osrs.transport.house_tele(outside=True)
+osrs.move.go_to_loc(2951, 3214)
+wooden_chairs_v2.main(2)
+plant_dead_trees.main()
+build_study.main()
+osrs.transport.leave_house()
+transport_functions.walk_to_ge()
+osrs.bank.ge_handler([
+    {'id': osrs.item_ids.ItemIDs.OAK_PLANK.value, 'quantity': 1},
+    {'id': osrs.item_ids.ItemIDs.DUST_BATTLESTAFF.value, 'quantity': 1},
+    {'id': osrs.item_ids.ItemIDs.LAW_RUNE.value, 'quantity': 5000},
+    {'id': osrs.item_ids.ItemIDs.FIRE_RUNE.value, 'quantity': 5000},
+    {'id': osrs.item_ids.ItemIDs.SOFT_CLAY.value, 'quantity': 5000},
+])
+osrs.bank.banking_handler({
+    'dump_inv': True,
+    'dump_equipment': True,
+    'withdraw': [
+        {
+            'items': [
+                {'id': osrs.item_ids.ItemIDs.HAMMER.value, 'quantity': '1'},
+                {'id': osrs.item_ids.ItemIDs.SAW.value, 'quantity': '1'},
+                {'id': osrs.item_ids.ItemIDs.TELEPORT_TO_HOUSE.value, 'quantity': '1'},
+                {'id': osrs.item_ids.ItemIDs.LAW_RUNE.value, 'quantity': 'All'},
+                {'id': osrs.item_ids.ItemIDs.OAK_PLANK.value, 'quantity': '1'},
+                {'id': osrs.item_ids.ItemIDs.DUST_BATTLESTAFF.value, 'quantity': '1'},
+                {'id': osrs.item_ids.ItemIDs.COINS_995.value, 'quantity': 'All'},
+                {'id': osrs.item_ids.ItemIDs.FIRE_RUNE.value, 'quantity': 'All'},
+                {'id': osrs.item_ids.ItemIDs.SOFT_CLAY.value, 'quantity': 'All', 'noted': True},
+            ]
+        }
+    ]
+})
+util_functions.equip_item(osrs.item_ids.ItemIDs.DUST_BATTLESTAFF.value)
+osrs.transport.house_tele(outside=True)
+build_oak_lectern.main(1)
+osrs.player.toggle_run('on')
+osrs.move.go_to_loc(2954, 3214)'''
+util_functions.turn_off_doors_in_house()
+util_functions.drop_hammer_and_saw()

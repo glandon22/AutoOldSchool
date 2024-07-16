@@ -14,6 +14,8 @@ from osrs.widget_ids import WidgetIDs
 
 config = dev.load_yaml()
 
+main_chat_widget = '162,34'
+quest_complete_widget = '153,4'
 
 class ScriptConfiguration(object):
     def __init__(self, intensity, login, logout):
@@ -585,3 +587,75 @@ def hop_worlds(pre_hop=False, total_level_worlds=True):
             clock.sleep_one_tick()
             keeb.press_key('esc')
             return
+
+
+def talk_to_npc(name, right_click=False, right_click_option='Talk-to'):
+    qh = osrs.queryHelper.QueryHelper()
+    if type(name) is str:
+        qh.set_npcs_by_name([name])
+    elif type(name) is int:
+        qh.set_npcs([str(name)])
+    qh.set_chat_options()
+    qh.set_widgets({main_chat_widget})
+    qh.set_canvas()
+    while True:
+        qh.query_backend()
+        if qh.get_chat_options() or qh.get_widgets(main_chat_widget):
+            return
+        elif qh.get_npcs_by_name():
+            if right_click:
+                osrs.move.right_click_v6(qh.get_npcs_by_name()[0], right_click_option, qh.get_canvas(), in_inv=True)
+            else:
+                osrs.move.fast_click(qh.get_npcs_by_name()[0])
+        elif qh.get_npcs():
+            if right_click:
+                osrs.move.right_click_v6(qh.get_npcs()[0], right_click_option, qh.get_canvas(), in_inv=True)
+            else:
+                osrs.move.fast_click(qh.get_npcs_by_name()[0])
+
+
+def dialogue_handler(desired_replies=None, timeout=3):
+
+    npc_chat_head_widget = '231,4'
+    player_chat_widget = '217,6'
+    chat_holder_widget = '231,0'
+    chat_holder2_widget = '217,1'
+    click_to_continue_widget = '229,2'
+    click_to_continue_level_widget = '233,2'
+    click_to_continue_other_widget = '193,0,2'
+    #
+    # quest_complete_widget = '153,4'
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_chat_options()
+    qh.set_widgets({
+        npc_chat_head_widget, player_chat_widget,
+        chat_holder_widget, chat_holder2_widget,
+        click_to_continue_widget, main_chat_widget, click_to_continue_level_widget,
+        click_to_continue_other_widget
+    })
+    had_dialogue = False
+    dialogue_last_seen = datetime.datetime.now()
+    while True:
+        qh.query_backend()
+        if (
+                not qh.get_widgets(main_chat_widget)
+                or (qh.get_widgets(main_chat_widget) and qh.get_widgets(main_chat_widget)['isHidden'])
+        ):
+            if (datetime.datetime.now() - dialogue_last_seen).total_seconds() > timeout:
+                return had_dialogue
+        else:
+            print('here')
+            dialogue_last_seen = datetime.datetime.now()
+
+        if desired_replies:
+            for reply in desired_replies:
+                if qh.get_chat_options(reply):
+                    osrs.keeb.write(str(qh.get_chat_options(reply)))
+                    had_dialogue = True
+        if (qh.get_widgets(player_chat_widget)
+                or qh.get_widgets(npc_chat_head_widget)
+                or qh.get_widgets(click_to_continue_level_widget)
+                or qh.get_widgets(click_to_continue_other_widget)
+                or qh.get_widgets(click_to_continue_widget)):
+            osrs.keeb.press_key('space')
+            had_dialogue = True

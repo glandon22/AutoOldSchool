@@ -800,5 +800,3 @@ def vork_loop():
         tele_to_ferox()
         drink_from_pool_of_refreshment()
 
-
-vork_loop()

@@ -80,6 +80,4 @@ def main():
             osrs.clock.random_sleep(1, 1.1)
             osrs.move.wait_until_stationary(port)
 
-main()
-'''inv = osrs.inv.get_inv()
-osrs.move.mac_right_click_menu_select(inv[0], 'Drop')'''
+

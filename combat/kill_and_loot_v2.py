@@ -132,6 +132,3 @@ def main():
             for i in range(5):
                 osrs.keeb.press_key('space')
                 osrs.clock.sleep_one_tick()
-
-
-main()

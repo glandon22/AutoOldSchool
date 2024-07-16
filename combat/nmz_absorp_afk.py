@@ -131,5 +131,3 @@ def start_dream():
     loc = osrs.server.get_world_location(port)
     osrs.move.run_to_loc(['{},{},3'.format(loc['x'] - 5, loc['y'] + 14)], port) # for whatever reason, the world points are different in NMZ.
 
-
-main()

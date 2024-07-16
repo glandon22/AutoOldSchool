@@ -46,6 +46,3 @@ def main():
         osrs.move.click_off_screen()
         osrs.clock.random_sleep(1.4, 1.9)
 
-
-
-main()

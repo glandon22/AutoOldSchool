@@ -113,6 +113,3 @@ def main():
                 osrs.move.click_off_screen()
             if not osrs.inv.is_item_in_inventory(data['inv'], fish_to_cook):
                 break
-
-
-main()

@@ -61,8 +61,3 @@ def main():
             continue
         inflate_toads()
 
-
-
-
-main()
-#print(osrs.inv.get_inv())

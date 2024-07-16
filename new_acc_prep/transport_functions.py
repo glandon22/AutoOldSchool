@@ -739,6 +739,34 @@ def games_neck_to_barb():
             click = datetime.datetime.now()
 
 
+def games_neck_to_burthorpe():
+    necklace_ids = [
+            osrs.item_ids.ItemIDs.GAMES_NECKLACE8.value,
+            osrs.item_ids.ItemIDs.GAMES_NECKLACE7.value,
+            osrs.item_ids.ItemIDs.GAMES_NECKLACE6.value,
+            osrs.item_ids.ItemIDs.GAMES_NECKLACE5.value,
+            osrs.item_ids.ItemIDs.GAMES_NECKLACE4.value,
+            osrs.item_ids.ItemIDs.GAMES_NECKLACE3.value,
+            osrs.item_ids.ItemIDs.GAMES_NECKLACE2.value,
+            osrs.item_ids.ItemIDs.GAMES_NECKLACE1.value,
+        ]
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_inventory()
+    qh.set_player_world_location()
+    qh.set_canvas()
+    qh.set_chat_options()
+    click = datetime.datetime.now() - datetime.timedelta(hours=1)
+    while True:
+        qh.query_backend()
+        if 2884 <= qh.get_player_world_location('x') <= 2913 and 3549 <= qh.get_player_world_location('y') <= 3578:
+            return
+        elif qh.get_chat_options("burth", fuzzy=True):
+            osrs.keeb.write(str(qh.get_chat_options("burth", fuzzy=True)))
+        elif qh.get_inventory(necklace_ids) and (datetime.datetime.now() - click).total_seconds() > 10:
+            osrs.move.right_click_v6(qh.get_inventory(necklace_ids), 'Rub', qh.get_canvas(), in_inv=True)
+            click = datetime.datetime.now()
+
+
 def dueling_to_c_wars():
     necklace_ids = [
             osrs.item_ids.ItemIDs.RING_OF_DUELING8.value,

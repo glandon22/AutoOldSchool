@@ -61,5 +61,3 @@ def main():
             if closest:
                 osrs.move.move_and_click(closest['x'], closest['y'], 2, 2)
                 osrs.clock.random_sleep(3, 4)
-
-main()

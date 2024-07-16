@@ -231,12 +231,6 @@ def phase_1_dawn(anchor):
             last_prot_click = datetime.datetime.now()
 
 
-
-
-
-anchor = start_fight()
-phase_1_dawn(anchor)
-
 '''
 x + 5, y - 4 to start
 x + 2, y - 4 to to trap

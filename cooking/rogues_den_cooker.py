@@ -2,57 +2,56 @@ import datetime
 
 import osrs
 
-banker_id = '3194'
-cook_widget = '270,13'
-fish_id = '3142'
-fire_id = '43475'
+fire_id = 43475
 
-def bank(qh: osrs.queryHelper.QueryHelper):
-    last_bank_click = datetime.datetime.now() - datetime.timedelta(hours=1)
+
+def cook_fish(qh: osrs.queryHelper.QueryHelper, fish):
+    last_click = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
         qh.query_backend()
-        banker = qh.get_npcs()
-        if banker and (datetime.datetime.now() - last_bank_click).total_seconds() > 5:
-            osrs.move.click(banker[0])
-            last_bank_click = datetime.datetime.now()
-        elif qh.get_bank():
-            print('here')
-            break
-    osrs.bank.dump_items()
-    qh.query_backend()
-    if not qh.get_bank(fish_id):
-        exit('no fish')
-    osrs.move.click(qh.get_bank(fish_id))
-    osrs.keeb.press_key('esc')
-
-
-def cook_fish(qh: osrs.queryHelper.QueryHelper):
-    qh.query_backend()
-    osrs.move.click(qh.get_game_objects(fire_id)[0])
-    while True:
-        qh.query_backend()
-        if qh.get_widgets(cook_widget):
-            osrs.keeb.write('2')
+        if qh.get_widgets_v2(osrs.widget_ids.WidgetIDs.CHATBOX_SKILLING_INPUT_BOX.value) or not qh.get_inventory(fish):
+            osrs.keeb.press_key('space')
             osrs.clock.sleep_one_tick()
             osrs.clock.sleep_one_tick()
             break
+        elif (qh.get_objects_v2('game', fire_id)
+              and (datetime.datetime.now() - last_click).total_seconds() > 3):
+            osrs.move.click(qh.get_objects_v2('game', fire_id)[0])
+            last_click = datetime.datetime.now()
 
 
-def main():
+def main(fish, goal=99):
     qh = osrs.queryHelper.QueryHelper()
-    qh.set_npcs([banker_id])
+    qh.set_npcs_by_name(['emerald benedict'])
     qh.set_inventory()
-    qh.set_bank()
-    qh.set_widgets({cook_widget})
-    qh.set_game_objects(
-        {'3043,4973,1'},
-        {fire_id}
-    )
+    qh.set_widgets_v2({
+        osrs.widget_ids.WidgetIDs.CHATBOX_SKILLING_INPUT_BOX.value,
+        osrs.widget_ids.WidgetIDs.LEVEL_UP_SKILL.value,
+    })
+    qh.set_objects_v2('game', {fire_id})
+    qh.set_skills({'cooking'})
+    last_cooked = datetime.datetime.now() - datetime.timedelta(hours=1)
+    last_banked = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
         qh.query_backend()
-        if not qh.get_inventory(fish_id):
-            bank(qh)
-            cook_fish(qh)
+        if qh.get_skills('cooking') and qh.get_skills('cooking')['level'] >= goal:
+            return
 
-
-main()
+        if (qh.get_inventory(fish)
+                and (qh.get_widgets_v2(osrs.widget_ids.WidgetIDs.LEVEL_UP_SKILL.value)
+                     or (datetime.datetime.now() - last_cooked).total_seconds() > 75)):
+            cook_fish(qh, fish)
+            last_cooked = datetime.datetime.now()
+        elif not qh.get_inventory(fish) and (datetime.datetime.now() - last_banked).total_seconds() > 2:
+            osrs.game.talk_to_npc('emerald benedict', right_click=True)
+            osrs.game.dialogue_handler(['Yes actually, can you help?'], timeout=1)
+            osrs.bank.banking_handler({
+                'dump_inv': True,
+                'withdraw': [{
+                    'items': [
+                        {'id': fish, 'quantity': 'All'},
+                    ]
+                }]
+            })
+            last_banked = datetime.datetime.now()
+            last_cooked = datetime.datetime.now() - datetime.timedelta(hours=1)

@@ -103,5 +103,3 @@ def main():
                 if closest and closest['x'] < 1915 and closest['y'] < 1040:
                     osrs.move.fast_click(closest)
 
-
-main()

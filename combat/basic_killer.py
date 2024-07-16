@@ -57,5 +57,3 @@ def main():
             osrs.move.move_and_click(closest['x'], closest['y'], 2, 2)
             npc_curr_target_id = closest['id']
             osrs.clock.random_sleep(3, 4)
-
-main()
