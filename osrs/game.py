@@ -335,11 +335,9 @@ def break_manager_v4(script_config):
         # Run pre-logout logic supplied by script
         if script_config['logout']:
             script_config['logout']()
-        print(f"logging back in at: {config['timings']['break_end']}")
         logout()
-        config['timings']['break_end'] = datetime.datetime.now() + datetime.timedelta(
-            minutes=random.randint(timings['min_rest'], timings['max_rest'])
-        )
+        config['timings']['break_end'] += datetime.timedelta(seconds=(current_time - config['timings']['break_start']).total_seconds())
+        print(f"logging back in at: {config['timings']['break_end']}")
         while True:
             if datetime.datetime.now() < config['timings']['break_end']:
                 move.move_and_click(500, 223, 5, 5)
