@@ -26,7 +26,7 @@ def leave_house():
                 'x': qh.get_objects_v2('game', house_portal_id)[0]['x'],
                 'y': qh.get_objects_v2('game', house_portal_id)[0]['y']
             }
-            session.get(url='http://localhost:1848/', json=req_data)
+            session.post(url='http://localhost:1848/', json=req_data)
 
 
 def resupply():
