@@ -2,9 +2,11 @@ import time
 
 import pyautogui
 import pywinctl as pwc
+import osrs
 
-windows = pwc.getWindowsWithTitle('RuneLite')
+windows = pwc.getWindowsWithTitle('RuneLite', condition=pwc.Re.CONTAINS)
 window = windows[0]
 window.activate()
-pyautogui.click(827, 291, button='right')
+osrs.clock.random_sleep(0.1, 0.11)
+osrs.keeb.press_key('f5')
 

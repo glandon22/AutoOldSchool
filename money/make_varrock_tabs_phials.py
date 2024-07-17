@@ -1,5 +1,4 @@
 import datetime
-import requests
 
 import osrs
 
@@ -7,7 +6,6 @@ build_widget = '458,0'
 built_chair = 6752
 lectern = 13642
 v_tab_widget = '403,20'
-session = requests.Session()
 
 
 def leave_house():
@@ -21,12 +19,7 @@ def leave_house():
         if qh.get_player_world_location('x') < 5000:
             return
         elif qh.get_objects_v2('game', house_portal_id):
-            req_data = {
-                'name': 'katehikes14',
-                'x': qh.get_objects_v2('game', house_portal_id)[0]['x'],
-                'y': qh.get_objects_v2('game', house_portal_id)[0]['y']
-            }
-            session.post(url='http://localhost:1848/', json=req_data)
+            osrs.move.click_v2(qh.get_objects_v2('game', house_portal_id)[0])
 
 
 def resupply():

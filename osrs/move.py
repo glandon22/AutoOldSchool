@@ -1,12 +1,8 @@
 import datetime
 import math
 import platform
-import random
-import time
-
-import numpy as np
+import requests
 import pyautogui
-from scipy import interpolate
 
 import osrs.dev as dev
 import osrs.move
@@ -20,6 +16,7 @@ inv_widget_id = '161,97'
 minimap_widget_id = '161,95'
 chat_buttons_widget_id = '162,1'
 
+session = requests.Session()
 config = dev.load_yaml()
 
 
@@ -639,3 +636,12 @@ def tab_to_varrock():
         elif qh.get_inventory(osrs.item_ids.ItemIDs.VARROCK_TELEPORT.value) and (datetime.datetime.now() - last_tab).total_seconds() > 10:
             osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.VARROCK_TELEPORT.value))
             last_tab = datetime.datetime.now()
+
+
+def click_v2(obj):
+    req_data = {
+        'name': config['username'],
+        'x': obj['x'],
+        'y': obj['y']
+    }
+    session.post(url='http://localhost:1848/click', json=req_data)
