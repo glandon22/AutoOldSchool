@@ -75,13 +75,13 @@ def main(min_SOFT_CLAYs):
             resupply()
         # exchange all noted SOFT_CLAYs with phials
         elif qh.get_chat_options('Exchange All', fuzzy=True):
-            osrs.keeb.write(str(qh.get_chat_options('Exchange All', fuzzy=True)))
+            osrs.keeb.write_v2(qh.get_chat_options('Exchange All', fuzzy=True))
         # use SOFT_CLAYs on phials
         elif (
                 qh.get_inventory(osrs.item_ids.ItemIDs.SOFT_CLAY.value, quantity=True) < min_SOFT_CLAYs
                 and (datetime.datetime.now() - last_phials_click).total_seconds() > 8
                 and len(qh.get_npcs_by_name()) > 0):
-            osrs.move.fast_click(qh.get_inventory(osrs.item_ids.ItemIDs.SOFT_CLAY.value + 1))
+            osrs.move.click_v2(qh.get_inventory(osrs.item_ids.ItemIDs.SOFT_CLAY.value + 1))
             res = osrs.move.right_click_v6(qh.get_npcs_by_name()[0], 'Use', qh.get_canvas(), in_inv=True)
             if res:
                 last_phials_click = datetime.datetime.now()
