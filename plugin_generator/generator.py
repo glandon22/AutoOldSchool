@@ -2,13 +2,13 @@ import shutil
 import copy
 import os
 
-plugin_name = 'glmobkiller'
+plugin_name = 'glvartabber'
 # this is what gets displayed in the sidebar for users to actually read
-plugin_name_readable = 'NPC Killer'
-plugin_description = 'Kills a configured NPC, drinks potions, and eats food'
+plugin_name_readable = 'Varrock Tab Maker'
+plugin_description = 'Make Varrock Teleport Tablets'
 # IMPORTANT: plugin must have tag "goonlite" to be loaded into the client!!!!!!!!!!!!!!!!!!!!!!!!!!
-plugin_tags = '{"combat", "killer", "goonlite"}'
-script_cmd = 'combat/kill_and_loot_v2.py'
+plugin_tags = '{"money", "magic", "goonlite"}'
+script_cmd = 'money/make_varrock_tabs_phials.py'
 '''{
     'key_name': 'npcToKill',
     'key_desc': 'NPC to kill',
@@ -16,15 +16,7 @@ script_cmd = 'combat/kill_and_loot_v2.py'
     'return_type': 'String',
     'default_return_value': '""'
 }'''
-dropdowns_configs = [
-{
-    'key_name': 'npcToKill',
-    'key_desc': 'NPC to kill',
-    'key_position': '1',
-    'return_type': 'String',
-    'default_return_value': '""'
-}
-]
+dropdowns_configs = []
 # NOT IMPLEMENTED YET!!!!!
 
 number_configs = [
