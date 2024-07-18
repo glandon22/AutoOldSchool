@@ -638,10 +638,13 @@ def tab_to_varrock():
             last_tab = datetime.datetime.now()
 
 
-def click_v2(obj):
+def click_v2(obj, movement_offset=None):
     req_data = {
         'name': config['username'],
         'x': obj['x'],
         'y': obj['y']
     }
+    if movement_offset:
+        req_data['x'] += movement_offset[0]
+        req_data['y'] += movement_offset[1]
     session.post(url='http://localhost:1848/click', json=req_data)

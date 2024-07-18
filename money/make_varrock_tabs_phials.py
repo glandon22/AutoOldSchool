@@ -13,13 +13,17 @@ def leave_house():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_player_world_location()
     qh.set_canvas()
+    qh.set_orientation()
     qh.set_objects_v2('game', {house_portal_id})
     while True:
         qh.query_backend()
         if qh.get_player_world_location('x') < 5000:
             return
         elif qh.get_objects_v2('game', house_portal_id):
-            osrs.move.click_v2(qh.get_objects_v2('game', house_portal_id)[0])
+            osrs.move.click_v2(
+                qh.get_objects_v2('game', house_portal_id)[0],
+                osrs.util.calculate_movement_offset(qh.get_orientation())
+            )
 
 
 def resupply():
@@ -36,7 +40,7 @@ def resupply():
         {'id': osrs.item_ids.ItemIDs.TELEPORT_TO_HOUSE.value, 'quantity': 1}
     ])
     osrs.transport.house_tele(outside=True)
-
+    osrs.move.go_to_loc(2954, 3216)
 
 script_config = {
     'intensity': 'high',
@@ -114,11 +118,11 @@ def main(min_SOFT_CLAYs):
                         last_lectern_click = datetime.datetime.now()
                         # build chair + remove chair both first option
                 elif qh.get_widgets(v_tab_widget) and (datetime.datetime.now() - last_tab_make).total_seconds() > 60:
-                    osrs.move.click(qh.get_widgets(v_tab_widget))
+                    osrs.move.click_v2(qh.get_widgets(v_tab_widget))
                     last_tab_make = datetime.datetime.now()
                 elif qh.get_widgets(create_widget) and (
                             datetime.datetime.now() - last_create_click).total_seconds() > 5:
-                    osrs.move.click(qh.get_widgets(create_widget))
+                    osrs.move.click_v2(qh.get_widgets(create_widget))
                     last_create_click = datetime.datetime.now()
             # out of SOFT_CLAYs - leave house
             else:

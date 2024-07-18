@@ -147,3 +147,24 @@ def combine_objects(objects):
     for k in objects:
         reduced = reduced + objects[k]
     return reduced
+
+
+def calculate_movement_offset(orientation):
+    if orientation == 1536:
+        return [-10, 0]
+    elif orientation == 1792:
+        return [-10, 10]
+    elif orientation == 0:
+        return [0, 10]
+    elif orientation == 256:
+        return [10, 10]
+    elif orientation == 512:
+        return [10, 0]
+    elif orientation == 738:
+        return [10, 0]
+    elif orientation == 1024:
+        return [0, -10]
+    elif orientation == 1280:
+        return [-10, -10]
+    else:
+        return [0, 0]

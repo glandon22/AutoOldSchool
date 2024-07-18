@@ -586,6 +586,16 @@ class QueryHelper:
     def set_yaw(self, value):
         self.query['setYaw'] = value
 
+    def set_orientation(self):
+        self.query['orientation'] = True
+
+    def get_orientation(self):
+        """
+        :return: 1536
+        """
+
+        return 'orientation' in self.game_data and self.game_data['orientation']
+
     def query_backend(self):
         '''print("\t«{}»\tLine number in which the function is defined.".
               format(inspect.getsourcelines(self.query_backend)[1]))
