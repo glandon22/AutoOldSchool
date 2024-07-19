@@ -28,6 +28,7 @@ def handle_click():
         logger.warning('No RuneLite window found for: %s', click_request['name'])
     window = windows[0]
     window.activate()
+    time.sleep(0.015)
     logger.info('Clicked (%s, %s) for player: %s', click_request['x'], click_request['y'], click_request['name'])
     # this needs to return true if true else false, non right click does not really matter
     if 'right' in click_request:
