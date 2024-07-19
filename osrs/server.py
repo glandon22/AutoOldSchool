@@ -11,7 +11,7 @@ session = requests.Session()
 establish_conn = {
     'helloWorld': True
 }
-print('here', os.environ["SERVER_PORT"])
+print('here', os.environ)
 session.get(url=f'http://localhost:{os.environ["SERVER_PORT"]}/osrs', json=establish_conn)
 
 
