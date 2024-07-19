@@ -1,3 +1,5 @@
+import os
+
 import osrs.game
 import osrs.server as server
 import osrs.dev as dev
@@ -602,5 +604,8 @@ class QueryHelper:
         print("\t«{}»\tLine from which the function has been called.".
               format(inspect.stack()[1][2]))
         print("\t«{}»\tInvoking/calling function.".format(inspect.stack()[1][3]))'''
-        self.game_data = server.query_game_data(self.query, config['port'])
+        port = config['port']
+        if 'SERVER_PORT' in os.environ:
+            port = os.environ['SERVER_PORT']
+        self.game_data = server.query_game_data(self.query, port)
         return self.game_data
