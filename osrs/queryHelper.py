@@ -25,6 +25,10 @@ class QueryHelper:
         # Always pull in the game canvas area
         self.query = {}
         self.game_data = {}
+        self.port = config['port']
+
+    def set_port(self, port):
+        self.port = port
 
     def set_game_state(self):
         self.query['gameState'] = True
@@ -604,8 +608,5 @@ class QueryHelper:
         print("\t«{}»\tLine from which the function has been called.".
               format(inspect.stack()[1][2]))
         print("\t«{}»\tInvoking/calling function.".format(inspect.stack()[1][3]))'''
-        port = config['port']
-        if 'SERVER_PORT' in os.environ:
-            port = os.environ['SERVER_PORT']
-        self.game_data = server.query_game_data(self.query, port)
+        self.game_data = server.query_game_data(self.query, self.port)
         return self.game_data

@@ -411,10 +411,12 @@ def right_click_v5(item, action, in_inv=False):
             return False
 
 
-def right_click_v6(item, action, canvas, in_inv=False):
+def right_click_v6(item, action, canvas, in_inv=False, port=None):
     osrs.move.move_and_click(item['x'], item['y'], 3, 3, 'right')
     curr_pos = pyautogui.position()
     qh = osrs.queryHelper.QueryHelper()
+    if port:
+        qh.set_port(port)
     qh.set_right_click_menu()
     max_canvas_y = canvas['yMax'] - canvas['yMin']
     print('mcy', max_canvas_y)

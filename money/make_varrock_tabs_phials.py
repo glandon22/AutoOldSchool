@@ -1,4 +1,5 @@
 import datetime
+import os
 
 import osrs
 
@@ -89,7 +90,7 @@ def main(min_SOFT_CLAYs):
             osrs.move.click_v2(qh.get_inventory(osrs.item_ids.ItemIDs.SOFT_CLAY.value + 1))
             n = qh.get_npcs_by_name()[0]
             c = qh.get_canvas()
-            res = osrs.move.click_v2(n, right=[n, 'Use', c, True])
+            res = osrs.move.click_v2(n, right=[n, 'Use', c, True, os.environ['SERVER_PORT']])
             if res:
                 last_phials_click = datetime.datetime.now()
         # have SOFT_CLAYs, click the house portal
@@ -100,7 +101,7 @@ def main(min_SOFT_CLAYs):
         ):
             o = qh.get_objects_v2('game', portal_id)[0]
             c = qh.get_canvas()
-            res = osrs.move.click_v2(o, right=[o, 'Home', c, True])
+            res = osrs.move.click_v2(o, right=[o, 'Home', c, True, os.environ['SERVER_PORT']])
             if res:
                 last_portal_click = datetime.datetime.now()
         # i am in house
@@ -114,7 +115,7 @@ def main(min_SOFT_CLAYs):
                 ):
                     o = qh.get_objects_v2('game', lectern)[0]
                     c = qh.get_canvas()
-                    res = osrs.move.click_v2(o, right=[o, 'Study', c, True])
+                    res = osrs.move.click_v2(o, right=[o, 'Study', c, True, os.environ['SERVER_PORT']])
                     if res:
                         last_lectern_click = datetime.datetime.now()
                         # build chair + remove chair both first option
