@@ -587,7 +587,7 @@ def follow_path_v2(start, end, right_click=False, exact_tile=False):
                     canvas = qh.get_canvas()
                     osrs.move.click_v2(
                         tile,
-                        right=[tile, 'Walk here', canvas, True]
+                        right=[tile, 'Walk here', canvas, True, os.environ['SERVER_PORT']]
                     )
 
                 else:

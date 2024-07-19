@@ -123,6 +123,31 @@ def login_v4():
         qh.query_backend()
 
 
+def login_v4_multi():
+    qh = QueryHelper.QueryHelper()
+    qh.set_canvas()
+    qh.set_game_state()
+    while True:
+        qh.query_backend()
+        print(f'Log in status: {qh.get_game_state()}')
+        if qh.get_game_state() == 'LOGGING_IN' or qh.get_game_state() == 'LOADING':
+            continue
+        elif qh.get_game_state() == 'LOGGED_IN':
+            clock.sleep_one_tick()
+            keeb.press_key_v2('esc')
+            clock.sleep_one_tick()
+            return
+        canvas = qh.get_canvas()
+        x = math.floor((canvas['xMax'] + canvas['xMin']) / 2)
+        # Game image is a fixed size, only black space is added horizontally as UI scales
+        y = canvas['yMin'] + 251
+        # add this click below to clear any unexpected interfaces. i.e. world was full
+        osrs.move.click_v2({'x': x, 'y': y + 50})
+        osrs.move.click_v2({'x': x, 'y': y})
+        osrs.clock.sleep_one_tick()
+        qh.query_backend()
+
+
 def logout():
     logout_icon_widget_id = '161,46'
     logout_button_widget_id = '182,12'
@@ -143,6 +168,29 @@ def logout():
                 osrs.move.click(qh.get_widgets(world_switcher_logout_widget_id))
         if qh.get_widgets(logout_icon_widget_id) and not clicked_first_button:
             osrs.move.click(qh.get_widgets(logout_icon_widget_id))
+            clicked_first_button = True
+
+
+def logout_multi():
+    logout_icon_widget_id = '161,46'
+    logout_button_widget_id = '182,12'
+    world_switcher_logout_widget_id = '69,25'
+
+    qh = QueryHelper.QueryHelper()
+    qh.set_widgets({logout_icon_widget_id, logout_button_widget_id, world_switcher_logout_widget_id})
+    qh.set_game_state()
+    clicked_first_button = False
+    while True:
+        qh.query_backend()
+        if qh.get_game_state() == 'LOGIN_SCREEN':
+            return
+        if clicked_first_button:
+            if qh.get_widgets(logout_button_widget_id):
+                osrs.move.click_v2(qh.get_widgets(logout_button_widget_id))
+            if qh.get_widgets(world_switcher_logout_widget_id):
+                osrs.move.click_v2(qh.get_widgets(world_switcher_logout_widget_id))
+        if qh.get_widgets(logout_icon_widget_id) and not clicked_first_button:
+            osrs.move.click_v2(qh.get_widgets(logout_icon_widget_id))
             clicked_first_button = True
 
 
@@ -345,6 +393,45 @@ def break_manager_v4(script_config):
             else:
                 break
         login_v4()
+        # Run post-login logic supplied by script
+        if script_config['login']:
+            script_config['login']()
+        set_timings(timings, datetime.datetime.now())
+    return config
+
+
+def break_manager_v4_multi(script_config):
+    """
+    :param script_config: Object
+    {
+        'intensity': 'high' | 'low',
+        'logout': function(), -- Steps to run before logging out for break
+        'login': function(), -- Steps to run after logging back in
+        'click_to_play': True | False -> Instances like Tithe Farm dont display this button after login
+    }
+    """
+    current_time = datetime.datetime.now()
+    timings = config['{}_intensity_script'.format(script_config['intensity'])]
+    # Initialize timings on script start
+    if not config['timings']['script_start']:
+        set_timings(timings, current_time)
+        print('current config: {}'.format(config))
+
+    # Begin break period
+    if current_time > config['timings']['break_start']:
+        # Run pre-logout logic supplied by script
+        if script_config['logout']:
+            script_config['logout']()
+        logout_multi()
+        config['timings']['break_end'] += datetime.timedelta(seconds=(current_time - config['timings']['break_start']).total_seconds())
+        print(f"logging back in at: {config['timings']['break_end']}")
+        while True:
+            if datetime.datetime.now() < config['timings']['break_end']:
+                move.click_v2(250, 250)
+                clock.random_sleep(10, 15)
+            else:
+                break
+        login_v4_multi()
         # Run post-login logic supplied by script
         if script_config['login']:
             script_config['login']()
