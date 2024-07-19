@@ -18,7 +18,7 @@ session.get(url=f'http://localhost:{os.environ["SERVER_PORT"]}/osrs', json=estab
 def query_game_data(q, port='56799'):
     while True:
         try:
-            r = session.get(url='http://localhost:{}/osrs'.format(port), json=q)
+            r = session.get(url='http://localhost:{}/osrs'.format(os.environ["SERVER_PORT"]), json=q)
             return r.json()
         except Exception as e:
             print('Got an error trying to query the game server: ', e)
