@@ -70,6 +70,7 @@ def main(min_SOFT_CLAYs):
     last_create_click = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
         osrs.game.break_manager_v4(script_config)
+        qh.set_port(os.environ['SERVER_PORT'])
         qh.query_backend()
         # outside of house and no longer have more SOFT_CLAYs
         if (
