@@ -1,4 +1,5 @@
 import datetime
+import os
 
 import osrs.move as move
 import osrs.queryHelper
@@ -85,8 +86,12 @@ def toggle_run_v2(desired_state, port='56799'):
     :return: void
     """
     desired_state = {'on': 1065, 'off': 1064}[desired_state]
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_port(os.environ['SERVER_PORT'])
+    qh.set_widgets({'160,29'})
     while True:
-        run_orb = server.get_widget('160,29', port)
+        qh.query_backend()
+        run_orb = qh.get_widgets('160,29')
         if run_orb:
             if run_orb['spriteID'] != desired_state:
                 move.click_v2(run_orb)

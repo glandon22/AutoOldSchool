@@ -26,6 +26,8 @@ class QueryHelper:
         self.query = {}
         self.game_data = {}
         self.port = config['port']
+        if 'SERVER_PORT' in os.environ:
+            self.port = os.environ['SERVER_PORT']
 
     def set_port(self, port):
         self.port = port
