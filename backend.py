@@ -1,10 +1,11 @@
 import time
-
 from flask import Flask, request
 import pyautogui
 import pywinctl as pwc
 import osrs
-
+import logging
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
 app = Flask(__name__)
 logger = osrs.dev.instantiate_logger()
 

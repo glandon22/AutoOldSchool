@@ -3,6 +3,7 @@ import math
 import platform
 import requests
 import pyautogui
+import os
 
 import osrs.dev as dev
 import osrs.move
@@ -419,7 +420,6 @@ def right_click_v6(item, action, canvas, in_inv=False, port=None):
         qh.set_port(port)
     qh.set_right_click_menu()
     max_canvas_y = canvas['yMax'] - canvas['yMin']
-    print('mcy', max_canvas_y)
     # if i right click something that is low on the screen, the menu would open off the screen so the game pushes it up
     additional_offset = 0
     while True:
@@ -747,7 +747,7 @@ def tab_to_varrock_v2():
 
 def click_v2(obj, movement_offset=None, right=None):
     req_data = {
-        'name': config['username'],
+        'name': os.environ['USERNAME'],
         'x': obj['x'],
         'y': obj['y']
     }
