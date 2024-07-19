@@ -11,7 +11,7 @@ session = requests.Session()
 establish_conn = {
     'helloWorld': True
 }
-session.get(url=f'http://localhost:{config["port"]}/osrs', json=establish_conn)
+session.get(url=f'http://localhost:{os.environ["SERVER_PORT"]}/osrs', json=establish_conn)
 
 
 def query_game_data(q, port='56799'):
