@@ -3,10 +3,13 @@ import time
 
 import pyautogui
 import osrs
-a = set()
-qh = osrs.queryHelper.QueryHelper()
-qh.set_orientation()
-while True:
-    qh.query_backend()
-    a.add(qh.get_orientation())
-    print(sorted(a, reverse=True))
+osrs.bank.ge_handler_v2([
+        {
+            'id': osrs.item_ids.ItemIDs.VARROCK_TELEPORT.value, 'sell': True,
+            'quantity': '6500', 'id_override': 'varrock teleport'
+        },
+        {'id': osrs.item_ids.ItemIDs.FIRE_RUNE.value, 'quantity': 1},
+        {'id': osrs.item_ids.ItemIDs.LAW_RUNE.value, 'quantity': 1},
+        {'id': osrs.item_ids.ItemIDs.SOFT_CLAY.value, 'quantity': 1},
+        {'id': osrs.item_ids.ItemIDs.TELEPORT_TO_HOUSE.value, 'quantity': 1}
+    ])

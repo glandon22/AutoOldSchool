@@ -47,3 +47,12 @@ def write_v2(phrase):
         'input': phrase
     }
     session.post(url='http://localhost:1848/type', json=req_data)
+
+
+def press_key_v2(key):
+    req_data = {
+        'name': config['username'],
+        'key_press': key
+    }
+    session.post(url='http://localhost:1848/type', json=req_data)
+

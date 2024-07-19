@@ -92,6 +92,28 @@ def house_tele(outside=False, house_loc='rimmington'):
             last_tele = datetime.datetime.now()
 
 
+def house_tele_v2(outside=False, house_loc='rimmington'):
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_inventory()
+    qh.set_player_world_location()
+    qh.set_canvas()
+    last_tele = datetime.datetime.now() - datetime.timedelta(hours=1)
+    while True:
+        qh.query_backend()
+        if qh.get_player_world_location('x') > 9000:
+            return
+        elif 2948 <= qh.get_player_world_location('x') <= 2958 and 3216 <= qh.get_player_world_location('y') <= 3228:
+            return
+        elif qh.get_inventory(osrs.item_ids.ItemIDs.TELEPORT_TO_HOUSE.value) and (datetime.datetime.now() - last_tele).total_seconds() > 10:
+            if outside:
+                item = qh.get_inventory(osrs.item_ids.ItemIDs.TELEPORT_TO_HOUSE.value)
+                canvas = qh.get_canvas()
+                osrs.move.click_v2(item, right=[item, 'Outside', canvas, True])
+            else:
+                osrs.move.click_v2(qh.get_inventory(osrs.item_ids.ItemIDs.TELEPORT_TO_HOUSE.value))
+            last_tele = datetime.datetime.now()
+
+
 def leave_house():
     house_portal_id = 4525
     qh = osrs.queryHelper.QueryHelper()

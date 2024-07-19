@@ -78,6 +78,21 @@ def toggle_run(desired_state, port='56799'):
             return
 
 
+def toggle_run_v2(desired_state, port='56799'):
+    """
+    :param desired_state: string : 'on' : 'off'
+    :param port:
+    :return: void
+    """
+    desired_state = {'on': 1065, 'off': 1064}[desired_state]
+    while True:
+        run_orb = server.get_widget('160,29', port)
+        if run_orb:
+            if run_orb['spriteID'] != desired_state:
+                move.click_v2(run_orb)
+            return
+
+
 def get_run_energy():
     while True:
         logging.info('getting run energy.')
