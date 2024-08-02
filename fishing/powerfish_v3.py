@@ -15,10 +15,7 @@ fish_to_catch_config = {
     '7': 'barbarian'
 }
 
-fish_to_catch = fish_to_catch_config['1']
-
-if str(sys.argv[1]):
-    fish_to_catch = str(sys.argv[1]).lower()
+fish_to_catch = fish_to_catch_config['2']
 
 logger.info(f'fishing for: {fish_to_catch}')
 
@@ -88,6 +85,7 @@ def query_server(gs: osrs.queryHelper.QueryHelper):
     qh.set_inventory()
     qh.set_npcs(fish_spot_ids[fish_to_catch])
     qh.set_is_fishing()
+    qh.set_skills({'fishing'})
     qh.set_canvas()
     while True:
         gs.game_data = qh.query_backend()
@@ -111,6 +109,8 @@ def main():
         'y_coord': 0
     }
     while True:
+        if game_state.get_skills('fishing') and game_state.get_skills('fishing')['level'] == 99:
+            exit(99)
         osrs.game.break_manager_v4(script_config)
         if game_state.get_inventory() and len(game_state.get_inventory()) == 28:
             logger.info(f'Full inv, beginning to drop fish {fish_to_catch}.')

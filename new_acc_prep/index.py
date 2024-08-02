@@ -532,7 +532,6 @@ osrs.bank.ge_handler([
     {'id': osrs.item_ids.ItemIDs.SAW.value, 'quantity': 1},
     {'id': osrs.item_ids.ItemIDs.BAGGED_DEAD_TREE.value, 'quantity': 653},
     {'id': osrs.item_ids.ItemIDs.PLANK.value, 'quantity': 588},
-    {'id': osrs.item_ids.ItemIDs.PLANK.value, 'quantity': 588},
     {'id': osrs.item_ids.ItemIDs.WATERING_CAN.value, 'quantity': 3},
     {'id': osrs.item_ids.ItemIDs.PURE_ESSENCE.value, 'quantity': 1000},
     {'id': osrs.item_ids.ItemIDs.FALADOR_TELEPORT.value, 'quantity': 45},
@@ -660,6 +659,7 @@ osrs.game.talk_to_npc('emerald benedict', right_click=True)
 osrs.game.dialogue_handler(['Yes actually, can you help?'], timeout=1)
 osrs.bank.banking_handler({
     'dump_inv': True,
+    'lock': True,
     'withdraw': [{
         'items': [
             {'id': osrs.item_ids.ItemIDs.WATERING_CAN.value, 'quantity': 'All'},
@@ -706,10 +706,11 @@ osrs.bank.banking_handler({
         }
     ]
 })
-util_functions.equip_item(osrs.item_ids.ItemIDs.DUST_BATTLESTAFF.value)
+
 osrs.transport.house_tele(outside=True)
 build_oak_lectern.main(1)
 osrs.player.toggle_run('on')
-osrs.move.go_to_loc(2954, 3214)'''
-util_functions.turn_off_doors_in_house()
+osrs.move.go_to_loc(2954, 3214)
+util_functions.turn_off_doors_in_house()'''
 util_functions.drop_hammer_and_saw()
+util_functions.equip_item(osrs.item_ids.ItemIDs.DUST_BATTLESTAFF.value)

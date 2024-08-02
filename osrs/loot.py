@@ -91,6 +91,7 @@ class Loot:
     config = {}
     inv_config = {}
     high_alch_widget_id = '218,44'
+    inv_widget_id = '161,62'
 
     def __init__(self):
         self.add_items(self.default_config())
@@ -141,7 +142,7 @@ class Loot:
             qh.query_backend()
             qh.set_canvas()
             qh.set_objects_v2('ground_items', set())
-            qh.set_widgets({self.high_alch_widget_id})
+            qh.set_widgets({self.high_alch_widget_id, self.inv_widget_id})
             qh.query_backend()
             if not qh.get_objects_v2('ground_items'):
                 return True
@@ -189,17 +190,19 @@ class Loot:
         qh.query_backend()
         if qh.get_inventory(item['id']):
             osrs.keeb.press_key('f6')
-            osrs.clock.sleep_one_tick()
             qh.query_backend()
             osrs.move.click(qh.get_widgets(self.high_alch_widget_id))
-            osrs.clock.random_sleep(0.2, 0.3)
             qh.query_backend()
-            if qh.get_inventory(item['id']):
-                osrs.move.click(qh.get_inventory(item['id']))
-            else:
-                osrs.move.click({'x': pyautogui.position().x, 'y': pyautogui.position().y})
-            osrs.clock.random_sleep(0.2, 0.3)
-            osrs.keeb.press_key('esc')
+            osrs.move.click(qh.get_inventory(item['id']))
+            last_changed = datetime.datetime.now()
+            while True:
+                qh.query_backend()
+                if not qh.get_widgets(self.inv_widget_id) or qh.get_widgets(self.inv_widget_id)['spriteID'] != 1030:
+                    osrs.keeb.press_key('esc')
+                    last_changed = datetime.datetime.now()
+                elif (datetime.datetime.now() - last_changed).total_seconds() > 0.6:
+                    return
+
 
     def handle_full_inv(self, qh, loot_item_config):
         if qh.get_inventory(loot_item_config['item_id']) and loot_item_config['stackable']:

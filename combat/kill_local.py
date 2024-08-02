@@ -20,9 +20,9 @@ slayer task boolean
 # yak SUPER COMBATS 10 20
 
 npc_to_kill = 'jungle spider'
-pot = 'RANGING_POTION'
+pot = 'SUPER_STRENGTH_AND_ATTACK'
 pot_interval = 10
-min_health = 12
+min_health = 7
 ss_x = -1
 ss_y = -1
 ss_z = -1
@@ -32,6 +32,8 @@ food_ids = [
     3144,  # karambwan
     379,  # lobster
     385,  # shark
+    329,  # shark
+    391,  # shark
 ]
 
 pot_matcher = {
@@ -45,9 +47,11 @@ karambwan_id = '7946'
 
 
 def find_next_target(npcs):
+    if not npcs:
+        return False
     res = False
     for npc in npcs:
-        if npc['health'] != 0:
+        if npc['health'] != 0 and npc['x_coord'] > 2447 and npc['y_coord'] > 3475 and npc['y'] < 1000:
             if not res or npc['dist'] < res['dist']:
                 res = npc
     return res
@@ -70,7 +74,7 @@ def return_to_safe_spot(qh):
 
 def main():
     qh = osrs.queryHelper.QueryHelper()
-    qh.set_npcs_by_name([npc_to_kill])
+    qh.set_npcs(['6082', '6081'])
     qh.set_skills({'hitpoints', 'strength', 'ranged', 'magic', 'attack', 'defence'})
     qh.set_inventory()
     qh.set_interating_with()
@@ -81,13 +85,6 @@ def main():
     while True:
         qh.query_backend()
 
-        returning_to_safespot = return_to_safe_spot(qh)
-        # confirm we are safespotting
-        if returning_to_safespot:
-            print('out of safespot')
-            if qh.get_tiles(f'{ss_x},{ss_y},{ss_z}') and osrs.move.is_clickable(qh.get_tiles(f'{ss_x},{ss_y},{ss_z}')):
-                osrs.move.fast_click(qh.get_tiles(f'{ss_x},{ss_y},{ss_z}'))
-
         if not qh.get_interating_with():
             osrs.game.break_manager_v4(script_config)
 
@@ -95,16 +92,15 @@ def main():
             k = osrs.inv.are_items_in_inventory_v2(qh.get_inventory(), food_ids)
             if not k:
                 exit('out of food')
-            osrs.move.click(k)
+            osrs.move.fast_click(k)
             osrs.clock.sleep_one_tick()
         elif qh.get_interating_with():
             print('In combat.')
         else:
-            if not returning_to_safespot:
-                targ = find_next_target(qh.get_npcs())
-                if targ:
-                    print(targ['health'])
-                    osrs.move.fast_click(targ)
+            targ = find_next_target(qh.get_npcs())
+            if targ:
+                print(targ['health'])
+                osrs.move.fast_click(targ)
 
         if pot != 'NONE' and (datetime.datetime.now() - last_pot).total_seconds() / 60 > pot_interval:
             last_pot = datetime.datetime.now()
@@ -115,6 +111,8 @@ def main():
                     print('out of str pots')
                 else:
                     osrs.move.click(strpot)
+                    osrs.clock.sleep_one_tick()
+                    osrs.clock.sleep_one_tick()
 
                 if not atk:
                     print('out of atk pots')
@@ -132,3 +130,5 @@ def main():
             for i in range(5):
                 osrs.keeb.press_key('space')
                 osrs.clock.sleep_one_tick()
+
+main()

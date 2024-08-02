@@ -340,6 +340,7 @@ def banking_handler(params):
         search: [{ query: 'metal_dragons', items:[itemID, itemID....] }]
     }
     """
+    lock_widget = '12,38'
     ge_banker_npc_ids = [
         1613, 1633, 1634, 3089
     ]
@@ -363,12 +364,13 @@ def banking_handler(params):
     barb_assault_bank_id = '19051'
     gnome_strong_bank_tile = '2449,3481,1'
     gnome_strong_bank_id = '10355'
+    gnome_strong_bank_tile_1 = '2441,3488,1'
     ferox_bank_tile = '3130,3632,0'
     ferox_bank_id = '26711'
     qh = osrs.queryHelper.QueryHelper()
     qh.set_npcs([*ge_banker_npc_ids, *varr_banker_npc_ids, *fally_banker_npc_ids])
     qh.set_objects(
-        {crafting_guild_bank_tile, c_wars_bank_tile, v_west_bank_tile_1, lum_top_floor_bank_tile, draynor_bank_tile, barb_assault_bank_tile, gnome_strong_bank_tile, ferox_bank_tile},
+        {gnome_strong_bank_tile_1, crafting_guild_bank_tile, c_wars_bank_tile, v_west_bank_tile_1, lum_top_floor_bank_tile, draynor_bank_tile, barb_assault_bank_tile, gnome_strong_bank_tile, ferox_bank_tile},
         {crafting_guild_bank_id, c_wars_bank_id, v_west_bank_id_1, lum_top_floor_bank_id, draynor_bank_id, barb_assault_bank_id, gnome_strong_bank_id, ferox_bank_id},
         osrs.queryHelper.ObjectTypes.GAME.value
     )
@@ -379,7 +381,7 @@ def banking_handler(params):
         WidgetIDs.BANK_DEPOSIT_EQUIPMENT.value,
         WidgetIDs.BANK_SEARCH_BUTTON_BACKGROUND.value
     })
-    qh.set_widgets({withdraw_item_widget, withdraw_noted_widget})
+    qh.set_widgets({withdraw_item_widget, withdraw_noted_widget, lock_widget})
     qh.set_bank()
     last_banker_click = datetime.datetime.now() - datetime.timedelta(hours=1)
     banker_search_duration = datetime.datetime.now()
@@ -405,13 +407,13 @@ def banking_handler(params):
 
     dumped_inv = False
     dumped_equipment = False
-    osrs.clock.random_sleep(1, 1.1)
     # Deposit desired items
     wait_time = datetime.datetime.now()
     while True:
         qh.query_backend()
         if (datetime.datetime.now() - wait_time).total_seconds() > 15:
             return banking_handler(params)
+
         if 'dump_inv' in params and params['dump_inv'] \
                 and qh.get_widgets_v2(WidgetIDs.BANK_DEPOSIT_INVENTORY.value) and not dumped_inv:
             osrs.move.click(qh.get_widgets_v2(WidgetIDs.BANK_DEPOSIT_INVENTORY.value))
@@ -428,8 +430,13 @@ def banking_handler(params):
                 and ('dump_equipment' not in params or not params['dump_equipment'] or dumped_equipment):
             break
     # sleep for a second so that all the items i deposited will register and be return on query
-    osrs.clock.random_sleep(1, 1.1)
+    if 'dump_inv' in params or 'dump_equipment' in params:
+        osrs.clock.sleep_one_tick()
     qh.query_backend()
+    if 'lock' in params and qh.get_widgets(lock_widget) and qh.get_widgets(lock_widget)['spriteID'] != 179:
+        osrs.move.click(qh.get_widgets(lock_widget))
+    if 'unlock' in params and qh.get_widgets(lock_widget) and qh.get_widgets(lock_widget)['spriteID'] == 179:
+        osrs.move.click(qh.get_widgets(lock_widget))
     # set the default withdrawal and deposit value for banking
     if 'set_quantity' in params:
         set_withdrawl_and_deposit_quantity(params['set_quantity'])
@@ -440,6 +447,7 @@ def banking_handler(params):
         success = withdraw(params['withdraw'], qh)
         if not success:
             print('Failed to withdraw items successfully.')
+            exit(777)
             return False
     if 'search' in params:
         success = search_and_withdraw(params['search'], qh)
@@ -496,6 +504,7 @@ def abort_offer(slot=None, item_name=None):
                     break
             if found:
                 break
+    qh.query_backend()
     while True:
         res = osrs.move.right_click_v6(slot, 'Abort offer', qh.get_canvas(), in_inv=True)
         if res:
@@ -646,7 +655,7 @@ def purchase_item(item, quantity, prev_price=0):
             # this offer isnt buying. up the price!
 
             if (datetime.datetime.now() - wait_time).total_seconds() > 5:
-                abort_offer(offer_slot)
+                abort_offer(qh1.get_widgets(f'{offer_slot},0'))
                 osrs.clock.sleep_one_tick()
                 return purchase_item(item, quantity, value)
         print('jj', qh.get_widgets(collect_widget))

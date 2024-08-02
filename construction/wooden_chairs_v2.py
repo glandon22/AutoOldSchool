@@ -23,7 +23,7 @@ def leave_house():
 
 script_config = {
     'intensity': 'high',
-    'login': False,
+    'login': lambda: osrs.clock.random_sleep(3, 3.1),
     'logout': False
 }
 

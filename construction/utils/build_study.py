@@ -65,9 +65,10 @@ def main():
                 return osrs.keeb.write(str(qh.get_chat_options('Build')))
             elif qh.get_widgets(study_widget) and qh.get_widgets(study_widget)['xMin'] != -1:
                 osrs.move.click(qh.get_widgets(study_widget))
+                osrs.clock.random_sleep(1, 1.1)
             elif qh.get_widgets(rooms_holder) and qh.get_widgets(rooms_holder)['xMin'] != -1:
                 osrs.move.fast_move(qh.get_widgets(rooms_holder))
-                pyautogui.scroll(-1)
+                pyautogui.scroll(-1000)
             elif (qh.get_objects_v2('wall', hotspot, dist=5)
                   and (datetime.datetime.now() - last_hotspot).total_seconds() > 15):
                 correct_location = list(

@@ -431,6 +431,7 @@ def right_click_v6(item, action, canvas, in_inv=False):
             choose_option_offset = entry_data['height'] - (len(entry_data['entries']) * 15)
             parsed_entries = reversed(entry_data['entries'])
             for i, entry in enumerate(parsed_entries):
+                print('aa', entry)
                 if action.upper() == entry[0].upper() and (in_inv or item['id'] == int(entry[1])):
                     additional = choose_option_offset + (i * 15)
                     osrs.move.move_and_click(
