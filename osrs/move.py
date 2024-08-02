@@ -3,6 +3,7 @@ import math
 import platform
 import requests
 import pyautogui
+import os
 
 import osrs.dev as dev
 import osrs.move
@@ -411,13 +412,14 @@ def right_click_v5(item, action, in_inv=False):
             return False
 
 
-def right_click_v6(item, action, canvas, in_inv=False):
+def right_click_v6(item, action, canvas, in_inv=False, port=None):
     osrs.move.move_and_click(item['x'], item['y'], 3, 3, 'right')
     curr_pos = pyautogui.position()
     qh = osrs.queryHelper.QueryHelper()
+    if port:
+        qh.set_port(port)
     qh.set_right_click_menu()
     max_canvas_y = canvas['yMax'] - canvas['yMin']
-    print('mcy', max_canvas_y)
     # if i right click something that is low on the screen, the menu would open off the screen so the game pushes it up
     additional_offset = 0
     while True:
@@ -530,6 +532,70 @@ def follow_path(start, end, right_click=False, exact_tile=False):
                 break
 
 
+def follow_path_v2(start, end, right_click=False, exact_tile=False):
+    # selected = 3053
+    all_chat_widget = '162,5'
+    game_chat_widget = '162,8'
+    pub_chat_widget = '162,12'
+    priv_chat_widget = '162,16'
+    chan_chat_widget = '162,20'
+    clan_chat_widget = '162,24'
+    trade_chat_widget = '162,28'
+    report_player_widget = '875,22'
+
+    path = dax.generate_path(start, end)
+    if not path:
+        osrs.clock.sleep_one_tick()
+        return
+    parsed_tiles = util.tile_objects_to_strings(path)
+    qh = queryHelper.QueryHelper()
+    qh.set_tiles(set(parsed_tiles))
+    qh.set_destination_tile()
+    qh.set_player_world_location()
+    qh.set_canvas()
+    qh.set_widgets({game_chat_widget, all_chat_widget, pub_chat_widget, priv_chat_widget, chan_chat_widget, clan_chat_widget, trade_chat_widget, report_player_widget})
+    prev_loc = None
+    time_on_same_tile = datetime.datetime.now()
+    while True:
+        if (datetime.datetime.now() - time_on_same_tile).total_seconds() > 2.5:
+            print('2.5 seconds on same tile, ending')
+            return
+        if qh.get_player_world_location() != prev_loc:
+            prev_loc = qh.get_player_world_location()
+            time_on_same_tile = datetime.datetime.now()
+        qh.query_backend()
+        # ensure that the chat box isnt open bc it blocks my clicks
+        if qh.get_widgets(report_player_widget):
+            osrs.keeb.press_key_v2('esc')
+        for key in qh.get_widgets():
+            if qh.get_widgets(key)['spriteID'] == 3053:
+                osrs.move.click_v2(qh.get_widgets(key))
+                break
+        dist_to_end = osrs.dev.point_dist(
+            qh.get_player_world_location('x'),
+            qh.get_player_world_location('y'),
+            int(parsed_tiles[-1].split(',')[0]),
+            int(parsed_tiles[-1].split(',')[1])
+        )
+        # sometimes the tile i want to end up on has an object on it so i cant actually stand on it,
+        # in that case, i still want to break if i am at the end of the path
+        if dist_to_end <= 3 and not exact_tile:
+            break
+        for tile in reversed(parsed_tiles):
+            if is_clickable(qh.get_tiles(tile)):
+                if right_click:
+                    tile = qh.get_tiles(tile)
+                    canvas = qh.get_canvas()
+                    osrs.move.click_v2(
+                        tile,
+                        right=[tile, 'Walk here', canvas, True, os.environ['SERVER_PORT']]
+                    )
+
+                else:
+                    osrs.move.click_v2(qh.get_tiles(tile))
+                break
+
+
 def is_clickable(target):
     if not target or 'x' not in target or 'y' not in target:
         return False
@@ -621,6 +687,29 @@ def go_to_loc(dest_x, dest_y, dest_z=0, right_click=False, exact_tile=False):
             )
 
 
+def go_to_loc_v2(dest_x, dest_y, dest_z=0, right_click=False, exact_tile=False):
+    x_min = dest_x - 2
+    y_min = dest_y - 2
+    x_max = dest_x + 2
+    y_max = dest_y + 2
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_player_world_location()
+    qh.set_canvas()
+    while True:
+        qh.query_backend()
+        if (x_min <= qh.get_player_world_location('x') <= x_max
+                and y_min <= qh.get_player_world_location('y') <= y_max
+                and not exact_tile):
+            break
+        elif exact_tile and qh.get_player_world_location('x') == dest_x and qh.get_player_world_location('y') == dest_y:
+            break
+        else:
+            follow_path_v2(
+                qh.get_player_world_location(), {'x': dest_x, 'y': dest_y, 'z': dest_z},
+                right_click=right_click, exact_tile=exact_tile
+            )
+
+
 def tab_to_varrock():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
@@ -639,13 +728,34 @@ def tab_to_varrock():
             last_tab = datetime.datetime.now()
 
 
-def click_v2(obj, movement_offset=None):
+def tab_to_varrock_v2():
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_inventory()
+    qh.set_player_world_location()
+    last_tab = datetime.datetime.now() - datetime.timedelta(hours=1)
+    while True:
+        qh.query_backend()
+        # in varrock center
+        if 3195 <= qh.get_player_world_location('x') <= 3226 and 3419 <= qh.get_player_world_location(
+                'y') <= 3438:
+            osrs.clock.sleep_one_tick()
+            osrs.clock.sleep_one_tick()
+            return
+        elif qh.get_inventory(osrs.item_ids.ItemIDs.VARROCK_TELEPORT.value) and (datetime.datetime.now() - last_tab).total_seconds() > 10:
+            osrs.move.click_v2(qh.get_inventory(osrs.item_ids.ItemIDs.VARROCK_TELEPORT.value))
+            last_tab = datetime.datetime.now()
+
+
+def click_v2(obj, movement_offset=None, right=None):
     req_data = {
-        'name': config['username'],
+        'name': os.environ['USERNAME'],
         'x': obj['x'],
         'y': obj['y']
     }
     if movement_offset:
         req_data['x'] += movement_offset[0]
         req_data['y'] += movement_offset[1]
-    session.post(url='http://localhost:1848/click', json=req_data)
+    if right:
+        req_data['right'] = right
+    response = session.post(url='http://localhost:1848/click', json=req_data)
+    return True if 'success' not in response.json() else response.json()['success']

@@ -1,8 +1,8 @@
 import datetime
 import logging
 import requests
+import os
 
-import osrs.dev
 import osrs.util as util
 import osrs.dev as dev
 
@@ -11,7 +11,8 @@ session = requests.Session()
 establish_conn = {
     'helloWorld': True
 }
-session.get(url='http://localhost:56799/osrs', json=establish_conn)
+print('here', os.environ)
+# session.get(url=f'http://localhost:{os.environ["SERVER_PORT"]}/osrs', json=establish_conn)
 
 
 def query_game_data(q, port='56799'):

@@ -1,10 +1,11 @@
 import time
-
 from flask import Flask, request
 import pyautogui
 import pywinctl as pwc
 import osrs
-
+import logging
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
 app = Flask(__name__)
 logger = osrs.dev.instantiate_logger()
 
@@ -27,9 +28,15 @@ def handle_click():
         logger.warning('No RuneLite window found for: %s', click_request['name'])
     window = windows[0]
     window.activate()
-    pyautogui.click(click_request['x'], click_request['y'])
+    time.sleep(0.015)
     logger.info('Clicked (%s, %s) for player: %s', click_request['x'], click_request['y'], click_request['name'])
-    return 'success'
+    # this needs to return true if true else false, non right click does not really matter
+    if 'right' in click_request:
+        res = osrs.move.right_click_v6(*click_request['right'])
+        return {'success': res}
+    else:
+        pyautogui.click(click_request['x'], click_request['y'])
+        return {'success': True}
 
 
 @app.route('/type', methods=['POST', 'GET'])

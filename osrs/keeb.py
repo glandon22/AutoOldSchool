@@ -1,5 +1,6 @@
 from pynput.keyboard import Controller, Key
 from osrs import dev
+import os
 import requests
 
 session = requests.Session()
@@ -43,7 +44,16 @@ def write(phrase):
 
 def write_v2(phrase):
     req_data = {
-        'name': config['username'],
+        'name': os.environ['USERNAME'],
         'input': phrase
     }
     session.post(url='http://localhost:1848/type', json=req_data)
+
+
+def press_key_v2(key):
+    req_data = {
+        'name': os.environ['USERNAME'],
+        'key_press': key
+    }
+    session.post(url='http://localhost:1848/type', json=req_data)
+
