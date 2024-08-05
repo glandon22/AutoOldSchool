@@ -430,9 +430,8 @@ def banking_handler(params):
         if ('dump_inv' not in params or not params['dump_inv'] or dumped_inv) \
                 and ('dump_equipment' not in params or not params['dump_equipment'] or dumped_equipment):
             break
-    # sleep for a second so that all the items i deposited will register and be return on query
-    if 'dump_inv' in params or 'dump_equipment' in params:
-        osrs.clock.sleep_one_tick()
+
+    osrs.clock.sleep_one_tick()
     qh.query_backend()
     if 'lock' in params and qh.get_widgets(lock_widget) and qh.get_widgets(lock_widget)['spriteID'] != 179:
         osrs.move.click(qh.get_widgets(lock_widget))
