@@ -41,14 +41,15 @@ def turn_off_all_prayers():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_active_prayers()
     qh.set_widgets({'160,21'})
+    last_click = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
         qh.query_backend()
         if not qh.get_active_prayers():
             return
-        elif qh.get_widgets('160,21'):
+        elif qh.get_widgets('160,21') and (datetime.datetime.now() - last_click).total_seconds() > 1:
             osrs.move.click(qh.get_widgets('160,21'))
-            osrs.clock.random_sleep(1, 1.1)
-
+            osrs.move.click(qh.get_widgets('160,21'))
+            last_click = datetime.datetime.now()
 
 def flick_all_prayers():
     qh = osrs.queryHelper.QueryHelper()
@@ -157,3 +158,18 @@ def dialogue_handler(desired_replies=None):
                 or qh.get_widgets(click_to_continue_widget)):
             osrs.keeb.press_key('space')
             had_dialogue = True
+
+
+def equip_item(items):
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_equipment()
+    qh.set_inventory()
+    while True:
+        qh.query_backend()
+        if qh.get_equipment() and set(items).issubset(qh.get_equipment()):
+            return
+        elif qh.get_inventory():
+            for item in qh.get_inventory():
+                if item['id'] in items:
+                    osrs.move.fast_click(item)
+                    osrs.clock.random_sleep(0.65, 0.66)

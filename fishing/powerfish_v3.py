@@ -15,10 +15,7 @@ fish_to_catch_config = {
     '7': 'barbarian'
 }
 
-fish_to_catch = fish_to_catch_config['1']
-
-if str(sys.argv[1]):
-    fish_to_catch = str(sys.argv[1]).lower()
+fish_to_catch = fish_to_catch_config['7']
 
 logger.info(f'fishing for: {fish_to_catch}')
 

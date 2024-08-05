@@ -2,6 +2,7 @@ import datetime
 import math
 import random
 import time
+import re
 
 import osrs.move
 import osrs.server as server
@@ -139,8 +140,10 @@ def logout():
         if clicked_first_button:
             if qh.get_widgets(logout_button_widget_id):
                 osrs.move.click(qh.get_widgets(logout_button_widget_id))
+                osrs.clock.random_sleep(8, 8.1)
             if qh.get_widgets(world_switcher_logout_widget_id):
                 osrs.move.click(qh.get_widgets(world_switcher_logout_widget_id))
+                osrs.clock.random_sleep(8, 8.1)
         if qh.get_widgets(logout_icon_widget_id) and not clicked_first_button:
             osrs.move.click(qh.get_widgets(logout_icon_widget_id))
             clicked_first_button = True
@@ -657,3 +660,38 @@ def dialogue_handler(desired_replies=None, timeout=3):
                 or qh.get_widgets(click_to_continue_widget)):
             osrs.keeb.press_key('space')
             had_dialogue = True
+
+
+def use_portal_nexus(destination):
+    # get the character to press to tele to dest
+    pattern = '(?<=\>)(.*?)(?=\<)'
+    nexus_id = 33354
+    dest_list_widget = '17,12'
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_objects_v2('game', {nexus_id})
+    qh.set_widgets({dest_list_widget})
+    qh.set_player_world_location()
+    qh.set_canvas()
+    last_click = datetime.datetime.now() - datetime.timedelta(hours=1)
+    while True:
+        qh.query_backend()
+        if qh.get_player_world_location('x') < 4000:
+            return
+        elif qh.get_widgets(dest_list_widget):
+            for i in range(31):
+                widget = f"17,12,{i}"
+                qh1 = osrs.queryHelper.QueryHelper()
+                qh1.set_widgets({widget})
+                qh1.query_backend()
+                if qh1.get_widgets(widget) and destination.lower() in qh1.get_widgets(widget)['text'].lower():
+                    char = re.search(pattern, qh1.get_widgets(widget)['text'].lower())
+                    if char and char.group(0):
+                        osrs.keeb.write(str(char.group(0)))
+        elif qh.get_objects_v2('game', nexus_id) and (datetime.datetime.now() - last_click).total_seconds() > 7:
+            osrs.move.right_click_v6(
+                qh.get_objects_v2('game', nexus_id)[0],
+                'Teleport menu',
+                qh.get_canvas()
+            )
+            last_click = datetime.datetime.now()
+

@@ -171,9 +171,9 @@ def drink_stam():
 
 def drink_wine():
     hp = osrs.server.get_skill_data('hitpoints', port)
-    if 'boostedLevel' in hp and hp['boostedLevel'] < 15:
+    if 'boostedLevel' in hp and hp['boostedLevel'] < 2:
         inv = osrs.inv.get_inv(port)
-        wine = osrs.inv.is_item_in_inventory_v2(inv, '1993')
+        wine = osrs.inv.is_item_in_inventory_v2(inv, '26149')
         if not wine:
             exit('out of wine')
         osrs.move.move_and_click(wine['x'], wine['y'], 3, 3)

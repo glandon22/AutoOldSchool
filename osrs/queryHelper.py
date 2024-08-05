@@ -227,8 +227,20 @@ class QueryHelper:
     def set_npcs(self, ids):
         self.query['npcsID'] = ids
 
-    def get_npcs(self):
-        return 'npcs' in self.game_data and self.game_data['npcs']
+    def get_npcs(self, npc_id=None, interacting_with_me=False):
+        if npc_id:
+            if 'npcs' in self.game_data:
+                for npc in self.game_data['npcs']:
+                    if npc['id'] == npc_id \
+                        and (
+                            not interacting_with_me or
+                            ('interacting' in npc and npc['interacting'].lower() == 'greazydonkey')
+                    ):
+                        return npc
+
+            return False
+        else:
+            return 'npcs' in self.game_data and self.game_data['npcs']
 
     def set_npcs_by_name(self, ids):
         if type(ids) is not list:

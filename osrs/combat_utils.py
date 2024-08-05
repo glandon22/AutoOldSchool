@@ -128,6 +128,7 @@ def prayer_handler(qh: osrs.queryHelper.QueryHelper or None, prayers):
     for prayer in prayers:
         if prayer_map[prayer] not in qh.get_active_prayers():
             osrs.keeb.press_key('f5')
+            osrs.clock.random_sleep(0.1, 0.11)
             qh.query_backend()
             if qh.get_widgets(prayer_map_widgets[prayer]):
                 osrs.move.fast_click(qh.get_widgets(prayer_map_widgets[prayer]))
@@ -135,8 +136,13 @@ def prayer_handler(qh: osrs.queryHelper.QueryHelper or None, prayers):
 
 
 def food_handler(qh, min_health):
+    if not qh:
+        qh = osrs.queryHelper.QueryHelper()
+        qh.set_inventory()
+        qh.set_skills({'hitpoints'})
+        qh.query_backend()
     if qh.get_skills('hitpoints')['boostedLevel'] < min_health:
-        k = osrs.inv.are_items_in_inventory_v2(qh.get_inventory(), food_ids)
+        k = qh.get_inventory(food_ids)
         if not k:
             return False
         osrs.move.click(k)

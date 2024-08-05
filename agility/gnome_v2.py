@@ -35,6 +35,7 @@ def main(goal):
             23135, 'y', 3426, True
         )
         osrs.move.interact_with_object(
-            23138, 'y', 3433, True
+            23138, 'y', 3433, True, obj_tile={'x': 2484, 'y': 3431}
         )
         osrs.move.go_to_loc(2474, 3436)
+main(99)
