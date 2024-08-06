@@ -1,5 +1,9 @@
+import datetime
+
 import osrs
 
+logger = osrs.dev.instantiate_logger()
+varrock_tele_widget_id = '218,23'
 tunnel_monsters_for_points = [
     1678,
     1679,
@@ -12,6 +16,33 @@ tunnel_monsters_for_points = [
     1686,
     1687,
     1688,
+]
+
+equipment = [
+    osrs.item_ids.ItemIDs.PRAYER_POTION4.value,
+    osrs.item_ids.ItemIDs.PRAYER_POTION4.value,
+    osrs.item_ids.ItemIDs.SHARK.value,
+    osrs.item_ids.ItemIDs.SHARK.value,
+    osrs.item_ids.ItemIDs.SHARK.value,
+    osrs.item_ids.ItemIDs.SHARK.value,
+    osrs.item_ids.ItemIDs.SHARK.value,
+    osrs.item_ids.ItemIDs.SHARK.value,
+    osrs.item_ids.ItemIDs.SHARK.value,
+    osrs.item_ids.ItemIDs.SHARK.value,
+    osrs.item_ids.ItemIDs.SPADE.value,
+    osrs.item_ids.ItemIDs.TOXIC_BLOWPIPE.value,
+    osrs.item_ids.ItemIDs.RUNE_POUCH.value,
+    osrs.item_ids.ItemIDs.ABYSSAL_WHIP.value,
+    osrs.item_ids.ItemIDs.AVAS_ACCUMULATOR.value,
+    osrs.item_ids.ItemIDs.SALVE_AMULETEI.value,
+    {
+        'id': [
+            osrs.item_ids.ItemIDs.STRANGE_OLD_LOCKPICK_FULL.value,
+            osrs.item_ids.ItemIDs.STRANGE_OLD_LOCKPICK.value,
+        ],
+        'quantity': '1'
+    },
+
 ]
 
 class BarrowsBrother():
@@ -56,7 +87,42 @@ def find_my_target(brother):
         return True
     if qh.get_npcs():
         for npc in qh.get_npcs():
+            # make sure the final brother is in the chest room so i can attack!
             if npc['id'] == brother and 'interacting' in npc and npc['interacting'].lower() == 'greazydonkey':
+                osrs.move.fast_click(npc)
+                osrs.move.fast_click(npc)
+                osrs.move.fast_click(npc)
+                return True
+
+
+def find_my_target_in_chest_room(args):
+    brother = args[0]
+    time = args[1]
+    logger.info(f"total time searching for final brother: {(datetime.datetime.now() - time).total_seconds()}")
+    # sometimes the brother spawns close to the chest room
+    # and when i open the chest it just despawns
+    # instead of spawning again in the chest room
+    if (datetime.datetime.now() - time).total_seconds() > 10:
+        return True
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_npcs([brother])
+    qh.set_widgets({'229,1'})
+    qh.set_objects_v2('game', {20973})
+    qh.set_canvas()
+    qh.query_backend()
+    if qh.get_npcs():
+        for npc in qh.get_npcs():
+            if npc['id'] == brother:
+                print('brother found: ', npc)
+            # make sure the final brother is in the chest room so i can attack!
+            if (npc['id'] == brother
+                    and 'interacting' in npc
+                    and npc['interacting'].lower() == 'greazydonkey'
+                    and 3546 <= npc['x_coord'] <= 3557
+                    and 9689 <= npc['y_coord'] <= 9700):
+                logger.info("found final brother, attacking!")
+                osrs.move.fast_click(npc)
+                osrs.move.fast_click(npc)
                 osrs.move.fast_click(npc)
                 return True
 
@@ -71,13 +137,16 @@ def loot_popup():
 
 # loot widget 155,1
 def awaken_brother(brother: BarrowsBrother, tunnel):
+    logger.info("Running to mound.")
     osrs.move.go_to_loc(*brother.as_dict()['mound_tile'])
     enter_mound()
+    logger.info("searching crypt.")
     osrs.move.interact_with_object(
         brother.as_dict()['crypt_id'], 'a', 1, False, right_click_option='Search',
         custom_exit_function=find_my_target, custom_exit_function_arg=brother.as_dict()['npc_id']
     )
     not_found = kill_brother(brother.as_dict()['npc_id'], brother.as_dict()['prayer'])
+    logger.info(f"killed brother. not found: {not_found}")
     osrs.move.interact_with_object(
         brother.as_dict()['staircase_id'], 'z', 0, False
     )
@@ -88,11 +157,6 @@ def awaken_brother(brother: BarrowsBrother, tunnel):
 
 
 def kill_brother(brother, prayer):
-    if brother == 1672:
-        osrs.player.equip_item([
-            osrs.item_ids.ItemIDs.TOXIC_BLOWPIPE.value,
-            osrs.item_ids.ItemIDs.AVAS_ACCUMULATOR.value,
-        ])
     qh = osrs.queryHelper.QueryHelper()
     qh.set_npcs([brother])
     qh.set_widgets({'229,1'})
@@ -101,16 +165,10 @@ def kill_brother(brother, prayer):
         qh.query_backend()
         target = qh.get_npcs(brother, interacting_with_me=True)
         if qh.get_widgets('229,1'):
-            print('found chat dialogue')
+            logger.info('found chat dialogue')
             return True
         if not target or target['health'] == 0:
-            print('killed brother')
-            if brother == 1672:
-                osrs.player.equip_item([
-                    osrs.item_ids.ItemIDs.TRIDENT_OF_THE_SWAMP.value,
-                    osrs.item_ids.ItemIDs.ELIDINIS_WARD.value,
-                    osrs.item_ids.ItemIDs.IMBUED_GUTHIX_CAPE.value,
-                ])
+            logger.info('killed brother')
             return
 
         if not target and not qh.get_interating_with():
@@ -121,7 +179,6 @@ def kill_brother(brother, prayer):
         # Drink prayer pots vs karil and dharok if necessary
         if brother in [1673, 1675]:
             osrs.combat_utils.pot_handler(None, {})
-
 
 brothers = [
     BarrowsBrother([3575, 3298, 0], 20720, 20668, 1673, ['protect_melee']),  # D
@@ -134,15 +191,28 @@ brothers = [
 
 
 def kill_all_brothers():
+    logger.info("Starting to kill all brothers.")
     brother_in_tunnel = None
     for brother in brothers:
+        if brother.as_dict()['npc_id'] == 1672:
+            logger.info("equipping ranging gear to fight ahrim.")
+            osrs.player.equip_item([
+                osrs.item_ids.ItemIDs.TOXIC_BLOWPIPE.value,
+                osrs.item_ids.ItemIDs.AVAS_ACCUMULATOR.value,
+            ])
         brother_in_tunnel = awaken_brother(brother, brother_in_tunnel)
-        print(brother_in_tunnel)
-    print(brother_in_tunnel)
+        if brother.as_dict()['npc_id'] == 1672:
+            logger.info("equiping mage gear after ahrim fight.")
+            osrs.player.equip_item([
+                osrs.item_ids.ItemIDs.TRIDENT_OF_THE_SWAMP.value,
+                osrs.item_ids.ItemIDs.ELIDINIS_WARD.value,
+                osrs.item_ids.ItemIDs.IMBUED_GUTHIX_CAPE.value,
+            ])
     return brother_in_tunnel
 
 
 def enter_crypt(brother: BarrowsBrother):
+    logger.info("five brothers killed. entering crypt")
     osrs.move.go_to_loc(*brother.as_dict()['mound_tile'], exact_tile=True)
     enter_mound()
     osrs.move.interact_with_object(
@@ -156,8 +226,10 @@ def click_lock_pick():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.STRANGE_OLD_LOCKPICK.value):
-        osrs.move.fast_click(qh.get_inventory(osrs.item_ids.ItemIDs.STRANGE_OLD_LOCKPICK.value))
+    if qh.get_inventory(
+            [osrs.item_ids.ItemIDs.STRANGE_OLD_LOCKPICK.value, osrs.item_ids.ItemIDs.STRANGE_OLD_LOCKPICK_FULL.value]
+    ):
+        osrs.move.fast_click(qh.get_inventory([osrs.item_ids.ItemIDs.STRANGE_OLD_LOCKPICK.value, osrs.item_ids.ItemIDs.STRANGE_OLD_LOCKPICK_FULL.value]))
 
 
 def kill_tunnel_monster():
@@ -180,8 +252,6 @@ def kill_tunnel_monster():
                         )
 
 
-
-
 def go_to_chest(brother):
     qh = osrs.queryHelper.QueryHelper()
     qh.set_player_world_location()
@@ -194,9 +264,10 @@ def go_to_chest(brother):
                 osrs.item_ids.ItemIDs.ELIDINIS_WARD.value,
                 osrs.item_ids.ItemIDs.OCCULT_NECKLACE.value,
             ])
+            curr_time = datetime.datetime.now()
             osrs.move.interact_with_object(
                 20973, 'y', 9705, False, right_click_option='Open',
-                custom_exit_function=find_my_target, custom_exit_function_arg=brother.as_dict()['npc_id'], timeout=7
+                custom_exit_function=find_my_target_in_chest_room, custom_exit_function_arg=[brother.as_dict()['npc_id'], curr_time], timeout=7
             )
             return
         # Northwest
@@ -270,23 +341,60 @@ def go_to_chest(brother):
             )
 
 
-'''brother_in_tunnel = kill_all_brothers()
-enter_crypt(brother_in_tunnel)
-osrs.player.equip_item([
-    osrs.item_ids.ItemIDs.ABYSSAL_WHIP.value,
-    osrs.item_ids.ItemIDs.SALVE_AMULETEI.value,
-])'''
-brother_in_tunnel = BarrowsBrother([3577, 3282, 0], 20722, 20669, 1674, ['protect_melee'])
-go_to_chest(brother_in_tunnel)
-overhead_prayer = ['protect_range'] if brother_in_tunnel.as_dict()['npc_id'] == 1675 else ['protect_melee']
-kill_brother(brother_in_tunnel.as_dict()['npc_id'], overhead_prayer)
-osrs.move.interact_with_object(
-    20973, 'y', 9705, False, right_click_option='Search',
-    custom_exit_function=loot_popup, timeout=3
-)
-osrs.game.tele_home()
-osrs.game.click_restore_pool()
-osrs.game.use_portal_nexus('barrows')
-'''
-if the brother appears right when i open door to chest room it will never search the chest and fail to win
-'''
+def loot_chest():
+    osrs.move.interact_with_object(
+        20973, 'y', 9705, False,
+        custom_exit_function=loot_popup, timeout=3
+    )
+
+
+def handle_banking():
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_inventory()
+    qh.query_backend()
+    # bank if inv is almost full, i have less than 4 sharks, no full prayer pots, or no more strange old lockpicks
+    if len(qh.get_inventory()) > 24 \
+        or not qh.get_inventory(osrs.item_ids.ItemIDs.PRAYER_POTION4.value) \
+            or (not qh.get_inventory(osrs.item_ids.ItemIDs.STRANGE_OLD_LOCKPICK.value)
+                and not qh.get_inventory(osrs.item_ids.ItemIDs.STRANGE_OLD_LOCKPICK_FULL.value)
+                ) \
+            or osrs.inv.get_item_quantity_in_inv(qh.get_inventory(), osrs.item_ids.ItemIDs.SHARK.value) < 4:
+        osrs.game.cast_spell(varrock_tele_widget_id)
+        osrs.bank.banking_handler({
+            'dump_inv': True,
+            'search': [{'query': 'barrows', 'items': equipment}]
+        })
+
+
+while True:
+    osrs.game.break_manager_v4({
+    'intensity': 'high',
+    'login': False,
+    'logout': False
+})
+    brother_in_tunnel = kill_all_brothers()
+    enter_crypt(brother_in_tunnel)
+    osrs.player.equip_item([
+        osrs.item_ids.ItemIDs.ABYSSAL_WHIP.value,
+        osrs.item_ids.ItemIDs.SALVE_AMULETEI.value,
+    ])
+    go_to_chest(brother_in_tunnel)
+    if brother_in_tunnel.as_dict()['npc_id'] == 1672:
+        osrs.player.equip_item([
+            osrs.item_ids.ItemIDs.TOXIC_BLOWPIPE.value,
+            osrs.item_ids.ItemIDs.AVAS_ACCUMULATOR.value,
+        ])
+    overhead_prayer = ['protect_range'] if brother_in_tunnel.as_dict()['npc_id'] == 1675 else ['protect_melee']
+    kill_brother(brother_in_tunnel.as_dict()['npc_id'], overhead_prayer)
+    if brother_in_tunnel.as_dict()['npc_id'] == 1672:
+        osrs.player.equip_item([
+            osrs.item_ids.ItemIDs.TRIDENT_OF_THE_SWAMP.value,
+            osrs.item_ids.ItemIDs.ELIDINIS_WARD.value,
+            osrs.item_ids.ItemIDs.IMBUED_GUTHIX_CAPE.value,
+        ])
+    loot_chest()
+    handle_banking()
+    osrs.game.tele_home()
+    osrs.player.turn_off_all_prayers()
+    osrs.game.click_restore_pool()
+    osrs.game.use_portal_nexus('barrows')
