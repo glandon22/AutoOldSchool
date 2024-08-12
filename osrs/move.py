@@ -127,8 +127,14 @@ def fast_click(obj):
     if not movement:
         print('movement was unsuccessful, target was off screen. Rejecting click.')
         return
-    osrs.clock.random_sleep(0.001, 0.002)
+    osrs.clock.random_sleep(0.01, 0.02)
     pyautogui.click()
+
+
+def fast_click_v2(obj, button='PRIMARY'):
+    pyautogui.moveTo(obj['x'], obj['y'])
+    osrs.clock.random_sleep(0.11, 0.12)
+    pyautogui.click(button=button)
 
 
 def fast_right_click(obj):
@@ -291,6 +297,12 @@ def fast_move_and_click(x, y, w, h, button='left'):
 
 def instant_click(x, y):
     pyautogui.moveTo(x, y)
+    clock.random_sleep(0.1, 0.11)
+    pyautogui.click()
+
+
+def instant_click_v2(obj):
+    pyautogui.moveTo(obj['x'], obj['y'])
     clock.random_sleep(0.1, 0.11)
     pyautogui.click()
 
@@ -461,8 +473,35 @@ def right_click_v5(item, action, in_inv=False):
             return False
 
 
-def right_click_v6(item, action, canvas, in_inv=False):
+def check_right_click_options(item, action, canvas, in_inv=False):
     osrs.move.move_and_click(item['x'], item['y'], 3, 3, 'right')
+    curr_pos = pyautogui.position()
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_right_click_menu()
+    max_canvas_y = canvas['yMax'] - canvas['yMin']
+    # if i right click something that is low on the screen, the menu would open off the screen so the game pushes it up
+    additional_offset = 0
+    while True:
+        qh.query_backend()
+        if qh.get_right_click_menu():
+            if curr_pos[1] + qh.get_right_click_menu()['height'] > max_canvas_y:
+                print('too big')
+                # the extra "- 15" is because this doesnt account for the menu header, which is 15px on a 1080p screen
+                additional_offset = qh.get_right_click_menu()['y'] + 40 - curr_pos[1] - 15
+            entry_data = qh.get_right_click_menu()
+            choose_option_offset = entry_data['height'] - (len(entry_data['entries']) * 15)
+            parsed_entries = reversed(entry_data['entries'])
+            for i, entry in enumerate(parsed_entries):
+                if action.upper() == entry[0].upper() and (in_inv or item['id'] == int(entry[1])):
+                    pyautogui.click()
+                    return True
+            pyautogui.click()
+            return False
+
+
+def right_click_v6(item, action, canvas, in_inv=False):
+    osrs.move.fast_click_v2(item, 'RIGHT')
+    osrs.clock.random_sleep(0.2, 0.21)
     curr_pos = pyautogui.position()
     qh = osrs.queryHelper.QueryHelper()
     qh.set_right_click_menu()
@@ -637,24 +676,25 @@ def interact_with_object(
             if pre_interact:
                 pre_interact()
             if right_click_option is None:
-                osrs.move.fast_click(target_obj[0])
+                osrs.move.instant_click_v2(target_obj[0])
                 last_click = datetime.datetime.now()
             else:
-                success = osrs.move.right_click_v6(target_obj[0], right_click_option, qh.get_canvas(), in_inv=True)
+                success = osrs.move.right_click_v6(target_obj[0], right_click_option, qh.get_canvas())
                 if success:
                     last_click = datetime.datetime.now()
         elif intermediate_tile and qh.get_tiles(intermediate_tile) and not target_obj:
-            osrs.move.fast_click(qh.get_tiles(intermediate_tile))
+            osrs.move.instant_click_v2(qh.get_tiles(intermediate_tile))
 
 
 def go_to_loc(dest_x, dest_y, dest_z=0, right_click=False, exact_tile=False):
-    x_min = dest_x - 2
-    y_min = dest_y - 2
-    x_max = dest_x + 2
-    y_max = dest_y + 2
+    x_min = dest_x - 3
+    y_min = dest_y - 3
+    x_max = dest_x + 3
+    y_max = dest_y + 3
     qh = osrs.queryHelper.QueryHelper()
     qh.set_player_world_location()
     qh.set_canvas()
+    qh.set_tiles({f'{dest_x},{dest_y},{dest_z}'})
     while True:
         qh.query_backend()
         if (x_min <= qh.get_player_world_location('x') <= x_max
@@ -663,6 +703,8 @@ def go_to_loc(dest_x, dest_y, dest_z=0, right_click=False, exact_tile=False):
             break
         elif exact_tile and qh.get_player_world_location('x') == dest_x and qh.get_player_world_location('y') == dest_y:
             break
+        elif qh.get_tiles(f'{dest_x},{dest_y},{dest_z}') and is_clickable(qh.get_tiles(f'{dest_x},{dest_y},{dest_z}')):
+            osrs.move.fast_click(qh.get_tiles(f'{dest_x},{dest_y},{dest_z}'))
         else:
             osrs.move.follow_path(
                 qh.get_player_world_location(), {'x': dest_x, 'y': dest_y, 'z': dest_z},
@@ -686,3 +728,9 @@ def tab_to_varrock():
         elif qh.get_inventory(osrs.item_ids.ItemIDs.VARROCK_TELEPORT.value) and (datetime.datetime.now() - last_tab).total_seconds() > 10:
             osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.VARROCK_TELEPORT.value))
             last_tab = datetime.datetime.now()
+
+
+'''
+will not properly exit when game is over
+
+'''

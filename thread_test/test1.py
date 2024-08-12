@@ -3,4 +3,6 @@ import time
 
 import pyautogui
 import osrs
-osrs.game.use_portal_nexus('barrows')
+osrs.move.interact_with_object(
+        43754, 'x', 1, False
+    )

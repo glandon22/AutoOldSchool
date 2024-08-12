@@ -164,12 +164,15 @@ def equip_item(items):
     qh = osrs.queryHelper.QueryHelper()
     qh.set_equipment()
     qh.set_inventory()
+    clicked = {
+
+    }
     while True:
         qh.query_backend()
         if qh.get_equipment() and set(items).issubset(qh.get_equipment()):
             return
         elif qh.get_inventory():
             for item in qh.get_inventory():
-                if item['id'] in items:
+                if item['id'] in items and (item['id'] not in clicked or (datetime.datetime.now() - clicked[item['id']]).total_seconds() > 1):
                     osrs.move.fast_click(item)
-                    osrs.clock.random_sleep(0.65, 0.66)
+                    clicked[item['id']] = datetime.datetime.now()

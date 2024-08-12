@@ -165,6 +165,27 @@ def withdraw_configured_items(item, game_state: osrs.queryHelper.QueryHelper):
         osrs.clock.sleep_one_tick()
         osrs.keeb.write(str(item['amount']))
         osrs.keeb.press_key('enter')
+
+    if 'consume' in item:
+        qh1 = osrs.queryHelper.QueryHelper()
+        qh1.set_inventory()
+        qh1.set_canvas()
+        for i in range(27):
+            qh1.set_widgets({f"15,3,{i}"})
+        while True:
+            qh1.query_backend()
+            for i in range(27):
+                if qh1.get_widgets(f"15,3,{i}") and qh1.get_widgets(f"15,3,{i}")['itemID'] == item['id']:
+                    res = osrs.move.right_click_v6(
+                        qh1.get_widgets(f"15,3,{i}"),
+                        item['consume'],
+                        qh1.get_canvas(),
+                        in_inv=True
+                    )
+                    if res:
+                        osrs.clock.sleep_one_tick()
+                        return True
+
     return True
 
 
@@ -200,6 +221,23 @@ def withdraw(searches, game_state: osrs.queryHelper.QueryHelper):
                 success = withdraw_items(item, quantities, game_state)
                 if not success:
                     return False
+    return True
+
+
+def withdraw_v2(items, game_state: osrs.queryHelper.QueryHelper):
+    for item in items:
+        if type(item) is dict:
+            success = withdraw_configured_items(item, game_state)
+            if not success:
+                return False
+        else:
+            banked_item = game_state.get_bank(item)
+            if not banked_item:
+                print(f'{ItemIDs(item).name} not found')
+                return False
+            else:
+                osrs.move.fast_click(banked_item)
+
     return True
 
 
@@ -249,21 +287,22 @@ def deposit_items(items: list):
         if 'id' not in item:
             logger.warn('deposit item missing id')
             continue
-        if 'quantity' not in item:
-            logger.warn('deposit item missing quantity')
-            continue
         qh.query_backend()
         inventory = list(filter(lambda inv_item: inv_item['id'] == item['id'], qh.get_inventory()))
         if not inventory:
             logger.warn('requested item to deposit was not found in inventory.')
             continue
         target_item = qh.get_inventory(item['id'])
-        success = osrs.move.right_click_v6(
-            target_item,
-            f'Deposit-{item["quantity"]}',
-            qh.get_canvas(),
-            in_inv=True
-        )
+        success = False
+        if 'quantity' in item:
+            success = osrs.move.right_click_v6(
+                target_item,
+                f'Deposit-{item["quantity"]}',
+                qh.get_canvas(),
+                in_inv=True
+            )
+        else:
+            osrs.move.fast_click(target_item)
         # we are depositing X amount, tell the bank what that amount is
         if success and 'amount' in item:
             while True:
@@ -328,7 +367,7 @@ def set_withdrawl_and_deposit_quantity(value):
             return
 
 
-def banking_handler(params):
+def banking_handler(params, wait_on_deposited_items=True):
     """
     Supports banking in GE, Varrock, Fally, C Wars, Crafting Guild, Camelot
 
@@ -351,6 +390,8 @@ def banking_handler(params):
     ]
     crafting_guild_bank_tile = '2936,3280,0'
     crafting_guild_bank_id = 14886
+    bf_bank_tile = '1948,4956,0'
+    bf_bank_id = 26707
     lum_top_floor_bank_tile = '3208,3221,2'
     lum_top_floor_bank_id = 18491
     draynor_bank_tile = '3091,3245,0'
@@ -368,8 +409,8 @@ def banking_handler(params):
     qh = osrs.queryHelper.QueryHelper()
     qh.set_npcs([*ge_banker_npc_ids, *varr_banker_npc_ids, *fally_banker_npc_ids])
     qh.set_objects(
-        {crafting_guild_bank_tile, c_wars_bank_tile, v_west_bank_tile_1, lum_top_floor_bank_tile, draynor_bank_tile, barb_assault_bank_tile, gnome_strong_bank_tile, ferox_bank_tile},
-        {crafting_guild_bank_id, c_wars_bank_id, v_west_bank_id_1, lum_top_floor_bank_id, draynor_bank_id, barb_assault_bank_id, gnome_strong_bank_id, ferox_bank_id},
+        {bf_bank_tile, crafting_guild_bank_tile, c_wars_bank_tile, v_west_bank_tile_1, lum_top_floor_bank_tile, draynor_bank_tile, barb_assault_bank_tile, gnome_strong_bank_tile, ferox_bank_tile},
+        {bf_bank_id, crafting_guild_bank_id, c_wars_bank_id, v_west_bank_id_1, lum_top_floor_bank_id, draynor_bank_id, barb_assault_bank_id, gnome_strong_bank_id, ferox_bank_id},
         osrs.queryHelper.ObjectTypes.GAME.value
     )
     qh.set_player_world_location()
@@ -381,15 +422,16 @@ def banking_handler(params):
     })
     qh.set_widgets({withdraw_item_widget, withdraw_noted_widget})
     qh.set_bank()
-    last_banker_click = datetime.datetime.now() - datetime.timedelta(hours=1)
     banker_search_duration = datetime.datetime.now()
+    prev_loc = None
+    time_on_same_tile = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
         if (datetime.datetime.now() - banker_search_duration).total_seconds() > 60:
             return {'error': 'No banker.'}
 
         qh.query_backend()
         # Exit Condition: successfully opened the banking interface
-        if qh.get_widgets_v2(WidgetIDs.BANK_ITEM_CONTAINER.value):
+        if qh.get_bank():
             print('Banking interface is open.')
             break
 
@@ -398,14 +440,16 @@ def banking_handler(params):
         if qh.get_npcs():
             all_bank_objects += qh.get_npcs()
         c = osrs.util.find_closest_target(all_bank_objects)
-        if c and osrs.move.is_clickable(c) and (datetime.datetime.now() - last_banker_click).total_seconds() > 13:
-            osrs.move.fast_click(c)
-            osrs.move.fast_click(c)
-            last_banker_click = datetime.datetime.now()
+        if c and osrs.move.is_clickable(c) and (datetime.datetime.now() - time_on_same_tile).total_seconds() > 1.2:
+            osrs.move.fast_click_v2(c)
+
+        if prev_loc != qh.get_player_world_location():
+            prev_loc = qh.get_player_world_location()
+            time_on_same_tile = datetime.datetime.now()
+
 
     dumped_inv = False
     dumped_equipment = False
-    osrs.clock.random_sleep(1, 1.1)
     # Deposit desired items
     wait_time = datetime.datetime.now()
     while True:
@@ -428,7 +472,8 @@ def banking_handler(params):
                 and ('dump_equipment' not in params or not params['dump_equipment'] or dumped_equipment):
             break
     # sleep for a second so that all the items i deposited will register and be return on query
-    osrs.clock.random_sleep(1, 1.1)
+    if wait_on_deposited_items:
+        osrs.clock.random_sleep(1, 1.1)
     qh.query_backend()
     # set the default withdrawal and deposit value for banking
     if 'set_quantity' in params:
@@ -441,13 +486,23 @@ def banking_handler(params):
         if not success:
             print('Failed to withdraw items successfully.')
             return False
+    if 'withdraw_v2' in params:
+        success = withdraw_v2(params['withdraw_v2'], qh)
+        if not success:
+            print('Failed to withdraw items successfully.')
+            return False
     if 'search' in params:
         success = search_and_withdraw(params['search'], qh)
         if not success:
             print('Failed to search and withdraw items successfully.')
             exit('failed')
             return False
-    osrs.keeb.press_key('esc')
+    while True:
+        qh.query_backend()
+        if not qh.get_bank():
+            break
+        else:
+            osrs.keeb.press_key('esc')
     return True
 
 
