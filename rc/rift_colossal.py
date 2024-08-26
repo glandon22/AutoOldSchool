@@ -263,6 +263,25 @@ def find_fire_altar():
             osrs.move.go_to_loc(2581, 4841)
 
 
+# mind altar and law altar exits are not visible from crafting loc
+def go_to_altar_exits():
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_player_world_location()
+    qh.set_tiles({
+        '2464,4823,0',
+        '2790,4832,0'
+    })
+    altar_info = determine_altar()
+    qh.query_backend()
+    # mind
+    if altar_info['altar'] == 34761 and qh.get_player_world_location('y') >= 4833 and qh.get_tiles('2790,4832,0'):
+        osrs.move.fast_click(qh.get_tiles('2790,4832,0'))
+
+    # law
+    elif altar_info['altar'] == 34767 and qh.get_player_world_location('y') >= 4824 and qh.get_tiles('2464,4823,0'):
+        osrs.move.fast_click(qh.get_tiles('2464,4823,0'))
+
+
 def craft_runes():
     # if you spawn in to the north side of the cosmic altar you cant see the actual altar
     crafting_info = determine_altar()
@@ -287,7 +306,7 @@ def craft_runes():
     )
     osrs.move.interact_with_object(
         crafting_info['exit'], 'x', 1, False,
-        custom_exit_function=in_game_arena, obj_dist=23, intermediate_tile='2464,4823,0'
+        custom_exit_function=in_game_arena, obj_dist=23, pre_interact=go_to_altar_exits
     )
 
 
