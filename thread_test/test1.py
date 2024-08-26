@@ -3,6 +3,7 @@ import time
 
 import pyautogui
 import osrs
-osrs.move.interact_with_object(
-        43754, 'x', 1, False
-    )
+qh = osrs.queryHelper.QueryHelper()
+qh.set_inventory()
+qh.query_backend()
+print(qh.get_inventory())

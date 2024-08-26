@@ -432,14 +432,14 @@ class QueryHelper:
         if item:
             if 'equipment' in self.game_data:
                 for equipment in self.game_data['equipment']:
-                    if equipment - 512 == int(item):
+                    if equipment - 2048 == int(item):
                         return True
                 return False
             else:
                 return False
         return 'equipment' in self.game_data \
                and self.game_data['equipment'] \
-               and [item - 512 for item in self.game_data['equipment']]
+               and [item - 2048 for item in self.game_data['equipment']]
 
     def set_canvas(self):
         self.query['canvas'] = True

@@ -370,6 +370,13 @@ class Loot:
             LootConfig(item_ids.ItemIDs.SHARK.value, 1),
             LootConfig(item_ids.ItemIDs.UGTHANKI_KEBAB.value, 1),
             LootConfig(item_ids.ItemIDs.TUNA_POTATO.value, 1),
+
+
+            LootConfig(item_ids.ItemIDs.DRAGON_DEFENDER.value, 1),
+            LootConfig(item_ids.ItemIDs.RIGHT_SKULL_HALF.value, 1),
+            LootConfig(item_ids.ItemIDs.BOTTOM_OF_SCEPTRE.value, 1),
+            LootConfig(item_ids.ItemIDs.TOP_OF_SCEPTRE.value, 1),
+            LootConfig(item_ids.ItemIDs.LEFT_SKULL_HALF.value, 1),
         ]
         return config
 

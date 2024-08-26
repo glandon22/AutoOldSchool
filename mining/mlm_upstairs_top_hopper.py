@@ -114,6 +114,7 @@ def descended_ladder():
 
 
 def ascended_ladder():
+    osrs.keeb.press_key('esc')
     qh = osrs.queryHelper.QueryHelper()
     qh.set_player_world_location()
     qh.query_backend()
@@ -167,7 +168,6 @@ def collect_ore():
                 if res:
                     last_deposit_box_click = datetime.datetime.now()
 
-osrs.move.go_to_loc(3761,5672)
 while True:
     osrs.game.break_manager_v4({
         'intensity': 'high',
@@ -177,8 +177,8 @@ while True:
     should_collect = mine_ore()
     logger.info('depositing ore')
     osrs.move.interact_with_object(
-        26674, 'y', 5673, False, custom_exit_function=deposit_ore, timeout=10,
-        obj_tile={'x': 3755, 'y': 5677, 'z': 0}, right_click_option='Deposit'
+        26674, 'y', 5673, False, custom_exit_function=deposit_ore,
+        obj_tile={'x': 3755, 'y': 5677, 'z': 0}
     )
     osrs.clock.random_sleep(1, 1.01)
     if should_collect:

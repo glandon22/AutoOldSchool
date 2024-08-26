@@ -505,7 +505,8 @@ def right_click_v6(item, action, canvas, in_inv=False):
     curr_pos = pyautogui.position()
     qh = osrs.queryHelper.QueryHelper()
     qh.set_right_click_menu()
-    max_canvas_y = canvas['yMax'] - canvas['yMin']
+    max_canvas_y = canvas['yMax']
+    print('cc', canvas)
     print('mcy', max_canvas_y)
     # if i right click something that is low on the screen, the menu would open off the screen so the game pushes it up
     additional_offset = 0

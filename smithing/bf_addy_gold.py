@@ -166,6 +166,9 @@ def confirm_bars():
         return True
 
 
+def equip():
+    osrs.player.equip_item([osrs.item_ids.ItemIDs.ICE_GLOVES.value])
+
 def main():
     trip_count = 1
     qh = osrs.queryHelper.QueryHelper()
@@ -188,10 +191,9 @@ def main():
         bank(trip_count % 3, qh)
         put_ore_on_belt(trip_count, qh)
         osrs.move.go_to_loc(1939, 4963)
-        osrs.player.equip_item([osrs.item_ids.ItemIDs.ICE_GLOVES.value])
         osrs.move.interact_with_object(
             9092, 'x', 1, False,
-            custom_exit_function=confirm_bars, right_click_option='Take', timeout=2
+            custom_exit_function=confirm_bars, right_click_option='Take', timeout=2, pre_interact=equip
         )
         trip_count += 1
 

@@ -50,6 +50,30 @@ rifts = {
     43705, 43706, 43707, 43708, 43709, 43710, 43711, 43712
 }
 
+def repair_pouches():
+    # have runes for spell s[rite-d =568
+    main_chat_widget = '162,34'
+    mage_widget = '75,14'
+    spellbook_widget = '161,65'
+    contact_widget = '218,108'
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_widgets({mage_widget, spellbook_widget, contact_widget, main_chat_widget})
+    while True:
+        qh.query_backend()
+        if qh.get_widgets(mage_widget):
+            osrs.move.click(qh.get_widgets(mage_widget))
+            osrs.clock.random_sleep(3, 3.1)
+            osrs.keeb.press_key('esc')
+            break
+        elif qh.get_widgets(spellbook_widget) and qh.get_widgets(spellbook_widget)['spriteID'] != 1027:
+            osrs.keeb.press_key('f6')
+        elif qh.get_widgets(contact_widget) \
+                and not qh.get_widgets(contact_widget)['isHidden'] \
+                and qh.get_widgets(contact_widget)['spriteID'] == 568:
+            osrs.move.click(qh.get_widgets(contact_widget))
+    osrs.player.dialogue_handler(["Can you repair my pouches?", "Thanks."])
+
+
 def game_active():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_widgets({game_active_widget})
@@ -106,7 +130,7 @@ def mine_guardian_fragments():
     while True:
         qh.query_backend()
         if (qh.get_inventory(osrs.item_ids.ItemIDs.GUARDIAN_FRAGMENTS.value)
-                and qh.get_inventory(osrs.item_ids.ItemIDs.GUARDIAN_FRAGMENTS.value)['quantity'] >= 240):
+                and qh.get_inventory(osrs.item_ids.ItemIDs.GUARDIAN_FRAGMENTS.value)['quantity'] >= 300):
             return
         elif (qh.get_widgets(game_active_widget)
               and not qh.get_is_mining()
@@ -134,14 +158,14 @@ def craft_guardian_essence():
         43754, 'x', 3636, False,
         custom_exit_function=completed_essence_crafting
     )
-    '''osrs.move.interact_with_object(
+    osrs.move.interact_with_object(
         43754, 'x', 3636, False,
         custom_exit_function=completed_essence_crafting
     )
     osrs.move.interact_with_object(
         43754, 'x', 3636, False,
         custom_exit_function=completed_essence_crafting
-    )'''
+    )
 
 '''
 death 34770 exit -> 34758
@@ -253,17 +277,17 @@ def craft_runes():
         crafting_info['altar'], 'x', 1, False,
         custom_exit_function=crafted_inv, obj_dist=20
     )
-    '''osrs.move.interact_with_object(
+    osrs.move.interact_with_object(
         crafting_info['altar'], 'x', 1, False,
         custom_exit_function=crafted_inv, obj_dist=20
     )
     osrs.move.interact_with_object(
         crafting_info['altar'], 'x', 1, False,
         custom_exit_function=crafted_inv, obj_dist=20
-    )'''
+    )
     osrs.move.interact_with_object(
         crafting_info['exit'], 'x', 1, False,
-        custom_exit_function=in_game_arena, obj_dist=23
+        custom_exit_function=in_game_arena, obj_dist=23, intermediate_tile='2464,4823,0'
     )
 
 
@@ -396,7 +420,7 @@ def get_points():
         guardian_power = parse_guardian_power_level()
         qh.query_backend()
         print('gp',guardian_power)
-        if guardian_power > 91 or not qh.get_inventory(osrs.item_ids.ItemIDs.GUARDIAN_FRAGMENTS.value):
+        if guardian_power > 88 or not qh.get_inventory(osrs.item_ids.ItemIDs.GUARDIAN_FRAGMENTS.value):
             while True:
                 if not game_active():
                     return
@@ -409,3 +433,4 @@ while True:
     })
     main()
     get_points()
+    repair_pouches()

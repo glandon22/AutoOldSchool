@@ -116,7 +116,7 @@ def login_v4():
         canvas = qh.get_canvas()
         x = math.floor((canvas['xMax'] + canvas['xMin']) / 2)
         # Game image is a fixed size, only black space is added horizontally as UI scales
-        y = canvas['yMin'] + 251
+        y = math.floor((canvas['yMin'] + 500) / 2)
         # add this click below to clear any unexpected interfaces. i.e. world was full
         osrs.move.click({'x': x, 'y': y + 50})
         osrs.move.click({'x': x, 'y': y})
@@ -328,6 +328,7 @@ def break_manager_v4(script_config):
     """
     current_time = datetime.datetime.now()
     timings = config['{}_intensity_script'.format(script_config['intensity'])]
+    print('zz', config)
     # Initialize timings on script start
     if not config['timings']['script_start']:
         set_timings(timings, current_time)

@@ -19,8 +19,8 @@ slayer task boolean
 '''
 # yak SUPER COMBATS 10 20
 
-npc_to_kill = 'jungle spider'
-pot = 'RANGING_POTION'
+npc_to_kill = 'ankou'
+pot = 'SUPER_COMBATS'
 pot_interval = 10
 min_health = 12
 ss_x = -1
@@ -78,9 +78,10 @@ def main():
     qh.set_tiles({f'{ss_x},{ss_y},{ss_z}'})
     qh.set_player_world_location()
     last_pot = datetime.datetime.now() - datetime.timedelta(hours=1)
+    loot_handler = osrs.loot.Loot()
     while True:
         qh.query_backend()
-
+        loot_handler.retrieve_loot()
         returning_to_safespot = return_to_safe_spot(qh)
         # confirm we are safespotting
         if returning_to_safespot:
@@ -132,3 +133,4 @@ def main():
             for i in range(5):
                 osrs.keeb.press_key('space')
                 osrs.clock.sleep_one_tick()
+main()
