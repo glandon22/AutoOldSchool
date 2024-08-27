@@ -148,6 +148,7 @@ def dump_items():
 
 
 def withdraw_configured_items(item, game_state: osrs.queryHelper.QueryHelper):
+    print('g', item)
     banked_item = game_state.get_bank(item['id'])
     if not banked_item:
         print(f'{ItemIDs(item).name} not found')
@@ -172,10 +173,11 @@ def withdraw_configured_items(item, game_state: osrs.queryHelper.QueryHelper):
         qh1.set_canvas()
         for i in range(27):
             qh1.set_widgets({f"15,3,{i}"})
+        search_id = item['consume_id_override'] if 'consume_id_override' in item else item['id']
         while True:
             qh1.query_backend()
             for i in range(27):
-                if qh1.get_widgets(f"15,3,{i}") and qh1.get_widgets(f"15,3,{i}")['itemID'] == item['id']:
+                if qh1.get_widgets(f"15,3,{i}") and qh1.get_widgets(f"15,3,{i}")['itemID'] == search_id:
                     res = osrs.move.right_click_v6(
                         qh1.get_widgets(f"15,3,{i}"),
                         item['consume'],

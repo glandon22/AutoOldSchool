@@ -687,6 +687,53 @@ def interact_with_object(
             osrs.move.instant_click_v2(qh.get_tiles(intermediate_tile))
 
 
+def interact_with_multiple_objects(
+        obj_ids, coord_type, coord_value, greater_than,
+        intermediate_tile=None, obj_type='game', timeout=0.1, custom_exit_function=None, custom_exit_function_arg=None,
+        pre_interact=None, obj_tile=None, right_click_option=None
+):
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_player_world_location()
+    qh.set_canvas()
+    qh.set_objects_v2(obj_type, obj_ids)
+    last_click = datetime.datetime.now() - datetime.timedelta(hours=1)
+    if intermediate_tile:
+        qh.set_tiles({intermediate_tile})
+    while True:
+        qh.query_backend()
+        target_obj = qh.get_objects_v2(obj_type)
+        closest = False
+        if target_obj and obj_tile:
+            target_obj = list(
+                filter(lambda obj: obj['x_coord'] == obj_tile['x'] and obj['y_coord'] == obj_tile['y'], target_obj)
+            )
+        if target_obj:
+            closest = osrs.util.find_closest_target(target_obj)
+        if not custom_exit_function:
+            if greater_than and qh.get_player_world_location(coord_type) >= coord_value:
+                return
+            elif not greater_than and qh.get_player_world_location(coord_type) <= coord_value:
+                return
+        else:
+            if custom_exit_function_arg is not None and custom_exit_function(custom_exit_function_arg):
+                return True
+            elif custom_exit_function_arg is None and custom_exit_function():
+                return True
+
+        if closest and (datetime.datetime.now() - last_click).total_seconds() > timeout:
+            if pre_interact:
+                pre_interact()
+            if right_click_option is None:
+                osrs.move.instant_click_v2(closest)
+                last_click = datetime.datetime.now()
+            else:
+                success = osrs.move.right_click_v6(closest, right_click_option, qh.get_canvas())
+                if success:
+                    last_click = datetime.datetime.now()
+        elif intermediate_tile and qh.get_tiles(intermediate_tile) and not target_obj:
+            osrs.move.instant_click_v2(qh.get_tiles(intermediate_tile))
+
+
 def go_to_loc(dest_x, dest_y, dest_z=0, right_click=False, exact_tile=False):
     x_min = dest_x - 3
     y_min = dest_y - 3

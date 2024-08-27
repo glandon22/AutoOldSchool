@@ -113,7 +113,7 @@ def toggle_auto_retaliate(state):
             last_widget_click = datetime.datetime.now()
 
 
-def dialogue_handler(desired_replies=None):
+def dialogue_handler(desired_replies=None, timeout=3):
     main_chat_widget = '162,34'
     npc_chat_head_widget = '231,4'
     player_chat_widget = '217,6'
@@ -140,7 +140,7 @@ def dialogue_handler(desired_replies=None):
                 not qh.get_widgets(main_chat_widget)
                 or (qh.get_widgets(main_chat_widget) and qh.get_widgets(main_chat_widget)['isHidden'])
         ):
-            if (datetime.datetime.now() - dialogue_last_seen).total_seconds() > 3:
+            if (datetime.datetime.now() - dialogue_last_seen).total_seconds() > timeout:
                 return had_dialogue
         else:
             print('here')

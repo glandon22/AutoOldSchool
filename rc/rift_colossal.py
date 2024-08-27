@@ -298,12 +298,12 @@ def find_altar(active_rifts):
         43704,  # fire
         43712,  # law
         43711,  # nat
-        43703,  # earth
+        #43703,  # earth
         #43702,  # water
         43710,  # cosmic
         43706,  # chaos
         #43701,  # air
-        43705,  # mind
+        #43705,  # mind
         43709,  # body
     ]
     for altar in altar_preferences:
