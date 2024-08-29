@@ -143,7 +143,7 @@ def dialogue_handler(desired_replies=None, timeout=3):
             if (datetime.datetime.now() - dialogue_last_seen).total_seconds() > timeout:
                 return had_dialogue
         else:
-            print('here')
+            print('dialogue box is open.')
             dialogue_last_seen = datetime.datetime.now()
 
         if desired_replies:

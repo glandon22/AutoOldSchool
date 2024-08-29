@@ -34,7 +34,7 @@ def repair_pouches():
                 and not qh.get_widgets(contact_widget)['isHidden'] \
                 and qh.get_widgets(contact_widget)['spriteID'] == 568:
             osrs.move.click(qh.get_widgets(contact_widget))
-    osrs.player.dialogue_handler(["Can you repair my pouches?", "Thanks."], timeout=3)
+    osrs.player.dialogue_handler(["Can you repair my pouches?", "Thanks."], timeout=0.6)
 
 
 def cast_magic_imbue():

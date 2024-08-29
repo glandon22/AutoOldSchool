@@ -506,15 +506,12 @@ def right_click_v6(item, action, canvas, in_inv=False):
     qh = osrs.queryHelper.QueryHelper()
     qh.set_right_click_menu()
     max_canvas_y = canvas['yMax']
-    print('cc', canvas)
-    print('mcy', max_canvas_y)
     # if i right click something that is low on the screen, the menu would open off the screen so the game pushes it up
     additional_offset = 0
     while True:
         qh.query_backend()
         if qh.get_right_click_menu():
             if curr_pos[1] + qh.get_right_click_menu()['height'] > max_canvas_y:
-                print('too big')
                 # the extra "- 15" is because this doesnt account for the menu header, which is 15px on a 1080p screen
                 additional_offset = qh.get_right_click_menu()['y'] + 40 - curr_pos[1] - 15
             entry_data = qh.get_right_click_menu()

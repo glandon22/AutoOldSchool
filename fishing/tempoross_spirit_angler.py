@@ -48,7 +48,7 @@ def determine_side():
         )
         qh.query_backend()
         if qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, bucket_bin_id) and qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, water_spout_id):
-            logger.info('On ship, found buckets and ropes.')
+            logger.info('On ship, found buckets.')
             # there are multiple places to get buckets
             buckets = osrs.util.find_closest_target(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, bucket_bin_id))
             tap = qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, water_spout_id)[0]
@@ -64,19 +64,14 @@ def determine_side():
                 return {'side': 'R', 'x': buckets['x_coord'], 'y': buckets['y_coord']}
 
 
-def have_ropes():
-    qh = osrs.queryHelper.QueryHelper()
-    qh.set_inventory()
-    qh.query_backend()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.ROPE.value):
-        return True
-
-
 def have_buckets():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.BUCKET.value) or qh.get_inventory(osrs.item_ids.ItemIDs.BUCKET_OF_WATER.value):
+    if (
+            osrs.inv.get_item_quantity_in_inv(qh.get_inventory(), osrs.item_ids.ItemIDs.BUCKET.value) +
+            osrs.inv.get_item_quantity_in_inv(qh.get_inventory(), osrs.item_ids.ItemIDs.BUCKET_OF_WATER.value) >= 2
+    ):
         return True
 
 
@@ -152,9 +147,6 @@ def have_tethered():
     elif 7211 in qh.get_spot_anims() or 534 in qh.get_spot_anims():
         logger.warn('failed to tether, washed.')
         return True
-    elif not qh.get_inventory(osrs.item_ids.ItemIDs.ROPE.value):
-        logger.warn('lost my rope')
-        return True
 
 
 def have_untethered():
@@ -167,16 +159,12 @@ def have_untethered():
 
 
 def tether_handler_v2(area_info):
-    rope = '954'
     qh = osrs.queryHelper.QueryHelper()
     qh.set_npcs_by_name(['first mate deri', 'captain dudi', 'first mate peri', 'captain pudi'])
     qh.set_inventory()
     qh.set_spot_anims()
     qh.set_player_world_location()
     qh.query_backend()
-    if not qh.get_inventory(rope):
-        logger.info('no rope in inv, not trying to tether')
-        return
     if qh.get_npcs_by_name():
         deri = qh.get_npcs_by_name()[0]
         if 'overheadText' in deri and 'drawing in water' in deri['overheadText']:
@@ -250,6 +238,8 @@ def fish_catching_handler(qh, important_area_tiles, area_info):
             continue
         if qh.get_interating_with():
             return
+        if 3136 <= qh.get_player_world_location('x') <= 3163 and 2835 <= qh.get_player_world_location('y') <= 2845:
+            return logger.info('game is over')
         if qh.get_npcs_by_name():
             closest = osrs.util.find_closest_target(qh.get_npcs_by_name())
             # if the fish spot is not clickable, this will fall through and click a tile to get closer to the spots
@@ -296,10 +286,6 @@ def tempoross_handler():
     bucket_of_water_id = '1929'
     bucket_id = '1925'
     area_info = determine_side()
-    logger.info('Grabbing ropes.')
-    osrs.move.interact_with_object(
-        40965, 'x', 1, False, custom_exit_function=have_ropes
-    )
     important_area_tiles = build_tiles(area_info)
     qh = osrs.queryHelper.QueryHelper()
     qh.set_is_fishing()
@@ -330,8 +316,7 @@ def tempoross_handler():
             logger.info('tempoross down, game is over')
             return leave_game()
 
-
-        if tempoross_state['energy'] and tempoross_state['energy'] < 7:
+        if 'energy' in tempoross_state and type(tempoross_state['energy']) is int and tempoross_state['energy'] < 7:
             logger.info('Spirit pool is nearly active, heading there.')
             fish_spirit_pool(important_area_tiles)
             continue
@@ -468,18 +453,6 @@ def fish_spirit_pool(important_area_tiles):
                 last_pool_click = datetime.datetime.now()
 
 
-def empty_inv(qh):
-    logger.info('cleaning up my inventory')
-    bucket_of_water_id = '1929'
-    bucket_id = '1925'
-    rope_id = '954'
-    if qh.get_inventory() and len(qh.get_inventory()) > 1:
-        for item in qh.get_inventory():
-            if str(item['id']) in [bucket_of_water_id, bucket_id, rope_id]:
-                osrs.move.right_click_v5(item, 'Drop', in_inv=True)
-        osrs.clock.sleep_one_tick()
-
-
 script_config = {
     'intensity': 'high',
     'login': False,
@@ -495,12 +468,10 @@ def main():
         qh.query_backend()
         if 3125 <= qh.get_player_world_location('x') <= 3135:
             logger.info('waiting for game')
-            #empty_inv(qh)
             continue
         elif qh.get_player_world_location('x') > 5000:
             tempoross_handler()
         else:
-            #empty_inv(qh)
             osrs.game.break_manager_v4(script_config)
             click_ladder()
 
