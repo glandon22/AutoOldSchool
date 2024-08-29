@@ -185,7 +185,6 @@ def withdraw_configured_items(item, game_state: osrs.queryHelper.QueryHelper):
                         in_inv=True
                     )
                     if res:
-                        osrs.clock.sleep_one_tick()
                         return True
 
     return True
