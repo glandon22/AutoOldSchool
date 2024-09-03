@@ -34,7 +34,7 @@ def repair_pouches():
                 and not qh.get_widgets(contact_widget)['isHidden'] \
                 and qh.get_widgets(contact_widget)['spriteID'] == 568:
             osrs.move.click(qh.get_widgets(contact_widget))
-    osrs.player.dialogue_handler(["Can you repair my pouches?", "Thanks."], timeout=0.6)
+    osrs.player.dialogue_handler(["Can you repair my pouches?", "Thanks."], timeout=3)
 
 
 def cast_magic_imbue():
@@ -190,7 +190,7 @@ def tele_to_crafting_guild():
 
 
 def main(goal_lvl=99):
-    iters = 1
+    iters = 0
     while True:
         osrs.game.break_manager_v4({
             'intensity': 'high',
