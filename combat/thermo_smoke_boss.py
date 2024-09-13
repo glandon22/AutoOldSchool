@@ -51,7 +51,7 @@ def main():
         osrs.combat_utils.pot_handler(qh, {})
         osrs.combat_utils.prayer_handler(qh, ['redemption'])
         # remove myself from the players list
-        filtered_players = [] if not qh.get_players() else list(filter(lambda player: player.lower() != 'greazydonkey', qh.get_players()))
+        filtered_players = [] if not qh.get_players() else list(filter(lambda player: player['name'].lower() != 'greazydonkey', qh.get_players()))
         if not filtered_players:
             last_player_sighting = datetime.datetime.now()
         else:
