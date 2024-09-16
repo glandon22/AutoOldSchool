@@ -3,8 +3,6 @@ import pyautogui
 import osrs.util
 from osrs import queryHelper, item_ids, dev
 
-logger = dev.instantiate_logger()
-
 
 class LootConfig:
     def __init__(self, item_id, priority, stackable=False, min_quantity=1, alch=False, consume=False):
@@ -101,7 +99,7 @@ class Loot:
 
     def add_inv_config_items(self, items: list[InvConfig]):
         if type(items) is not list:
-            logger.warn('Tried to add loot inv config items but input was not a list.')
+            dev.logger.warn('Tried to add loot inv config items but input was not a list.')
             return False
 
         for item in items:
@@ -109,7 +107,7 @@ class Loot:
 
     def add_items(self, items: list[LootConfig]):
         if type(items) is not list:
-            logger.warn('Tried to add loot config items but input was not a list.')
+            dev.logger.warn('Tried to add loot config items but input was not a list.')
             return False
 
         for item in items:
@@ -132,7 +130,7 @@ class Loot:
         time_since_last_loot = datetime.datetime.now()
         while True:
             if (datetime.datetime.now() - time_since_last_loot).total_seconds() > 15:
-                logger.warn('Looter timed out trying to get an item.')
+                dev.logger.warn('Looter timed out trying to get an item.')
                 return False
             found_loot = False
             qh = queryHelper.QueryHelper()
@@ -156,7 +154,7 @@ class Loot:
                 # dont pick up small amouts of something, i.e. coins
                 if item['quantity'] < item_config['min_quantity']:
                     continue
-                if len(qh.get_inventory()) == 28:
+                if qh.get_inventory() and len(qh.get_inventory()) == 28:
                     space_made = self.handle_full_inv(qh, item_config)
                     if not space_made:
                         return False
@@ -290,6 +288,8 @@ class Loot:
             LootConfig(item_ids.ItemIDs.MYSTIC_ROBE_BOTTOM.value, 47, alch=True),
             LootConfig(item_ids.ItemIDs.BATTLESTAFF.value + 1, 8, stackable=True),
             LootConfig(item_ids.ItemIDs.RED_DHIDE_BODY.value, 6, alch=True),
+            LootConfig(item_ids.ItemIDs.GREEN_DHIDE_BODY.value, 4, alch=True),
+            LootConfig(item_ids.ItemIDs.GREEN_DHIDE_CHAPS.value, 2, alch=True),
             LootConfig(item_ids.ItemIDs.OCCULT_NECKLACE.value, 800,),
 
             LootConfig(item_ids.ItemIDs.GRANITE_MAUL.value, 300),
@@ -377,6 +377,11 @@ class Loot:
             LootConfig(item_ids.ItemIDs.BOTTOM_OF_SCEPTRE.value, 1),
             LootConfig(item_ids.ItemIDs.TOP_OF_SCEPTRE.value, 1),
             LootConfig(item_ids.ItemIDs.LEFT_SKULL_HALF.value, 1),
+            LootConfig(item_ids.ItemIDs.CRYSTAL_SHARD.value, 1),
+            LootConfig(item_ids.ItemIDs.CRYSTAL_SHARDS.value, 1),
+            LootConfig(item_ids.ItemIDs.ENHANCED_CRYSTAL_TELEPORT_SEED.value, 1),
+            LootConfig(item_ids.ItemIDs.SOUL_FRAGMENT.value, 1),
+            LootConfig(item_ids.ItemIDs.SOUL_FRAGMENT_25201.value, 1),
         ]
         return config
 

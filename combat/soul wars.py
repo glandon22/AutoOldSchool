@@ -29,6 +29,7 @@ import osrs.queryHelper
 
 red_table_id = 40463
 blue_table_id = 40462
+partner = 'UtahDogs'
 
 
 def wait_for_game():
@@ -40,6 +41,16 @@ def wait_for_game():
         if qh.get_player_world_location('x') > 4000:
             osrs.dev.logger.info('I am in the game arena.')
             break
+
+
+def in_game():
+    osrs.dev.logger.info('Waiting to enter the game arena.')
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_player_world_location()
+    qh.query_backend()
+    if qh.get_player_world_location('x') > 4000:
+        osrs.dev.logger.info('I am in the game arena.')
+        return True
 
 
 def determine_side():
@@ -158,6 +169,40 @@ def run_to_center(side, anchor):
     osrs.dev.logger.info('Arrived at central obelisk.')
 
 
+def start_game():
+    osrs.move.go_to_loc(2219, 2842)
+    osrs.move.interact_with_object(41200, 'x', 2220, True, obj_type='wall')
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_players()
+    qh.set_widgets({'492,6'})
+    qh.set_canvas()
+    last_challenge = datetime.datetime.now() - datetime.timedelta(hours=1)
+    last_accept = datetime.datetime.now() - datetime.timedelta(hours=1)
+    while True:
+        qh.query_backend()
+        if in_game():
+            return
+        elif qh.get_widgets('492,6'):
+            if (datetime.datetime.now() - last_accept).total_seconds() > 5:
+                osrs.move.click(qh.get_widgets('492,6'))
+                last_accept = datetime.datetime.now()
+        elif qh.get_players() and (datetime.datetime.now() - last_challenge).total_seconds() > 5:
+            partner_loc = list(
+                filter(
+                    lambda player: player['name'].lower() == partner.lower() and 2220 <= player['worldPoint']['x'] <= 2229,
+                    qh.get_players()
+                )
+            )
+            if partner_loc:
+                res = osrs.move.right_click_v6(
+                    partner_loc[0],
+                    'Challenge',
+                    qh.get_canvas(),
+                    in_inv=True
+                )
+                if res:
+                    last_challenge = datetime.datetime.now()
+
 def get_first_capture(side, anchor):
     lookup = {
         'red': {
@@ -258,21 +303,22 @@ def get_second_capture(side, anchor):
 
 
 def main_active():
-    wait_for_game()
-    side = determine_side()
-    anchor = determine_anchor(side)
-    exit_starting_area(side, anchor)
-    osrs.dev.logger.info('Exited starting area.')
-    run_to_ghosts(side, anchor)
-    kill_ghost()
-    get_first_capture(side, anchor)
-    run_to_center(side, anchor)
-    # use soul frags on obelisk
-    osrs.move.interact_with_object(
-        40449, 'z', 3, True, custom_exit_function=used_frags
-    )
-    capture_center(side)
-    get_second_capture(side, anchor)
+    while True:
+        start_game()
+        side = determine_side()
+        anchor = determine_anchor(side)
+        exit_starting_area(side, anchor)
+        osrs.dev.logger.info('Exited starting area.')
+        run_to_ghosts(side, anchor)
+        kill_ghost()
+        get_first_capture(side, anchor)
+        run_to_center(side, anchor)
+        # use soul frags on obelisk
+        osrs.move.interact_with_object(
+            40449, 'z', 3, True, custom_exit_function=used_frags
+        )
+        capture_center(side)
+        get_second_capture(side, anchor)
 
 
 def game_over(widgets):
@@ -302,31 +348,24 @@ def main_passive():
     qh.set_objects_v2('game', bandage_tables)
     last_bandage_click = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
-        qh.query_backend()
-        if qh.get_widgets(take_bandage_widget):
-            osrs.dev.logger.info('Being prompted to take a bandage.')
-            osrs.keeb.press_key('space')
-        elif qh.get_objects_v2('game') and (datetime.datetime.now() - last_bandage_click).total_seconds() > 30:
-            osrs.dev.logger.info('Taking a bandage.')
-            osrs.move.click(qh.get_objects_v2('game')[0])
-            last_bandage_click = datetime.datetime.now()
-        elif game_over(qh.get_widgets()):
-            osrs.dev.logger.info('Active player captured both sides, forfeiting.')
-            osrs.move.interact_with_multiple_objects(
-                {40460, 40461}, 'x', 4000, False, right_click_option='Leave',
-                pre_interact=lambda: osrs.keeb.write('1'), timeout=1
-            )
-            return
+        start_game()
+        while True:
+            qh.query_backend()
+            if qh.get_widgets(take_bandage_widget):
+                osrs.dev.logger.info('Being prompted to take a bandage.')
+                osrs.keeb.press_key('space')
+            elif qh.get_objects_v2('game') and (datetime.datetime.now() - last_bandage_click).total_seconds() > 15:
+                osrs.dev.logger.info('Taking a bandage.')
+                osrs.move.click(qh.get_objects_v2('game')[0])
+                last_bandage_click = datetime.datetime.now()
+            elif game_over(qh.get_widgets()):
+                osrs.dev.logger.info('Active player captured both sides, forfeiting.')
+                osrs.move.interact_with_multiple_objects(
+                    {40460, 40461}, 'x', 4000, False, right_click_option='Leave',
+                    pre_interact=lambda: osrs.keeb.write('1'), timeout=1
+                )
+                break
 
 
-
-
-
-
+#main_active()
 main_passive()
-
-'''
-
-
-
-'''

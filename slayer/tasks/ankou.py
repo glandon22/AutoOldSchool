@@ -5,7 +5,7 @@ import osrs
 from osrs.item_ids import ItemIDs
 from slayer import transport_functions
 from combat import slayer_killer
-from slayer.tasks import gear
+from slayer.utils import bank
 
 varrock_tele_widget_id = '218,23'
 
@@ -29,13 +29,26 @@ supplies = [
             ],
             'quantity': '1'
         },
-        ItemIDs.KARAMJA_GLOVES_3.value,
+        ItemIDs.KARAMJA_GLOVES_4.value,
         {
             'id': ItemIDs.MONKFISH.value,
             'quantity': 'All'
         },
     ]
-equipment = gear.pure_melee['equipment']
+
+equipment = [
+    {'id': ItemIDs.DRAGON_DEFENDER.value, 'consume': 'Wield'},
+    {'id': ItemIDs.FIRE_CAPE.value, 'consume': 'Wear'},
+    {'id': ItemIDs.SLAYER_HELMET_I.value, 'consume': 'Wear'},
+    {'id': ItemIDs.BARROWS_GLOVES.value, 'consume': 'Wear'},
+    {'id': ItemIDs.BRIMSTONE_RING.value, 'consume': 'Wear'},
+    {'id': ItemIDs.DRAGON_BOOTS.value, 'consume': 'Wear'},
+    {'id': ItemIDs.BANDOS_CHESTPLATE.value, 'consume': 'Wear'},
+    {'id': ItemIDs.BANDOS_TASSETS.value, 'consume': 'Wear'},
+    {'id': ItemIDs.AMULET_OF_FURY.value, 'consume': 'Wear'},
+    {'id': ItemIDs.OSMUMTENS_FANG.value, 'consume': 'Wield'},
+    {'id': ItemIDs.HOLY_BLESSING.value, 'consume': 'Equip'},
+]
 
 banking_config_equipment = {
     'dump_inv': True,
@@ -86,22 +99,7 @@ def main():
     qh.set_inventory()
     task_started = False
     while True:
-        qh.query_backend()
-        print('starting function')
-        if not task_started:
-            success = osrs.bank.banking_handler(banking_config_equipment)
-            if not success:
-                print('failed to withdraw equipment.')
-                return False
-            osrs.clock.sleep_one_tick()
-            qh.query_backend()
-            for item in qh.get_inventory():
-                osrs.move.click(item)
-            qh.query_backend()
-        success = osrs.bank.banking_handler(banking_config_supplies)
-        if not success:
-            print('failed to withdraw supplies.')
-            return False
+        bank(qh, task_started, equipment, supplies)
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
         transport_functions.stronghold_slayer_dungeon_ankou()

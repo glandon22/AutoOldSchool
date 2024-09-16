@@ -1,16 +1,15 @@
-# 2134,9305,0
 import datetime
 
 import osrs
 from osrs.item_ids import ItemIDs
 from slayer import transport_functions
 from combat import slayer_killer
-from slayer.tasks import gear
 from slayer.utils import bank
 
 varrock_tele_widget_id = '218,23'
-fally_tele_widget_id = '218,29'
 
+# for this one i dont want a slayer ring with only one charge,
+# bc i tele to the cave, then to nieve after the task is done
 supplies = [
         ItemIDs.SUPER_ATTACK4.value,
         ItemIDs.SUPER_ATTACK4.value,
@@ -18,17 +17,17 @@ supplies = [
         ItemIDs.SUPER_STRENGTH4.value,
         ItemIDs.RUNE_POUCH.value,
         ItemIDs.KARAMJA_GLOVES_4.value,
-        ItemIDs.MONKFISH.value,
-        ItemIDs.MONKFISH.value,
         {
             'id': ItemIDs.NATURE_RUNE.value,
             'quantity': 'All'
         },
+        ItemIDs.ETERNAL_TELEPORT_CRYSTAL.value,
         {
-            'id': ItemIDs.PRAYER_POTION4.value,
+            'id': ItemIDs.MONKFISH.value,
             'quantity': 'All'
         },
     ]
+
 
 equipment = [
     {'id': ItemIDs.DRAGON_DEFENDER.value, 'consume': 'Wield'},
@@ -37,37 +36,43 @@ equipment = [
     {'id': ItemIDs.BARROWS_GLOVES.value, 'consume': 'Wear'},
     {'id': ItemIDs.BRIMSTONE_RING.value, 'consume': 'Wear'},
     {'id': ItemIDs.DRAGON_BOOTS.value, 'consume': 'Wear'},
-    {'id': ItemIDs.PROSELYTE_HAUBERK.value, 'consume': 'Wear'},
-    {'id': ItemIDs.PROSELYTE_CUISSE.value, 'consume': 'Wear'},
+    {'id': ItemIDs.BANDOS_CHESTPLATE.value, 'consume': 'Wear'},
+    {'id': ItemIDs.BANDOS_TASSETS.value, 'consume': 'Wear'},
     {'id': ItemIDs.AMULET_OF_FURY.value, 'consume': 'Wear'},
     {'id': ItemIDs.OSMUMTENS_FANG.value, 'consume': 'Wield'},
     {'id': ItemIDs.HOLY_BLESSING.value, 'consume': 'Equip'},
 ]
 
-pot_config = slayer_killer.PotConfig(super_str=True, super_atk=True)
+pot_config = slayer_killer.PotConfig(super_atk=True, super_str=True)
 
 
 def pre_log():
+    safe_tile = {
+        'x': 3189,
+        'y': 12409,
+        'z': 0
+    }
+    safe_tile_string = f'{safe_tile["x"]},{safe_tile["y"]},{safe_tile["z"]}'
     qh = osrs.queryHelper.QueryHelper()
-    qh.set_tiles({'2885,9770,0'})
+    qh.set_tiles({safe_tile_string})
     qh.set_player_world_location()
     last_off_tile = datetime.datetime.now()
     while True:
         qh.query_backend()
-        if qh.get_player_world_location('x') != 2885 \
-                or qh.get_player_world_location('y') != 9770:
+        if qh.get_player_world_location('x') != safe_tile["x"] \
+                or qh.get_player_world_location('y') != safe_tile["y"]:
             last_off_tile = datetime.datetime.now()
 
-        if qh.get_player_world_location('x') == 2885 \
-                and qh.get_player_world_location('y') == 9770:
+        if qh.get_player_world_location('x') == safe_tile["x"] \
+                and qh.get_player_world_location('y') == safe_tile["y"]:
             if (datetime.datetime.now() - last_off_tile).total_seconds() > 11:
                 return
             if (datetime.datetime.now() - last_off_tile).total_seconds() > 3:
                 osrs.player.turn_off_all_prayers()
-        elif qh.get_tiles('2885,9770,0') and osrs.move.is_clickable(qh.get_tiles('2885,9770,0')):
-            osrs.move.fast_click(qh.get_tiles('2885,9770,0'))
+        elif qh.get_tiles(safe_tile_string):
+            osrs.move.fast_click(qh.get_tiles(safe_tile_string))
         else:
-            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2885, 'y': 9770, 'z': 0})
+            osrs.move.follow_path(qh.get_player_world_location(), safe_tile)
 
 
 def main():
@@ -78,12 +83,14 @@ def main():
         bank(qh, task_started, equipment, supplies)
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
+        transport_functions.iorworth_dungeon_elves()
         qh.query_backend()
-        osrs.game.cast_spell(fally_tele_widget_id)
-        transport_functions.taverley_dungeon_black_demons()
         task_started = True
-        success = slayer_killer.main('black demon', pot_config.asdict(), 35, prayers=['protect_melee'], hop=True, pre_hop=pre_log)
-        osrs.player.turn_off_all_prayers()
+        success = slayer_killer.main(
+            'iorwerth warrior',
+            pot_config.asdict(),
+            35, pre_hop=pre_log
+        )
         qh.query_backend()
         osrs.game.cast_spell(varrock_tele_widget_id)
         if success:

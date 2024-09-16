@@ -217,9 +217,10 @@ def run_to_loc_v2(steps, port='56799'):
     wait_until_stationary(port)
 
 
-def run_towards_square(destination, port):
+def run_towards_square(destination, port=56799, steps_only=False):
     """
 
+    :param steps_only: true || False
     :param destination: obj {x: 2341, y: 687, z:0}
     :type port: str
     """
@@ -243,6 +244,8 @@ def run_towards_square(destination, port):
         loc['y'] = loc['y'] + y_inc
         next_sq = '{},{},{}'.format(loc['x'], loc['y'], loc['z'])
         steps.append(next_sq)
+    if steps_only:
+        return steps
     run_to_loc(steps)
 
 
@@ -574,6 +577,60 @@ def follow_path(start, end, right_click=False, exact_tile=False):
         osrs.clock.sleep_one_tick()
         return
     parsed_tiles = util.tile_objects_to_strings(path)
+    qh = queryHelper.QueryHelper()
+    qh.set_tiles(set(parsed_tiles))
+    qh.set_destination_tile()
+    qh.set_player_world_location()
+    qh.set_canvas()
+    qh.set_widgets({game_chat_widget, all_chat_widget, pub_chat_widget, priv_chat_widget, chan_chat_widget, clan_chat_widget, trade_chat_widget, report_player_widget})
+    prev_loc = None
+    time_on_same_tile = datetime.datetime.now()
+    while True:
+        if (datetime.datetime.now() - time_on_same_tile).total_seconds() > 2.5:
+            print('2.5 seconds on same tile, ending')
+            return
+        if qh.get_player_world_location() != prev_loc:
+            prev_loc = qh.get_player_world_location()
+            time_on_same_tile = datetime.datetime.now()
+        qh.query_backend()
+        # ensure that the chat box isnt open bc it blocks my clicks
+        if qh.get_widgets(report_player_widget):
+            osrs.keeb.press_key('esc')
+        for key in qh.get_widgets():
+            if qh.get_widgets(key)['spriteID'] == 3053:
+                osrs.move.fast_click(qh.get_widgets(key))
+                break
+        dist_to_end = osrs.dev.point_dist(
+            qh.get_player_world_location('x'),
+            qh.get_player_world_location('y'),
+            int(parsed_tiles[-1].split(',')[0]),
+            int(parsed_tiles[-1].split(',')[1])
+        )
+        # sometimes the tile i want to end up on has an object on it so i cant actually stand on it,
+        # in that case, i still want to break if i am at the end of the path
+        if dist_to_end <= 3 and not exact_tile:
+            break
+        for tile in reversed(parsed_tiles):
+            if is_clickable(qh.get_tiles(tile)):
+                if right_click:
+                    osrs.move.right_click_v6(qh.get_tiles(tile), 'Walk here', qh.get_canvas(), in_inv=True)
+                else:
+                    osrs.move.fast_click(qh.get_tiles(tile))
+                break
+
+
+def fixed_follow_path(path, right_click=False, exact_tile=False):
+    # selected = 3053
+    all_chat_widget = '162,5'
+    game_chat_widget = '162,8'
+    pub_chat_widget = '162,12'
+    priv_chat_widget = '162,16'
+    chan_chat_widget = '162,20'
+    clan_chat_widget = '162,24'
+    trade_chat_widget = '162,28'
+    report_player_widget = '875,22'
+
+    parsed_tiles = path
     qh = queryHelper.QueryHelper()
     qh.set_tiles(set(parsed_tiles))
     qh.set_destination_tile()

@@ -5,7 +5,6 @@ import osrs.queryHelper
 import osrs.server as server
 import osrs.dev as dev
 from osrs.widget_ids import WidgetIDs
-import logging
 
 def toggle_prayer_slow(desired_state, port):
     """
@@ -81,10 +80,10 @@ def toggle_run(desired_state, port='56799'):
 
 def get_run_energy():
     while True:
-        logging.info('getting run energy.')
+        osrs.dev.logger.info('getting run energy.')
         run_orb = server.get_widget('160,28')
         if run_orb:
-            logging.info('got run energy: {}'.format(run_orb))
+            osrs.dev.logger.info('got run energy: {}'.format(run_orb))
             return int(run_orb['text'])
 
 

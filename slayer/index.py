@@ -12,7 +12,8 @@ def skip_task():
         'cave horror',
         'cave horrors',
         'waterfiends',
-        'dagannoth'
+        'dagannoth',
+        'adamant dragons'
     ]
     task_widget = '426,12,6'
     cancel_widget = '426,26,1'
@@ -51,7 +52,6 @@ def skip_task():
                 qh.get_canvas(),
                 in_inv=True
             )
-
 
 
 def main():
@@ -103,8 +103,8 @@ def main():
                 slayer.turoth.main()
             # Verified
             elif slayer_task == 'Bloodveld':
-                #slayer.bloodvelds.main()
-                slayer.mutated_bloodveld.main()
+                slayer.bloodvelds.main()
+                #slayer.mutated_bloodveld.main()
             # Verified
             elif slayer_task == 'Ankou':
                 slayer.ankou.main()
@@ -144,7 +144,17 @@ def main():
             elif slayer_task == 'Waterfiends':
                 slayer.waterfiends.main()
             elif slayer_task == 'Smoke Devils':
-                slayer.thermonucler_smoke_devil.main()
+                #slayer.thermonucler_smoke_devil.main()
+                slayer.smoke_devil.main()
+            elif slayer_task == 'Dark Beasts':
+                slayer.dark_beast.main()
+            elif slayer_task == 'Rune Dragons':
+                slayer.rune_drags.main()
+            elif slayer_task == 'Elves':
+                slayer.elves.main()
+            elif slayer_task == 'Araxytes':
+                slayer.araxyte.main()
+
             else:
                 return print(f'Can not parse {slayer_task}')
         else:
@@ -156,7 +166,7 @@ def main():
                     osrs.clock.sleep_one_tick()
                     osrs.clock.sleep_one_tick()
                     break
-            transport_functions.duradel()
+            transport_functions.duradel_gloves_4()
             skip_task()
             osrs.game.cast_spell(varrock_tele_widget_id)
 

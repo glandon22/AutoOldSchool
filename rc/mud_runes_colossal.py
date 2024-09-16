@@ -13,7 +13,7 @@ start fully kitted in crafting guild bank
 run_energy_widget = '160,28'
 
 
-def repair_pouches():
+def repair_pouches_v2():
     # have runes for spell s[rite-d =568
     main_chat_widget = '162,34'
     mage_widget = '75,14'
@@ -21,20 +21,30 @@ def repair_pouches():
     contact_widget = '218,108'
     qh = osrs.queryHelper.QueryHelper()
     qh.set_widgets({mage_widget, spellbook_widget, contact_widget, main_chat_widget})
+    qh.set_chat_options()
+    last_spell_click = datetime.datetime.now() - datetime.timedelta(hours=1)
+    last_mage_click = datetime.datetime.now() - datetime.timedelta(hours=1)
+    mage_clicked = False
+    spell_clicked = False
     while True:
         qh.query_backend()
-        if qh.get_widgets(mage_widget):
-            osrs.move.click(qh.get_widgets(mage_widget))
-            osrs.clock.random_sleep(3, 3.1)
-            osrs.keeb.press_key('esc')
+        if qh.get_chat_options() or qh.get_widgets(main_chat_widget) and mage_clicked and spell_clicked:
             break
+        elif qh.get_widgets(mage_widget) and (datetime.datetime.now() - last_mage_click).total_seconds() > 5:
+            last_mage_click = datetime.datetime.now()
+            mage_clicked = True
+            osrs.move.click(qh.get_widgets(mage_widget))
         elif qh.get_widgets(spellbook_widget) and qh.get_widgets(spellbook_widget)['spriteID'] != 1027:
             osrs.keeb.press_key('f6')
         elif qh.get_widgets(contact_widget) \
                 and not qh.get_widgets(contact_widget)['isHidden'] \
-                and qh.get_widgets(contact_widget)['spriteID'] == 568:
+                and qh.get_widgets(contact_widget)['spriteID'] == 568 \
+                and (datetime.datetime.now() - last_spell_click).total_seconds() > 7:
             osrs.move.click(qh.get_widgets(contact_widget))
-    osrs.player.dialogue_handler(["Can you repair my pouches?", "Thanks."], timeout=3)
+            last_spell_click = datetime.datetime.now()
+            spell_clicked = True
+    osrs.player.dialogue_handler(["Can you repair my pouches?", "Thanks."], timeout=0.8)
+    osrs.keeb.press_key('esc')
 
 
 def cast_magic_imbue():
@@ -70,18 +80,6 @@ def click_pouches(qh, empty=False):
     else:
         osrs.move.fast_click(qh.get_inventory(osrs.item_ids.ItemIDs.GIANT_POUCH.value))
         osrs.move.fast_click(qh.get_inventory(osrs.item_ids.ItemIDs.LARGE_POUCH.value))
-
-
-def fill_pouches(qh):
-    qh.query_backend()
-    osrs.bank.banking_handler({
-        'withdraw': [{'items': [{
-            'id': osrs.item_ids.ItemIDs.PURE_ESSENCE.value,
-            'quantity': 'All'
-        }]}],
-        'deposit': [{'id': osrs.item_ids.ItemIDs.MUD_RUNE.value, 'quantity': 'All'}]
-    })
-    click_pouches(qh)
 
 
 def tele_to_earth_altar():
@@ -207,7 +205,7 @@ def main(goal_lvl=99):
         if qh.get_skills('runecraft') and qh.get_skills('runecraft')['level'] >= goal_lvl:
             return
         if iters % 7 == 0:
-            repair_pouches()
+            repair_pouches_v2()
             qh.query_backend()
 
         items_to_withdraw = []
@@ -224,24 +222,21 @@ def main(goal_lvl=99):
         items_to_withdraw += [
             {
                 'id': osrs.item_ids.ItemIDs.PURE_ESSENCE.value,
-                'quantity': 'All',
                 'consume': 'Fill',
                 'consume_id_override': osrs.item_ids.ItemIDs.COLOSSAL_POUCH.value
             },
             {
                 'id': osrs.item_ids.ItemIDs.PURE_ESSENCE.value,
-                'quantity': 'All',
                 'consume': 'Fill',
                 'consume_id_override': osrs.item_ids.ItemIDs.COLOSSAL_POUCH.value
             },
             {
                 'id': osrs.item_ids.ItemIDs.PURE_ESSENCE.value,
-                'quantity': 'All',
             }
         ]
-        print(items_to_withdraw)
         osrs.bank.banking_handler({
-            'withdraw_v2': items_to_withdraw
+            'deposit': [{'id': osrs.item_ids.ItemIDs.MUD_RUNE.value}, {'id': osrs.item_ids.ItemIDs.EARTH_RUNE.value}],
+            'withdraw_v2': items_to_withdraw,
         })
 
         tele_to_earth_altar()

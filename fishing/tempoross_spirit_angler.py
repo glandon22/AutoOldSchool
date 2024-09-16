@@ -136,7 +136,7 @@ def untether():
                 osrs.move.fast_click(closest)
 
 
-def have_tethered():
+def have_tethered(start):
     qh = osrs.queryHelper.QueryHelper()
     qh.set_spot_anims()
     qh.set_inventory()
@@ -146,6 +146,9 @@ def have_tethered():
         return True
     elif 7211 in qh.get_spot_anims() or 534 in qh.get_spot_anims():
         logger.warn('failed to tether, washed.')
+        return True
+    elif (datetime.datetime.now() - start).total_seconds() > 9:
+        logger.warn('got washed')
         return True
 
 
@@ -171,7 +174,8 @@ def tether_handler_v2(area_info):
             logger.info('Tempoross is drawing in water.')
             osrs.move.interact_with_multiple_objects(
                 {north_totem_id, south_totem_id, left_mast_id, right_mast_id}, 'x', 1, False,
-                custom_exit_function=have_tethered, right_click_option='Tether'
+                custom_exit_function=have_tethered, right_click_option='Tether',
+                custom_exit_function_arg=datetime.datetime.now()
             )
             wait_start = datetime.datetime.now()
             while True:
@@ -179,7 +183,7 @@ def tether_handler_v2(area_info):
                 if len(qh.get_spot_anims()) == 0:
                     logger.info('successfully handled wave, exiting.')
                     return
-                elif (datetime.datetime.now() - wait_start).total_seconds() > 10:
+                elif (datetime.datetime.now() - wait_start).total_seconds() > 4:
                     logger.warn('failed to handle a colossal wave, timed out.')
                     break
             osrs.move.interact_with_multiple_objects(
@@ -395,6 +399,7 @@ def fish_spirit_pool(important_area_tiles):
     qh = osrs.queryHelper.QueryHelper()
     qh.set_player_world_location()
     qh.set_is_fishing()
+    qh.set_inventory()
     qh.set_widgets({intensity_widget_id, essence_widget_id, energy_widget_id})
     qh.set_interating_with()
     qh.set_tiles({

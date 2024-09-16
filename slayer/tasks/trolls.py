@@ -4,50 +4,39 @@ import osrs
 from osrs.item_ids import ItemIDs
 from slayer import transport_functions
 from combat import slayer_killer
-from slayer.tasks import gear
+from slayer.utils import bank
 
 varrock_tele_widget_id = '218,23'
 
 supplies = [
-        ItemIDs.SUPER_COMBAT_POTION4.value,
-        ItemIDs.SUPER_COMBAT_POTION4.value,
-        ItemIDs.SUPER_COMBAT_POTION4.value,
-        ItemIDs.RUNE_POUCH.value,
-    ItemIDs.KARAMJA_GLOVES_3.value,
-
-    ItemIDs.DRAMEN_STAFF.value,
-        {
-            'id': ItemIDs.MONKFISH.value,
-            'quantity': 'All'
-        },
-    ]
+    ItemIDs.SUPER_ATTACK4.value,
+    ItemIDs.SUPER_ATTACK4.value,
+    ItemIDs.SUPER_STRENGTH4.value,
+    ItemIDs.SUPER_STRENGTH4.value,
+    ItemIDs.RUNE_POUCH.value,
+    ItemIDs.KARAMJA_GLOVES_4.value,
+    {'id': ItemIDs.DRAMEN_STAFF.value, 'consume': 'Wield'},
+    {
+        'id': ItemIDs.MONKFISH.value,
+        'quantity': 'All'
+    },
+]
 
 equipment = [
-        ItemIDs.RUNE_DEFENDER.value,
-        ItemIDs.BARROWS_GLOVES.value,
-        ItemIDs.FIRE_CAPE.value,
-        ItemIDs.ABYSSAL_WHIP.value,
-        ItemIDs.SLAYER_HELMET_I.value,
-        ItemIDs.BRIMSTONE_RING.value,
-        ItemIDs.DRAGON_BOOTS.value,
-        ItemIDs.BANDOS_CHESTPLATE.value,
-        ItemIDs.BANDOS_TASSETS.value,
-        ItemIDs.AMULET_OF_FURY.value,
-    ]
+    {'id': ItemIDs.DRAGON_DEFENDER.value, 'consume': 'Wield'},
+    {'id': ItemIDs.FIRE_CAPE.value, 'consume': 'Wear'},
+    {'id': ItemIDs.SLAYER_HELMET_I.value, 'consume': 'Wear'},
+    {'id': ItemIDs.BARROWS_GLOVES.value, 'consume': 'Wear'},
+    {'id': ItemIDs.BRIMSTONE_RING.value, 'consume': 'Wear'},
+    {'id': ItemIDs.DRAGON_BOOTS.value, 'consume': 'Wear'},
+    {'id': ItemIDs.BANDOS_CHESTPLATE.value, 'consume': 'Wear'},
+    {'id': ItemIDs.BANDOS_TASSETS.value, 'consume': 'Wear'},
+    {'id': ItemIDs.AMULET_OF_FURY.value, 'consume': 'Wear'},
+    {'id': ItemIDs.ABYSSAL_WHIP.value},
+    {'id': ItemIDs.HOLY_BLESSING.value, 'consume': 'Equip'},
+]
 
-banking_config_equipment = {
-    'dump_inv': True,
-    'dump_equipment': True,
-    'search': [{'query': 'slayer', 'items': equipment}]
-}
-
-banking_config_supplies = {
-    'dump_inv': True,
-    'dump_equipment': False,
-    'search': [{'query': 'slayer', 'items': supplies}]
-}
-
-pot_config = slayer_killer.PotConfig(super_combat=True)
+pot_config = slayer_killer.PotConfig(super_atk=True, super_str=True)
 
 
 def pre_log():
@@ -84,27 +73,7 @@ def main():
     qh.set_inventory()
     task_started = False
     while True:
-        qh.query_backend()
-        print('starting function')
-        if not task_started:
-            success = osrs.bank.banking_handler(banking_config_equipment)
-            if not success:
-                print('failed to withdraw equipment.')
-                return False
-            osrs.clock.sleep_one_tick()
-            qh.query_backend()
-            for item in qh.get_inventory():
-                osrs.move.click(item)
-            qh.query_backend()
-        success = osrs.bank.banking_handler(banking_config_supplies)
-        if not success:
-            print('failed to withdraw supplies.')
-            return False
-        while True:
-            qh.query_backend()
-            if qh.get_inventory(ItemIDs.DRAMEN_STAFF.value):
-                osrs.move.click(qh.get_inventory(ItemIDs.DRAMEN_STAFF.value))
-                break
+        bank(qh, task_started, equipment, supplies)
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
         osrs.game.tele_home_fairy_ring('bls')

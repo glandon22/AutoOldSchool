@@ -1,8 +1,5 @@
 import datetime
-import logging
 import requests
-
-import osrs.dev
 import osrs.util as util
 import osrs.dev as dev
 
@@ -31,7 +28,7 @@ def post_game_status(q, updated_config, port='56798'):
             start = type(start) is datetime.datetime and f'{start.hour}:{str(start.minute).zfill(2)}:{str(start.second).zfill(2)}'
             end = updated_config['timings']['break_end']
             end = type(end) is datetime.datetime and f'{end.hour}:{str(end.minute).zfill(2)}:{str(end.second).zfill(2)}'
-            logging.info(f'Timing variables. Start: {start}, end: {end}')
+            dev.logger.info(f'Timing variables. Start: {start}, end: {end}')
             enhanced_q = {
                 'status': q,
                 'next_break': start,
@@ -39,9 +36,9 @@ def post_game_status(q, updated_config, port='56798'):
             }
             r = session.post(url='http://localhost:{}/manager'.format(port), json=enhanced_q)
             parsed = r.json()
-            logging.info('Parsed response from game server: {}'.format(parsed))
+            dev.logger.info('Parsed response from game server: {}'.format(parsed))
             if parsed and 'terminate' in parsed and parsed['terminate']:
-                logging.info('Process killed by game server.')
+                dev.logger.info('Process killed by game server.')
                 exit(99)
             return r.json()
         except Exception as e:

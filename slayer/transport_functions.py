@@ -34,7 +34,7 @@ def isle_of_souls_dungeon(x=2145, y=9296):
         {dungeon_entrance_id},
         osrs.queryHelper.ObjectTypes.GAME.value
     )
-    qh.set_tiles({f'{x},{y},0'})
+    qh.set_tiles({f'{x},{y},0', '2268,2973,0'})
     while True:
         qh.query_backend()
         # I am in the dungeon
@@ -43,6 +43,8 @@ def isle_of_souls_dungeon(x=2145, y=9296):
         elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, dungeon_entrance_id):
             osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, dungeon_entrance_id)[0])
         else:
+            if qh.get_tiles('2268,2973,0'):
+                osrs.move.fast_click(qh.get_tiles('2268,2973,0'))
             osrs.move.follow_path(qh.get_player_world_location(), {'x': 2310, 'y': 2918, 'z': 0})
     while True:
         qh.query_backend()
@@ -547,10 +549,10 @@ def stronghold_slayer_dungeon_spectres():
             break
     while True:
         qh.query_backend()
-        if 2456 <= qh.get_player_world_location('x') <= 2462 and 9773 <= qh.get_player_world_location('y') <= 9780:
+        if 2468 <= qh.get_player_world_location('x') <= 2473 and 9776 <= qh.get_player_world_location('y') <= 9780:
             return
         else:
-            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2459, 'y': 9778, 'z': 0})
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2470, 'y': 9778, 'z': 0})
 
 
 '''
@@ -1028,6 +1030,42 @@ def duradel():
                 osrs.move.fast_click(closest)
 
 
+
+def duradel_gloves_4():
+    gem_mine_ladder_id = '23584'
+    duradel_ladder_id = '16683'
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_inventory()
+    qh.set_player_world_location()
+    qh.set_objects(
+        {'2838,9388,0', '2871,2971,0'},
+        {duradel_ladder_id, gem_mine_ladder_id},
+        osrs.queryHelper.ObjectTypes.GAME.value
+    )
+    qh.set_npcs_by_name(['duradel'])
+    qh.set_slayer()
+    qh.set_canvas()
+    glove_click = datetime.datetime.now() - datetime.timedelta(hours=1)
+    while True:
+        qh.query_backend()
+        if qh.get_slayer() and qh.get_slayer()['monster']:
+            print('got a new task')
+            return True
+        elif qh.get_inventory() and qh.get_inventory(osrs.item_ids.ItemIDs.KARAMJA_GLOVES_4.value) \
+                and (datetime.datetime.now() - glove_click).total_seconds() > 10:
+            osrs.move.right_click_v6(
+                qh.get_inventory(osrs.item_ids.ItemIDs.KARAMJA_GLOVES_4.value),
+                'Slayer master',
+                qh.get_canvas(),
+                in_inv=True
+            )
+            glove_click = datetime.datetime.now()
+        elif qh.get_npcs_by_name():
+            closest = osrs.util.find_closest_target(qh.get_npcs_by_name())
+            if closest:
+                osrs.move.fast_click(closest)
+
+
 def morytania_nechs():
     basement_ladder_id = '30191'
     qh = osrs.queryHelper.QueryHelper()
@@ -1263,3 +1301,136 @@ def kraken_cove_waterfiends():
             if qh.get_player_world_location('x') == 2319 and qh.get_player_world_location('y') == 3619 and qh.get_tiles('2315,3613,0'):
                 osrs.move.fast_click(qh.get_tiles('2315,3613,0'))
             osrs.move.follow_path(qh.get_player_world_location(), {'x': 2282, 'y': 3610, 'z': 0})
+
+
+def morytania_spectres():
+    basement_ladder_id = 16537
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_chat_options()
+    qh.set_canvas()
+    qh.set_player_world_location()
+    qh.set_objects_v2('game', {basement_ladder_id})
+    qh.set_inventory()
+    slayer_rings = [
+        ItemIDs.SLAYER_RING_1.value,
+        ItemIDs.SLAYER_RING_2.value,
+        ItemIDs.SLAYER_RING_3.value,
+        ItemIDs.SLAYER_RING_4.value,
+        ItemIDs.SLAYER_RING_5.value,
+        ItemIDs.SLAYER_RING_6.value,
+        ItemIDs.SLAYER_RING_7.value,
+        ItemIDs.SLAYER_RING_8.value,
+    ]
+    last_ring_click = datetime.datetime.now() - datetime.timedelta(hours=1)
+    while True:
+        qh.query_backend()
+        if qh.get_player_world_location('z') == 1 and 3405 <= qh.get_player_world_location('x') < 3450:
+            return
+        elif qh.get_chat_options() and 'Teleport' in qh.get_chat_options():
+            osrs.keeb.write('1')
+        elif qh.get_chat_options() and 'Teleport to the Morytania Slayer Tower' in qh.get_chat_options():
+            osrs.keeb.write('2')
+        elif qh.get_objects_v2('game', basement_ladder_id):
+            osrs.move.interact_with_object(
+                basement_ladder_id, 'z', 1, True,
+                right_click_option='Climb-up', timeout=7
+            )
+        elif qh.get_inventory(slayer_rings) and (datetime.datetime.now() - last_ring_click).total_seconds() > 7:
+            ring = qh.get_inventory(slayer_rings)
+            osrs.move.right_click_v3(ring, 'Rub')
+            last_ring_click = datetime.datetime.now()
+
+
+def iorworth_dungeon_dark_beasts():
+    entrance_id = 36690
+    shortcut_id = 36692
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_player_world_location()
+    qh.set_inventory()
+    qh.set_canvas()
+    last_crystal = datetime.datetime.now() - datetime.timedelta(hours=1)
+    while True:
+        qh.query_backend()
+        if 3150 <= qh.get_player_world_location('x') <= 3300 and 6000 <= qh.get_player_world_location('y') <= 6100:
+            break
+        elif qh.get_inventory(osrs.item_ids.ItemIDs.ETERNAL_TELEPORT_CRYSTAL.value) and (datetime.datetime.now() - last_crystal).total_seconds() > 7:
+            osrs.move.right_click_v6(
+                qh.get_inventory(osrs.item_ids.ItemIDs.ETERNAL_TELEPORT_CRYSTAL.value),
+                'Prifddinas',
+                qh.get_canvas(),
+                in_inv=True
+            )
+            last_crystal = datetime.datetime.now()
+    osrs.move.go_to_loc(3229, 6049)
+    osrs.move.interact_with_object(
+        entrance_id, 'y', 10000, True, right_click_option='Enter'
+    )
+    osrs.move.interact_with_object(
+        shortcut_id, 'x', 3221, True
+    )
+    osrs.move.go_to_loc(3176, 12420)
+
+
+def iorworth_dungeon_elves():
+    entrance_id = 36690
+    shortcut_id = 36692
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_player_world_location()
+    qh.set_inventory()
+    qh.set_canvas()
+    last_crystal = datetime.datetime.now() - datetime.timedelta(hours=1)
+    while True:
+        qh.query_backend()
+        if 3150 <= qh.get_player_world_location('x') <= 3300 and 6000 <= qh.get_player_world_location('y') <= 6100:
+            break
+        elif qh.get_inventory(osrs.item_ids.ItemIDs.ETERNAL_TELEPORT_CRYSTAL.value) and (datetime.datetime.now() - last_crystal).total_seconds() > 7:
+            osrs.move.right_click_v6(
+                qh.get_inventory(osrs.item_ids.ItemIDs.ETERNAL_TELEPORT_CRYSTAL.value),
+                'Prifddinas',
+                qh.get_canvas(),
+                in_inv=True
+            )
+            last_crystal = datetime.datetime.now()
+    osrs.move.go_to_loc(3229, 6049)
+    osrs.move.interact_with_object(
+        entrance_id, 'y', 10000, True, right_click_option='Enter'
+    )
+    osrs.move.interact_with_object(
+        shortcut_id, 'x', 3221, True
+    )
+    osrs.move.go_to_loc(3189, 12409)
+
+
+def rune_dragons():
+    '''
+    3547,10455,0 in dungeon
+click 32113 y< 10468
+click 32117 y> 10000
+click 32153 x < 1574
+break
+    '''
+    def in_lithkren():
+        qh = osrs.queryHelper.QueryHelper()
+        qh.set_player_world_location()
+        qh.set_widgets({'187,3'})
+        qh.query_backend()
+        if 3500 <= qh.get_player_world_location('x') <= 3600 and 10400 <= qh.get_player_world_location('y') <= 10500:
+            return True
+        elif qh.get_widgets('187,3'):
+            osrs.keeb.write('3')
+    mounted_pendant_id = 33417
+    osrs.move.interact_with_object(
+        mounted_pendant_id, 'z', 3, True,
+        obj_type='decorative', custom_exit_function=in_lithkren, right_click_option='Teleport menu',
+        timeout=7
+    )
+    osrs.move.interact_with_object(
+        32113, 'y', 10468, True
+    )
+    osrs.move.interact_with_object(
+        32117, 'y', 8000, False
+    )
+    osrs.move.interact_with_object(
+        32153, 'x', 1574, True, obj_tile={'x': 1574, 'y': 5074, 'z': 0},
+        right_click_option='Pass', timeout=10
+    )

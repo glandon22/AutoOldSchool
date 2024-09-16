@@ -4,23 +4,55 @@ import datetime
 import osrs
 from osrs.item_ids import ItemIDs
 from slayer import transport_functions
-from combat import slayer_killer
 from slayer.utils import bank
+from combat import slayer_killer
 
 varrock_tele_widget_id = '218,23'
-fally_tele_widget_id = '218,29'
 
 supplies = [
     ItemIDs.SUPER_ATTACK4.value,
     ItemIDs.SUPER_ATTACK4.value,
     ItemIDs.SUPER_STRENGTH4.value,
     ItemIDs.SUPER_STRENGTH4.value,
+    {
+        'id': [
+            ItemIDs.RING_OF_DUELING1.value,
+            ItemIDs.RING_OF_DUELING2.value,
+            ItemIDs.RING_OF_DUELING3.value,
+            ItemIDs.RING_OF_DUELING4.value,
+            ItemIDs.RING_OF_DUELING5.value,
+            ItemIDs.RING_OF_DUELING6.value,
+            ItemIDs.RING_OF_DUELING7.value,
+            ItemIDs.RING_OF_DUELING8.value
+        ],
+        'quantity': '1'
+    },
     ItemIDs.RUNE_POUCH.value,
+    {
+        'id': [
+            ItemIDs.NATURE_RUNE.value
+        ],
+        'quantity': 'All'
+    },
     ItemIDs.KARAMJA_GLOVES_4.value,
     {
-        'id': ItemIDs.MONKFISH.value,
-        'quantity': 'All'
-    }
+        'id': [
+            ItemIDs.PRAYER_POTION4.value,
+            ItemIDs.PRAYER_POTION3.value,
+            ItemIDs.PRAYER_POTION2.value,
+            ItemIDs.PRAYER_POTION1.value,
+        ],
+        'quantity': '10'
+    },
+    {
+        'id': [
+            ItemIDs.PRAYER_POTION4.value,
+            ItemIDs.PRAYER_POTION3.value,
+            ItemIDs.PRAYER_POTION2.value,
+            ItemIDs.PRAYER_POTION1.value,
+        ],
+        'quantity': '5'
+    },
 ]
 
 equipment = [
@@ -41,32 +73,8 @@ pot_config = slayer_killer.PotConfig(super_atk=True, super_str=True)
 
 
 def pre_log():
-    safe_tile = {
-        'x': 2848,
-        'y': 9832,
-        'z': 0
-    }
-    safe_tile_string = f'{safe_tile["x"]},{safe_tile["y"]},{safe_tile["z"]}'
-    qh = osrs.queryHelper.QueryHelper()
-    qh.set_tiles({safe_tile_string})
-    qh.set_player_world_location()
-    last_off_tile = datetime.datetime.now()
-    while True:
-        qh.query_backend()
-        if qh.get_player_world_location('x') != safe_tile["x"] \
-                or qh.get_player_world_location('y') != safe_tile["y"]:
-            last_off_tile = datetime.datetime.now()
-
-        if qh.get_player_world_location('x') == safe_tile["x"] \
-                and qh.get_player_world_location('y') == safe_tile["y"]:
-            if (datetime.datetime.now() - last_off_tile).total_seconds() > 11:
-                return
-            if (datetime.datetime.now() - last_off_tile).total_seconds() > 3:
-                osrs.player.turn_off_all_prayers()
-        elif qh.get_tiles(safe_tile_string):
-            osrs.move.fast_click(qh.get_tiles(safe_tile_string))
-        else:
-            osrs.move.follow_path(qh.get_player_world_location(), safe_tile)
+    osrs.player.turn_off_all_prayers()
+    osrs.clock.random_sleep(11, 12)
 
 
 def main():
@@ -77,13 +85,25 @@ def main():
         bank(qh, task_started, equipment, supplies)
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
-        qh.query_backend()
-        osrs.game.cast_spell(fally_tele_widget_id)
-        transport_functions.taverley_dungeon_hellhounds()
-        qh.query_backend()
+        osrs.transport.dueling_to_c_wars()
+        osrs.transport.walk_out_of_c_wars()
+        osrs.move.go_to_loc(2414, 3060)
+        osrs.move.interact_with_object(30176, 'y', 5500, True)
+        osrs.move.go_to_loc(2406, 9452, right_click=True)
         task_started = True
-        success = slayer_killer.main('hellhound', pot_config.asdict(), 35, hop=True, pre_hop=pre_log)
+        success = slayer_killer.main(
+            ['smoke devil'], pot_config.asdict(), 35, hop=True,
+            pre_hop=pre_log, prayers=['protect_range']
+        )
         qh.query_backend()
         osrs.game.cast_spell(varrock_tele_widget_id)
         if success:
             return True
+
+'''
+run to 2406,9452, 0
+
+
+
+
+'''

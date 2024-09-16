@@ -234,7 +234,7 @@ class QueryHelper:
                     if npc['id'] == npc_id \
                         and (
                             not interacting_with_me or
-                            ('interacting' in npc and npc['interacting'].lower() == 'greazydonkey')
+                            ('interacting' in npc and npc['interacting'].lower() == 'DJT Fan 14')
                     ):
                         return npc
 

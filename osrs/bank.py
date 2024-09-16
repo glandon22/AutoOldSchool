@@ -8,6 +8,7 @@ import osrs.queryHelper
 import osrs.server as server
 import osrs.util as util
 import osrs.keeb as keeb
+import osrs.dev as dev
 from osrs.item_ids import ItemIDs
 import osrs.queryHelper as queryHelper
 from osrs.widget_ids import WidgetIDs
@@ -15,9 +16,6 @@ from collections import Counter
 
 withdraw_item_widget = '12,22'
 withdraw_noted_widget = '12,24'
-
-
-logger = osrs.dev.instantiate_logger()
 
 
 def deposit_all_of_x(items, port='56799'):
@@ -153,16 +151,21 @@ def withdraw_configured_items(item, game_state: osrs.queryHelper.QueryHelper):
     if not banked_item:
         print(f'{ItemIDs(item).name} not found')
         return False
-    if item['quantity'] not in ['All', 'X', 'x'] and banked_item['quantity'] < int(item['quantity']):
+    if 'quantity' in item and item['quantity'] not in ['All', 'X', 'x'] and banked_item['quantity'] < int(item['quantity']):
         print(f'not enough {ItemIDs(item).name} to satisfy request')
         return False
     if 'noted' in item and item['noted']:
         osrs.move.fast_click(game_state.get_widgets(withdraw_noted_widget))
-    osrs.move.right_click_v3(banked_item, f'Withdraw-{item["quantity"]}')
+
+    if 'quantity' in item:
+        osrs.move.right_click_v3(banked_item, f'Withdraw-{item["quantity"]}')
+    else:
+        osrs.move.fast_click(banked_item)
+
     if 'noted' in item and item['noted']:
         osrs.move.fast_click(game_state.get_widgets(withdraw_item_widget))
 
-    if item['quantity'] == 'X':
+    if 'quantity' in item and item['quantity'] == 'X':
         osrs.clock.sleep_one_tick()
         osrs.keeb.write(str(item['amount']))
         osrs.keeb.press_key('enter')
@@ -282,16 +285,16 @@ def deposit_items(items: list):
     qh.set_widgets({input_widget})
     qh.set_canvas()
     if type(items) is not list:
-        logger.error('non list passed to banking deposit function')
+        dev.logger.error('non list passed to banking deposit function')
         return False
     for item in items:
         if 'id' not in item:
-            logger.warn('deposit item missing id')
+            dev.logger.warn('deposit item missing id')
             continue
         qh.query_backend()
         inventory = list(filter(lambda inv_item: inv_item['id'] == item['id'], qh.get_inventory()))
         if not inventory:
-            logger.warn('requested item to deposit was not found in inventory.')
+            dev.logger.warn('requested item to deposit was not found in inventory.')
             continue
         target_item = qh.get_inventory(item['id'])
         success = False
@@ -314,7 +317,7 @@ def deposit_items(items: list):
                     osrs.keeb.press_key('enter')
                     break
         # wait for item to be deposited
-        while True:
+        '''while True:
             qh.query_backend()
             deposited = True
             for new_item in qh.get_inventory():
@@ -322,7 +325,7 @@ def deposit_items(items: list):
                     deposited = False
                     break
             if deposited:
-                break
+                break'''
 
 
 def set_withdrawl_and_deposit_quantity(value):
@@ -568,7 +571,7 @@ def abort_offer(slot=None, item_name=None):
 
 def purchase_item(item, quantity, prev_price=0):
     print('pp', prev_price)
-    logger.info('invoked')
+    dev.logger.info('invoked')
     first_search_result = '162,50,0'
     default_item_value = '465,25,41'
     default_item_quantity = '465,25,51'
@@ -615,14 +618,14 @@ def purchase_item(item, quantity, prev_price=0):
         if not qh1.get_widgets(f'{offer_slot},0'):
             continue
         osrs.move.fast_click(qh1.get_widgets(f'{offer_slot},0'))
-        logger.info('clicked on buy an item widget')
+        dev.logger.info('clicked on buy an item widget')
         while True:
             qh.query_backend()
             if qh.get_widgets(chat_input_widget):
                 break
         target_item = osrs.item_ids.ItemIDs(item).name.replace('_', ' ').lower() if type(item) is int else item.lower()
         osrs.keeb.write(target_item)
-        logger.info('entered in the name of item i am buying')
+        dev.logger.info('entered in the name of item i am buying')
         osrs.clock.sleep_one_tick()
         while True:
             qh.query_backend()
@@ -643,7 +646,7 @@ def purchase_item(item, quantity, prev_price=0):
             widget = qh2.get_widgets(widget)
             if widget['text'].lower() == target_item:
                 osrs.move.click(widget)
-        logger.info('clicked on the first returned search item')
+        dev.logger.info('clicked on the first returned search item')
         while True:
             qh.query_backend()
             if qh.get_widgets(default_item_value) and qh.get_widgets(default_item_value)['text']:
@@ -652,13 +655,13 @@ def purchase_item(item, quantity, prev_price=0):
         if prev_price > 0:
             value = prev_price
         value = math.ceil(value * 1.2)
-        logger.info('clicking on the custom price three dots')
+        dev.logger.info('clicking on the custom price three dots')
         while True:
             qh.query_backend()
             if qh.get_widgets(three_dots_offer_screen):
                 break
         osrs.move.click(qh.get_widgets(three_dots_offer_screen))
-        logger.info('item price input up. entering desired price')
+        dev.logger.info('item price input up. entering desired price')
         while True:
             qh.query_backend()
             if qh.get_widgets(chat_input_widget) and not qh.get_widgets(chat_input_widget)['isHidden']:
@@ -666,26 +669,26 @@ def purchase_item(item, quantity, prev_price=0):
         osrs.keeb.write(str(value))
         osrs.keeb.press_key('enter')
         if quantity != 1:
-            logger.info('clicking on the custom quantity three dots')
+            dev.logger.info('clicking on the custom quantity three dots')
             while True:
                 qh.query_backend()
                 if qh.get_widgets(default_item_quantity):
                     break
             osrs.move.click(qh.get_widgets(default_item_quantity))
-            logger.info('item price input up. entering desired quantity')
+            dev.logger.info('item price input up. entering desired quantity')
             while True:
                 qh.query_backend()
                 if qh.get_widgets(chat_input_widget) and not qh.get_widgets(chat_input_widget)['isHidden']:
                     break
             osrs.keeb.write(str(quantity))
             osrs.keeb.press_key('enter')
-        logger.info('click on confirm offer')
+        dev.logger.info('click on confirm offer')
         while True:
             qh.query_backend()
             if qh.get_widgets(confirm_offer_widget):
                 break
         osrs.move.click(qh.get_widgets(confirm_offer_widget))
-        logger.info('clicking on collect items')
+        dev.logger.info('clicking on collect items')
         wait_time = datetime.datetime.now()
         qh.set_widgets({collect_widget})
         # sometimes clicks when the widget isnt there. make sure its actually there
@@ -794,20 +797,20 @@ def sell_item(item, quantity, custom_name, value=0):
             break
         elif search_ge_inv(item):
             osrs.move.click(search_ge_inv(item))
-    logger.info('fetching default sell price')
+    dev.logger.info('fetching default sell price')
     if value == 0:
         while True:
             qh.query_backend()
             if qh.get_widgets(default_item_value) and qh.get_widgets(default_item_value)['text']:
                 value = int(qh.get_widgets(default_item_value)['text'].split(' ')[0])
                 break
-    logger.info('clicking on the custom price three dots')
+    dev.logger.info('clicking on the custom price three dots')
     while True:
         qh.query_backend()
         if qh.get_widgets(three_dots_offer_screen):
             break
     osrs.move.click(qh.get_widgets(three_dots_offer_screen))
-    logger.info('item price input up. entering desired price')
+    dev.logger.info('item price input up. entering desired price')
     while True:
         qh.query_backend()
         if qh.get_widgets(chat_input_widget) and not qh.get_widgets(chat_input_widget)['isHidden']:
@@ -815,26 +818,26 @@ def sell_item(item, quantity, custom_name, value=0):
     osrs.keeb.write(str(value))
     osrs.keeb.press_key('enter')
     if quantity != 'All':
-        logger.info('clicking on the custom quantity three dots')
+        dev.logger.info('clicking on the custom quantity three dots')
         while True:
             qh.query_backend()
             if qh.get_widgets(default_item_quantity):
                 break
         osrs.move.click(qh.get_widgets(default_item_quantity))
-        logger.info('item price input up. entering desired quantity')
+        dev.logger.info('item price input up. entering desired quantity')
         while True:
             qh.query_backend()
             if qh.get_widgets(chat_input_widget) and not qh.get_widgets(chat_input_widget)['isHidden']:
                 break
         osrs.keeb.write(str(quantity))
         osrs.keeb.press_key('enter')
-    logger.info('click on confirm offer')
+    dev.logger.info('click on confirm offer')
     while True:
         qh.query_backend()
         if qh.get_widgets(confirm_offer_widget):
             break
     osrs.move.click(qh.get_widgets(confirm_offer_widget))
-    logger.info('clicking on collect items')
+    dev.logger.info('clicking on collect items')
     wait_time = datetime.datetime.now()
     qh.set_widgets({collect_widget})
     # sometimes clicks when the widget isnt there. make sure its actually there

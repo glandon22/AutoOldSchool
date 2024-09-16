@@ -5,17 +5,19 @@ import osrs
 from osrs.item_ids import ItemIDs
 from slayer import transport_functions
 from combat import slayer_killer
-from slayer.tasks import gear
+from slayer.utils import bank
 
 varrock_tele_widget_id = '218,23'
 
 # for this one i dont want a slayer ring with only one charge,
 # bc i tele to the cave, then to nieve after the task is done
 supplies = [
-        ItemIDs.SUPER_COMBAT_POTION4.value,
-        ItemIDs.SUPER_COMBAT_POTION4.value,
+        ItemIDs.SUPER_ATTACK4.value,
+        ItemIDs.SUPER_ATTACK4.value,
+        ItemIDs.SUPER_STRENGTH4.value,
+        ItemIDs.SUPER_STRENGTH4.value,
         ItemIDs.RUNE_POUCH.value,
-        ItemIDs.KARAMJA_GLOVES_3.value,
+        ItemIDs.KARAMJA_GLOVES_4.value,
         {
             'id': ItemIDs.NATURE_RUNE.value,
             'quantity': 'All'
@@ -38,39 +40,32 @@ supplies = [
             'amount': '12'
         },
     ]
+
+
 equipment = [
-    ItemIDs.SLAYER_HELMET_I.value,
-    ItemIDs.ABYSSAL_WHIP.value,
-    ItemIDs.BARROWS_GLOVES.value,
-    ItemIDs.BRIMSTONE_RING.value,
-    ItemIDs.DRAGON_BOOTS.value,
-    ItemIDs.PROSELYTE_CUISSE.value,
-    ItemIDs.PROSELYTE_HAUBERK.value,
-    ItemIDs.AMULET_OF_FURY.value,
-    ItemIDs.RUNE_DEFENDER.value,
-    ItemIDs.HOLY_BLESSING.value,
-    ItemIDs.FIRE_CAPE.value,
+    {'id': ItemIDs.DRAGON_DEFENDER.value, 'consume': 'Wield'},
+    {'id': ItemIDs.FIRE_CAPE.value, 'consume': 'Wear'},
+    {'id': ItemIDs.SLAYER_HELMET_I.value, 'consume': 'Wear'},
+    {'id': ItemIDs.BARROWS_GLOVES.value, 'consume': 'Wear'},
+    {'id': ItemIDs.BRIMSTONE_RING.value, 'consume': 'Wear'},
+    {'id': ItemIDs.DRAGON_BOOTS.value, 'consume': 'Wear'},
+    {'id': ItemIDs.PROSELYTE_CUISSE.value, 'consume': 'Wear'},
+    {'id': ItemIDs.PROSELYTE_HAUBERK.value, 'consume': 'Wear'},
+    {'id': ItemIDs.AMULET_OF_FURY.value, 'consume': 'Wear'},
+    {'id': ItemIDs.OSMUMTENS_FANG.value, 'consume': 'Wield'},
+    {'id': ItemIDs.HOLY_BLESSING.value, 'consume': 'Equip'},
 ]
 
-banking_config_equipment = {
-    'dump_inv': True,
-    'dump_equipment': True,
-    'search': [{'query': 'slayer', 'items': equipment}]
-}
+pot_config = slayer_killer.PotConfig(super_atk=True, super_str=True)
 
-banking_config_supplies = {
-    'dump_inv': True,
-    'dump_equipment': False,
-    'search': [{'query': 'slayer', 'items': supplies}]
-}
-
-pot_config = slayer_killer.PotConfig(super_combat=True)
+def return_to_loc():
+    osrs.move.go_to_loc(2470, 9779)
 
 
 def pre_log():
     safe_tile = {
-        'x': 2451,
-        'y': 9778,
+        'x': 2446,
+        'y': 9803,
         'z': 0
     }
     safe_tile_string = f'{safe_tile["x"]},{safe_tile["y"]},{safe_tile["z"]}'
@@ -101,22 +96,7 @@ def main():
     qh.set_inventory()
     task_started = False
     while True:
-        qh.query_backend()
-        print('starting function')
-        if not task_started:
-            success = osrs.bank.banking_handler(banking_config_equipment)
-            if not success:
-                print('failed to withdraw equipment.')
-                return False
-            osrs.clock.sleep_one_tick()
-            qh.query_backend()
-            for item in qh.get_inventory():
-                osrs.move.click(item)
-            qh.query_backend()
-        success = osrs.bank.banking_handler(banking_config_supplies)
-        if not success:
-            print('failed to withdraw supplies.')
-            return False
+        bank(qh, task_started, equipment, supplies)
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
         transport_functions.stronghold_slayer_dungeon_spectres()
@@ -125,9 +105,9 @@ def main():
         success = slayer_killer.main(
             'aberrant spectre',
             pot_config.asdict(),
-            35,
-            hop=True, pre_hop=pre_log,
-            prayers=['protect_mage']
+            35, pre_hop=pre_log,
+            prayers=['protect_mage'], post_login=return_to_loc, hop=True,
+            attackable_area={'x_min': 2469, 'x_max': 2474, 'y_min': 9775, 'y_max': 9784},
         )
         osrs.player.turn_off_all_prayers()
         qh.query_backend()

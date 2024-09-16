@@ -2,15 +2,9 @@
 import time
 
 import pyautogui
-'''import osrs
+import osrs
 qh = osrs.queryHelper.QueryHelper()
-qh.set_canvas()
-qh.set_inventory()
-qh.query_backend()
-osrs.move.right_click_v6(
-    qh.get_inventory(osrs.item_ids.ItemIDs.SPIRIT_FLAKES.value),
-    'Eat',
-    qh.get_canvas()
-)'''
-pyautogui.moveTo(500, 500)
-print(pyautogui.position())
+qh.set_player_world_location()
+while True:
+    qh.query_backend()
+    print(qh.get_player_world_location())

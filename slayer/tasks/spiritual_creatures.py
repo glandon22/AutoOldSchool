@@ -1,11 +1,3 @@
-'''
-
-gwd entrance 26419 2917,3745,0
-'''
-
-# run to 2865,9827,1
-# then exit
-# 2134,9305,0
 import datetime
 
 import osrs
@@ -13,6 +5,7 @@ import osrs.move
 from osrs.item_ids import ItemIDs
 from slayer import transport_functions
 from combat import slayer_killer
+from slayer.utils import bank
 
 varrock_tele_widget_id = '218,23'
 fally_tele_widget_id = '218,29'
@@ -20,15 +13,17 @@ trollheim_tele_widget_id = '218,54'
 
 
 supplies = [
-    ItemIDs.SUPER_COMBAT_POTION4.value,
-    ItemIDs.SUPER_COMBAT_POTION4.value,
+    ItemIDs.SUPER_ATTACK4.value,
+    ItemIDs.SUPER_ATTACK4.value,
+    ItemIDs.SUPER_STRENGTH4.value,
+    ItemIDs.SUPER_STRENGTH4.value,
     ItemIDs.RUNE_POUCH.value,
     ItemIDs.SUPER_RESTORE4.value,
     {
         'id': ItemIDs.NATURE_RUNE.value,
         'quantity': 'All'
     },
-    ItemIDs.KARAMJA_GLOVES_3.value,
+    ItemIDs.KARAMJA_GLOVES_4.value,
     {
         'id': ItemIDs.MONKFISH.value,
         'quantity': 'X',
@@ -36,22 +31,22 @@ supplies = [
     },
     {
         'id': ItemIDs.PRAYER_POTION4.value,
-        'quantity': 'All'
+        'quantity': '10'
     },
 ]
 
 equipment = [
-    ItemIDs.ABYSSAL_WHIP.value,
-    ItemIDs.HOLY_BLESSING.value,
-    ItemIDs.RUNE_DEFENDER.value,
-    ItemIDs.ARMADYL_BRACERS.value,
-    ItemIDs.ZAMORAK_CLOAK.value,
-    ItemIDs.SLAYER_HELMET_I.value,
-    ItemIDs.BRIMSTONE_RING.value,
-    ItemIDs.DRAGON_BOOTS.value,
-    ItemIDs.BANDOS_CHESTPLATE.value,
-    ItemIDs.BANDOS_TASSETS.value,
-    ItemIDs.AMULET_OF_FURY.value,
+    {'id': ItemIDs.DRAGON_DEFENDER.value, 'consume': 'Wield'},
+    {'id': ItemIDs.ZAMORAK_CLOAK.value, 'consume': 'Wear'},
+    {'id': ItemIDs.SLAYER_HELMET_I.value, 'consume': 'Wear'},
+    {'id': ItemIDs.ARMADYL_BRACERS.value, 'consume': 'Wear'},
+    {'id': ItemIDs.BRIMSTONE_RING.value, 'consume': 'Wear'},
+    {'id': ItemIDs.DRAGON_BOOTS.value, 'consume': 'Wear'},
+    {'id': ItemIDs.BANDOS_CHESTPLATE.value, 'consume': 'Wear'},
+    {'id': ItemIDs.BANDOS_TASSETS.value, 'consume': 'Wear'},
+    {'id': ItemIDs.AMULET_OF_FURY.value, 'consume': 'Wear'},
+    {'id': ItemIDs.OSMUMTENS_FANG.value, 'consume': 'Wield'},
+    {'id': ItemIDs.HOLY_BLESSING.value, 'consume': 'Equip'},
 ]
 
 banking_config_equipment = {
@@ -66,36 +61,11 @@ banking_config_supplies = {
     'search': [{'query': 'slayer', 'items': supplies}]
 }
 
-pot_config = slayer_killer.PotConfig(super_combat=True)
+pot_config = slayer_killer.PotConfig(super_atk=True, super_str=True)
 
 
 def pre_log():
-    safe_tile = {
-        'x': 2898,
-        'y': 5315,
-        'z': 2
-    }
-    safe_tile_string = f'{safe_tile["x"]},{safe_tile["y"]},{safe_tile["z"]}'
-    qh = osrs.queryHelper.QueryHelper()
-    qh.set_tiles({safe_tile_string})
-    qh.set_player_world_location()
-    last_off_tile = datetime.datetime.now()
-    while True:
-        qh.query_backend()
-        if qh.get_player_world_location('x') != safe_tile["x"] \
-                or qh.get_player_world_location('y') != safe_tile["y"]:
-            last_off_tile = datetime.datetime.now()
-
-        if qh.get_player_world_location('x') == safe_tile["x"] \
-                and qh.get_player_world_location('y') == safe_tile["y"]:
-            if (datetime.datetime.now() - last_off_tile).total_seconds() > 11:
-                return
-            if (datetime.datetime.now() - last_off_tile).total_seconds() > 3:
-                osrs.player.turn_off_all_prayers()
-        elif qh.get_tiles(safe_tile_string):
-            osrs.move.fast_click(qh.get_tiles(safe_tile_string))
-        else:
-            osrs.move.follow_path(qh.get_player_world_location(), safe_tile)
+    osrs.clock.random_sleep(11, 12)
 
 
 def main():
@@ -103,22 +73,7 @@ def main():
     qh.set_inventory()
     task_started = False
     while True:
-        qh.query_backend()
-        print('starting function')
-        if not task_started:
-            success = osrs.bank.banking_handler(banking_config_equipment)
-            if not success:
-                print('failed to withdraw equipment.')
-                return False
-            osrs.clock.sleep_one_tick()
-            qh.query_backend()
-            for item in qh.get_inventory():
-                osrs.move.click(item)
-            qh.query_backend()
-        success = osrs.bank.banking_handler(banking_config_supplies)
-        if not success:
-            print('failed to withdraw supplies.')
-            return False
+        bank(qh, task_started, equipment, supplies)
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
         osrs.clock.sleep_one_tick()

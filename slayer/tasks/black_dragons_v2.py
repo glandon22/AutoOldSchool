@@ -9,33 +9,35 @@ import osrs.move
 from osrs.item_ids import ItemIDs
 from slayer import transport_functions
 from combat import slayer_killer
+from slayer.utils import bank
 
 varrock_tele_widget_id = '218,23'
 fally_tele_widget_id = '218,29'
 
 
+equipment = [
+    {'id': ItemIDs.DRAGONFIRE_SHIELD.value, 'consume': 'Wield'},
+    {'id': ItemIDs.FIRE_CAPE.value, 'consume': 'Wear'},
+    {'id': ItemIDs.SLAYER_HELMET_I.value, 'consume': 'Wear'},
+    {'id': ItemIDs.BARROWS_GLOVES.value, 'consume': 'Wear'},
+    {'id': ItemIDs.BRIMSTONE_RING.value, 'consume': 'Wear'},
+    {'id': ItemIDs.DRAGON_BOOTS.value, 'consume': 'Wear'},
+    {'id': ItemIDs.BANDOS_CHESTPLATE.value, 'consume': 'Wear'},
+    {'id': ItemIDs.BANDOS_TASSETS.value, 'consume': 'Wear'},
+    {'id': ItemIDs.AMULET_OF_FURY.value, 'consume': 'Wear'},
+    {'id': ItemIDs.DRAGON_HUNTER_LANCE.value, 'consume': 'Wield'},
+    {'id': ItemIDs.HOLY_BLESSING.value, 'consume': 'Equip'},
+]
+
 supplies = [
-    ItemIDs.SUPER_COMBAT_POTION4.value,
-    ItemIDs.SUPER_COMBAT_POTION4.value,
+    ItemIDs.SUPER_STRENGTH4.value,
+    ItemIDs.SUPER_ATTACK4.value,
     ItemIDs.RUNE_POUCH.value,
-    ItemIDs.KARAMJA_GLOVES_3.value,
+    ItemIDs.KARAMJA_GLOVES_4.value,
     {
         'id': ItemIDs.MONKFISH.value,
         'quantity': 'All'
     },
-]
-
-equipment = [
-    ItemIDs.DRAGON_HUNTER_LANCE.value,
-    ItemIDs.RUNE_DEFENDER.value,
-    ItemIDs.BARROWS_GLOVES.value,
-    ItemIDs.FIRE_CAPE.value,
-    ItemIDs.SLAYER_HELMET_I.value,
-    ItemIDs.BRIMSTONE_RING.value,
-    ItemIDs.DRAGON_BOOTS.value,
-    ItemIDs.BANDOS_CHESTPLATE.value,
-    ItemIDs.BANDOS_TASSETS.value,
-    ItemIDs.AMULET_OF_FURY.value,
 ]
 
 banking_config_equipment = {
@@ -50,7 +52,7 @@ banking_config_supplies = {
     'search': [{'query': 'slayer', 'items': supplies}]
 }
 
-pot_config = slayer_killer.PotConfig(super_combat=True)
+pot_config = slayer_killer.PotConfig(super_atk=True, super_str=True)
 
 
 def pre_log():
@@ -87,22 +89,7 @@ def main():
     qh.set_inventory()
     task_started = False
     while True:
-        qh.query_backend()
-        print('starting function')
-        if not task_started:
-            success = osrs.bank.banking_handler(banking_config_equipment)
-            if not success:
-                print('failed to withdraw equipment.')
-                return False
-            osrs.clock.sleep_one_tick()
-            qh.query_backend()
-            for item in qh.get_inventory():
-                osrs.move.click(item)
-            qh.query_backend()
-        success = osrs.bank.banking_handler(banking_config_supplies)
-        if not success:
-            print('failed to withdraw supplies.')
-            return False
+        bank(qh, task_started, equipment, supplies)
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
         osrs.clock.sleep_one_tick()
