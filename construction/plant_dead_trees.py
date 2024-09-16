@@ -8,14 +8,14 @@ build_widget = '458,0'
 planted_tree = 4531
 tree_space = 15362
 watering_can_list = [
-    osrs.item_ids.ItemIDs.WATERING_CAN1.value,
-    osrs.item_ids.ItemIDs.WATERING_CAN2.value,
-    osrs.item_ids.ItemIDs.WATERING_CAN3.value,
-    osrs.item_ids.ItemIDs.WATERING_CAN4.value,
-    osrs.item_ids.ItemIDs.WATERING_CAN5.value,
-    osrs.item_ids.ItemIDs.WATERING_CAN6.value,
-    osrs.item_ids.ItemIDs.WATERING_CAN7.value,
-    osrs.item_ids.ItemIDs.WATERING_CAN.value,
+    osrs.item_ids.WATERING_CAN1,
+    osrs.item_ids.WATERING_CAN2,
+    osrs.item_ids.WATERING_CAN3,
+    osrs.item_ids.WATERING_CAN4,
+    osrs.item_ids.WATERING_CAN5,
+    osrs.item_ids.WATERING_CAN6,
+    osrs.item_ids.WATERING_CAN7,
+    osrs.item_ids.WATERING_CAN,
 ]
 
 def leave_house():
@@ -63,8 +63,8 @@ def main():
         if (
                 2944 <= qh.get_player_world_location('x') <= 2964
                 and 3208 <= qh.get_player_world_location('y') <= 3232
-                and not qh.get_inventory(osrs.item_ids.ItemIDs.BAGGED_DEAD_TREE.value + 1)
-                and not qh.get_inventory(osrs.item_ids.ItemIDs.BAGGED_DEAD_TREE.value)
+                and not qh.get_inventory(osrs.item_ids.BAGGED_DEAD_TREE + 1)
+                and not qh.get_inventory(osrs.item_ids.BAGGED_DEAD_TREE)
         ):
             return
         # exchange all noted BAGGED_DEAD_TREEs with phials
@@ -72,16 +72,16 @@ def main():
             osrs.keeb.write(str(qh.get_chat_options('Exchange All', fuzzy=True)))
         # use BAGGED_DEAD_TREEs on phials
         elif (
-                not qh.get_inventory(osrs.item_ids.ItemIDs.BAGGED_DEAD_TREE.value)
-                and qh.get_inventory(osrs.item_ids.ItemIDs.BAGGED_DEAD_TREE.value + 1)
+                not qh.get_inventory(osrs.item_ids.BAGGED_DEAD_TREE)
+                and qh.get_inventory(osrs.item_ids.BAGGED_DEAD_TREE + 1)
                 and (datetime.datetime.now() - last_phials_click).total_seconds() > 8
                 and len(qh.get_npcs_by_name()) > 0):
-            osrs.move.fast_click(qh.get_inventory(osrs.item_ids.ItemIDs.BAGGED_DEAD_TREE.value + 1))
+            osrs.move.fast_click(qh.get_inventory(osrs.item_ids.BAGGED_DEAD_TREE + 1))
             res = osrs.move.right_click_v6(qh.get_npcs_by_name()[0], 'Use', qh.get_canvas(), in_inv=True)
             if res:
                 last_phials_click = datetime.datetime.now()
         # fill watering cans
-        elif qh.get_inventory(watering_can_list) and qh.get_inventory(osrs.item_ids.ItemIDs.BAGGED_DEAD_TREE.value) and qh.get_player_world_location('x') < 3500:
+        elif qh.get_inventory(watering_can_list) and qh.get_inventory(osrs.item_ids.BAGGED_DEAD_TREE) and qh.get_player_world_location('x') < 3500:
             if (qh.get_objects_v2('game', sink_id)
                     and (datetime.datetime.now() - last_can_fill).total_seconds() > 30):
                 osrs.move.click(qh.get_inventory(watering_can_list))
@@ -96,7 +96,7 @@ def main():
                 osrs.move.go_to_loc(2960, 3213)
         # have BAGGED_DEAD_TREEs, click the house portal
         elif (
-                qh.get_inventory(osrs.item_ids.ItemIDs.BAGGED_DEAD_TREE.value)
+                qh.get_inventory(osrs.item_ids.BAGGED_DEAD_TREE)
                 and (datetime.datetime.now() - last_portal_click).total_seconds() > 8
                 and qh.get_objects_v2('game', portal_id)
         ):
@@ -108,7 +108,7 @@ def main():
         # i am in house
         elif qh.get_player_world_location('x') > 3500:
             # in house w BAGGED_DEAD_TREEs, build!
-            if qh.get_inventory(osrs.item_ids.ItemIDs.BAGGED_DEAD_TREE.value):
+            if qh.get_inventory(osrs.item_ids.BAGGED_DEAD_TREE):
                 # removing chair
                 if (qh.get_objects_v2('game', planted_tree)
                         and (datetime.datetime.now() - last_chair_removal).total_seconds() > 4):

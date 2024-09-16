@@ -176,8 +176,8 @@ def walk_to_wizards_tower():
 
 
 def glory_to_draynor():
-    glories = [osrs.item_ids.ItemIDs.AMULET_OF_GLORY6.value, osrs.item_ids.ItemIDs.AMULET_OF_GLORY5.value,
-               osrs.item_ids.ItemIDs.AMULET_OF_GLORY4.value]
+    glories = [osrs.item_ids.AMULET_OF_GLORY6, osrs.item_ids.AMULET_OF_GLORY5,
+               osrs.item_ids.AMULET_OF_GLORY4]
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.set_player_world_location()
@@ -490,9 +490,9 @@ def tab_to_fally():
             osrs.clock.sleep_one_tick()
             osrs.clock.sleep_one_tick()
             return
-        elif qh.get_inventory(osrs.item_ids.ItemIDs.FALADOR_TELEPORT.value) and (
+        elif qh.get_inventory(osrs.item_ids.FALADOR_TELEPORT) and (
                 datetime.datetime.now() - last_tab).total_seconds() > 10:
-            osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.FALADOR_TELEPORT.value))
+            osrs.move.click(qh.get_inventory(osrs.item_ids.FALADOR_TELEPORT))
             last_tab = datetime.datetime.now()
 
 
@@ -625,9 +625,9 @@ def tab_to_lumby():
             osrs.clock.sleep_one_tick()
             osrs.clock.sleep_one_tick()
             return
-        elif qh.get_inventory(osrs.item_ids.ItemIDs.LUMBRIDGE_TELEPORT.value) and (
+        elif qh.get_inventory(osrs.item_ids.LUMBRIDGE_TELEPORT) and (
                 datetime.datetime.now() - last_tab).total_seconds() > 10:
-            osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.LUMBRIDGE_TELEPORT.value))
+            osrs.move.click(qh.get_inventory(osrs.item_ids.LUMBRIDGE_TELEPORT))
             last_tab = datetime.datetime.now()
 
 
@@ -663,11 +663,11 @@ def talk_to_lumby_duke():
 
 def necklace_of_passage_tele_wiz_tower():
     necklace_ids = [
-            osrs.item_ids.ItemIDs.NECKLACE_OF_PASSAGE5.value,
-            osrs.item_ids.ItemIDs.NECKLACE_OF_PASSAGE4.value,
-            osrs.item_ids.ItemIDs.NECKLACE_OF_PASSAGE3.value,
-            osrs.item_ids.ItemIDs.NECKLACE_OF_PASSAGE2.value,
-            osrs.item_ids.ItemIDs.NECKLACE_OF_PASSAGE1.value,
+            osrs.item_ids.NECKLACE_OF_PASSAGE5,
+            osrs.item_ids.NECKLACE_OF_PASSAGE4,
+            osrs.item_ids.NECKLACE_OF_PASSAGE3,
+            osrs.item_ids.NECKLACE_OF_PASSAGE2,
+            osrs.item_ids.NECKLACE_OF_PASSAGE1,
         ]
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
@@ -688,11 +688,11 @@ def necklace_of_passage_tele_wiz_tower():
 
 def necklace_of_passage_tele_outpost():
     necklace_ids = [
-            osrs.item_ids.ItemIDs.NECKLACE_OF_PASSAGE5.value,
-            osrs.item_ids.ItemIDs.NECKLACE_OF_PASSAGE4.value,
-            osrs.item_ids.ItemIDs.NECKLACE_OF_PASSAGE3.value,
-            osrs.item_ids.ItemIDs.NECKLACE_OF_PASSAGE2.value,
-            osrs.item_ids.ItemIDs.NECKLACE_OF_PASSAGE1.value,
+            osrs.item_ids.NECKLACE_OF_PASSAGE5,
+            osrs.item_ids.NECKLACE_OF_PASSAGE4,
+            osrs.item_ids.NECKLACE_OF_PASSAGE3,
+            osrs.item_ids.NECKLACE_OF_PASSAGE2,
+            osrs.item_ids.NECKLACE_OF_PASSAGE1,
         ]
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
@@ -713,14 +713,14 @@ def necklace_of_passage_tele_outpost():
 
 def games_neck_to_barb():
     necklace_ids = [
-            osrs.item_ids.ItemIDs.GAMES_NECKLACE8.value,
-            osrs.item_ids.ItemIDs.GAMES_NECKLACE7.value,
-            osrs.item_ids.ItemIDs.GAMES_NECKLACE6.value,
-            osrs.item_ids.ItemIDs.GAMES_NECKLACE5.value,
-            osrs.item_ids.ItemIDs.GAMES_NECKLACE4.value,
-            osrs.item_ids.ItemIDs.GAMES_NECKLACE3.value,
-            osrs.item_ids.ItemIDs.GAMES_NECKLACE2.value,
-            osrs.item_ids.ItemIDs.GAMES_NECKLACE1.value,
+            osrs.item_ids.GAMES_NECKLACE8,
+            osrs.item_ids.GAMES_NECKLACE7,
+            osrs.item_ids.GAMES_NECKLACE6,
+            osrs.item_ids.GAMES_NECKLACE5,
+            osrs.item_ids.GAMES_NECKLACE4,
+            osrs.item_ids.GAMES_NECKLACE3,
+            osrs.item_ids.GAMES_NECKLACE2,
+            osrs.item_ids.GAMES_NECKLACE1,
         ]
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
@@ -741,14 +741,14 @@ def games_neck_to_barb():
 
 def games_neck_to_burthorpe():
     necklace_ids = [
-            osrs.item_ids.ItemIDs.GAMES_NECKLACE8.value,
-            osrs.item_ids.ItemIDs.GAMES_NECKLACE7.value,
-            osrs.item_ids.ItemIDs.GAMES_NECKLACE6.value,
-            osrs.item_ids.ItemIDs.GAMES_NECKLACE5.value,
-            osrs.item_ids.ItemIDs.GAMES_NECKLACE4.value,
-            osrs.item_ids.ItemIDs.GAMES_NECKLACE3.value,
-            osrs.item_ids.ItemIDs.GAMES_NECKLACE2.value,
-            osrs.item_ids.ItemIDs.GAMES_NECKLACE1.value,
+            osrs.item_ids.GAMES_NECKLACE8,
+            osrs.item_ids.GAMES_NECKLACE7,
+            osrs.item_ids.GAMES_NECKLACE6,
+            osrs.item_ids.GAMES_NECKLACE5,
+            osrs.item_ids.GAMES_NECKLACE4,
+            osrs.item_ids.GAMES_NECKLACE3,
+            osrs.item_ids.GAMES_NECKLACE2,
+            osrs.item_ids.GAMES_NECKLACE1,
         ]
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
@@ -769,14 +769,14 @@ def games_neck_to_burthorpe():
 
 def dueling_to_c_wars():
     necklace_ids = [
-            osrs.item_ids.ItemIDs.RING_OF_DUELING8.value,
-            osrs.item_ids.ItemIDs.RING_OF_DUELING7.value,
-            osrs.item_ids.ItemIDs.RING_OF_DUELING6.value,
-            osrs.item_ids.ItemIDs.RING_OF_DUELING5.value,
-            osrs.item_ids.ItemIDs.RING_OF_DUELING4.value,
-            osrs.item_ids.ItemIDs.RING_OF_DUELING3.value,
-            osrs.item_ids.ItemIDs.RING_OF_DUELING2.value,
-            osrs.item_ids.ItemIDs.RING_OF_DUELING1.value,
+            osrs.item_ids.RING_OF_DUELING8,
+            osrs.item_ids.RING_OF_DUELING7,
+            osrs.item_ids.RING_OF_DUELING6,
+            osrs.item_ids.RING_OF_DUELING5,
+            osrs.item_ids.RING_OF_DUELING4,
+            osrs.item_ids.RING_OF_DUELING3,
+            osrs.item_ids.RING_OF_DUELING2,
+            osrs.item_ids.RING_OF_DUELING1,
         ]
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
@@ -820,7 +820,7 @@ def tab_to_ardy():
             osrs.clock.sleep_one_tick()
             osrs.clock.sleep_one_tick()
             return
-        elif qh.get_inventory(osrs.item_ids.ItemIDs.ARDOUGNE_TELEPORT.value) and (
+        elif qh.get_inventory(osrs.item_ids.ARDOUGNE_TELEPORT) and (
                 datetime.datetime.now() - last_tab).total_seconds() > 10:
-            osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.ARDOUGNE_TELEPORT.value))
+            osrs.move.click(qh.get_inventory(osrs.item_ids.ARDOUGNE_TELEPORT))
             last_tab = datetime.datetime.now()

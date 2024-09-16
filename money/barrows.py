@@ -19,26 +19,26 @@ tunnel_monsters_for_points = [
 ]
 
 equipment = [
-    osrs.item_ids.ItemIDs.PRAYER_POTION4.value,
-    osrs.item_ids.ItemIDs.PRAYER_POTION4.value,
-    osrs.item_ids.ItemIDs.SHARK.value,
-    osrs.item_ids.ItemIDs.SHARK.value,
-    osrs.item_ids.ItemIDs.SHARK.value,
-    osrs.item_ids.ItemIDs.SHARK.value,
-    osrs.item_ids.ItemIDs.SHARK.value,
-    osrs.item_ids.ItemIDs.SHARK.value,
-    osrs.item_ids.ItemIDs.SHARK.value,
-    osrs.item_ids.ItemIDs.SHARK.value,
-    osrs.item_ids.ItemIDs.SPADE.value,
-    osrs.item_ids.ItemIDs.TOXIC_BLOWPIPE.value,
-    osrs.item_ids.ItemIDs.RUNE_POUCH.value,
-    osrs.item_ids.ItemIDs.ABYSSAL_WHIP.value,
-    osrs.item_ids.ItemIDs.AVAS_ACCUMULATOR.value,
-    osrs.item_ids.ItemIDs.SALVE_AMULETEI.value,
+    osrs.item_ids.PRAYER_POTION4,
+    osrs.item_ids.PRAYER_POTION4,
+    osrs.item_ids.SHARK,
+    osrs.item_ids.SHARK,
+    osrs.item_ids.SHARK,
+    osrs.item_ids.SHARK,
+    osrs.item_ids.SHARK,
+    osrs.item_ids.SHARK,
+    osrs.item_ids.SHARK,
+    osrs.item_ids.SHARK,
+    osrs.item_ids.SPADE,
+    osrs.item_ids.TOXIC_BLOWPIPE,
+    osrs.item_ids.RUNE_POUCH,
+    osrs.item_ids.ABYSSAL_WHIP,
+    osrs.item_ids.AVAS_ACCUMULATOR,
+    osrs.item_ids.SALVE_AMULETEI,
     {
         'id': [
-            osrs.item_ids.ItemIDs.STRANGE_OLD_LOCKPICK_FULL.value,
-            osrs.item_ids.ItemIDs.STRANGE_OLD_LOCKPICK.value,
+            osrs.item_ids.STRANGE_OLD_LOCKPICK_FULL,
+            osrs.item_ids.STRANGE_OLD_LOCKPICK,
         ],
         'quantity': '1'
     },
@@ -74,8 +74,8 @@ def enter_mound():
         qh.query_backend()
         if qh.get_player_world_location('z') == 3:
             return
-        elif qh.get_inventory(osrs.item_ids.ItemIDs.SPADE.value):
-            osrs.move.fast_click(qh.get_inventory(osrs.item_ids.ItemIDs.SPADE.value))
+        elif qh.get_inventory(osrs.item_ids.SPADE):
+            osrs.move.fast_click(qh.get_inventory(osrs.item_ids.SPADE))
 
 
 def find_my_target(brother):
@@ -222,16 +222,16 @@ def kill_all_brothers():
         if brother.as_dict()['npc_id'] == 1672:
             logger.info("equipping ranging gear to fight ahrim.")
             osrs.player.equip_item([
-                osrs.item_ids.ItemIDs.TOXIC_BLOWPIPE.value,
-                osrs.item_ids.ItemIDs.AVAS_ACCUMULATOR.value,
+                osrs.item_ids.TOXIC_BLOWPIPE,
+                osrs.item_ids.AVAS_ACCUMULATOR,
             ])
         brother_in_tunnel = awaken_brother(brother, brother_in_tunnel)
         if brother.as_dict()['npc_id'] == 1672:
             logger.info("equiping mage gear after ahrim fight.")
             osrs.player.equip_item([
-                osrs.item_ids.ItemIDs.TRIDENT_OF_THE_SWAMP.value,
-                osrs.item_ids.ItemIDs.ELIDINIS_WARD.value,
-                osrs.item_ids.ItemIDs.IMBUED_GUTHIX_CAPE.value,
+                osrs.item_ids.TRIDENT_OF_THE_SWAMP,
+                osrs.item_ids.ELIDINIS_WARD,
+                osrs.item_ids.IMBUED_GUTHIX_CAPE,
             ])
     return brother_in_tunnel
 
@@ -252,9 +252,9 @@ def click_lock_pick():
     qh.set_inventory()
     qh.query_backend()
     if qh.get_inventory(
-            [osrs.item_ids.ItemIDs.STRANGE_OLD_LOCKPICK.value, osrs.item_ids.ItemIDs.STRANGE_OLD_LOCKPICK_FULL.value]
+            [osrs.item_ids.STRANGE_OLD_LOCKPICK, osrs.item_ids.STRANGE_OLD_LOCKPICK_FULL]
     ):
-        osrs.move.fast_click(qh.get_inventory([osrs.item_ids.ItemIDs.STRANGE_OLD_LOCKPICK.value, osrs.item_ids.ItemIDs.STRANGE_OLD_LOCKPICK_FULL.value]))
+        osrs.move.fast_click(qh.get_inventory([osrs.item_ids.STRANGE_OLD_LOCKPICK, osrs.item_ids.STRANGE_OLD_LOCKPICK_FULL]))
 
 
 def kill_tunnel_monster(x_min, x_max, y_min, y_max):
@@ -287,9 +287,9 @@ def go_to_chest(brother):
         # In Chest room
         if 3546 <= qh.get_player_world_location('x') <= 3557 and 9689 <= qh.get_player_world_location('y') <= 9700:
             osrs.player.equip_item([
-                osrs.item_ids.ItemIDs.TRIDENT_OF_THE_SWAMP.value,
-                osrs.item_ids.ItemIDs.ELIDINIS_WARD.value,
-                osrs.item_ids.ItemIDs.OCCULT_NECKLACE.value,
+                osrs.item_ids.TRIDENT_OF_THE_SWAMP,
+                osrs.item_ids.ELIDINIS_WARD,
+                osrs.item_ids.OCCULT_NECKLACE,
             ])
             curr_time = datetime.datetime.now()
             osrs.move.interact_with_object(
@@ -387,11 +387,11 @@ def handle_banking():
     qh.query_backend()
     # bank if inv is almost full, i have less than 4 sharks, no full prayer pots, or no more strange old lockpicks
     if len(qh.get_inventory()) > 24 \
-        or not qh.get_inventory(osrs.item_ids.ItemIDs.PRAYER_POTION4.value) \
-            or (not qh.get_inventory(osrs.item_ids.ItemIDs.STRANGE_OLD_LOCKPICK.value)
-                and not qh.get_inventory(osrs.item_ids.ItemIDs.STRANGE_OLD_LOCKPICK_FULL.value)
+        or not qh.get_inventory(osrs.item_ids.PRAYER_POTION4) \
+            or (not qh.get_inventory(osrs.item_ids.STRANGE_OLD_LOCKPICK)
+                and not qh.get_inventory(osrs.item_ids.STRANGE_OLD_LOCKPICK_FULL)
                 ) \
-            or osrs.inv.get_item_quantity_in_inv(qh.get_inventory(), osrs.item_ids.ItemIDs.SHARK.value) < 4:
+            or osrs.inv.get_item_quantity_in_inv(qh.get_inventory(), osrs.item_ids.SHARK) < 4:
         osrs.game.cast_spell(varrock_tele_widget_id)
         osrs.bank.banking_handler({
             'dump_inv': True,
@@ -409,22 +409,22 @@ def main():
         brother_in_tunnel = kill_all_brothers()
         enter_crypt(brother_in_tunnel)
         osrs.player.equip_item([
-            osrs.item_ids.ItemIDs.ABYSSAL_WHIP.value,
-            osrs.item_ids.ItemIDs.SALVE_AMULETEI.value,
+            osrs.item_ids.ABYSSAL_WHIP,
+            osrs.item_ids.SALVE_AMULETEI,
         ])
         go_to_chest(brother_in_tunnel)
         if brother_in_tunnel.as_dict()['npc_id'] == 1672:
             osrs.player.equip_item([
-                osrs.item_ids.ItemIDs.TOXIC_BLOWPIPE.value,
-                osrs.item_ids.ItemIDs.AVAS_ACCUMULATOR.value,
+                osrs.item_ids.TOXIC_BLOWPIPE,
+                osrs.item_ids.AVAS_ACCUMULATOR,
             ])
         overhead_prayer = ['protect_range'] if brother_in_tunnel.as_dict()['npc_id'] == 1675 else ['protect_melee']
         kill_brother_final(brother_in_tunnel.as_dict()['npc_id'], overhead_prayer)
         if brother_in_tunnel.as_dict()['npc_id'] == 1672:
             osrs.player.equip_item([
-                osrs.item_ids.ItemIDs.TRIDENT_OF_THE_SWAMP.value,
-                osrs.item_ids.ItemIDs.ELIDINIS_WARD.value,
-                osrs.item_ids.ItemIDs.IMBUED_GUTHIX_CAPE.value,
+                osrs.item_ids.TRIDENT_OF_THE_SWAMP,
+                osrs.item_ids.ELIDINIS_WARD,
+                osrs.item_ids.IMBUED_GUTHIX_CAPE,
             ])
         loot_chest()
         handle_banking()

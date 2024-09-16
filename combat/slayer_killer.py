@@ -2,7 +2,6 @@ import datetime
 
 import pyautogui
 import osrs
-from osrs.item_ids import ItemIDs
 
 
 class PotConfig:
@@ -43,72 +42,72 @@ ANTIFIRE_VARBIT = '3981'
 
 pot_matcher = {
     "SUPER_COMBATS": [
-        ItemIDs.SUPER_COMBAT_POTION4.value,
-        ItemIDs.SUPER_COMBAT_POTION3.value,
-        ItemIDs.SUPER_COMBAT_POTION2.value,
-        ItemIDs.SUPER_COMBAT_POTION1.value
+        osrs.item_ids.SUPER_COMBAT_POTION4,
+        osrs.item_ids.SUPER_COMBAT_POTION3,
+        osrs.item_ids.SUPER_COMBAT_POTION2,
+        osrs.item_ids.SUPER_COMBAT_POTION1
     ],
     "SUPER_ATTACK": [
-        ItemIDs.SUPER_ATTACK4.value,
-        ItemIDs.SUPER_ATTACK3.value,
-        ItemIDs.SUPER_ATTACK2.value,
-        ItemIDs.SUPER_ATTACK1.value,
+        osrs.item_ids.SUPER_ATTACK4,
+        osrs.item_ids.SUPER_ATTACK3,
+        osrs.item_ids.SUPER_ATTACK2,
+        osrs.item_ids.SUPER_ATTACK1,
     ],
     "SUPER_STRENGTH": [
-        ItemIDs.SUPER_STRENGTH4.value,
-        ItemIDs.SUPER_STRENGTH3.value,
-        ItemIDs.SUPER_STRENGTH2.value,
-        ItemIDs.SUPER_STRENGTH1.value,
+        osrs.item_ids.SUPER_STRENGTH4,
+        osrs.item_ids.SUPER_STRENGTH3,
+        osrs.item_ids.SUPER_STRENGTH2,
+        osrs.item_ids.SUPER_STRENGTH1,
     ],
     "SUPER_DEFENCE": [
-        ItemIDs.SUPER_DEFENCE4.value,
-        ItemIDs.SUPER_DEFENCE3.value,
-        ItemIDs.SUPER_DEFENCE2.value,
-        ItemIDs.SUPER_DEFENCE1.value,
+        osrs.item_ids.SUPER_DEFENCE4,
+        osrs.item_ids.SUPER_DEFENCE3,
+        osrs.item_ids.SUPER_DEFENCE2,
+        osrs.item_ids.SUPER_DEFENCE1,
     ],
     "RANGING_POTION": [
-        ItemIDs.RANGING_POTION4.value,
-        ItemIDs.RANGING_POTION3.value,
-        ItemIDs.RANGING_POTION2.value,
-        ItemIDs.RANGING_POTION1.value,
+        osrs.item_ids.RANGING_POTION4,
+        osrs.item_ids.RANGING_POTION3,
+        osrs.item_ids.RANGING_POTION2,
+        osrs.item_ids.RANGING_POTION1,
     ],
     "MAGIC_POTION": [
-        ItemIDs.MAGIC_POTION4.value,
-        ItemIDs.MAGIC_POTION3.value,
-        ItemIDs.MAGIC_POTION2.value,
-        ItemIDs.MAGIC_POTION1.value,
+        osrs.item_ids.MAGIC_POTION4,
+        osrs.item_ids.MAGIC_POTION3,
+        osrs.item_ids.MAGIC_POTION2,
+        osrs.item_ids.MAGIC_POTION1,
     ],
     "SUPER_ANTI_POISION": [
-        ItemIDs.SUPERANTIPOISON4.value,
-        ItemIDs.SUPERANTIPOISON3.value,
-        ItemIDs.SUPERANTIPOISON2.value,
-        ItemIDs.SUPERANTIPOISON1.value,
+        osrs.item_ids.SUPERANTIPOISON4,
+        osrs.item_ids.SUPERANTIPOISON3,
+        osrs.item_ids.SUPERANTIPOISON2,
+        osrs.item_ids.SUPERANTIPOISON1,
     ],
     "EXTENDED_ANTIFIRE": [
-        ItemIDs.EXTENDED_ANTIFIRE4.value,
-        ItemIDs.EXTENDED_ANTIFIRE3.value,
-        ItemIDs.EXTENDED_ANTIFIRE2.value,
-        ItemIDs.EXTENDED_ANTIFIRE1.value,
+        osrs.item_ids.EXTENDED_ANTIFIRE4,
+        osrs.item_ids.EXTENDED_ANTIFIRE3,
+        osrs.item_ids.EXTENDED_ANTIFIRE2,
+        osrs.item_ids.EXTENDED_ANTIFIRE1,
     ],
     "PRAYER": [
-        ItemIDs.PRAYER_POTION4.value,
-        ItemIDs.PRAYER_POTION3.value,
-        ItemIDs.PRAYER_POTION2.value,
-        ItemIDs.PRAYER_POTION1.value,
+        osrs.item_ids.PRAYER_POTION4,
+        osrs.item_ids.PRAYER_POTION3,
+        osrs.item_ids.PRAYER_POTION2,
+        osrs.item_ids.PRAYER_POTION1,
     ],
     "ANTIVENOM": [
-        ItemIDs.EXTENDED_ANTIVENOM4.value,
-        ItemIDs.EXTENDED_ANTIVENOM3.value,
-        ItemIDs.EXTENDED_ANTIVENOM2.value,
-        ItemIDs.EXTENDED_ANTIVENOM1.value,
-        ItemIDs.ANTIVENOM4.value,
-        ItemIDs.ANTIVENOM3.value,
-        ItemIDs.ANTIVENOM2.value,
-        ItemIDs.ANTIVENOM1.value,
-        ItemIDs.ANTIVENOM4_12913.value,
-        ItemIDs.ANTIVENOM3_12915.value,
-        ItemIDs.ANTIVENOM2_12917.value,
-        ItemIDs.ANTIVENOM1_12919.value,
+        osrs.item_ids.EXTENDED_ANTIVENOM4,
+        osrs.item_ids.EXTENDED_ANTIVENOM3,
+        osrs.item_ids.EXTENDED_ANTIVENOM2,
+        osrs.item_ids.EXTENDED_ANTIVENOM1,
+        osrs.item_ids.ANTIVENOM4,
+        osrs.item_ids.ANTIVENOM3,
+        osrs.item_ids.ANTIVENOM2,
+        osrs.item_ids.ANTIVENOM1,
+        osrs.item_ids.ANTIVENOM4_12913,
+        osrs.item_ids.ANTIVENOM3_12915,
+        osrs.item_ids.ANTIVENOM2_12917,
+        osrs.item_ids.ANTIVENOM1_12919,
     ]
 
 }

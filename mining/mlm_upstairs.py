@@ -21,12 +21,12 @@ ore_locs = {
 }
 
 loot = [
-    osrs.item_ids.ItemIDs.GOLDEN_NUGGET.value,
-    osrs.item_ids.ItemIDs.RUNITE_ORE.value,
-    osrs.item_ids.ItemIDs.ADAMANTITE_ORE.value,
-    osrs.item_ids.ItemIDs.MITHRIL_ORE.value,
-    osrs.item_ids.ItemIDs.GOLD_ORE.value,
-    osrs.item_ids.ItemIDs.COAL.value,
+    osrs.item_ids.GOLDEN_NUGGET,
+    osrs.item_ids.RUNITE_ORE,
+    osrs.item_ids.ADAMANTITE_ORE,
+    osrs.item_ids.MITHRIL_ORE,
+    osrs.item_ids.GOLD_ORE,
+    osrs.item_ids.COAL,
 ]
 
 rockfall_id = '26679'  # game object id
@@ -62,7 +62,7 @@ def mine_ore():
                 last_return_tile_click = datetime.datetime.now()
         elif qh.get_inventory() and len(qh.get_inventory()) == 28:
             logger.info('inv is full, done mining.')
-            return osrs.inv.get_item_quantity_in_inv(qh.get_inventory(), osrs.item_ids.ItemIDs.PAYDIRT.value)
+            return osrs.inv.get_item_quantity_in_inv(qh.get_inventory(), osrs.item_ids.PAYDIRT)
         elif not qh.get_is_mining() and (datetime.datetime.now() - last_mining).total_seconds() > 1.5:
             logger.info('have not been mining for over 1.5 seconds.')
             if qh.get_objects(osrs.queryHelper.ObjectTypes.WALL.value) and (

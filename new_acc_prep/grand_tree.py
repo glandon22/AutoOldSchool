@@ -42,7 +42,7 @@ def get_journal():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.GLOUGHS_JOURNAL.value):
+    if qh.get_inventory(osrs.item_ids.GLOUGHS_JOURNAL):
         osrs.clock.random_sleep(1, 1.1)
         osrs.keeb.press_key('space')
         osrs.keeb.press_key('esc')
@@ -61,15 +61,15 @@ def click_key():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.GLOUGHS_KEY.value):
-        osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.GLOUGHS_KEY.value))
+    if qh.get_inventory(osrs.item_ids.GLOUGHS_KEY):
+        osrs.move.click(qh.get_inventory(osrs.item_ids.GLOUGHS_KEY))
 
 
 def get_plans():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.INVASION_PLANS.value):
+    if qh.get_inventory(osrs.item_ids.INVASION_PLANS):
         return True
 
 
@@ -77,15 +77,15 @@ def click_t():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.TWIGS.value):
-        osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.TWIGS.value))
+    if qh.get_inventory(osrs.item_ids.TWIGS):
+        osrs.move.click(qh.get_inventory(osrs.item_ids.TWIGS))
 
 
 def place_t():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if not qh.get_inventory(osrs.item_ids.ItemIDs.TWIGS.value):
+    if not qh.get_inventory(osrs.item_ids.TWIGS):
         osrs.clock.sleep_one_tick()
         osrs.clock.sleep_one_tick()
         return True
@@ -95,15 +95,15 @@ def click_u():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.TWIGS_790.value):
-        osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.TWIGS_790.value))
+    if qh.get_inventory(osrs.item_ids.TWIGS_790):
+        osrs.move.click(qh.get_inventory(osrs.item_ids.TWIGS_790))
 
 
 def place_u():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if not qh.get_inventory(osrs.item_ids.ItemIDs.TWIGS_790.value):
+    if not qh.get_inventory(osrs.item_ids.TWIGS_790):
         osrs.clock.sleep_one_tick()
         osrs.clock.sleep_one_tick()
         return True
@@ -113,15 +113,15 @@ def click_z():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.TWIGS_791.value):
-        osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.TWIGS_791.value))
+    if qh.get_inventory(osrs.item_ids.TWIGS_791):
+        osrs.move.click(qh.get_inventory(osrs.item_ids.TWIGS_791))
 
 
 def place_z():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if not qh.get_inventory(osrs.item_ids.ItemIDs.TWIGS_791.value):
+    if not qh.get_inventory(osrs.item_ids.TWIGS_791):
         osrs.clock.sleep_one_tick()
         osrs.clock.sleep_one_tick()
         return True
@@ -131,15 +131,15 @@ def click_o():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.TWIGS_792.value):
-        osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.TWIGS_792.value))
+    if qh.get_inventory(osrs.item_ids.TWIGS_792):
+        osrs.move.click(qh.get_inventory(osrs.item_ids.TWIGS_792))
 
 
 def place_o():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if not qh.get_inventory(osrs.item_ids.ItemIDs.TWIGS_792.value):
+    if not qh.get_inventory(osrs.item_ids.TWIGS_792):
         osrs.clock.sleep_one_tick()
         osrs.clock.sleep_one_tick()
         return True
@@ -299,7 +299,7 @@ def click_roots():
             qh.set_tiles({root['walk_to']})
         while True:
             qh.query_backend()
-            if qh.get_inventory(osrs.item_ids.ItemIDs.DACONIA_ROCK.value):
+            if qh.get_inventory(osrs.item_ids.DACONIA_ROCK):
                 return True
             elif qh.get_widgets(util_functions.main_chat_widget):
                 osrs.keeb.press_key('space')
@@ -326,36 +326,36 @@ def main():
     osrs.move.interact_with_object(16683, 'z', 1, True, timeout=4)
     osrs.move.go_to_loc(2449, 3483, 1)
     quest_items = [
-        osrs.item_ids.ItemIDs.TRANSLATION_BOOK.value,
-        osrs.item_ids.ItemIDs.BARK_SAMPLE.value,
+        osrs.item_ids.TRANSLATION_BOOK,
+        osrs.item_ids.BARK_SAMPLE,
         {
             'id': [
-                osrs.item_ids.ItemIDs.PRAYER_POTION4.value,
-                osrs.item_ids.ItemIDs.PRAYER_POTION3.value,
-                osrs.item_ids.ItemIDs.PRAYER_POTION2.value,
-                osrs.item_ids.ItemIDs.PRAYER_POTION1.value,
+                osrs.item_ids.PRAYER_POTION4,
+                osrs.item_ids.PRAYER_POTION3,
+                osrs.item_ids.PRAYER_POTION2,
+                osrs.item_ids.PRAYER_POTION1,
             ],
             'quantity': '1'
         },
         {
             'id': [
-                osrs.item_ids.ItemIDs.NECKLACE_OF_PASSAGE5.value,
-                osrs.item_ids.ItemIDs.NECKLACE_OF_PASSAGE4.value,
-                osrs.item_ids.ItemIDs.NECKLACE_OF_PASSAGE3.value,
-                osrs.item_ids.ItemIDs.NECKLACE_OF_PASSAGE2.value,
+                osrs.item_ids.NECKLACE_OF_PASSAGE5,
+                osrs.item_ids.NECKLACE_OF_PASSAGE4,
+                osrs.item_ids.NECKLACE_OF_PASSAGE3,
+                osrs.item_ids.NECKLACE_OF_PASSAGE2,
             ],
             'quantity': '1'
         },
         {
             'id': [
-                osrs.item_ids.ItemIDs.RING_OF_DUELING8.value,
-                osrs.item_ids.ItemIDs.RING_OF_DUELING7.value,
-                osrs.item_ids.ItemIDs.RING_OF_DUELING6.value,
-                osrs.item_ids.ItemIDs.RING_OF_DUELING5.value,
-                osrs.item_ids.ItemIDs.RING_OF_DUELING4.value,
-                osrs.item_ids.ItemIDs.RING_OF_DUELING3.value,
-                osrs.item_ids.ItemIDs.RING_OF_DUELING2.value,
-                osrs.item_ids.ItemIDs.RING_OF_DUELING1.value,
+                osrs.item_ids.RING_OF_DUELING8,
+                osrs.item_ids.RING_OF_DUELING7,
+                osrs.item_ids.RING_OF_DUELING6,
+                osrs.item_ids.RING_OF_DUELING5,
+                osrs.item_ids.RING_OF_DUELING4,
+                osrs.item_ids.RING_OF_DUELING3,
+                osrs.item_ids.RING_OF_DUELING2,
+                osrs.item_ids.RING_OF_DUELING1,
             ],
             'quantity': '1'
         },
@@ -458,16 +458,16 @@ def main():
     osrs.move.interact_with_object(16683, 'z', 1, True, timeout=4)
     osrs.move.go_to_loc(2449, 3483, 1)
     quest_items = [
-        osrs.item_ids.ItemIDs.STAFF_OF_AIR.value,
+        osrs.item_ids.STAFF_OF_AIR,
         {
             'id': [
-                osrs.item_ids.ItemIDs.FIRE_RUNE.value
+                osrs.item_ids.FIRE_RUNE
             ],
             'quantity': 'All'
         },
         {
             'id': [
-                osrs.item_ids.ItemIDs.MIND_RUNE.value,
+                osrs.item_ids.MIND_RUNE,
             ],
             'quantity': 'All'
         }
@@ -490,7 +490,7 @@ def main():
     osrs.move.interact_with_object(2442, 'z', 2, True, pre_interact=click_z, custom_exit_function=place_z, timeout=5, right_click_option='Use')
     osrs.move.interact_with_object(2443, 'z', 2, True, pre_interact=click_o, custom_exit_function=place_o, timeout=5, right_click_option='Use')
     pyautogui.scroll(-50)
-    util_functions.equip_staff_and_set_autocast(osrs.item_ids.ItemIDs.STAFF_OF_AIR.value, '201,1,4')
+    util_functions.equip_staff_and_set_autocast(osrs.item_ids.STAFF_OF_AIR, '201,1,4')
     osrs.player.toggle_run('on')
     osrs.move.interact_with_object(2444, 'x', 5500, True, timeout=8, obj_type='ground')
     util_functions.talk_to_npc('dummy')

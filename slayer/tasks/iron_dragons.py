@@ -1,5 +1,5 @@
 import osrs
-from osrs.item_ids import ItemIDs
+
 from slayer import transport_functions
 from combat import slayer_killer
 
@@ -7,34 +7,34 @@ varrock_tele_widget_id = '218,23'
 
 
 items = [
-    ItemIDs.RUNE_POUCH.value,
-    ItemIDs.DRAMEN_STAFF.value,
-    ItemIDs.OCCULT_NECKLACE.value,
-    ItemIDs.SEERS_RING.value,
-    ItemIDs.FIRE_CAPE.value,
-    ItemIDs.WIZARD_BOOTS.value,
-    ItemIDs.ANTIDRAGON_SHIELD.value,
-    ItemIDs.TRIDENT_OF_THE_SWAMP.value,
-    ItemIDs.VOID_MAGE_HELM.value,
-    ItemIDs.VOID_KNIGHT_TOP.value,
-    ItemIDs.VOID_KNIGHT_ROBE.value,
-    ItemIDs.VOID_KNIGHT_GLOVES.value,
-    ItemIDs.MONKFISH.value,
-    ItemIDs.MONKFISH.value,
-    ItemIDs.MONKFISH.value,
-    ItemIDs.EXTENDED_ANTIFIRE4.value,
-    ItemIDs.EXTENDED_ANTIFIRE4.value,
-    ItemIDs.EXTENDED_ANTIFIRE4.value,
+    osrs.item_ids.RUNE_POUCH,
+    osrs.item_ids.DRAMEN_STAFF,
+    osrs.item_ids.OCCULT_NECKLACE,
+    osrs.item_ids.SEERS_RING,
+    osrs.item_ids.FIRE_CAPE,
+    osrs.item_ids.WIZARD_BOOTS,
+    osrs.item_ids.ANTIDRAGON_SHIELD,
+    osrs.item_ids.TRIDENT_OF_THE_SWAMP,
+    osrs.item_ids.VOID_MAGE_HELM,
+    osrs.item_ids.VOID_KNIGHT_TOP,
+    osrs.item_ids.VOID_KNIGHT_ROBE,
+    osrs.item_ids.VOID_KNIGHT_GLOVES,
+    osrs.item_ids.MONKFISH,
+    osrs.item_ids.MONKFISH,
+    osrs.item_ids.MONKFISH,
+    osrs.item_ids.EXTENDED_ANTIFIRE4,
+    osrs.item_ids.EXTENDED_ANTIFIRE4,
+    osrs.item_ids.EXTENDED_ANTIFIRE4,
     {
         'id': [
-            ItemIDs.SLAYER_RING_1.value,
-            ItemIDs.SLAYER_RING_2.value,
-            ItemIDs.SLAYER_RING_3.value,
-            ItemIDs.SLAYER_RING_4.value,
-            ItemIDs.SLAYER_RING_5.value,
-            ItemIDs.SLAYER_RING_6.value,
-            ItemIDs.SLAYER_RING_7.value,
-            ItemIDs.SLAYER_RING_8.value,
+            osrs.item_ids.SLAYER_RING_1,
+            osrs.item_ids.SLAYER_RING_2,
+            osrs.item_ids.SLAYER_RING_3,
+            osrs.item_ids.SLAYER_RING_4,
+            osrs.item_ids.SLAYER_RING_5,
+            osrs.item_ids.SLAYER_RING_6,
+            osrs.item_ids.SLAYER_RING_7,
+            osrs.item_ids.SLAYER_RING_8,
         ],
         'quantity': '1'
     },
@@ -42,16 +42,16 @@ items = [
 ]
 
 equipment = [
-    ItemIDs.DRAMEN_STAFF.value,
-    ItemIDs.OCCULT_NECKLACE.value,
-    ItemIDs.SEERS_RING.value,
-    ItemIDs.FIRE_CAPE.value,
-    ItemIDs.WIZARD_BOOTS.value,
-    ItemIDs.ANTIDRAGON_SHIELD.value,
-    ItemIDs.VOID_MAGE_HELM.value,
-    ItemIDs.VOID_KNIGHT_TOP.value,
-    ItemIDs.VOID_KNIGHT_ROBE.value,
-    ItemIDs.VOID_KNIGHT_GLOVES.value,
+    osrs.item_ids.DRAMEN_STAFF,
+    osrs.item_ids.OCCULT_NECKLACE,
+    osrs.item_ids.SEERS_RING,
+    osrs.item_ids.FIRE_CAPE,
+    osrs.item_ids.WIZARD_BOOTS,
+    osrs.item_ids.ANTIDRAGON_SHIELD,
+    osrs.item_ids.VOID_MAGE_HELM,
+    osrs.item_ids.VOID_KNIGHT_TOP,
+    osrs.item_ids.VOID_KNIGHT_ROBE,
+    osrs.item_ids.VOID_KNIGHT_GLOVES,
 ]
 
 banking_config = {
@@ -78,7 +78,7 @@ def main():
         osrs.game.tele_home_fairy_ring('bjp')
         transport_functions.isle_of_souls_dungeon()
         qh.query_backend()
-        osrs.move.click(qh.get_inventory(ItemIDs.TRIDENT_OF_THE_SWAMP.value))
+        osrs.move.click(qh.get_inventory(osrs.item_ids.TRIDENT_OF_THE_SWAMP))
         success = slayer_killer.main('iron dragon', pot_config.asdict(), 35, 2145, 9296, 0, 3, 5)
         osrs.game.cast_spell(varrock_tele_widget_id)
         if success:

@@ -2,7 +2,7 @@
 import datetime
 
 import osrs
-from osrs.item_ids import ItemIDs
+
 from slayer import transport_functions
 from combat import slayer_killer
 from slayer.tasks import gear
@@ -13,29 +13,29 @@ fally_tele_widget_id = '218,29'
 
 supplies = [
     {
-        'id': ItemIDs.NATURE_RUNE.value,
+        'id': osrs.item_ids.NATURE_RUNE,
         'quantity': 'All'
     },
-    ItemIDs.SUPER_ATTACK4.value,
-    ItemIDs.SUPER_ATTACK4.value,
-    ItemIDs.SUPER_STRENGTH4.value,
-    ItemIDs.SUPER_STRENGTH4.value,
-    ItemIDs.RUNE_POUCH.value,
-    ItemIDs.KARAMJA_GLOVES_3.value,
+    osrs.item_ids.SUPER_ATTACK4,
+    osrs.item_ids.SUPER_ATTACK4,
+    osrs.item_ids.SUPER_STRENGTH4,
+    osrs.item_ids.SUPER_STRENGTH4,
+    osrs.item_ids.RUNE_POUCH,
+    osrs.item_ids.KARAMJA_GLOVES_3,
     {
         'id': [
-            ItemIDs.SLAYER_RING_2.value,
-            ItemIDs.SLAYER_RING_3.value,
-            ItemIDs.SLAYER_RING_4.value,
-            ItemIDs.SLAYER_RING_5.value,
-            ItemIDs.SLAYER_RING_6.value,
-            ItemIDs.SLAYER_RING_7.value,
-            ItemIDs.SLAYER_RING_8.value,
+            osrs.item_ids.SLAYER_RING_2,
+            osrs.item_ids.SLAYER_RING_3,
+            osrs.item_ids.SLAYER_RING_4,
+            osrs.item_ids.SLAYER_RING_5,
+            osrs.item_ids.SLAYER_RING_6,
+            osrs.item_ids.SLAYER_RING_7,
+            osrs.item_ids.SLAYER_RING_8,
         ],
         'quantity': '1'
     },
     {
-        'id': ItemIDs.MONKFISH.value,
+        'id': osrs.item_ids.MONKFISH,
         'quantity': 'X',
         'amount': '17'
     },
@@ -93,34 +93,34 @@ def loot_builder():
         'loot': []
     }
 
-    item = osrs.loot.InvConfig(ItemIDs.MONKFISH.value, osrs.loot.monkfish_eval)
+    item = osrs.loot.InvConfig(osrs.item_ids.MONKFISH, osrs.loot.monkfish_eval)
     config['inv'].append(item)
 
-    item = osrs.loot.LootConfig(ItemIDs.RUNE_LONGSWORD.value, 6, alch=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.RUNE_LONGSWORD, 6, alch=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.ADAMANT_PLATEBODY.value, 6, alch=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.ADAMANT_PLATEBODY, 6, alch=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.RUNE_AXE.value, 6, alch=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.RUNE_AXE, 6, alch=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.LEAFBLADED_SWORD.value, 6, alch=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.LEAFBLADED_SWORD, 6, alch=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.MYSTIC_ROBE_TOP_LIGHT.value, 6, alch=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.MYSTIC_ROBE_TOP_LIGHT, 6, alch=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.LEAFBLADED_BATTLEAXE.value, 6, alch=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.LEAFBLADED_BATTLEAXE, 6, alch=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.NATURE_RUNE.value, 6, min_quantity=15)
+    item = osrs.loot.LootConfig(osrs.item_ids.NATURE_RUNE, 6, min_quantity=15)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.SNAPDRAGON_SEED.value, 8, stackable=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.SNAPDRAGON_SEED, 8, stackable=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.SNAPE_GRASS_SEED.value, 8, stackable=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.SNAPE_GRASS_SEED, 8, stackable=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.COINS_995.value, 8, min_quantity=1000)
+    item = osrs.loot.LootConfig(osrs.item_ids.COINS_995, 8, min_quantity=1000)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.PAPAYA_FRUIT.value + 1, 8)
+    item = osrs.loot.LootConfig(osrs.item_ids.PAPAYA_FRUIT + 1, 8)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.COCONUT.value + 1, 8)
+    item = osrs.loot.LootConfig(osrs.item_ids.COCONUT + 1, 8)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.KURASK_HEAD.value, 8)
+    item = osrs.loot.LootConfig(osrs.item_ids.KURASK_HEAD, 8)
     config['loot'].append(item)
 
     return config

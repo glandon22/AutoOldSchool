@@ -20,8 +20,8 @@ def rope_to_rock():
         qh.query_backend()
         if (qh.get_player_world_location('y') >= 3475
                 and qh.get_objects_v2('game', rock)
-                and qh.get_inventory(osrs.item_ids.ItemIDs.ROPE.value)):
-            osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.ROPE.value))
+                and qh.get_inventory(osrs.item_ids.ROPE)):
+            osrs.move.click(qh.get_inventory(osrs.item_ids.ROPE))
             osrs.move.fast_click(qh.get_objects_v2('game', rock)[0])
         elif qh.get_player_world_location('y') <= 3468:
             return
@@ -37,8 +37,8 @@ def rope_to_tree():
         qh.query_backend()
         if (qh.get_player_world_location('y') >= 3465
                 and qh.get_objects_v2('game', rock)
-                and qh.get_inventory(osrs.item_ids.ItemIDs.ROPE.value)):
-            osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.ROPE.value))
+                and qh.get_inventory(osrs.item_ids.ROPE)):
+            osrs.move.click(qh.get_inventory(osrs.item_ids.ROPE))
             osrs.move.fast_click(qh.get_objects_v2('game', rock)[0])
         elif qh.get_player_world_location('y') <= 3463:
             return
@@ -49,8 +49,8 @@ def read_book():
     qh.set_inventory()
     while True:
         qh.query_backend()
-        if qh.get_inventory(osrs.item_ids.ItemIDs.BOOK_ON_BAXTORIAN.value):
-            osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.BOOK_ON_BAXTORIAN.value))
+        if qh.get_inventory(osrs.item_ids.BOOK_ON_BAXTORIAN):
+            osrs.move.click(qh.get_inventory(osrs.item_ids.BOOK_ON_BAXTORIAN))
             osrs.clock.random_sleep(1, 1.1)
             osrs.keeb.press_key('esc')
             return
@@ -73,7 +73,7 @@ def wait_for_key():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.KEY_293.value):
+    if qh.get_inventory(osrs.item_ids.KEY_293):
         return True
     return False
 
@@ -82,7 +82,7 @@ def wait_for_ammy():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.GLARIALS_AMULET.value):
+    if qh.get_inventory(osrs.item_ids.GLARIALS_AMULET):
         return True
     return False
 
@@ -91,7 +91,7 @@ def wait_for_urn():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.GLARIALS_URN.value):
+    if qh.get_inventory(osrs.item_ids.GLARIALS_URN):
         return True
     return False
 
@@ -100,7 +100,7 @@ def wait_for_key_final():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.KEY_298.value):
+    if qh.get_inventory(osrs.item_ids.KEY_298):
         return True
     return False
 
@@ -109,32 +109,32 @@ def click_glarials_pebble():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.GLARIALS_PEBBLE.value):
-        osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.GLARIALS_PEBBLE.value))
+    if qh.get_inventory(osrs.item_ids.GLARIALS_PEBBLE):
+        osrs.move.click(qh.get_inventory(osrs.item_ids.GLARIALS_PEBBLE))
 
 
 def click_air():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.AIR_RUNE.value):
-        osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.AIR_RUNE.value))
+    if qh.get_inventory(osrs.item_ids.AIR_RUNE):
+        osrs.move.click(qh.get_inventory(osrs.item_ids.AIR_RUNE))
 
 
 def click_water():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.WATER_RUNE.value):
-        osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.WATER_RUNE.value))
+    if qh.get_inventory(osrs.item_ids.WATER_RUNE):
+        osrs.move.click(qh.get_inventory(osrs.item_ids.WATER_RUNE))
 
 
 def click_earth():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.EARTH_RUNE.value):
-        osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.EARTH_RUNE.value))
+    if qh.get_inventory(osrs.item_ids.EARTH_RUNE):
+        osrs.move.click(qh.get_inventory(osrs.item_ids.EARTH_RUNE))
 
 
 def walk_to_tile(tile):
@@ -160,10 +160,10 @@ def use_air_rune(quantity):
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.AIR_RUNE.value):
-        if qh.get_inventory(osrs.item_ids.ItemIDs.AIR_RUNE.value)['quantity'] == quantity:
+    if qh.get_inventory(osrs.item_ids.AIR_RUNE):
+        if qh.get_inventory(osrs.item_ids.AIR_RUNE)['quantity'] == quantity:
             return True
-    elif quantity == 0 and not qh.get_inventory(osrs.item_ids.ItemIDs.AIR_RUNE.value):
+    elif quantity == 0 and not qh.get_inventory(osrs.item_ids.AIR_RUNE):
         return True
 
 
@@ -171,10 +171,10 @@ def use_water_rune(quantity):
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.WATER_RUNE.value):
-        if qh.get_inventory(osrs.item_ids.ItemIDs.WATER_RUNE.value)['quantity'] == quantity:
+    if qh.get_inventory(osrs.item_ids.WATER_RUNE):
+        if qh.get_inventory(osrs.item_ids.WATER_RUNE)['quantity'] == quantity:
             return True
-    elif quantity == 0 and not qh.get_inventory(osrs.item_ids.ItemIDs.WATER_RUNE.value):
+    elif quantity == 0 and not qh.get_inventory(osrs.item_ids.WATER_RUNE):
         return True
 
 
@@ -182,10 +182,10 @@ def use_earth_rune(quantity):
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.EARTH_RUNE.value):
-        if qh.get_inventory(osrs.item_ids.ItemIDs.EARTH_RUNE.value)['quantity'] == quantity:
+    if qh.get_inventory(osrs.item_ids.EARTH_RUNE):
+        if qh.get_inventory(osrs.item_ids.EARTH_RUNE)['quantity'] == quantity:
             return True
-    elif quantity == 0 and not qh.get_inventory(osrs.item_ids.ItemIDs.EARTH_RUNE.value):
+    elif quantity == 0 and not qh.get_inventory(osrs.item_ids.EARTH_RUNE):
         return True
 
 
@@ -195,7 +195,7 @@ def remove_amulet():
     qh.set_widgets({'387,17'})
     while True:
         qh.query_backend()
-        if qh.get_inventory(osrs.item_ids.ItemIDs.GLARIALS_AMULET.value):
+        if qh.get_inventory(osrs.item_ids.GLARIALS_AMULET):
             osrs.keeb.press_key('esc')
             return True
         elif qh.get_widgets('387,17'):
@@ -211,7 +211,7 @@ def consume_amulet():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if qh.get_inventory() and not qh.get_inventory(osrs.item_ids.ItemIDs.GLARIALS_AMULET.value):
+    if qh.get_inventory() and not qh.get_inventory(osrs.item_ids.GLARIALS_AMULET):
         osrs.clock.random_sleep(5, 5.1)
         osrs.keeb.press_key('space')
         osrs.keeb.press_key('space')
@@ -233,9 +233,9 @@ def right_click_amulet():
     qh.set_inventory()
     qh.set_canvas()
     qh.query_backend()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.GLARIALS_AMULET.value):
+    if qh.get_inventory(osrs.item_ids.GLARIALS_AMULET):
         osrs.move.right_click_v6(
-            qh.get_inventory(osrs.item_ids.ItemIDs.GLARIALS_AMULET.value), 'Use', qh.get_canvas(), in_inv=True
+            qh.get_inventory(osrs.item_ids.GLARIALS_AMULET), 'Use', qh.get_canvas(), in_inv=True
         )
 
 
@@ -243,8 +243,8 @@ def click_urn():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.GLARIALS_URN.value):
-        osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.GLARIALS_URN.value))
+    if qh.get_inventory(osrs.item_ids.GLARIALS_URN):
+        osrs.move.click(qh.get_inventory(osrs.item_ids.GLARIALS_URN))
 
 
 def main():
@@ -324,36 +324,36 @@ def main():
     osrs.player.turn_off_all_prayers()
     transport_functions.games_neck_to_barb()
     quest_items = [
-        osrs.item_ids.ItemIDs.AIR_RUNE.value,
-        osrs.item_ids.ItemIDs.AIR_RUNE.value,
-        osrs.item_ids.ItemIDs.AIR_RUNE.value,
-        osrs.item_ids.ItemIDs.AIR_RUNE.value,
-        osrs.item_ids.ItemIDs.AIR_RUNE.value,
-        osrs.item_ids.ItemIDs.AIR_RUNE.value,
-        osrs.item_ids.ItemIDs.EARTH_RUNE.value,
-        osrs.item_ids.ItemIDs.EARTH_RUNE.value,
-        osrs.item_ids.ItemIDs.EARTH_RUNE.value,
-        osrs.item_ids.ItemIDs.EARTH_RUNE.value,
-        osrs.item_ids.ItemIDs.EARTH_RUNE.value,
-        osrs.item_ids.ItemIDs.EARTH_RUNE.value,
-        osrs.item_ids.ItemIDs.WATER_RUNE.value,
-        osrs.item_ids.ItemIDs.WATER_RUNE.value,
-        osrs.item_ids.ItemIDs.WATER_RUNE.value,
-        osrs.item_ids.ItemIDs.WATER_RUNE.value,
-        osrs.item_ids.ItemIDs.WATER_RUNE.value,
-        osrs.item_ids.ItemIDs.WATER_RUNE.value,
-        osrs.item_ids.ItemIDs.GLARIALS_AMULET.value,
-        osrs.item_ids.ItemIDs.GLARIALS_URN.value,
-        osrs.item_ids.ItemIDs.ROPE.value,
-        osrs.item_ids.ItemIDs.PRAYER_POTION4.value,
-        osrs.item_ids.ItemIDs.PRAYER_POTION4.value,
+        osrs.item_ids.AIR_RUNE,
+        osrs.item_ids.AIR_RUNE,
+        osrs.item_ids.AIR_RUNE,
+        osrs.item_ids.AIR_RUNE,
+        osrs.item_ids.AIR_RUNE,
+        osrs.item_ids.AIR_RUNE,
+        osrs.item_ids.EARTH_RUNE,
+        osrs.item_ids.EARTH_RUNE,
+        osrs.item_ids.EARTH_RUNE,
+        osrs.item_ids.EARTH_RUNE,
+        osrs.item_ids.EARTH_RUNE,
+        osrs.item_ids.EARTH_RUNE,
+        osrs.item_ids.WATER_RUNE,
+        osrs.item_ids.WATER_RUNE,
+        osrs.item_ids.WATER_RUNE,
+        osrs.item_ids.WATER_RUNE,
+        osrs.item_ids.WATER_RUNE,
+        osrs.item_ids.WATER_RUNE,
+        osrs.item_ids.GLARIALS_AMULET,
+        osrs.item_ids.GLARIALS_URN,
+        osrs.item_ids.ROPE,
+        osrs.item_ids.PRAYER_POTION4,
+        osrs.item_ids.PRAYER_POTION4,
         {
             'id': [
-                osrs.item_ids.ItemIDs.NECKLACE_OF_PASSAGE5.value,
-                osrs.item_ids.ItemIDs.NECKLACE_OF_PASSAGE4.value,
-                osrs.item_ids.ItemIDs.NECKLACE_OF_PASSAGE3.value,
-                osrs.item_ids.ItemIDs.NECKLACE_OF_PASSAGE2.value,
-                osrs.item_ids.ItemIDs.NECKLACE_OF_PASSAGE1.value,
+                osrs.item_ids.NECKLACE_OF_PASSAGE5,
+                osrs.item_ids.NECKLACE_OF_PASSAGE4,
+                osrs.item_ids.NECKLACE_OF_PASSAGE3,
+                osrs.item_ids.NECKLACE_OF_PASSAGE2,
+                osrs.item_ids.NECKLACE_OF_PASSAGE1,
             ],
             'quantity': '1'
         },
@@ -363,7 +363,7 @@ def main():
         'dump_equipment': True,
         'search': [{'query': '', 'items': quest_items}]
     })
-    util_functions.equip_item(osrs.item_ids.ItemIDs.GLARIALS_AMULET.value)
+    util_functions.equip_item(osrs.item_ids.GLARIALS_AMULET)
     transport_functions.walk_to_loc(2528, 2530, 3494, 3497, 2529, 3495)
     util_functions.walk_through_door(
         1560, 'x', 2527, False, intermediate_tile='2525,3495,0', door_dist=5
@@ -390,7 +390,7 @@ def main():
         1999, 'x', 2582, True, custom_exit_function=wait_for_key_final, door_type='game'
     )
     transport_functions.walk_to_loc(2563, 2565, 9877, 9879, 2564, 9878)
-    util_functions.equip_item(osrs.item_ids.ItemIDs.PRAYER_POTION4.value)
+    util_functions.equip_item(osrs.item_ids.PRAYER_POTION4)
     osrs.clock.sleep_one_tick()
     osrs.combat_utils.prayer_handler(None, ['protect_melee'])
     util_functions.interact_with_object(

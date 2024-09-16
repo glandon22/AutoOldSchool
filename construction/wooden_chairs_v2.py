@@ -50,8 +50,8 @@ def main(min_planks):
         if (
                 2944 <= qh.get_player_world_location('x') <= 2964
                 and 3208 <= qh.get_player_world_location('y') <= 3232
-                and not qh.get_inventory(osrs.item_ids.ItemIDs.PLANK.value + 1)
-                and qh.get_inventory(osrs.item_ids.ItemIDs.PLANK.value, quantity=True) < min_planks
+                and not qh.get_inventory(osrs.item_ids.PLANK + 1)
+                and qh.get_inventory(osrs.item_ids.PLANK, quantity=True) < min_planks
         ):
             return
         # exchange all noted planks with phials
@@ -59,16 +59,16 @@ def main(min_planks):
             osrs.keeb.write(str(qh.get_chat_options('Exchange All', fuzzy=True)))
         # use planks on phials
         elif (
-                qh.get_inventory(osrs.item_ids.ItemIDs.PLANK.value, quantity=True) < min_planks
+                qh.get_inventory(osrs.item_ids.PLANK, quantity=True) < min_planks
                 and (datetime.datetime.now() - last_phials_click).total_seconds() > 8
                 and len(qh.get_npcs_by_name()) > 0):
-            osrs.move.fast_click(qh.get_inventory(osrs.item_ids.ItemIDs.PLANK.value + 1))
+            osrs.move.fast_click(qh.get_inventory(osrs.item_ids.PLANK + 1))
             res = osrs.move.right_click_v6(qh.get_npcs_by_name()[0], 'Use', qh.get_canvas(), in_inv=True)
             if res:
                 last_phials_click = datetime.datetime.now()
         # have planks, click the house portal
         elif (
-                qh.get_inventory(osrs.item_ids.ItemIDs.PLANK.value, quantity=True) >= min_planks
+                qh.get_inventory(osrs.item_ids.PLANK, quantity=True) >= min_planks
                 and (datetime.datetime.now() - last_portal_click).total_seconds() > 8
                 and qh.get_objects_v2('game', portal_id)
         ):
@@ -80,7 +80,7 @@ def main(min_planks):
         # i am in house
         elif qh.get_player_world_location('x') > 3500:
             # in house w planks, build!
-            if qh.get_inventory(osrs.item_ids.ItemIDs.PLANK.value, quantity=True) >= min_planks:
+            if qh.get_inventory(osrs.item_ids.PLANK, quantity=True) >= min_planks:
                 # removing chair
                 if (qh.get_objects_v2('game', built_chair)
                         and (datetime.datetime.now() - last_chair_removal).total_seconds() > 4):

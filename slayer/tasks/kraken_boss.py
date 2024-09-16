@@ -2,7 +2,7 @@
 import datetime
 
 import osrs
-from osrs.item_ids import ItemIDs
+
 from slayer import transport_functions
 from combat import slayer_killer
 
@@ -12,87 +12,87 @@ varrock_tele_widget_id = '218,23'
 
 
 supplies = [
-    ItemIDs.DRAMEN_STAFF.value,
-    ItemIDs.RUNE_POUCH.value,
-    ItemIDs.SUPER_DEFENCE4.value,
-    ItemIDs.SUPER_DEFENCE4.value,
+    osrs.item_ids.DRAMEN_STAFF,
+    osrs.item_ids.RUNE_POUCH,
+    osrs.item_ids.SUPER_DEFENCE4,
+    osrs.item_ids.SUPER_DEFENCE4,
     {
         'id': [
-            ItemIDs.NATURE_RUNE.value
+            osrs.item_ids.NATURE_RUNE
         ],
         'quantity': 'All'
     },
-    ItemIDs.KARAMJA_GLOVES_3.value,
+    osrs.item_ids.KARAMJA_GLOVES_3,
     {
         'id': [
-            ItemIDs.FISHING_EXPLOSIVE_6664.value
+            osrs.item_ids.FISHING_EXPLOSIVE_6664
         ],
         'quantity': 'All'
     },
     {
         'id': [
-            ItemIDs.SHARK.value
+            osrs.item_ids.SHARK
         ],
         'quantity': 'All'
     },
 ]
 
 initial = [
-    ItemIDs.TRIDENT_OF_THE_SWAMP.value,
+    osrs.item_ids.TRIDENT_OF_THE_SWAMP,
     {
         'id': [
-            ItemIDs.FIRE_RUNE.value,
+            osrs.item_ids.FIRE_RUNE,
         ],
         'quantity': 'All'
     },
     {
         'id': [
-            ItemIDs.CHAOS_RUNE.value,
+            osrs.item_ids.CHAOS_RUNE,
         ],
         'quantity': 'All'
     },
     {
         'id': [
-            ItemIDs.DEATH_RUNE.value,
+            osrs.item_ids.DEATH_RUNE,
         ],
         'quantity': 'All'
     },
     {
         'id': [
-            ItemIDs.ZULRAHS_SCALES.value,
+            osrs.item_ids.ZULRAHS_SCALES,
         ],
         'quantity': 'All'
     },
 ]
 
 equipment = [
-    ItemIDs.SLAYER_HELMET_I.value,
-    ItemIDs.FIRE_CAPE.value,
-    ItemIDs.OCCULT_NECKLACE.value,
+    osrs.item_ids.SLAYER_HELMET_I,
+    osrs.item_ids.FIRE_CAPE,
+    osrs.item_ids.OCCULT_NECKLACE,
     {
         'id': [
-            ItemIDs.KARILS_LEATHERTOP.value,
-            ItemIDs.KARILS_LEATHERTOP_25.value,
-            ItemIDs.KARILS_LEATHERTOP_50.value,
-            ItemIDs.KARILS_LEATHERTOP_75.value,
-            ItemIDs.KARILS_LEATHERTOP_100.value,
+            osrs.item_ids.KARILS_LEATHERTOP,
+            osrs.item_ids.KARILS_LEATHERTOP_25,
+            osrs.item_ids.KARILS_LEATHERTOP_50,
+            osrs.item_ids.KARILS_LEATHERTOP_75,
+            osrs.item_ids.KARILS_LEATHERTOP_100,
         ],
         'quantity': 1
     },
     {
         'id': [
-            ItemIDs.KARILS_LEATHERSKIRT.value,
-            ItemIDs.KARILS_LEATHERSKIRT_25.value,
-            ItemIDs.KARILS_LEATHERSKIRT_50.value,
-            ItemIDs.KARILS_LEATHERSKIRT_75.value,
-            ItemIDs.KARILS_LEATHERSKIRT_100.value,
+            osrs.item_ids.KARILS_LEATHERSKIRT,
+            osrs.item_ids.KARILS_LEATHERSKIRT_25,
+            osrs.item_ids.KARILS_LEATHERSKIRT_50,
+            osrs.item_ids.KARILS_LEATHERSKIRT_75,
+            osrs.item_ids.KARILS_LEATHERSKIRT_100,
         ],
         'quantity': 1
     },
-    ItemIDs.MALEDICTION_WARD.value,
-    ItemIDs.BARROWS_GLOVES.value,
-    ItemIDs.ETERNAL_BOOTS.value,
-    ItemIDs.BRIMSTONE_RING.value,
+    osrs.item_ids.MALEDICTION_WARD,
+    osrs.item_ids.BARROWS_GLOVES,
+    osrs.item_ids.ETERNAL_BOOTS,
+    osrs.item_ids.BRIMSTONE_RING,
 ]
 
 initial_weapon_setup = {
@@ -132,8 +132,8 @@ def main():
             return False
         while True:
             qh.query_backend()
-            fire_rune = qh.get_inventory(ItemIDs.FIRE_RUNE.value)
-            trident = qh.get_inventory(ItemIDs.TRIDENT_OF_THE_SWAMP.value)
+            fire_rune = qh.get_inventory(osrs.item_ids.FIRE_RUNE)
+            trident = qh.get_inventory(osrs.item_ids.TRIDENT_OF_THE_SWAMP)
             if fire_rune and trident:
                 osrs.move.click(fire_rune)
                 osrs.move.click(trident)
@@ -157,15 +157,15 @@ def main():
             return False
         while True:
             qh.query_backend()
-            if qh.get_inventory(ItemIDs.DRAMEN_STAFF.value):
-                osrs.move.click(qh.get_inventory(ItemIDs.DRAMEN_STAFF.value))
+            if qh.get_inventory(osrs.item_ids.DRAMEN_STAFF):
+                osrs.move.click(qh.get_inventory(osrs.item_ids.DRAMEN_STAFF))
                 break
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
         osrs.game.tele_home_fairy_ring('akq')
         transport_functions.kraken_cove_private()
         qh.query_backend()
-        osrs.move.click(qh.get_inventory(ItemIDs.TRIDENT_OF_THE_SWAMP.value))
+        osrs.move.click(qh.get_inventory(osrs.item_ids.TRIDENT_OF_THE_SWAMP))
         osrs.player.toggle_auto_retaliate('off')
         osrs.clock.sleep_one_tick()
         success = cave_kraken.main()

@@ -7,14 +7,14 @@ import osrs.queryHelper
 import osrs.queryHelper as queryHelper
 
 necklace_ids = [
-    item_ids.ItemIDs.RING_OF_DUELING8.value,
-    item_ids.ItemIDs.RING_OF_DUELING7.value,
-    item_ids.ItemIDs.RING_OF_DUELING6.value,
-    item_ids.ItemIDs.RING_OF_DUELING5.value,
-    item_ids.ItemIDs.RING_OF_DUELING4.value,
-    item_ids.ItemIDs.RING_OF_DUELING3.value,
-    item_ids.ItemIDs.RING_OF_DUELING2.value,
-    item_ids.ItemIDs.RING_OF_DUELING1.value,
+    item_ids.RING_OF_DUELING8,
+    item_ids.RING_OF_DUELING7,
+    item_ids.RING_OF_DUELING6,
+    item_ids.RING_OF_DUELING5,
+    item_ids.RING_OF_DUELING4,
+    item_ids.RING_OF_DUELING3,
+    item_ids.RING_OF_DUELING2,
+    item_ids.RING_OF_DUELING1,
 ]
 
 
@@ -79,16 +79,16 @@ def house_tele(outside=False, house_loc='rimmington'):
             return
         elif 2948 <= qh.get_player_world_location('x') <= 2958 and 3216 <= qh.get_player_world_location('y') <= 3228:
             return
-        elif qh.get_inventory(osrs.item_ids.ItemIDs.TELEPORT_TO_HOUSE.value) and (datetime.datetime.now() - last_tele).total_seconds() > 10:
+        elif qh.get_inventory(osrs.item_ids.TELEPORT_TO_HOUSE) and (datetime.datetime.now() - last_tele).total_seconds() > 10:
             if outside:
                 osrs.move.right_click_v6(
-                    qh.get_inventory(osrs.item_ids.ItemIDs.TELEPORT_TO_HOUSE.value),
+                    qh.get_inventory(osrs.item_ids.TELEPORT_TO_HOUSE),
                     'Outside',
                     qh.get_canvas(),
                     in_inv=True
                 )
             else:
-                osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.TELEPORT_TO_HOUSE.value))
+                osrs.move.click(qh.get_inventory(osrs.item_ids.TELEPORT_TO_HOUSE))
             last_tele = datetime.datetime.now()
 
 
@@ -119,6 +119,6 @@ def tab_to_varrock():
             osrs.clock.sleep_one_tick()
             osrs.clock.sleep_one_tick()
             return
-        elif qh.get_inventory(osrs.item_ids.ItemIDs.VARROCK_TELEPORT.value) and (datetime.datetime.now() - last_tab).total_seconds() > 10:
-            osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.VARROCK_TELEPORT.value))
+        elif qh.get_inventory(osrs.item_ids.VARROCK_TELEPORT) and (datetime.datetime.now() - last_tab).total_seconds() > 10:
+            osrs.move.click(qh.get_inventory(osrs.item_ids.VARROCK_TELEPORT))
             last_tab = datetime.datetime.now()

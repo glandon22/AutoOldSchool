@@ -6,14 +6,14 @@ logger = osrs.dev.instantiate_logger()
 
 
 prayer_restoring_pot_list = [
-    osrs.item_ids.ItemIDs.PRAYER_POTION4.value,
-    osrs.item_ids.ItemIDs.PRAYER_POTION3.value,
-    osrs.item_ids.ItemIDs.PRAYER_POTION2.value,
-    osrs.item_ids.ItemIDs.PRAYER_POTION1.value,
-    osrs.item_ids.ItemIDs.SUPER_RESTORE1.value,
-    osrs.item_ids.ItemIDs.SUPER_RESTORE2.value,
-    osrs.item_ids.ItemIDs.SUPER_RESTORE3.value,
-    osrs.item_ids.ItemIDs.SUPER_RESTORE4.value,
+    osrs.item_ids.PRAYER_POTION4,
+    osrs.item_ids.PRAYER_POTION3,
+    osrs.item_ids.PRAYER_POTION2,
+    osrs.item_ids.PRAYER_POTION1,
+    osrs.item_ids.SUPER_RESTORE1,
+    osrs.item_ids.SUPER_RESTORE2,
+    osrs.item_ids.SUPER_RESTORE3,
+    osrs.item_ids.SUPER_RESTORE4,
 ]
 
 

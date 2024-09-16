@@ -22,18 +22,18 @@ y >= 9483
 '''
 
 craftable_runes = [
-    osrs.item_ids.ItemIDs.FIRE_RUNE.value,
-    osrs.item_ids.ItemIDs.NATURE_RUNE.value,
-    osrs.item_ids.ItemIDs.EARTH_RUNE.value,
-    osrs.item_ids.ItemIDs.WATER_RUNE.value,
-    osrs.item_ids.ItemIDs.COSMIC_RUNE.value,
-    osrs.item_ids.ItemIDs.AIR_RUNE.value,
-    osrs.item_ids.ItemIDs.MIND_RUNE.value,
-    osrs.item_ids.ItemIDs.BODY_RUNE.value,
-    osrs.item_ids.ItemIDs.CHAOS_RUNE.value,
-    osrs.item_ids.ItemIDs.DEATH_RUNE.value,
-    osrs.item_ids.ItemIDs.LAW_RUNE.value,
-    osrs.item_ids.ItemIDs.BLOOD_RUNE.value,
+    osrs.item_ids.FIRE_RUNE,
+    osrs.item_ids.NATURE_RUNE,
+    osrs.item_ids.EARTH_RUNE,
+    osrs.item_ids.WATER_RUNE,
+    osrs.item_ids.COSMIC_RUNE,
+    osrs.item_ids.AIR_RUNE,
+    osrs.item_ids.MIND_RUNE,
+    osrs.item_ids.BODY_RUNE,
+    osrs.item_ids.CHAOS_RUNE,
+    osrs.item_ids.DEATH_RUNE,
+    osrs.item_ids.LAW_RUNE,
+    osrs.item_ids.BLOOD_RUNE,
 ]
 
 
@@ -129,8 +129,8 @@ def mine_guardian_fragments():
     qh.set_objects_v2('game', {large_guardian_remains})
     while True:
         qh.query_backend()
-        if (qh.get_inventory(osrs.item_ids.ItemIDs.GUARDIAN_FRAGMENTS.value)
-                and qh.get_inventory(osrs.item_ids.ItemIDs.GUARDIAN_FRAGMENTS.value)['quantity'] >= 300):
+        if (qh.get_inventory(osrs.item_ids.GUARDIAN_FRAGMENTS)
+                and qh.get_inventory(osrs.item_ids.GUARDIAN_FRAGMENTS)['quantity'] >= 300):
             return
         elif (qh.get_widgets(game_active_widget)
               and not qh.get_is_mining()
@@ -142,11 +142,11 @@ def completed_essence_crafting():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if not qh.get_inventory(osrs.item_ids.ItemIDs.GUARDIAN_FRAGMENTS.value):
+    if not qh.get_inventory(osrs.item_ids.GUARDIAN_FRAGMENTS):
         return True
     elif len(qh.get_inventory()) >= 28:
-        if qh.get_inventory(osrs.item_ids.ItemIDs.COLOSSAL_POUCH.value):
-            osrs.move.fast_click(qh.get_inventory(osrs.item_ids.ItemIDs.COLOSSAL_POUCH.value))
+        if qh.get_inventory(osrs.item_ids.COLOSSAL_POUCH):
+            osrs.move.fast_click(qh.get_inventory(osrs.item_ids.COLOSSAL_POUCH))
             osrs.clock.random_sleep(1, 1.01)
         return True
 
@@ -216,10 +216,10 @@ def crafted_inv():
     qh.set_inventory()
     qh.set_canvas()
     qh.query_backend()
-    if not qh.get_inventory(osrs.item_ids.ItemIDs.GUARDIAN_ESSENCE.value):
-        if qh.get_inventory(osrs.item_ids.ItemIDs.COLOSSAL_POUCH.value):
+    if not qh.get_inventory(osrs.item_ids.GUARDIAN_ESSENCE):
+        if qh.get_inventory(osrs.item_ids.COLOSSAL_POUCH):
             osrs.move.right_click_v6(
-                qh.get_inventory(osrs.item_ids.ItemIDs.COLOSSAL_POUCH.value),
+                qh.get_inventory(osrs.item_ids.COLOSSAL_POUCH),
                 'Empty',
                 qh.get_canvas(),
                 in_inv=True
@@ -388,8 +388,8 @@ def charge_guardian():
         qh.query_backend()
 
         if not qh.get_inventory([
-            osrs.item_ids.ItemIDs.CATALYTIC_GUARDIAN_STONE.value,
-            osrs.item_ids.ItemIDs.ELEMENTAL_GUARDIAN_STONE.value,
+            osrs.item_ids.CATALYTIC_GUARDIAN_STONE,
+            osrs.item_ids.ELEMENTAL_GUARDIAN_STONE,
         ]):
             return
         elif qh.get_npcs():
@@ -403,10 +403,10 @@ def place_cell():
     while True:
         qh.query_backend()
         if not qh.get_inventory([
-            osrs.item_ids.ItemIDs.OVERCHARGED_CELL.value,
-            osrs.item_ids.ItemIDs.MEDIUM_CELL.value,
-            osrs.item_ids.ItemIDs.STRONG_CELL.value,
-            osrs.item_ids.ItemIDs.WEAK_CELL.value,
+            osrs.item_ids.OVERCHARGED_CELL,
+            osrs.item_ids.MEDIUM_CELL,
+            osrs.item_ids.STRONG_CELL,
+            osrs.item_ids.WEAK_CELL,
         ]) or not game_active():
             return
         elif qh.get_objects_v2('ground'):
@@ -439,7 +439,7 @@ def get_points():
         guardian_power = parse_guardian_power_level()
         qh.query_backend()
         print('gp',guardian_power)
-        if guardian_power > 88 or not qh.get_inventory(osrs.item_ids.ItemIDs.GUARDIAN_FRAGMENTS.value):
+        if guardian_power > 88 or not qh.get_inventory(osrs.item_ids.GUARDIAN_FRAGMENTS):
             while True:
                 if not game_active():
                     return

@@ -44,7 +44,7 @@ def main():
         elif not qh.get_interating_with() and len(asleep_kraken) > 0 and (datetime.datetime.now() - last_explosive).total_seconds() > 15:
             osrs.game.break_manager_v4(script_config)
             kraken = asleep_kraken[0]
-            explosive = qh.get_inventory(osrs.item_ids.ItemIDs.FISHING_EXPLOSIVE_6664.value)
+            explosive = qh.get_inventory(osrs.item_ids.FISHING_EXPLOSIVE_6664)
             if not explosive:
                 return False
             if len(kraken) > 0:

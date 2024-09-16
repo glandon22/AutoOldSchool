@@ -1,26 +1,26 @@
-from osrs.item_ids import ItemIDs
+
 
 task_config = {
     'iron_dragon': {
         'items': [
-            ItemIDs.RUNE_POUCH.value,
-            ItemIDs.DRAMEN_STAFF.value,
-            ItemIDs.OCCULT_NECKLACE.value,
-            ItemIDs.SEERS_RING.value,
-            ItemIDs.FIRE_CAPE.value,
-            ItemIDs.WIZARD_BOOTS.value,
-            ItemIDs.ANTIDRAGON_SHIELD.value,
-            ItemIDs.TRIDENT_OF_THE_SWAMP.value,
-            ItemIDs.VOID_MAGE_HELM.value,
-            ItemIDs.VOID_KNIGHT_TOP.value,
-            ItemIDs.VOID_KNIGHT_ROBE.value,
-            ItemIDs.VOID_KNIGHT_GLOVES.value,
-            ItemIDs.MONKFISH.value,
-            ItemIDs.MONKFISH.value,
-            ItemIDs.MONKFISH.value,
-            ItemIDs.EXTENDED_ANTIFIRE4.value,
-            ItemIDs.EXTENDED_ANTIFIRE4.value,
-            ItemIDs.EXTENDED_ANTIFIRE4.value,
+            osrs.item_ids.RUNE_POUCH,
+            osrs.item_ids.DRAMEN_STAFF,
+            osrs.item_ids.OCCULT_NECKLACE,
+            osrs.item_ids.SEERS_RING,
+            osrs.item_ids.FIRE_CAPE,
+            osrs.item_ids.WIZARD_BOOTS,
+            osrs.item_ids.ANTIDRAGON_SHIELD,
+            osrs.item_ids.TRIDENT_OF_THE_SWAMP,
+            osrs.item_ids.VOID_MAGE_HELM,
+            osrs.item_ids.VOID_KNIGHT_TOP,
+            osrs.item_ids.VOID_KNIGHT_ROBE,
+            osrs.item_ids.VOID_KNIGHT_GLOVES,
+            osrs.item_ids.MONKFISH,
+            osrs.item_ids.MONKFISH,
+            osrs.item_ids.MONKFISH,
+            osrs.item_ids.EXTENDED_ANTIFIRE4,
+            osrs.item_ids.EXTENDED_ANTIFIRE4,
+            osrs.item_ids.EXTENDED_ANTIFIRE4,
         ]
     }
 }

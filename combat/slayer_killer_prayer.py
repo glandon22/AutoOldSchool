@@ -1,7 +1,7 @@
 import datetime
 import osrs
-from osrs.item_ids import ItemIDs
-from osrs.widget_ids import WidgetIDs
+
+
 
 prayer_map = {
     'protect_melee': 4118,
@@ -45,40 +45,40 @@ ANTIFIRE_VARBIT = '3981'
 
 pot_matcher = {
     "SUPER_COMBATS": [
-        ItemIDs.SUPER_COMBAT_POTION4.value,
-        ItemIDs.SUPER_COMBAT_POTION3.value,
-        ItemIDs.SUPER_COMBAT_POTION2.value,
-        ItemIDs.SUPER_COMBAT_POTION1.value
+        osrs.item_ids.SUPER_COMBAT_POTION4,
+        osrs.item_ids.SUPER_COMBAT_POTION3,
+        osrs.item_ids.SUPER_COMBAT_POTION2,
+        osrs.item_ids.SUPER_COMBAT_POTION1
     ],
     "RANGING_POTION": [
-        ItemIDs.RANGING_POTION4.value,
-        ItemIDs.RANGING_POTION3.value,
-        ItemIDs.RANGING_POTION2.value,
-        ItemIDs.RANGING_POTION1.value,
+        osrs.item_ids.RANGING_POTION4,
+        osrs.item_ids.RANGING_POTION3,
+        osrs.item_ids.RANGING_POTION2,
+        osrs.item_ids.RANGING_POTION1,
     ],
     "MAGIC_POTION": [
-        ItemIDs.MAGIC_POTION4.value,
-        ItemIDs.MAGIC_POTION3.value,
-        ItemIDs.MAGIC_POTION2.value,
-        ItemIDs.MAGIC_POTION1.value,
+        osrs.item_ids.MAGIC_POTION4,
+        osrs.item_ids.MAGIC_POTION3,
+        osrs.item_ids.MAGIC_POTION2,
+        osrs.item_ids.MAGIC_POTION1,
     ],
     "SUPER_ANTI_POISION": [
-        ItemIDs.SUPERANTIPOISON4.value,
-        ItemIDs.SUPERANTIPOISON3.value,
-        ItemIDs.SUPERANTIPOISON2.value,
-        ItemIDs.SUPERANTIPOISON1.value,
+        osrs.item_ids.SUPERANTIPOISON4,
+        osrs.item_ids.SUPERANTIPOISON3,
+        osrs.item_ids.SUPERANTIPOISON2,
+        osrs.item_ids.SUPERANTIPOISON1,
     ],
     "EXTENDED_ANTIFIRE": [
-        ItemIDs.EXTENDED_ANTIFIRE4.value,
-        ItemIDs.EXTENDED_ANTIFIRE3.value,
-        ItemIDs.EXTENDED_ANTIFIRE2.value,
-        ItemIDs.EXTENDED_ANTIFIRE1.value,
+        osrs.item_ids.EXTENDED_ANTIFIRE4,
+        osrs.item_ids.EXTENDED_ANTIFIRE3,
+        osrs.item_ids.EXTENDED_ANTIFIRE2,
+        osrs.item_ids.EXTENDED_ANTIFIRE1,
     ],
     "PRAYER": [
-        ItemIDs.PRAYER_POTION4.value,
-        ItemIDs.PRAYER_POTION3.value,
-        ItemIDs.PRAYER_POTION2.value,
-        ItemIDs.PRAYER_POTION1.value,
+        osrs.item_ids.PRAYER_POTION4,
+        osrs.item_ids.PRAYER_POTION3,
+        osrs.item_ids.PRAYER_POTION2,
+        osrs.item_ids.PRAYER_POTION1,
     ]
 }
 

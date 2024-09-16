@@ -27,13 +27,13 @@ def resupply():
     osrs.move.go_to_loc(3165, 3483)
     osrs.bank.ge_handler([
         {
-            'id': osrs.item_ids.ItemIDs.VARROCK_TELEPORT.value, 'sell': True,
+            'id': osrs.item_ids.VARROCK_TELEPORT, 'sell': True,
             'quantity': 'All', 'id_override': 'varrock teleport'
         },
-        {'id': osrs.item_ids.ItemIDs.FIRE_RUNE.value, 'quantity': 13000},
-        {'id': osrs.item_ids.ItemIDs.LAW_RUNE.value, 'quantity': 13000},
-        {'id': osrs.item_ids.ItemIDs.SOFT_CLAY.value, 'quantity': 13000},
-        {'id': osrs.item_ids.ItemIDs.TELEPORT_TO_HOUSE.value, 'quantity': 1}
+        {'id': osrs.item_ids.FIRE_RUNE, 'quantity': 13000},
+        {'id': osrs.item_ids.LAW_RUNE, 'quantity': 13000},
+        {'id': osrs.item_ids.SOFT_CLAY, 'quantity': 13000},
+        {'id': osrs.item_ids.TELEPORT_TO_HOUSE, 'quantity': 1}
     ])
     osrs.transport.house_tele(outside=True)
 
@@ -69,8 +69,8 @@ def main(min_SOFT_CLAYs):
         if (
                 2944 <= qh.get_player_world_location('x') <= 2964
                 and 3208 <= qh.get_player_world_location('y') <= 3232
-                and not qh.get_inventory(osrs.item_ids.ItemIDs.SOFT_CLAY.value + 1)
-                and qh.get_inventory(osrs.item_ids.ItemIDs.SOFT_CLAY.value, quantity=True) < min_SOFT_CLAYs
+                and not qh.get_inventory(osrs.item_ids.SOFT_CLAY + 1)
+                and qh.get_inventory(osrs.item_ids.SOFT_CLAY, quantity=True) < min_SOFT_CLAYs
         ):
             resupply()
         # exchange all noted SOFT_CLAYs with phials
@@ -78,16 +78,16 @@ def main(min_SOFT_CLAYs):
             osrs.keeb.write(str(qh.get_chat_options('Exchange All', fuzzy=True)))
         # use SOFT_CLAYs on phials
         elif (
-                qh.get_inventory(osrs.item_ids.ItemIDs.SOFT_CLAY.value, quantity=True) < min_SOFT_CLAYs
+                qh.get_inventory(osrs.item_ids.SOFT_CLAY, quantity=True) < min_SOFT_CLAYs
                 and (datetime.datetime.now() - last_phials_click).total_seconds() > 8
                 and len(qh.get_npcs_by_name()) > 0):
-            osrs.move.fast_click(qh.get_inventory(osrs.item_ids.ItemIDs.SOFT_CLAY.value + 1))
+            osrs.move.fast_click(qh.get_inventory(osrs.item_ids.SOFT_CLAY + 1))
             res = osrs.move.right_click_v6(qh.get_npcs_by_name()[0], 'Use', qh.get_canvas(), in_inv=True)
             if res:
                 last_phials_click = datetime.datetime.now()
         # have SOFT_CLAYs, click the house portal
         elif (
-                qh.get_inventory(osrs.item_ids.ItemIDs.SOFT_CLAY.value, quantity=True) >= min_SOFT_CLAYs
+                qh.get_inventory(osrs.item_ids.SOFT_CLAY, quantity=True) >= min_SOFT_CLAYs
                 and (datetime.datetime.now() - last_portal_click).total_seconds() > 8
                 and qh.get_objects_v2('game', portal_id)
         ):
@@ -99,7 +99,7 @@ def main(min_SOFT_CLAYs):
         # i am in house
         elif qh.get_player_world_location('x') > 3500:
             # in house w SOFT_CLAYs, build!
-            if qh.get_inventory(osrs.item_ids.ItemIDs.SOFT_CLAY.value, quantity=True) >= min_SOFT_CLAYs:
+            if qh.get_inventory(osrs.item_ids.SOFT_CLAY, quantity=True) >= min_SOFT_CLAYs:
                 # removing chair
                 if (qh.get_objects_v2('game', lectern)
                         and (datetime.datetime.now() - last_lectern_click).total_seconds() > 10

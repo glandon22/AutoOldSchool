@@ -827,8 +827,8 @@ def tab_to_varrock():
             osrs.clock.sleep_one_tick()
             osrs.clock.sleep_one_tick()
             return
-        elif qh.get_inventory(osrs.item_ids.ItemIDs.VARROCK_TELEPORT.value) and (datetime.datetime.now() - last_tab).total_seconds() > 10:
-            osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.VARROCK_TELEPORT.value))
+        elif qh.get_inventory(osrs.item_ids.VARROCK_TELEPORT) and (datetime.datetime.now() - last_tab).total_seconds() > 10:
+            osrs.move.click(qh.get_inventory(osrs.item_ids.VARROCK_TELEPORT))
             last_tab = datetime.datetime.now()
 
 

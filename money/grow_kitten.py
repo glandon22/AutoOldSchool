@@ -20,7 +20,7 @@ while True:
     osrs.keeb.press_key('f1')
     osrs.keeb.press_key('esc')
     if (datetime.datetime.now() - last_feed).total_seconds() > 23 * 60:
-        osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.RAW_BASS.value))
+        osrs.move.click(qh.get_inventory(osrs.item_ids.RAW_BASS))
         osrs.move.click(qh.get_npcs()[0])
         last_feed = datetime.datetime.now()
     elif (datetime.datetime.now() - last_play).total_seconds() > 24 * 60 and qh.get_npcs():

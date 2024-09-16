@@ -68,7 +68,7 @@ def have_ropes():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.ROPE.value):
+    if qh.get_inventory(osrs.item_ids.ROPE):
         return True
 
 
@@ -76,7 +76,7 @@ def have_buckets():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.BUCKET.value) or qh.get_inventory(osrs.item_ids.ItemIDs.BUCKET_OF_WATER.value):
+    if qh.get_inventory(osrs.item_ids.BUCKET) or qh.get_inventory(osrs.item_ids.BUCKET_OF_WATER):
         return True
 
 
@@ -152,7 +152,7 @@ def have_tethered():
     elif 7211 in qh.get_spot_anims() or 534 in qh.get_spot_anims():
         logger.warn('failed to tether, washed.')
         return True
-    elif not qh.get_inventory(osrs.item_ids.ItemIDs.ROPE.value):
+    elif not qh.get_inventory(osrs.item_ids.ROPE):
         logger.warn('lost my rope')
         return True
 
@@ -231,7 +231,7 @@ def tempoross_state_parser(qh: osrs.queryHelper.QueryHelper):
 
 def ground_fire_handler(qh: osrs.queryHelper.QueryHelper):
     if qh.get_objects_v2('game', ground_fire_id, dist=5):
-        if not qh.get_inventory(osrs.item_ids.ItemIDs.BUCKET_OF_WATER.value):
+        if not qh.get_inventory(osrs.item_ids.BUCKET_OF_WATER):
             logger.warn('fire on the ground but dont have any buckets of water.')
             return
         c = osrs.util.find_closest_target(qh.get_objects_v2('game', ground_fire_id, dist=5))

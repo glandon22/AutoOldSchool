@@ -16,31 +16,31 @@ pipe_id = '1785'
 
 deposit_query = [
     {
-        'id': osrs.item_ids.ItemIDs.BEER_GLASS.value,
+        'id': osrs.item_ids.BEER_GLASS,
         'quantity': 'All'
     },
     {
-        'id': osrs.item_ids.ItemIDs.EMPTY_CANDLE_LANTERN.value,
+        'id': osrs.item_ids.EMPTY_CANDLE_LANTERN,
         'quantity': 'All'
     },
     {
-        'id': osrs.item_ids.ItemIDs.EMPTY_OIL_LAMP.value,
+        'id': osrs.item_ids.EMPTY_OIL_LAMP,
         'quantity': 'All'
     },
     {
-        'id': osrs.item_ids.ItemIDs.EMPTY_OIL_LANTERN.value,
+        'id': osrs.item_ids.EMPTY_OIL_LANTERN,
         'quantity': 'All'
     },
     {
-        'id': osrs.item_ids.ItemIDs.EMPTY_VIAL.value,
+        'id': osrs.item_ids.EMPTY_VIAL,
         'quantity': 'All'
     },
     {
-        'id': osrs.item_ids.ItemIDs.EMPTY_FISHBOWL.value,
+        'id': osrs.item_ids.EMPTY_FISHBOWL,
         'quantity': 'All'
     },
     {
-        'id': osrs.item_ids.ItemIDs.UNPOWERED_ORB.value,
+        'id': osrs.item_ids.UNPOWERED_ORB,
         'quantity': 'All'
     },
 ]
@@ -125,7 +125,7 @@ def main(goal_level=99):
         if not glass and (datetime.datetime.now() - last_banked).total_seconds() > 3:
             osrs.bank.banking_handler({
                 'deposit': deposit_query,
-                'withdraw': [{'items': [{'id': osrs.item_ids.ItemIDs.MOLTEN_GLASS.value, 'quantity': 'All'}]}]
+                'withdraw': [{'items': [{'id': osrs.item_ids.MOLTEN_GLASS, 'quantity': 'All'}]}]
             })
             last_click = datetime.datetime.now() - datetime.timedelta(hours=1)
             last_banked = datetime.datetime.now()

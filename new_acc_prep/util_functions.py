@@ -93,8 +93,8 @@ def equip_air_staff_and_earth_strike():
     osrs.keeb.press_key('esc')
     while True:
         qh.query_backend()
-        if qh.get_inventory(osrs.item_ids.ItemIDs.STAFF_OF_AIR.value):
-            osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.STAFF_OF_AIR.value))
+        if qh.get_inventory(osrs.item_ids.STAFF_OF_AIR):
+            osrs.move.click(qh.get_inventory(osrs.item_ids.STAFF_OF_AIR))
             osrs.clock.sleep_one_tick()
             osrs.clock.sleep_one_tick()
             break
@@ -157,8 +157,8 @@ def tab_to_varrock():
             osrs.clock.sleep_one_tick()
             osrs.clock.sleep_one_tick()
             return
-        elif qh.get_inventory(osrs.item_ids.ItemIDs.VARROCK_TELEPORT.value) and (datetime.datetime.now() - last_tab).total_seconds() > 10:
-            osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.VARROCK_TELEPORT.value))
+        elif qh.get_inventory(osrs.item_ids.VARROCK_TELEPORT) and (datetime.datetime.now() - last_tab).total_seconds() > 10:
+            osrs.move.click(qh.get_inventory(osrs.item_ids.VARROCK_TELEPORT))
             last_tab = datetime.datetime.now()
 
 
@@ -223,8 +223,8 @@ def dye_goblin_mail():
     qh.set_inventory()
     while True:
         qh.query_backend()
-        mail = qh.get_inventory(osrs.item_ids.ItemIDs.GOBLIN_MAIL.value)
-        blue_dye = qh.get_inventory(osrs.item_ids.ItemIDs.BLUE_DYE.value)
+        mail = qh.get_inventory(osrs.item_ids.GOBLIN_MAIL)
+        blue_dye = qh.get_inventory(osrs.item_ids.BLUE_DYE)
         if mail and blue_dye:
             osrs.move.click(blue_dye)
             osrs.move.click(mail)
@@ -232,8 +232,8 @@ def dye_goblin_mail():
     osrs.clock.random_sleep(1, 1.1)
     while True:
         qh.query_backend()
-        mail = qh.get_inventory(osrs.item_ids.ItemIDs.GOBLIN_MAIL.value)
-        orange_dye = qh.get_inventory(osrs.item_ids.ItemIDs.ORANGE_DYE.value)
+        mail = qh.get_inventory(osrs.item_ids.GOBLIN_MAIL)
+        orange_dye = qh.get_inventory(osrs.item_ids.ORANGE_DYE)
         if mail and blue_dye:
             osrs.move.click(orange_dye)
             osrs.move.click(mail)
@@ -300,10 +300,10 @@ def enchant_meats():
     while True:
         qh.query_backend()
         item = qh.get_inventory([
-            osrs.item_ids.ItemIDs.RAW_CHICKEN.value,
-            osrs.item_ids.ItemIDs.RAW_BEAR_MEAT.value,
-            osrs.item_ids.ItemIDs.RAW_RAT_MEAT.value,
-            osrs.item_ids.ItemIDs.RAW_BEEF.value,
+            osrs.item_ids.RAW_CHICKEN,
+            osrs.item_ids.RAW_BEAR_MEAT,
+            osrs.item_ids.RAW_RAT_MEAT,
+            osrs.item_ids.RAW_BEEF,
         ])
         if item:
             if qh.get_objects_v2('game', cauldron):
@@ -488,9 +488,9 @@ def drop_hammer_and_saw():
     qh.set_canvas()
     while True:
         qh.query_backend()
-        if qh.get_inventory([osrs.item_ids.ItemIDs.SAW.value, osrs.item_ids.ItemIDs.HAMMER.value]):
+        if qh.get_inventory([osrs.item_ids.SAW, osrs.item_ids.HAMMER]):
             osrs.move.right_click_v6(
-                qh.get_inventory([osrs.item_ids.ItemIDs.SAW.value, osrs.item_ids.ItemIDs.HAMMER.value]),
+                qh.get_inventory([osrs.item_ids.SAW, osrs.item_ids.HAMMER]),
                 'Drop',
                 qh.get_canvas(),
                 in_inv=True

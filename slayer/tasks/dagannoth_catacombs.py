@@ -2,7 +2,7 @@
 import datetime
 
 import osrs
-from osrs.item_ids import ItemIDs
+
 from slayer import transport_functions
 from combat import slayer_killer
 
@@ -10,29 +10,29 @@ varrock_tele_widget_id = '218,23'
 
 
 supplies = [
-    ItemIDs.SUPER_ATTACK4.value,
-    ItemIDs.SUPER_ATTACK4.value,
-    ItemIDs.SUPER_STRENGTH4.value,
-    ItemIDs.SUPER_STRENGTH4.value,
-    ItemIDs.RUNE_POUCH.value,
-    ItemIDs.KARAMJA_GLOVES_3.value,
+    osrs.item_ids.SUPER_ATTACK4,
+    osrs.item_ids.SUPER_ATTACK4,
+    osrs.item_ids.SUPER_STRENGTH4,
+    osrs.item_ids.SUPER_STRENGTH4,
+    osrs.item_ids.RUNE_POUCH,
+    osrs.item_ids.KARAMJA_GLOVES_3,
     {
-        'id': ItemIDs.PRAYER_POTION4.value,
+        'id': osrs.item_ids.PRAYER_POTION4,
         'quantity': '10'
     },
 ]
 
 equipment = [
-        ItemIDs.RUNE_DEFENDER.value,
-        ItemIDs.BARROWS_GLOVES.value,
-        ItemIDs.FIRE_CAPE.value,
-        ItemIDs.ABYSSAL_WHIP.value,
-        ItemIDs.SLAYER_HELMET_I.value,
-        ItemIDs.BRIMSTONE_RING.value,
-        ItemIDs.DRAGON_BOOTS.value,
-        ItemIDs.BANDOS_CHESTPLATE.value,
-        ItemIDs.BANDOS_TASSETS.value,
-        ItemIDs.AMULET_OF_FURY.value,
+        osrs.item_ids.RUNE_DEFENDER,
+        osrs.item_ids.BARROWS_GLOVES,
+        osrs.item_ids.FIRE_CAPE,
+        osrs.item_ids.ABYSSAL_WHIP,
+        osrs.item_ids.SLAYER_HELMET_I,
+        osrs.item_ids.BRIMSTONE_RING,
+        osrs.item_ids.DRAGON_BOOTS,
+        osrs.item_ids.BANDOS_CHESTPLATE,
+        osrs.item_ids.BANDOS_TASSETS,
+        osrs.item_ids.AMULET_OF_FURY,
     ]
 
 banking_config_equipment = {
@@ -75,24 +75,24 @@ def loot_builder():
         'loot': []
     }
 
-    item = osrs.loot.LootConfig(ItemIDs.SNAPE_GRASS_SEED.value, 7)
+    item = osrs.loot.LootConfig(osrs.item_ids.SNAPE_GRASS_SEED, 7)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.SNAPDRAGON_SEED.value, 17)
+    item = osrs.loot.LootConfig(osrs.item_ids.SNAPDRAGON_SEED, 17)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.TORSTOL_SEED.value, 17)
+    item = osrs.loot.LootConfig(osrs.item_ids.TORSTOL_SEED, 17)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.WARRIOR_HELM.value, 17)
+    item = osrs.loot.LootConfig(osrs.item_ids.WARRIOR_HELM, 17)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.ANCIENT_SHARD.value, 9)
+    item = osrs.loot.LootConfig(osrs.item_ids.ANCIENT_SHARD, 9)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.DARK_TOTEM_TOP.value, 9)
+    item = osrs.loot.LootConfig(osrs.item_ids.DARK_TOTEM_TOP, 9)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.DARK_TOTEM_BASE.value, 9)
+    item = osrs.loot.LootConfig(osrs.item_ids.DARK_TOTEM_BASE, 9)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.DARK_TOTEM_MIDDLE.value, 9)
+    item = osrs.loot.LootConfig(osrs.item_ids.DARK_TOTEM_MIDDLE, 9)
     config['loot'].append(item)
 
-    item = osrs.loot.InvConfig(ItemIDs.MONKFISH.value, osrs.loot.monkfish_eval)
+    item = osrs.loot.InvConfig(osrs.item_ids.MONKFISH, osrs.loot.monkfish_eval)
     config['inv'].append(item)
 
     return config

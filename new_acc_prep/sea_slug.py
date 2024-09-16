@@ -14,7 +14,7 @@ def get_glass():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.BROKEN_GLASS_1469.value):
+    if qh.get_inventory(osrs.item_ids.BROKEN_GLASS_1469):
         return True
 
 
@@ -22,7 +22,7 @@ def get_sticks():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.DAMP_STICKS.value):
+    if qh.get_inventory(osrs.item_ids.DAMP_STICKS):
         return True
 
 
@@ -31,11 +31,11 @@ def dry_sticks():
     qh.set_inventory()
     while True:
         qh.query_backend()
-        if qh.get_inventory(osrs.item_ids.ItemIDs.DRY_STICKS.value):
+        if qh.get_inventory(osrs.item_ids.DRY_STICKS):
             return
-        elif qh.get_inventory(osrs.item_ids.ItemIDs.DAMP_STICKS.value) and qh.get_inventory(osrs.item_ids.ItemIDs.BROKEN_GLASS_1469.value):
-            osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.BROKEN_GLASS_1469.value))
-            osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.DAMP_STICKS.value))
+        elif qh.get_inventory(osrs.item_ids.DAMP_STICKS) and qh.get_inventory(osrs.item_ids.BROKEN_GLASS_1469):
+            osrs.move.click(qh.get_inventory(osrs.item_ids.BROKEN_GLASS_1469))
+            osrs.move.click(qh.get_inventory(osrs.item_ids.DAMP_STICKS))
             osrs.clock.random_sleep(3, 3.1)
 
 
@@ -44,10 +44,10 @@ def click_sticks():
     qh.set_inventory()
     while True:
         qh.query_backend()
-        if qh.get_inventory(osrs.item_ids.ItemIDs.LIT_TORCH.value):
+        if qh.get_inventory(osrs.item_ids.LIT_TORCH):
             return
-        elif qh.get_inventory(osrs.item_ids.ItemIDs.DRY_STICKS.value):
-            osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.DRY_STICKS.value))
+        elif qh.get_inventory(osrs.item_ids.DRY_STICKS):
+            osrs.move.click(qh.get_inventory(osrs.item_ids.DRY_STICKS))
             osrs.clock.random_sleep(3, 3.1)
 
 

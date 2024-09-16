@@ -55,10 +55,10 @@ def use_bones():
     qh.set_objects_v2('game', {gilded_id})
     while True:
         qh.query_backend()
-        if not qh.get_inventory(osrs.item_ids.ItemIDs.DRAGON_BONES.value) or qh.get_player_world_location('x') < 5000:
+        if not qh.get_inventory(osrs.item_ids.DRAGON_BONES) or qh.get_player_world_location('x') < 5000:
             return
-        elif qh.get_inventory(osrs.item_ids.ItemIDs.DRAGON_BONES.value) and qh.get_objects_v2('game', gilded_id):
-            osrs.move.fast_click(qh.get_inventory(osrs.item_ids.ItemIDs.DRAGON_BONES.value))
+        elif qh.get_inventory(osrs.item_ids.DRAGON_BONES) and qh.get_objects_v2('game', gilded_id):
+            osrs.move.fast_click(qh.get_inventory(osrs.item_ids.DRAGON_BONES))
             res = osrs.move.right_click_v6(qh.get_objects_v2('game', gilded_id)[0], 'Use', qh.get_canvas())
 
 
@@ -84,8 +84,8 @@ def offer_bones(house):
         if (
                 2944 <= qh.get_player_world_location('x') <= 2964
                 and 3208 <= qh.get_player_world_location('y') <= 3232
-                and not qh.get_inventory(osrs.item_ids.ItemIDs.DRAGON_BONES.value + 1)
-                and not qh.get_inventory(osrs.item_ids.ItemIDs.DRAGON_BONES.value)
+                and not qh.get_inventory(osrs.item_ids.DRAGON_BONES + 1)
+                and not qh.get_inventory(osrs.item_ids.DRAGON_BONES)
         ):
             return
         elif qh.get_chat_options():
@@ -94,15 +94,15 @@ def offer_bones(house):
                     osrs.keeb.write(str(i))
                     osrs.clock.sleep_one_tick()
                     break
-        elif (not qh.get_inventory(osrs.item_ids.ItemIDs.DRAGON_BONES.value)
+        elif (not qh.get_inventory(osrs.item_ids.DRAGON_BONES)
               and (datetime.datetime.now() - last_phials_click).total_seconds() > 8
               and len(qh.get_npcs_by_name()) > 0):
-            osrs.move.fast_click(qh.get_inventory(osrs.item_ids.ItemIDs.DRAGON_BONES.value + 1))
+            osrs.move.fast_click(qh.get_inventory(osrs.item_ids.DRAGON_BONES + 1))
             res = osrs.move.right_click_v6(qh.get_npcs_by_name()[0], 'Use', qh.get_canvas(), in_inv=True)
             if res:
                 last_phials_click = datetime.datetime.now()
         elif (
-                qh.get_inventory(osrs.item_ids.ItemIDs.DRAGON_BONES.value)
+                qh.get_inventory(osrs.item_ids.DRAGON_BONES)
                 and (datetime.datetime.now() - last_portal_click).total_seconds() > 8
                 and qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, portal_id)
         ):
@@ -114,7 +114,7 @@ def offer_bones(house):
             osrs.clock.sleep_one_tick()
             osrs.keeb.press_key('enter')
         elif qh.get_player_world_location('x') > 7500:
-            if qh.get_inventory(osrs.item_ids.ItemIDs.DRAGON_BONES.value):
+            if qh.get_inventory(osrs.item_ids.DRAGON_BONES):
                 use_bones()
             else:
                 leave_house()

@@ -107,7 +107,7 @@ def kill_ghost():
         loot.retrieve_loot(10)
         qh.query_backend()
         if qh.get_inventory(
-                [osrs.item_ids.ItemIDs.SOUL_FRAGMENT.value, osrs.item_ids.ItemIDs.SOUL_FRAGMENT_25201.value]
+                [osrs.item_ids.SOUL_FRAGMENT, osrs.item_ids.SOUL_FRAGMENT_25201]
         ):
             osrs.dev.logger.info('I have a soul fragment.')
             return
@@ -238,8 +238,8 @@ def used_frags():
     qh.set_inventory()
     qh.query_backend()
     if not qh.get_inventory([
-        osrs.item_ids.ItemIDs.SOUL_FRAGMENT.value,
-        osrs.item_ids.ItemIDs.SOUL_FRAGMENT_25201.value,
+        osrs.item_ids.SOUL_FRAGMENT,
+        osrs.item_ids.SOUL_FRAGMENT_25201,
     ]):
         return True
 

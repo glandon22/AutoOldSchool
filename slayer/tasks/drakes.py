@@ -2,7 +2,7 @@
 import datetime
 
 import osrs
-from osrs.item_ids import ItemIDs
+
 from slayer import transport_functions
 from combat import slayer_killer
 from slayer.tasks import gear
@@ -11,41 +11,41 @@ varrock_tele_widget_id = '218,23'
 
 
 supplies = [
-    ItemIDs.DRAMEN_STAFF.value,
-    ItemIDs.SUPER_ATTACK4.value,
-    ItemIDs.SUPER_ATTACK4.value,
-    ItemIDs.SUPER_STRENGTH4.value,
-    ItemIDs.SUPER_STRENGTH4.value,
-    ItemIDs.EXTENDED_ANTIFIRE4.value,
-    ItemIDs.RUNE_POUCH.value,
-    ItemIDs.KARAMJA_GLOVES_3.value,
+    osrs.item_ids.DRAMEN_STAFF,
+    osrs.item_ids.SUPER_ATTACK4,
+    osrs.item_ids.SUPER_ATTACK4,
+    osrs.item_ids.SUPER_STRENGTH4,
+    osrs.item_ids.SUPER_STRENGTH4,
+    osrs.item_ids.EXTENDED_ANTIFIRE4,
+    osrs.item_ids.RUNE_POUCH,
+    osrs.item_ids.KARAMJA_GLOVES_3,
     {
-        'id': ItemIDs.MONKFISH.value,
+        'id': osrs.item_ids.MONKFISH,
         'quantity': '10'
     },
     {
-        'id': ItemIDs.PRAYER_POTION4.value,
+        'id': osrs.item_ids.PRAYER_POTION4,
         'quantity': '5'
     },
     {
-        'id': ItemIDs.NATURE_RUNE.value,
+        'id': osrs.item_ids.NATURE_RUNE,
         'quantity': 'X',
         'amount': 50
     },
 ]
 
 equipment = [
-    ItemIDs.DRAGONFIRE_SHIELD.value,
-    ItemIDs.BARROWS_GLOVES.value,
-    ItemIDs.FIRE_CAPE.value,
-    ItemIDs.SLAYER_HELMET_I.value,
-    ItemIDs.BRIMSTONE_RING.value,
-    ItemIDs.BOOTS_OF_BRIMSTONE.value,
-    ItemIDs.BANDOS_CHESTPLATE.value,
-    ItemIDs.BANDOS_TASSETS.value,
-    ItemIDs.AMULET_OF_FURY.value,
-    ItemIDs.DRAGON_HUNTER_LANCE.value,
-    ItemIDs.HOLY_BLESSING.value,
+    osrs.item_ids.DRAGONFIRE_SHIELD,
+    osrs.item_ids.BARROWS_GLOVES,
+    osrs.item_ids.FIRE_CAPE,
+    osrs.item_ids.SLAYER_HELMET_I,
+    osrs.item_ids.BRIMSTONE_RING,
+    osrs.item_ids.BOOTS_OF_BRIMSTONE,
+    osrs.item_ids.BANDOS_CHESTPLATE,
+    osrs.item_ids.BANDOS_TASSETS,
+    osrs.item_ids.AMULET_OF_FURY,
+    osrs.item_ids.DRAGON_HUNTER_LANCE,
+    osrs.item_ids.HOLY_BLESSING,
 ]
 
 banking_config_equipment = {
@@ -98,45 +98,45 @@ def loot_builder():
         'loot': []
     }
 
-    item = osrs.loot.LootConfig(ItemIDs.RUNE_FULL_HELM.value, 10, alch=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.RUNE_FULL_HELM, 10, alch=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.RED_DHIDE_BODY.value, 10, alch=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.RED_DHIDE_BODY, 10, alch=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.MYSTIC_EARTH_STAFF.value, 10, alch=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.MYSTIC_EARTH_STAFF, 10, alch=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.DRAGON_MACE.value, 10, alch=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.DRAGON_MACE, 10, alch=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.RUNE_BATTLEAXE.value, 10, alch=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.RUNE_BATTLEAXE, 10, alch=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.RUNITE_LIMBS.value, 10, alch=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.RUNITE_LIMBS, 10, alch=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.DRAKES_TOOTH.value, 999)
+    item = osrs.loot.LootConfig(osrs.item_ids.DRAKES_TOOTH, 999)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.DRAKES_CLAW.value, 999)
+    item = osrs.loot.LootConfig(osrs.item_ids.DRAKES_CLAW, 999)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.DRAGON_THROWNAXE.value, 999)
+    item = osrs.loot.LootConfig(osrs.item_ids.DRAGON_THROWNAXE, 999)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.DRAGON_KNIFE.value, 999)
+    item = osrs.loot.LootConfig(osrs.item_ids.DRAGON_KNIFE, 999)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.NATURE_RUNE.value, 7, stackable=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.NATURE_RUNE, 7, stackable=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.LAW_RUNE.value, 7, stackable=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.LAW_RUNE, 7, stackable=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.DEATH_RUNE.value, 7, stackable=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.DEATH_RUNE, 7, stackable=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.COINS_995.value, 7, stackable=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.COINS_995, 7, stackable=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.DIAMOND.value + 1, 7, stackable=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.DIAMOND + 1, 7, stackable=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.GRIMY_RANARR_WEED.value + 1, 7, stackable=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.GRIMY_RANARR_WEED + 1, 7, stackable=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.GRIMY_SNAPDRAGON.value + 1, 7, stackable=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.GRIMY_SNAPDRAGON + 1, 7, stackable=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.GRIMY_TORSTOL.value + 1, 7, stackable=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.GRIMY_TORSTOL + 1, 7, stackable=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.SNAPDRAGON_SEED.value, 7, stackable=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.SNAPDRAGON_SEED, 7, stackable=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.SNAPE_GRASS_SEED.value, 7, stackable=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.SNAPE_GRASS_SEED, 7, stackable=True)
     config['loot'].append(item)
 
     return config
@@ -165,15 +165,15 @@ def main():
             return False
         while True:
             qh.query_backend()
-            if qh.get_inventory(ItemIDs.DRAMEN_STAFF.value):
-                osrs.move.click(qh.get_inventory(ItemIDs.DRAMEN_STAFF.value))
+            if qh.get_inventory(osrs.item_ids.DRAMEN_STAFF):
+                osrs.move.click(qh.get_inventory(osrs.item_ids.DRAMEN_STAFF))
                 break
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
         osrs.game.tele_home_fairy_ring('cir')
         transport_functions.mount_karuulm_drakes()
         qh.query_backend()
-        osrs.move.click(qh.get_inventory(ItemIDs.DRAGON_HUNTER_LANCE.value))
+        osrs.move.click(qh.get_inventory(osrs.item_ids.DRAGON_HUNTER_LANCE))
         task_started = True
         success = slayer_killer.main('drake', pot_config.asdict(), 35, prayers=['protect_range'], pre_hop=pre_log, loot_config=loot_builder())
         qh.query_backend()

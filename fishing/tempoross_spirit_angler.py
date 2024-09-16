@@ -69,8 +69,8 @@ def have_buckets():
     qh.set_inventory()
     qh.query_backend()
     if (
-            osrs.inv.get_item_quantity_in_inv(qh.get_inventory(), osrs.item_ids.ItemIDs.BUCKET.value) +
-            osrs.inv.get_item_quantity_in_inv(qh.get_inventory(), osrs.item_ids.ItemIDs.BUCKET_OF_WATER.value) >= 2
+            osrs.inv.get_item_quantity_in_inv(qh.get_inventory(), osrs.item_ids.BUCKET) +
+            osrs.inv.get_item_quantity_in_inv(qh.get_inventory(), osrs.item_ids.BUCKET_OF_WATER) >= 2
     ):
         return True
 
@@ -223,7 +223,7 @@ def tempoross_state_parser(qh: osrs.queryHelper.QueryHelper):
 
 def ground_fire_handler(qh: osrs.queryHelper.QueryHelper):
     if qh.get_objects_v2('game', ground_fire_id, dist=5):
-        if not qh.get_inventory(osrs.item_ids.ItemIDs.BUCKET_OF_WATER.value):
+        if not qh.get_inventory(osrs.item_ids.BUCKET_OF_WATER):
             logger.warn('fire on the ground but dont have any buckets of water.')
             return
         c = osrs.util.find_closest_target(qh.get_objects_v2('game', ground_fire_id, dist=5))

@@ -1,5 +1,5 @@
 import osrs
-from osrs.item_ids import ItemIDs
+
 from slayer import transport_functions
 from combat import slayer_killer
 from slayer.tasks import gear
@@ -7,37 +7,37 @@ from slayer.tasks import gear
 varrock_tele_widget_id = '218,23'
 supplies = [
         {
-            'id': ItemIDs.COINS_995.value,
+            'id': osrs.item_ids.COINS_995,
             'quantity': 'X',
             'amount': '200'
         },
         {
-            'id': ItemIDs.NATURE_RUNE.value,
+            'id': osrs.item_ids.NATURE_RUNE,
             'quantity': 'All'
         },
-        ItemIDs.SUPER_ATTACK4.value,
-        ItemIDs.SUPER_ATTACK4.value,
-        ItemIDs.SUPER_STRENGTH4.value,
-        ItemIDs.SUPER_STRENGTH4.value,
-        ItemIDs.RUNE_POUCH.value,
-        ItemIDs.KARAMJA_GLOVES_3.value,
-        ItemIDs.DRAMEN_STAFF.value,
+        osrs.item_ids.SUPER_ATTACK4,
+        osrs.item_ids.SUPER_ATTACK4,
+        osrs.item_ids.SUPER_STRENGTH4,
+        osrs.item_ids.SUPER_STRENGTH4,
+        osrs.item_ids.RUNE_POUCH,
+        osrs.item_ids.KARAMJA_GLOVES_3,
+        osrs.item_ids.DRAMEN_STAFF,
         {
-            'id': ItemIDs.MONKFISH.value,
+            'id': osrs.item_ids.MONKFISH,
             'quantity': 'All'
         },
     ]
 equipment = [
-        ItemIDs.ABYSSAL_WHIP.value,
-        ItemIDs.RUNE_DEFENDER.value,
-        ItemIDs.BARROWS_GLOVES.value,
-        ItemIDs.FIRE_CAPE.value,
-        ItemIDs.SLAYER_HELMET_I.value,
-        ItemIDs.BRIMSTONE_RING.value,
-        ItemIDs.DRAGON_BOOTS.value,
-        ItemIDs.BANDOS_CHESTPLATE.value,
-        ItemIDs.BANDOS_TASSETS.value,
-        ItemIDs.AMULET_OF_FURY.value,
+        osrs.item_ids.ABYSSAL_WHIP,
+        osrs.item_ids.RUNE_DEFENDER,
+        osrs.item_ids.BARROWS_GLOVES,
+        osrs.item_ids.FIRE_CAPE,
+        osrs.item_ids.SLAYER_HELMET_I,
+        osrs.item_ids.BRIMSTONE_RING,
+        osrs.item_ids.DRAGON_BOOTS,
+        osrs.item_ids.BANDOS_CHESTPLATE,
+        osrs.item_ids.BANDOS_TASSETS,
+        osrs.item_ids.AMULET_OF_FURY,
     ]
 banking_config_equipment = {
     'dump_inv': True,
@@ -81,8 +81,8 @@ def main():
             return False
         while True:
             qh.query_backend()
-            if qh.get_inventory(ItemIDs.DRAMEN_STAFF.value):
-                osrs.move.click(qh.get_inventory(ItemIDs.DRAMEN_STAFF.value))
+            if qh.get_inventory(osrs.item_ids.DRAMEN_STAFF):
+                osrs.move.click(qh.get_inventory(osrs.item_ids.DRAMEN_STAFF))
                 break
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
@@ -91,8 +91,8 @@ def main():
         qh.query_backend()
         while True:
             qh.query_backend()
-            if qh.get_inventory(ItemIDs.ABYSSAL_WHIP.value):
-                osrs.move.click(qh.get_inventory(ItemIDs.ABYSSAL_WHIP.value))
+            if qh.get_inventory(osrs.item_ids.ABYSSAL_WHIP):
+                osrs.move.click(qh.get_inventory(osrs.item_ids.ABYSSAL_WHIP))
                 break
         task_started = True
         finished = slayer_killer.main('dust devil', pot_config.asdict(), 35, pre_hop=pre_log)

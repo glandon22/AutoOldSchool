@@ -2,7 +2,7 @@
 import datetime
 
 import osrs
-from osrs.item_ids import ItemIDs
+
 from slayer import transport_functions
 from combat import slayer_killer
 
@@ -10,57 +10,57 @@ varrock_tele_widget_id = '218,23'
 
 
 supplies = [
-    ItemIDs.DRAMEN_STAFF.value,
-    ItemIDs.SUPER_ATTACK4.value,
-    ItemIDs.SUPER_ATTACK4.value,
-    ItemIDs.SUPER_STRENGTH4.value,
-    ItemIDs.SUPER_STRENGTH4.value,
-    ItemIDs.RUNE_POUCH.value,
-    ItemIDs.KARAMJA_GLOVES_3.value,
+    osrs.item_ids.DRAMEN_STAFF,
+    osrs.item_ids.SUPER_ATTACK4,
+    osrs.item_ids.SUPER_ATTACK4,
+    osrs.item_ids.SUPER_STRENGTH4,
+    osrs.item_ids.SUPER_STRENGTH4,
+    osrs.item_ids.RUNE_POUCH,
+    osrs.item_ids.KARAMJA_GLOVES_3,
     {
-        'id': ItemIDs.NATURE_RUNE.value,
+        'id': osrs.item_ids.NATURE_RUNE,
         'quantity': 'All'
     },
     {
-        'id': ItemIDs.PRAYER_POTION4.value,
+        'id': osrs.item_ids.PRAYER_POTION4,
         'quantity': '5'
     },
 {
-        'id': ItemIDs.MONKFISH.value,
+        'id': osrs.item_ids.MONKFISH,
         'quantity': '10'
     },
 ]
 
 equipment = [
-    ItemIDs.HOLY_BLESSING.value,
-    ItemIDs.SLAYER_HELMET_I.value,
-    ItemIDs.ZOMBIE_AXE.value,
-    ItemIDs.BARROWS_GLOVES.value,
-    ItemIDs.BRIMSTONE_RING.value,
-    ItemIDs.DRAGON_BOOTS.value,
+    osrs.item_ids.HOLY_BLESSING,
+    osrs.item_ids.SLAYER_HELMET_I,
+    osrs.item_ids.ZOMBIE_AXE,
+    osrs.item_ids.BARROWS_GLOVES,
+    osrs.item_ids.BRIMSTONE_RING,
+    osrs.item_ids.DRAGON_BOOTS,
     {
         'id': [
-            ItemIDs.KARILS_LEATHERTOP.value,
-            ItemIDs.KARILS_LEATHERTOP_25.value,
-            ItemIDs.KARILS_LEATHERTOP_50.value,
-            ItemIDs.KARILS_LEATHERTOP_75.value,
-            ItemIDs.KARILS_LEATHERTOP_100.value,
+            osrs.item_ids.KARILS_LEATHERTOP,
+            osrs.item_ids.KARILS_LEATHERTOP_25,
+            osrs.item_ids.KARILS_LEATHERTOP_50,
+            osrs.item_ids.KARILS_LEATHERTOP_75,
+            osrs.item_ids.KARILS_LEATHERTOP_100,
         ],
         'quantity': 1
     },
     {
         'id': [
-            ItemIDs.KARILS_LEATHERSKIRT.value,
-            ItemIDs.KARILS_LEATHERSKIRT_25.value,
-            ItemIDs.KARILS_LEATHERSKIRT_50.value,
-            ItemIDs.KARILS_LEATHERSKIRT_75.value,
-            ItemIDs.KARILS_LEATHERSKIRT_100.value,
+            osrs.item_ids.KARILS_LEATHERSKIRT,
+            osrs.item_ids.KARILS_LEATHERSKIRT_25,
+            osrs.item_ids.KARILS_LEATHERSKIRT_50,
+            osrs.item_ids.KARILS_LEATHERSKIRT_75,
+            osrs.item_ids.KARILS_LEATHERSKIRT_100,
         ],
         'quantity': 1
     },
-    ItemIDs.AMULET_OF_FURY.value,
-    ItemIDs.RUNE_DEFENDER.value,
-    ItemIDs.FIRE_CAPE.value,
+    osrs.item_ids.AMULET_OF_FURY,
+    osrs.item_ids.RUNE_DEFENDER,
+    osrs.item_ids.FIRE_CAPE,
 ]
 
 banking_config_equipment = {
@@ -130,15 +130,15 @@ def main():
             return False
         while True:
             qh.query_backend()
-            if qh.get_inventory(ItemIDs.DRAMEN_STAFF.value):
-                osrs.move.click(qh.get_inventory(ItemIDs.DRAMEN_STAFF.value))
+            if qh.get_inventory(osrs.item_ids.DRAMEN_STAFF):
+                osrs.move.click(qh.get_inventory(osrs.item_ids.DRAMEN_STAFF))
                 break
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
         osrs.game.tele_home_fairy_ring('akq')
         transport_functions.kraken_cove_waterfiends()
         qh.query_backend()
-        osrs.move.click(qh.get_inventory(ItemIDs.ZOMBIE_AXE.value))
+        osrs.move.click(qh.get_inventory(osrs.item_ids.ZOMBIE_AXE))
         task_started = True
         success = slayer_killer.main('waterfiend', pot_config.asdict(), 35, pre_hop=pre_log, prayers=['protect_range'])
         osrs.player.turn_off_all_prayers()

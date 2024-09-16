@@ -22,10 +22,10 @@ def kill_rat_and_get_tail():
         nearby_tiles = osrs.util.generate_surrounding_tiles_from_point(10, qh.get_player_world_location())
         qh.set_ground_items(nearby_tiles)
         qh.query_backend()
-        if qh.get_inventory(osrs.item_ids.ItemIDs.RATS_TAIL.value):
+        if qh.get_inventory(osrs.item_ids.RATS_TAIL):
             return
         elif qh.get_ground_items():
-            tail = list(filter(lambda item: item['id'] == osrs.item_ids.ItemIDs.RATS_TAIL.value, qh.get_ground_items()))
+            tail = list(filter(lambda item: item['id'] == osrs.item_ids.RATS_TAIL, qh.get_ground_items()))
             if len(tail) > 0:
                 osrs.move.fast_click(tail[0])
 

@@ -2,7 +2,7 @@
 import datetime
 
 import osrs
-from osrs.item_ids import ItemIDs
+
 from slayer import transport_functions
 from combat import slayer_killer
 from slayer.utils import bank
@@ -14,48 +14,48 @@ varrock_tele_widget_id = '218,23'
 supplies = [
     {
         'id': [
-            ItemIDs.NATURE_RUNE.value
+            osrs.item_ids.NATURE_RUNE
         ],
         'quantity': 'All'
     },
-    ItemIDs.SUPER_ATTACK4.value,
-    ItemIDs.SUPER_ATTACK4.value,
-    ItemIDs.SUPER_STRENGTH4.value,
-    ItemIDs.SUPER_STRENGTH4.value,
-    ItemIDs.RUNE_POUCH.value,
-    ItemIDs.KARAMJA_GLOVES_4.value,
+    osrs.item_ids.SUPER_ATTACK4,
+    osrs.item_ids.SUPER_ATTACK4,
+    osrs.item_ids.SUPER_STRENGTH4,
+    osrs.item_ids.SUPER_STRENGTH4,
+    osrs.item_ids.RUNE_POUCH,
+    osrs.item_ids.KARAMJA_GLOVES_4,
     {
         'id': [
-            ItemIDs.SLAYER_RING_2.value,
-            ItemIDs.SLAYER_RING_3.value,
-            ItemIDs.SLAYER_RING_4.value,
-            ItemIDs.SLAYER_RING_5.value,
-            ItemIDs.SLAYER_RING_6.value,
-            ItemIDs.SLAYER_RING_7.value,
-            ItemIDs.SLAYER_RING_8.value,
+            osrs.item_ids.SLAYER_RING_2,
+            osrs.item_ids.SLAYER_RING_3,
+            osrs.item_ids.SLAYER_RING_4,
+            osrs.item_ids.SLAYER_RING_5,
+            osrs.item_ids.SLAYER_RING_6,
+            osrs.item_ids.SLAYER_RING_7,
+            osrs.item_ids.SLAYER_RING_8,
         ],
         'quantity': '1'
     },
-    ItemIDs.ROCK_HAMMER.value,
+    osrs.item_ids.ROCK_HAMMER,
     {
-        'id': ItemIDs.PRAYER_POTION4.value,
+        'id': osrs.item_ids.PRAYER_POTION4,
         'quantity': 'X',
         'amount': '12'
     }
 ]
 
 equipment = [
-    {'id': ItemIDs.DRAGON_DEFENDER.value, 'consume': 'Wield'},
-    {'id': ItemIDs.FIRE_CAPE.value, 'consume': 'Wear'},
-    {'id': ItemIDs.SLAYER_HELMET_I.value, 'consume': 'Wear'},
-    {'id': ItemIDs.BARROWS_GLOVES.value, 'consume': 'Wear'},
-    {'id': ItemIDs.BRIMSTONE_RING.value, 'consume': 'Wear'},
-    {'id': ItemIDs.DRAGON_BOOTS.value, 'consume': 'Wear'},
-    {'id': ItemIDs.BANDOS_CHESTPLATE.value, 'consume': 'Wear'},
-    {'id': ItemIDs.BANDOS_TASSETS.value, 'consume': 'Wear'},
-    {'id': ItemIDs.AMULET_OF_FURY.value, 'consume': 'Wear'},
-    {'id': ItemIDs.ZOMBIE_AXE.value, 'consume': 'Wield'},
-    {'id': ItemIDs.HOLY_BLESSING.value, 'consume': 'Equip'},
+    {'id': osrs.item_ids.DRAGON_DEFENDER, 'consume': 'Wield'},
+    {'id': osrs.item_ids.FIRE_CAPE, 'consume': 'Wear'},
+    {'id': osrs.item_ids.SLAYER_HELMET_I, 'consume': 'Wear'},
+    {'id': osrs.item_ids.BARROWS_GLOVES, 'consume': 'Wear'},
+    {'id': osrs.item_ids.BRIMSTONE_RING, 'consume': 'Wear'},
+    {'id': osrs.item_ids.DRAGON_BOOTS, 'consume': 'Wear'},
+    {'id': osrs.item_ids.BANDOS_CHESTPLATE, 'consume': 'Wear'},
+    {'id': osrs.item_ids.BANDOS_TASSETS, 'consume': 'Wear'},
+    {'id': osrs.item_ids.AMULET_OF_FURY, 'consume': 'Wear'},
+    {'id': osrs.item_ids.ZOMBIE_AXE, 'consume': 'Wield'},
+    {'id': osrs.item_ids.HOLY_BLESSING, 'consume': 'Equip'},
 ]
 
 pot_config = slayer_killer.PotConfig(super_str=True, super_atk=True)

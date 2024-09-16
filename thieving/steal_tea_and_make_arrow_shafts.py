@@ -30,7 +30,7 @@ def main(goal_lvl=99):
             return
 
         if len(qh.get_inventory()) == 27:
-            dump_inv_right_click(qh, [osrs.item_ids.ItemIDs.CUP_OF_TEA_1978.value])
+            dump_inv_right_click(qh, [osrs.item_ids.CUP_OF_TEA_1978])
         elif qh.get_objects_v2('game', tea_stall):
             osrs.move.fast_click(qh.get_objects_v2('game', tea_stall)[0])
             currently_fletching = False
@@ -38,9 +38,9 @@ def main(goal_lvl=99):
             if qh.get_widgets(arrow_widget):
                 osrs.keeb.press_key('space')
                 currently_fletching = True
-            elif qh.get_inventory(osrs.item_ids.ItemIDs.ARROW_SHAFT.value) \
-                and qh.get_inventory(osrs.item_ids.ItemIDs.FEATHER.value) and \
+            elif qh.get_inventory(osrs.item_ids.ARROW_SHAFT) \
+                and qh.get_inventory(osrs.item_ids.FEATHER) and \
                     (datetime.datetime.now() - last_arrow_click).total_seconds() > 0.7:
-                osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.ARROW_SHAFT.value))
-                osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.FEATHER.value))
+                osrs.move.click(qh.get_inventory(osrs.item_ids.ARROW_SHAFT))
+                osrs.move.click(qh.get_inventory(osrs.item_ids.FEATHER))
                 last_arrow_click = datetime.datetime.now()

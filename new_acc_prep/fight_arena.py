@@ -20,7 +20,7 @@ def in_bar():
 
 
 def click_keys():
-    util_functions.equip_item(osrs.item_ids.ItemIDs.KHAZARD_CELL_KEYS.value)
+    util_functions.equip_item(osrs.item_ids.KHAZARD_CELL_KEYS)
 
 
 def get_to_safe_spot():
@@ -61,13 +61,13 @@ def main():
     osrs.move.interact_with_object(
         75, 'x', 1, False,
         custom_exit_function=util_functions.check_for_item_in_inv,
-        custom_exit_function_arg=osrs.item_ids.ItemIDs.KHAZARD_HELMET.value
+        custom_exit_function_arg=osrs.item_ids.KHAZARD_HELMET
     )
     osrs.move.interact_with_object(1535, 'y', 3188, False, obj_type='wall', intermediate_tile='2609,3188,0',
                                    obj_tile={'x': 2609, 'y': 3191})
     osrs.move.go_to_loc(2617, 3173)
-    util_functions.equip_item(osrs.item_ids.ItemIDs.KHAZARD_HELMET.value)
-    util_functions.equip_item(osrs.item_ids.ItemIDs.KHAZARD_ARMOUR.value)
+    util_functions.equip_item(osrs.item_ids.KHAZARD_HELMET)
+    util_functions.equip_item(osrs.item_ids.KHAZARD_ARMOUR)
     osrs.move.interact_with_object(81, 'y', 3171, False, obj_type='wall')
     osrs.move.go_to_loc(2616, 3150, right_click=True)
     osrs.move.interact_with_object(1540, 'y', 3146, False, obj_type='wall', intermediate_tile='2616,3144,0')

@@ -2,7 +2,7 @@
 import datetime
 
 import osrs
-from osrs.item_ids import ItemIDs
+
 from slayer import transport_functions
 from combat import slayer_killer
 from slayer.utils import bank
@@ -11,42 +11,42 @@ varrock_tele_widget_id = '218,23'
 
 
 supplies = [
-    {'id': ItemIDs.DRAMEN_STAFF.value, 'consume': 'Wield'},
-    ItemIDs.SUPER_ATTACK4.value,
-    ItemIDs.SUPER_ATTACK4.value,
-    ItemIDs.SUPER_STRENGTH4.value,
-    ItemIDs.SUPER_STRENGTH4.value,
-    ItemIDs.EXTENDED_ANTIFIRE4.value,
-    ItemIDs.EXTENDED_ANTIFIRE4.value,
-    ItemIDs.RUNE_POUCH.value,
-    ItemIDs.KARAMJA_GLOVES_4.value,
+    {'id': osrs.item_ids.DRAMEN_STAFF, 'consume': 'Wield'},
+    osrs.item_ids.SUPER_ATTACK4,
+    osrs.item_ids.SUPER_ATTACK4,
+    osrs.item_ids.SUPER_STRENGTH4,
+    osrs.item_ids.SUPER_STRENGTH4,
+    osrs.item_ids.EXTENDED_ANTIFIRE4,
+    osrs.item_ids.EXTENDED_ANTIFIRE4,
+    osrs.item_ids.RUNE_POUCH,
+    osrs.item_ids.KARAMJA_GLOVES_4,
     {
-        'id': ItemIDs.MONKFISH.value,
+        'id': osrs.item_ids.MONKFISH,
         'quantity': '5'
     },
     {
-        'id': ItemIDs.PRAYER_POTION4.value,
+        'id': osrs.item_ids.PRAYER_POTION4,
         'quantity': '10'
     },
     {
-        'id': ItemIDs.NATURE_RUNE.value,
+        'id': osrs.item_ids.NATURE_RUNE,
         'quantity': 'X',
         'amount': 50
     },
 ]
 
 equipment = [
-    {'id': ItemIDs.DRAGONFIRE_SHIELD.value, 'consume': 'Wield'},
-    {'id': ItemIDs.FIRE_CAPE.value, 'consume': 'Wear'},
-    {'id': ItemIDs.SLAYER_HELMET_I.value, 'consume': 'Wear'},
-    {'id': ItemIDs.BARROWS_GLOVES.value, 'consume': 'Wear'},
-    {'id': ItemIDs.BRIMSTONE_RING.value, 'consume': 'Wear'},
-    {'id': ItemIDs.DRAGON_BOOTS.value, 'consume': 'Wear'},
-    {'id': ItemIDs.BANDOS_CHESTPLATE.value, 'consume': 'Wear'},
-    {'id': ItemIDs.BANDOS_TASSETS.value, 'consume': 'Wear'},
-    {'id': ItemIDs.AMULET_OF_FURY.value, 'consume': 'Wear'},
-    {'id': ItemIDs.DRAGON_HUNTER_LANCE.value},
-    {'id': ItemIDs.HOLY_BLESSING.value, 'consume': 'Equip'},
+    {'id': osrs.item_ids.DRAGONFIRE_SHIELD, 'consume': 'Wield'},
+    {'id': osrs.item_ids.FIRE_CAPE, 'consume': 'Wear'},
+    {'id': osrs.item_ids.SLAYER_HELMET_I, 'consume': 'Wear'},
+    {'id': osrs.item_ids.BARROWS_GLOVES, 'consume': 'Wear'},
+    {'id': osrs.item_ids.BRIMSTONE_RING, 'consume': 'Wear'},
+    {'id': osrs.item_ids.DRAGON_BOOTS, 'consume': 'Wear'},
+    {'id': osrs.item_ids.BANDOS_CHESTPLATE, 'consume': 'Wear'},
+    {'id': osrs.item_ids.BANDOS_TASSETS, 'consume': 'Wear'},
+    {'id': osrs.item_ids.AMULET_OF_FURY, 'consume': 'Wear'},
+    {'id': osrs.item_ids.DRAGON_HUNTER_LANCE},
+    {'id': osrs.item_ids.HOLY_BLESSING, 'consume': 'Equip'},
 ]
 
 pot_config = slayer_killer.PotConfig(super_atk=True, super_str=True, antifire=True)
@@ -87,22 +87,22 @@ def loot_builder():
         'loot': []
     }
 
-    item = osrs.loot.InvConfig(ItemIDs.MONKFISH.value, osrs.loot.monkfish_eval)
+    item = osrs.loot.InvConfig(osrs.item_ids.MONKFISH, osrs.loot.monkfish_eval)
     config['inv'].append(item)
 
-    item = osrs.loot.LootConfig(ItemIDs.DRAGON_PLATELEGS.value, 10, alch=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.DRAGON_PLATELEGS, 10, alch=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.DRAGON_PLATESKIRT.value, 10, alch=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.DRAGON_PLATESKIRT, 10, alch=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.ADAMANT_2H_SWORD.value, 10, alch=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.ADAMANT_2H_SWORD, 10, alch=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.RUNE_MED_HELM.value, 10, alch=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.RUNE_MED_HELM, 10, alch=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.RUNE_BATTLEAXE.value, 10, alch=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.RUNE_BATTLEAXE, 10, alch=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.RUNITE_LIMBS.value, 10, alch=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.RUNITE_LIMBS, 10, alch=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.DRACONIC_VISAGE.value, 999)
+    item = osrs.loot.LootConfig(osrs.item_ids.DRACONIC_VISAGE, 999)
     config['loot'].append(item)
 
     return config
@@ -119,7 +119,7 @@ def main():
         osrs.game.tele_home_fairy_ring('bjp')
         transport_functions.isle_of_souls_dungeon()
         qh.query_backend()
-        osrs.move.click(qh.get_inventory(ItemIDs.DRAGON_HUNTER_LANCE.value))
+        osrs.move.click(qh.get_inventory(osrs.item_ids.DRAGON_HUNTER_LANCE))
         task_started = True
         success = slayer_killer.main('iron dragon', pot_config.asdict(), 35, prayers=['protect_melee'], hop=True, pre_hop=pre_log, loot_config=loot_builder())
         qh.query_backend()

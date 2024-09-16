@@ -21,12 +21,12 @@ ore_locs = {
 }
 
 loot = [
-    osrs.item_ids.ItemIDs.GOLDEN_NUGGET.value,
-    osrs.item_ids.ItemIDs.RUNITE_ORE.value,
-    osrs.item_ids.ItemIDs.ADAMANTITE_ORE.value,
-    osrs.item_ids.ItemIDs.MITHRIL_ORE.value,
-    osrs.item_ids.ItemIDs.GOLD_ORE.value,
-    osrs.item_ids.ItemIDs.COAL.value,
+    osrs.item_ids.GOLDEN_NUGGET,
+    osrs.item_ids.RUNITE_ORE,
+    osrs.item_ids.ADAMANTITE_ORE,
+    osrs.item_ids.MITHRIL_ORE,
+    osrs.item_ids.GOLD_ORE,
+    osrs.item_ids.COAL,
 ]
 
 rockfall_id = '26679'  # game object id
@@ -62,7 +62,7 @@ def mine_ore():
                   and (datetime.datetime.now() - last_return_tile_click).total_seconds() > 2.3):
                 osrs.move.fast_click(qh.get_tiles('3761,5670,0'))
                 last_return_tile_click = datetime.datetime.now()
-        elif qh.get_varbit() and qh.get_varbit() + osrs.inv.get_item_quantity_in_inv(qh.get_inventory() or [], osrs.item_ids.ItemIDs.PAYDIRT.value) >= 189:
+        elif qh.get_varbit() and qh.get_varbit() + osrs.inv.get_item_quantity_in_inv(qh.get_inventory() or [], osrs.item_ids.PAYDIRT) >= 189:
             logger.info('at 189 paydirt.')
             return True
         elif qh.get_inventory() and len(qh.get_inventory()) == 28:
@@ -93,7 +93,7 @@ def deposit_ore():
     qh.set_inventory()
     qh.set_varbit('5558')
     qh.query_backend()
-    if not qh.get_inventory(osrs.item_ids.ItemIDs.PAYDIRT.value) or qh.get_varbit() >= 189:
+    if not qh.get_inventory(osrs.item_ids.PAYDIRT) or qh.get_varbit() >= 189:
         return True
 
 

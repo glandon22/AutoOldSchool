@@ -2,7 +2,7 @@
 import datetime
 
 import osrs
-from osrs.item_ids import ItemIDs
+
 from combat import thermo_smoke_boss
 from combat import slayer_killer
 
@@ -11,31 +11,31 @@ varrock_tele_widget_id = '218,23'
 supplies = [
     {
         'id': [
-            ItemIDs.RING_OF_DUELING1.value,
-            ItemIDs.RING_OF_DUELING2.value,
-            ItemIDs.RING_OF_DUELING3.value,
-            ItemIDs.RING_OF_DUELING4.value,
-            ItemIDs.RING_OF_DUELING5.value,
-            ItemIDs.RING_OF_DUELING6.value,
-            ItemIDs.RING_OF_DUELING7.value,
-            ItemIDs.RING_OF_DUELING8.value
+            osrs.item_ids.RING_OF_DUELING1,
+            osrs.item_ids.RING_OF_DUELING2,
+            osrs.item_ids.RING_OF_DUELING3,
+            osrs.item_ids.RING_OF_DUELING4,
+            osrs.item_ids.RING_OF_DUELING5,
+            osrs.item_ids.RING_OF_DUELING6,
+            osrs.item_ids.RING_OF_DUELING7,
+            osrs.item_ids.RING_OF_DUELING8
         ],
         'quantity': '1'
     },
-    ItemIDs.RUNE_POUCH.value,
+    osrs.item_ids.RUNE_POUCH,
     {
         'id': [
-            ItemIDs.NATURE_RUNE.value
+            osrs.item_ids.NATURE_RUNE
         ],
         'quantity': 'All'
     },
-    ItemIDs.KARAMJA_GLOVES_3.value,
+    osrs.item_ids.KARAMJA_GLOVES_3,
     {
         'id': [
-            ItemIDs.SUPER_RESTORE4.value,
-            ItemIDs.SUPER_RESTORE3.value,
-            ItemIDs.SUPER_RESTORE2.value,
-            ItemIDs.SUPER_RESTORE1.value
+            osrs.item_ids.SUPER_RESTORE4,
+            osrs.item_ids.SUPER_RESTORE3,
+            osrs.item_ids.SUPER_RESTORE2,
+            osrs.item_ids.SUPER_RESTORE1
         ],
         'quantity': 'X',
         'amount': 20
@@ -43,34 +43,34 @@ supplies = [
 ]
 
 equipment = [
-    ItemIDs.SLAYER_HELMET_I.value,
-    ItemIDs.SANGUINESTI_STAFF.value,
-    ItemIDs.FIRE_CAPE.value,
-    ItemIDs.OCCULT_NECKLACE.value,
+    osrs.item_ids.SLAYER_HELMET_I,
+    osrs.item_ids.SANGUINESTI_STAFF,
+    osrs.item_ids.FIRE_CAPE,
+    osrs.item_ids.OCCULT_NECKLACE,
     {
         'id': [
-            ItemIDs.AHRIMS_ROBESKIRT.value,
-            ItemIDs.AHRIMS_ROBESKIRT_25.value,
-            ItemIDs.AHRIMS_ROBESKIRT_50.value,
-            ItemIDs.AHRIMS_ROBESKIRT_75.value,
-            ItemIDs.AHRIMS_ROBESKIRT_100.value,
+            osrs.item_ids.AHRIMS_ROBESKIRT,
+            osrs.item_ids.AHRIMS_ROBESKIRT_25,
+            osrs.item_ids.AHRIMS_ROBESKIRT_50,
+            osrs.item_ids.AHRIMS_ROBESKIRT_75,
+            osrs.item_ids.AHRIMS_ROBESKIRT_100,
         ],
         'quantity': 1
     },
     {
         'id': [
-            ItemIDs.AHRIMS_ROBETOP.value,
-            ItemIDs.AHRIMS_ROBETOP_25.value,
-            ItemIDs.AHRIMS_ROBETOP_50.value,
-            ItemIDs.AHRIMS_ROBETOP_75.value,
-            ItemIDs.AHRIMS_ROBETOP_100.value,
+            osrs.item_ids.AHRIMS_ROBETOP,
+            osrs.item_ids.AHRIMS_ROBETOP_25,
+            osrs.item_ids.AHRIMS_ROBETOP_50,
+            osrs.item_ids.AHRIMS_ROBETOP_75,
+            osrs.item_ids.AHRIMS_ROBETOP_100,
         ],
         'quantity': 1
     },
-    ItemIDs.MALEDICTION_WARD.value,
-    ItemIDs.BARROWS_GLOVES.value,
-    ItemIDs.ETERNAL_BOOTS.value,
-    ItemIDs.BRIMSTONE_RING.value,
+    osrs.item_ids.MALEDICTION_WARD,
+    osrs.item_ids.BARROWS_GLOVES,
+    osrs.item_ids.ETERNAL_BOOTS,
+    osrs.item_ids.BRIMSTONE_RING,
 ]
 
 banking_config_equipment = {

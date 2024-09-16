@@ -2,7 +2,6 @@ import datetime
 
 import osrs
 import osrs.move
-from osrs.item_ids import ItemIDs
 
 
 def nieve():
@@ -340,14 +339,14 @@ def stronghold_slayer_dungeon_bloodvelds():
     while True:
         qh.query_backend()
         slayer_ring = qh.get_inventory([
-            ItemIDs.SLAYER_RING_1.value,
-            ItemIDs.SLAYER_RING_2.value,
-            ItemIDs.SLAYER_RING_3.value,
-            ItemIDs.SLAYER_RING_4.value,
-            ItemIDs.SLAYER_RING_5.value,
-            ItemIDs.SLAYER_RING_6.value,
-            ItemIDs.SLAYER_RING_7.value,
-            ItemIDs.SLAYER_RING_8.value,
+            osrs.item_ids.SLAYER_RING_1,
+            osrs.item_ids.SLAYER_RING_2,
+            osrs.item_ids.SLAYER_RING_3,
+            osrs.item_ids.SLAYER_RING_4,
+            osrs.item_ids.SLAYER_RING_5,
+            osrs.item_ids.SLAYER_RING_6,
+            osrs.item_ids.SLAYER_RING_7,
+            osrs.item_ids.SLAYER_RING_8,
         ])
         if not slayer_ring:
             return print('need new task, no slayer ring in inv')
@@ -391,14 +390,14 @@ def stronghold_slayer_dungeon_ankou():
     while True:
         qh.query_backend()
         slayer_ring = qh.get_inventory([
-            ItemIDs.SLAYER_RING_1.value,
-            ItemIDs.SLAYER_RING_2.value,
-            ItemIDs.SLAYER_RING_3.value,
-            ItemIDs.SLAYER_RING_4.value,
-            ItemIDs.SLAYER_RING_5.value,
-            ItemIDs.SLAYER_RING_6.value,
-            ItemIDs.SLAYER_RING_7.value,
-            ItemIDs.SLAYER_RING_8.value,
+            osrs.item_ids.SLAYER_RING_1,
+            osrs.item_ids.SLAYER_RING_2,
+            osrs.item_ids.SLAYER_RING_3,
+            osrs.item_ids.SLAYER_RING_4,
+            osrs.item_ids.SLAYER_RING_5,
+            osrs.item_ids.SLAYER_RING_6,
+            osrs.item_ids.SLAYER_RING_7,
+            osrs.item_ids.SLAYER_RING_8,
         ])
         if not slayer_ring:
             return print('need new task, no slayer ring in inv')
@@ -519,14 +518,14 @@ def stronghold_slayer_dungeon_spectres():
     while True:
         qh.query_backend()
         slayer_ring = qh.get_inventory([
-            ItemIDs.SLAYER_RING_1.value,
-            ItemIDs.SLAYER_RING_2.value,
-            ItemIDs.SLAYER_RING_3.value,
-            ItemIDs.SLAYER_RING_4.value,
-            ItemIDs.SLAYER_RING_5.value,
-            ItemIDs.SLAYER_RING_6.value,
-            ItemIDs.SLAYER_RING_7.value,
-            ItemIDs.SLAYER_RING_8.value,
+            osrs.item_ids.SLAYER_RING_1,
+            osrs.item_ids.SLAYER_RING_2,
+            osrs.item_ids.SLAYER_RING_3,
+            osrs.item_ids.SLAYER_RING_4,
+            osrs.item_ids.SLAYER_RING_5,
+            osrs.item_ids.SLAYER_RING_6,
+            osrs.item_ids.SLAYER_RING_7,
+            osrs.item_ids.SLAYER_RING_8,
         ])
         if not slayer_ring:
             return print('need new task, no slayer ring in inv')
@@ -835,14 +834,14 @@ def morytania_gargoyles():
     qh.set_inventory()
     qh.set_canvas()
     slayer_rings = [
-        ItemIDs.SLAYER_RING_1.value,
-        ItemIDs.SLAYER_RING_2.value,
-        ItemIDs.SLAYER_RING_3.value,
-        ItemIDs.SLAYER_RING_4.value,
-        ItemIDs.SLAYER_RING_5.value,
-        ItemIDs.SLAYER_RING_6.value,
-        ItemIDs.SLAYER_RING_7.value,
-        ItemIDs.SLAYER_RING_8.value,
+        osrs.item_ids.SLAYER_RING_1,
+        osrs.item_ids.SLAYER_RING_2,
+        osrs.item_ids.SLAYER_RING_3,
+        osrs.item_ids.SLAYER_RING_4,
+        osrs.item_ids.SLAYER_RING_5,
+        osrs.item_ids.SLAYER_RING_6,
+        osrs.item_ids.SLAYER_RING_7,
+        osrs.item_ids.SLAYER_RING_8,
     ]
     last_ring_click = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
@@ -884,14 +883,14 @@ def morytania_abby_demons():
     qh.set_canvas()
     qh.set_inventory()
     slayer_rings = [
-        ItemIDs.SLAYER_RING_1.value,
-        ItemIDs.SLAYER_RING_2.value,
-        ItemIDs.SLAYER_RING_3.value,
-        ItemIDs.SLAYER_RING_4.value,
-        ItemIDs.SLAYER_RING_5.value,
-        ItemIDs.SLAYER_RING_6.value,
-        ItemIDs.SLAYER_RING_7.value,
-        ItemIDs.SLAYER_RING_8.value,
+        osrs.item_ids.SLAYER_RING_1,
+        osrs.item_ids.SLAYER_RING_2,
+        osrs.item_ids.SLAYER_RING_3,
+        osrs.item_ids.SLAYER_RING_4,
+        osrs.item_ids.SLAYER_RING_5,
+        osrs.item_ids.SLAYER_RING_6,
+        osrs.item_ids.SLAYER_RING_7,
+        osrs.item_ids.SLAYER_RING_8,
     ]
     last_ring_click = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
@@ -932,13 +931,13 @@ def tele_to_frem_cave():
     qh.set_npcs_by_name(['gargoyle'])
     qh.set_inventory()
     slayer_rings = [
-        ItemIDs.SLAYER_RING_2.value,
-        ItemIDs.SLAYER_RING_3.value,
-        ItemIDs.SLAYER_RING_4.value,
-        ItemIDs.SLAYER_RING_5.value,
-        ItemIDs.SLAYER_RING_6.value,
-        ItemIDs.SLAYER_RING_7.value,
-        ItemIDs.SLAYER_RING_8.value,
+        osrs.item_ids.SLAYER_RING_2,
+        osrs.item_ids.SLAYER_RING_3,
+        osrs.item_ids.SLAYER_RING_4,
+        osrs.item_ids.SLAYER_RING_5,
+        osrs.item_ids.SLAYER_RING_6,
+        osrs.item_ids.SLAYER_RING_7,
+        osrs.item_ids.SLAYER_RING_8,
     ]
     last_ring_click = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
@@ -983,10 +982,10 @@ def duradel():
     glove_click = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
         qh.query_backend()
-        if qh.get_inventory() and qh.get_inventory(osrs.item_ids.ItemIDs.KARAMJA_GLOVES_3.value) \
+        if qh.get_inventory() and qh.get_inventory(osrs.item_ids.osrs.item_ids.KARAMJA_GLOVES_3) \
                 and (datetime.datetime.now() - glove_click).total_seconds() > 10:
             osrs.move.right_click_v6(
-                qh.get_inventory(osrs.item_ids.ItemIDs.KARAMJA_GLOVES_3.value),
+                qh.get_inventory(osrs.item_ids.osrs.item_ids.KARAMJA_GLOVES_3),
                 'Gem Mine',
                 qh.get_canvas(),
                 in_inv=True
@@ -1051,10 +1050,10 @@ def duradel_gloves_4():
         if qh.get_slayer() and qh.get_slayer()['monster']:
             print('got a new task')
             return True
-        elif qh.get_inventory() and qh.get_inventory(osrs.item_ids.ItemIDs.KARAMJA_GLOVES_4.value) \
+        elif qh.get_inventory() and qh.get_inventory(osrs.item_ids.osrs.item_ids.KARAMJA_GLOVES_4) \
                 and (datetime.datetime.now() - glove_click).total_seconds() > 10:
             osrs.move.right_click_v6(
-                qh.get_inventory(osrs.item_ids.ItemIDs.KARAMJA_GLOVES_4.value),
+                qh.get_inventory(osrs.item_ids.osrs.item_ids.KARAMJA_GLOVES_4),
                 'Slayer master',
                 qh.get_canvas(),
                 in_inv=True
@@ -1081,14 +1080,14 @@ def morytania_nechs():
     qh.set_npcs_by_name(['Nechryael'])
     qh.set_inventory()
     slayer_rings = [
-        ItemIDs.SLAYER_RING_1.value,
-        ItemIDs.SLAYER_RING_2.value,
-        ItemIDs.SLAYER_RING_3.value,
-        ItemIDs.SLAYER_RING_4.value,
-        ItemIDs.SLAYER_RING_5.value,
-        ItemIDs.SLAYER_RING_6.value,
-        ItemIDs.SLAYER_RING_7.value,
-        ItemIDs.SLAYER_RING_8.value,
+        osrs.item_ids.SLAYER_RING_1,
+        osrs.item_ids.SLAYER_RING_2,
+        osrs.item_ids.SLAYER_RING_3,
+        osrs.item_ids.SLAYER_RING_4,
+        osrs.item_ids.SLAYER_RING_5,
+        osrs.item_ids.SLAYER_RING_6,
+        osrs.item_ids.SLAYER_RING_7,
+        osrs.item_ids.SLAYER_RING_8,
     ]
     last_ring_click = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
@@ -1312,14 +1311,14 @@ def morytania_spectres():
     qh.set_objects_v2('game', {basement_ladder_id})
     qh.set_inventory()
     slayer_rings = [
-        ItemIDs.SLAYER_RING_1.value,
-        ItemIDs.SLAYER_RING_2.value,
-        ItemIDs.SLAYER_RING_3.value,
-        ItemIDs.SLAYER_RING_4.value,
-        ItemIDs.SLAYER_RING_5.value,
-        ItemIDs.SLAYER_RING_6.value,
-        ItemIDs.SLAYER_RING_7.value,
-        ItemIDs.SLAYER_RING_8.value,
+        osrs.item_ids.SLAYER_RING_1,
+        osrs.item_ids.SLAYER_RING_2,
+        osrs.item_ids.SLAYER_RING_3,
+        osrs.item_ids.SLAYER_RING_4,
+        osrs.item_ids.SLAYER_RING_5,
+        osrs.item_ids.SLAYER_RING_6,
+        osrs.item_ids.SLAYER_RING_7,
+        osrs.item_ids.SLAYER_RING_8,
     ]
     last_ring_click = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
@@ -1353,9 +1352,9 @@ def iorworth_dungeon_dark_beasts():
         qh.query_backend()
         if 3150 <= qh.get_player_world_location('x') <= 3300 and 6000 <= qh.get_player_world_location('y') <= 6100:
             break
-        elif qh.get_inventory(osrs.item_ids.ItemIDs.ETERNAL_TELEPORT_CRYSTAL.value) and (datetime.datetime.now() - last_crystal).total_seconds() > 7:
+        elif qh.get_inventory(osrs.item_ids.osrs.item_ids.ETERNAL_TELEPORT_CRYSTAL) and (datetime.datetime.now() - last_crystal).total_seconds() > 7:
             osrs.move.right_click_v6(
-                qh.get_inventory(osrs.item_ids.ItemIDs.ETERNAL_TELEPORT_CRYSTAL.value),
+                qh.get_inventory(osrs.item_ids.osrs.item_ids.ETERNAL_TELEPORT_CRYSTAL),
                 'Prifddinas',
                 qh.get_canvas(),
                 in_inv=True
@@ -1383,9 +1382,9 @@ def iorworth_dungeon_elves():
         qh.query_backend()
         if 3150 <= qh.get_player_world_location('x') <= 3300 and 6000 <= qh.get_player_world_location('y') <= 6100:
             break
-        elif qh.get_inventory(osrs.item_ids.ItemIDs.ETERNAL_TELEPORT_CRYSTAL.value) and (datetime.datetime.now() - last_crystal).total_seconds() > 7:
+        elif qh.get_inventory(osrs.item_ids.osrs.item_ids.ETERNAL_TELEPORT_CRYSTAL) and (datetime.datetime.now() - last_crystal).total_seconds() > 7:
             osrs.move.right_click_v6(
-                qh.get_inventory(osrs.item_ids.ItemIDs.ETERNAL_TELEPORT_CRYSTAL.value),
+                qh.get_inventory(osrs.item_ids.osrs.item_ids.ETERNAL_TELEPORT_CRYSTAL),
                 'Prifddinas',
                 qh.get_canvas(),
                 in_inv=True

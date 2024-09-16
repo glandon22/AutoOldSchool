@@ -9,9 +9,8 @@ import osrs.server as server
 import osrs.util as util
 import osrs.keeb as keeb
 import osrs.dev as dev
-from osrs.item_ids import ItemIDs
 import osrs.queryHelper as queryHelper
-from osrs.widget_ids import WidgetIDs
+
 from collections import Counter
 
 withdraw_item_widget = '12,22'
@@ -146,13 +145,12 @@ def dump_items():
 
 
 def withdraw_configured_items(item, game_state: osrs.queryHelper.QueryHelper):
-    print('g', item)
     banked_item = game_state.get_bank(item['id'])
     if not banked_item:
-        print(f'{ItemIDs(item).name} not found')
+        osrs.dev.logger.warn('item not found: %s', item)
         return False
     if 'quantity' in item and item['quantity'] not in ['All', 'X', 'x'] and banked_item['quantity'] < int(item['quantity']):
-        print(f'not enough {ItemIDs(item).name} to satisfy request')
+        osrs.dev.logger.warn('note enough found: %s', item)
         return False
     if 'noted' in item and item['noted']:
         osrs.move.fast_click(game_state.get_widgets(withdraw_noted_widget))
@@ -196,10 +194,10 @@ def withdraw_configured_items(item, game_state: osrs.queryHelper.QueryHelper):
 def withdraw_items(item, quantities, game_state: osrs.queryHelper.QueryHelper):
     banked_item = game_state.get_bank(item)
     if not banked_item:
-        print(f'{ItemIDs(item).name} not found')
+        osrs.dev.logger.warn('item not found: %s', item)
         return False
     if banked_item['quantity'] < quantities['item']:
-        print(f'not enough {ItemIDs(item).name} to satisfy request')
+        osrs.dev.logger.warn('note enough found: %s', item)
         return False
 
     osrs.move.click(game_state.get_bank(item))
@@ -237,7 +235,7 @@ def withdraw_v2(items, game_state: osrs.queryHelper.QueryHelper):
         else:
             banked_item = game_state.get_bank(item)
             if not banked_item:
-                print(f'{ItemIDs(item).name} not found')
+                osrs.dev.logger.warn('item not found: %s', item)
                 return False
             else:
                 osrs.move.fast_click(banked_item)
@@ -247,7 +245,7 @@ def withdraw_v2(items, game_state: osrs.queryHelper.QueryHelper):
 
 def search_and_withdraw(searches, game_state: osrs.queryHelper.QueryHelper):
     for search in searches:
-        osrs.move.click(game_state.get_widgets_v2(WidgetIDs.BANK_SEARCH_BUTTON_BACKGROUND.value))
+        osrs.move.click(game_state.get_widgets_v2(osrs.widget_ids.BANK_SEARCH_BUTTON_BACKGROUND))
         osrs.keeb.write(search['query'])
         osrs.keeb.press_key('enter')
         osrs.clock.sleep_one_tick()
@@ -267,7 +265,7 @@ def search_and_withdraw(searches, game_state: osrs.queryHelper.QueryHelper):
                 if not success:
                     return False
                 if 'quantity' in item and item['quantity'] == 'X':
-                    osrs.move.click(game_state.get_widgets_v2(WidgetIDs.BANK_SEARCH_BUTTON_BACKGROUND.value))
+                    osrs.move.click(game_state.get_widgets_v2(osrs.widget_ids.BANK_SEARCH_BUTTON_BACKGROUND))
                     osrs.clock.random_sleep(0.1, 0.2)
                     osrs.keeb.write(search['query'])
                     osrs.keeb.press_key('enter')
@@ -419,10 +417,10 @@ def banking_handler(params, wait_on_deposited_items=True):
     )
     qh.set_player_world_location()
     qh.set_widgets_v2({
-        WidgetIDs.BANK_ITEM_CONTAINER.value,
-        WidgetIDs.BANK_DEPOSIT_INVENTORY.value,
-        WidgetIDs.BANK_DEPOSIT_EQUIPMENT.value,
-        WidgetIDs.BANK_SEARCH_BUTTON_BACKGROUND.value
+        osrs.widget_ids.BANK_ITEM_CONTAINER,
+        osrs.widget_ids.BANK_DEPOSIT_INVENTORY,
+        osrs.widget_ids.BANK_DEPOSIT_EQUIPMENT,
+        osrs.widget_ids.BANK_SEARCH_BUTTON_BACKGROUND
     })
     qh.set_widgets({withdraw_item_widget, withdraw_noted_widget})
     qh.set_bank()
@@ -461,15 +459,15 @@ def banking_handler(params, wait_on_deposited_items=True):
         if (datetime.datetime.now() - wait_time).total_seconds() > 15:
             return banking_handler(params)
         if 'dump_inv' in params and params['dump_inv'] \
-                and qh.get_widgets_v2(WidgetIDs.BANK_DEPOSIT_INVENTORY.value) and not dumped_inv:
-            osrs.move.click(qh.get_widgets_v2(WidgetIDs.BANK_DEPOSIT_INVENTORY.value))
+                and qh.get_widgets_v2(osrs.widget_ids.BANK_DEPOSIT_INVENTORY) and not dumped_inv:
+            osrs.move.click(qh.get_widgets_v2(osrs.widget_ids.BANK_DEPOSIT_INVENTORY))
             dumped_inv = True
 
         if 'dump_equipment' in params and params['dump_equipment'] \
                 and qh.get_widgets_v2(
-            WidgetIDs.BANK_DEPOSIT_EQUIPMENT.value
+            osrs.widget_ids.BANK_DEPOSIT_EQUIPMENT
         ) and not dumped_equipment:
-            osrs.move.click(qh.get_widgets_v2(WidgetIDs.BANK_DEPOSIT_EQUIPMENT.value))
+            osrs.move.click(qh.get_widgets_v2(osrs.widget_ids.BANK_DEPOSIT_EQUIPMENT))
             dumped_equipment = True
 
         if ('dump_inv' not in params or not params['dump_inv'] or dumped_inv) \

@@ -11,7 +11,7 @@ import osrs.keeb as keeb
 import osrs.move as move
 import osrs.dev as dev
 import osrs.queryHelper as QueryHelper
-from osrs.widget_ids import WidgetIDs
+
 
 config = dev.load_yaml()
 
@@ -460,10 +460,10 @@ def tele_home_fairy_ring(code):
     qh = osrs.queryHelper.QueryHelper()
     qh.set_player_world_location()
     qh.set_widgets_v2({
-        WidgetIDs.FAIRY_RING_TELEPORT_BUTTON.value,
-        WidgetIDs.FAIRY_RING_LEFT_WHEEL_CENTER.value,
-        WidgetIDs.FAIRY_RING_MIDDLE_WHEEL_CENTER.value,
-        WidgetIDs.FAIRY_RING_RIGHT_WHEEL_CENTER.value,
+        osrs.widget_ids.FAIRY_RING_TELEPORT_BUTTON,
+        osrs.widget_ids.FAIRY_RING_LEFT_WHEEL_CENTER,
+        osrs.widget_ids.FAIRY_RING_MIDDLE_WHEEL_CENTER,
+        osrs.widget_ids.FAIRY_RING_RIGHT_WHEEL_CENTER,
     })
     tile_map = None
     last_ring_click = datetime.datetime.now() - datetime.timedelta(hours=1)
@@ -481,29 +481,29 @@ def tele_home_fairy_ring(code):
             qh.set_objects(set(tile_map), {fairy_ring_id}, osrs.queryHelper.ObjectTypes.GAME.value)
         elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, fairy_ring_id) \
                 and (datetime.datetime.now() - last_ring_click).total_seconds() > 7 \
-                and not qh.get_widgets_v2(WidgetIDs.FAIRY_RING_TELEPORT_BUTTON.value):
+                and not qh.get_widgets_v2(osrs.widget_ids.FAIRY_RING_TELEPORT_BUTTON):
             osrs.move.right_click_v3(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, fairy_ring_id)[0],
                                      'Configure')
             last_ring_click = datetime.datetime.now()
-        elif qh.get_widgets_v2(WidgetIDs.FAIRY_RING_TELEPORT_BUTTON.value):
+        elif qh.get_widgets_v2(osrs.widget_ids.FAIRY_RING_TELEPORT_BUTTON):
             # Each instruction set is for a wheel of the fairy ring interface. it always opens with A I P selected.
             # I add 50px to the y value to move from the center of the wheel widget to the letter where i click to turn
             for op in instructions[0]:
                 osrs.move.click({
-                    'x': qh.get_widgets_v2(WidgetIDs.FAIRY_RING_LEFT_WHEEL_CENTER.value)['x'] + op,
-                    'y': qh.get_widgets_v2(WidgetIDs.FAIRY_RING_LEFT_WHEEL_CENTER.value)['y'] + 50
+                    'x': qh.get_widgets_v2(osrs.widget_ids.FAIRY_RING_LEFT_WHEEL_CENTER)['x'] + op,
+                    'y': qh.get_widgets_v2(osrs.widget_ids.FAIRY_RING_LEFT_WHEEL_CENTER)['y'] + 50
                 })
             for op in instructions[1]:
                 osrs.move.click({
-                    'x': qh.get_widgets_v2(WidgetIDs.FAIRY_RING_MIDDLE_WHEEL_CENTER.value)['x'] + op,
-                    'y': qh.get_widgets_v2(WidgetIDs.FAIRY_RING_MIDDLE_WHEEL_CENTER.value)['y'] + 50
+                    'x': qh.get_widgets_v2(osrs.widget_ids.FAIRY_RING_MIDDLE_WHEEL_CENTER)['x'] + op,
+                    'y': qh.get_widgets_v2(osrs.widget_ids.FAIRY_RING_MIDDLE_WHEEL_CENTER)['y'] + 50
                 })
             for op in instructions[2]:
                 osrs.move.click({
-                    'x': qh.get_widgets_v2(WidgetIDs.FAIRY_RING_RIGHT_WHEEL_CENTER.value)['x'] + op,
-                    'y': qh.get_widgets_v2(WidgetIDs.FAIRY_RING_RIGHT_WHEEL_CENTER.value)['y'] + 50
+                    'x': qh.get_widgets_v2(osrs.widget_ids.FAIRY_RING_RIGHT_WHEEL_CENTER)['x'] + op,
+                    'y': qh.get_widgets_v2(osrs.widget_ids.FAIRY_RING_RIGHT_WHEEL_CENTER)['y'] + 50
                 })
-            osrs.move.click(qh.get_widgets_v2(WidgetIDs.FAIRY_RING_TELEPORT_BUTTON.value))
+            osrs.move.click(qh.get_widgets_v2(osrs.widget_ids.FAIRY_RING_TELEPORT_BUTTON))
             return
 
 

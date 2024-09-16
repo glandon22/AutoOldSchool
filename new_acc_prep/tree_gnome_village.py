@@ -28,7 +28,7 @@ def wait_for_orb1():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.ORB_OF_PROTECTION.value):
+    if qh.get_inventory(osrs.item_ids.ORB_OF_PROTECTION):
         return True
 
 
@@ -36,7 +36,7 @@ def wait_for_orbs_of_protection():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.ORBS_OF_PROTECTION.value):
+    if qh.get_inventory(osrs.item_ids.ORBS_OF_PROTECTION):
         return True
 
 
@@ -101,7 +101,7 @@ def main():
     util_functions.talk_to_npc('king bolren', right_click=True)
     util_functions.dialogue_handler(dialogue)
     osrs.clock.random_sleep(3, 3.1)
-    util_functions.equip_staff_and_set_autocast(osrs.item_ids.ItemIDs.STAFF_OF_AIR.value, '201,1,4')
+    util_functions.equip_staff_and_set_autocast(osrs.item_ids.STAFF_OF_AIR, '201,1,4')
     osrs.player.toggle_run('on')
     osrs.move.go_to_loc(2457, 3297, right_click=True)
     osrs.combat_utils.pot_handler(None, {})
@@ -111,7 +111,7 @@ def main():
     util_functions.dialogue_handler(dialogue)
     util_functions.kill_single_npc('khazard warlord', ['protect_melee'], {})
     osrs.move.interact_with_object(
-        osrs.item_ids.ItemIDs.ORBS_OF_PROTECTION.value, 'x', 1, True,
+        osrs.item_ids.ORBS_OF_PROTECTION, 'x', 1, True,
         obj_type='ground_items', custom_exit_function=wait_for_orbs_of_protection)
     osrs.player.turn_off_all_prayers()
     osrs.player.toggle_run('on')

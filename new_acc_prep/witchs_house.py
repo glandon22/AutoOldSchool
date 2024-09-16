@@ -19,7 +19,7 @@ def search_plant():
     qh.set_inventory()
     while True:
         qh.query_backend()
-        if qh.get_inventory(osrs.item_ids.ItemIDs.DOOR_KEY.value):
+        if qh.get_inventory(osrs.item_ids.DOOR_KEY):
             return
         elif qh.get_objects_v2('game', plant_id):
             osrs.move.fast_click(qh.get_objects_v2('game', plant_id)[0])
@@ -103,7 +103,7 @@ def search_cupboards():
     qh.set_inventory()
     while True:
         qh.query_backend()
-        if qh.get_inventory(osrs.item_ids.ItemIDs.MAGNET.value):
+        if qh.get_inventory(osrs.item_ids.MAGNET):
             return
         elif qh.get_objects_v2('game', closed_cb_id):
             osrs.move.fast_click(qh.get_objects_v2('game', closed_cb_id)[0])
@@ -167,13 +167,13 @@ def catch_mouse():
     qh.set_widgets({main_chat_widget})
     while True:
         qh.query_backend()
-        if qh.get_inventory(osrs.item_ids.ItemIDs.CHEESE.value):
+        if qh.get_inventory(osrs.item_ids.CHEESE):
             res = osrs.move.right_click_v6(
-                qh.get_inventory(osrs.item_ids.ItemIDs.CHEESE.value), 'Drop', qh.get_canvas(), in_inv=True
+                qh.get_inventory(osrs.item_ids.CHEESE), 'Drop', qh.get_canvas(), in_inv=True
             )
             if res:
                 break
-    osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.MAGNET.value))
+    osrs.move.click(qh.get_inventory(osrs.item_ids.MAGNET))
     while True:
         qh.query_backend()
         if qh.get_npcs_by_name():
@@ -346,7 +346,7 @@ def take_ball():
     qh.set_inventory()
     while True:
         qh.query_backend()
-        if qh.get_inventory(osrs.item_ids.ItemIDs.BALL.value):
+        if qh.get_inventory(osrs.item_ids.BALL):
             return
         elif qh.get_objects_v2('game', ball_id):
             osrs.move.fast_click(qh.get_objects_v2('game', ball_id)[0])
@@ -358,7 +358,7 @@ def main():
     search_plant()
     enter_witch_house()
     go_to_basement()
-    util_functions.equip_item(osrs.item_ids.ItemIDs.LEATHER_GLOVES.value)
+    util_functions.equip_item(osrs.item_ids.LEATHER_GLOVES)
     util_functions.equip_air_staff_and_earth_strike()
     enter_gate_area()
     search_cupboards()

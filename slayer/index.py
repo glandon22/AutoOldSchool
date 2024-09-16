@@ -1,6 +1,6 @@
 import osrs
 import slayer
-from osrs.item_ids import ItemIDs
+
 import transport_functions
 
 varrock_tele_widget_id = '218,23'

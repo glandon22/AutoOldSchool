@@ -2,7 +2,7 @@
 import datetime
 
 import osrs
-from osrs.item_ids import ItemIDs
+
 from slayer import transport_functions
 from combat import slayer_killer
 from slayer.utils import bank
@@ -11,30 +11,30 @@ varrock_tele_widget_id = '218,23'
 fally_tele_widget_id = '218,29'
 
 supplies = [
-    ItemIDs.SUPER_ATTACK4.value,
-    ItemIDs.SUPER_ATTACK4.value,
-    ItemIDs.SUPER_STRENGTH4.value,
-    ItemIDs.SUPER_STRENGTH4.value,
-    ItemIDs.RUNE_POUCH.value,
-    ItemIDs.KARAMJA_GLOVES_4.value,
+    osrs.item_ids.SUPER_ATTACK4,
+    osrs.item_ids.SUPER_ATTACK4,
+    osrs.item_ids.SUPER_STRENGTH4,
+    osrs.item_ids.SUPER_STRENGTH4,
+    osrs.item_ids.RUNE_POUCH,
+    osrs.item_ids.KARAMJA_GLOVES_4,
     {
-        'id': ItemIDs.MONKFISH.value,
+        'id': osrs.item_ids.MONKFISH,
         'quantity': 'All'
     }
 ]
 
 equipment = [
-    {'id': ItemIDs.DRAGON_DEFENDER.value, 'consume': 'Wield'},
-    {'id': ItemIDs.FIRE_CAPE.value, 'consume': 'Wear'},
-    {'id': ItemIDs.SLAYER_HELMET_I.value, 'consume': 'Wear'},
-    {'id': ItemIDs.BARROWS_GLOVES.value, 'consume': 'Wear'},
-    {'id': ItemIDs.BRIMSTONE_RING.value, 'consume': 'Wear'},
-    {'id': ItemIDs.DRAGON_BOOTS.value, 'consume': 'Wear'},
-    {'id': ItemIDs.BANDOS_CHESTPLATE.value, 'consume': 'Wear'},
-    {'id': ItemIDs.BANDOS_TASSETS.value, 'consume': 'Wear'},
-    {'id': ItemIDs.AMULET_OF_FURY.value, 'consume': 'Wear'},
-    {'id': ItemIDs.OSMUMTENS_FANG.value, 'consume': 'Wield'},
-    {'id': ItemIDs.HOLY_BLESSING.value, 'consume': 'Equip'},
+    {'id': osrs.item_ids.DRAGON_DEFENDER, 'consume': 'Wield'},
+    {'id': osrs.item_ids.FIRE_CAPE, 'consume': 'Wear'},
+    {'id': osrs.item_ids.SLAYER_HELMET_I, 'consume': 'Wear'},
+    {'id': osrs.item_ids.BARROWS_GLOVES, 'consume': 'Wear'},
+    {'id': osrs.item_ids.BRIMSTONE_RING, 'consume': 'Wear'},
+    {'id': osrs.item_ids.DRAGON_BOOTS, 'consume': 'Wear'},
+    {'id': osrs.item_ids.BANDOS_CHESTPLATE, 'consume': 'Wear'},
+    {'id': osrs.item_ids.BANDOS_TASSETS, 'consume': 'Wear'},
+    {'id': osrs.item_ids.AMULET_OF_FURY, 'consume': 'Wear'},
+    {'id': osrs.item_ids.OSMUMTENS_FANG, 'consume': 'Wield'},
+    {'id': osrs.item_ids.HOLY_BLESSING, 'consume': 'Equip'},
 ]
 
 pot_config = slayer_killer.PotConfig(super_atk=True, super_str=True)

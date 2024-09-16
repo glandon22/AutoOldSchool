@@ -49,8 +49,8 @@ def main(min_OAK_PLANKs):
         if (
                 2944 <= qh.get_player_world_location('x') <= 2964
                 and 3208 <= qh.get_player_world_location('y') <= 3232
-                and not qh.get_inventory(osrs.item_ids.ItemIDs.OAK_PLANK.value + 1)
-                and qh.get_inventory(osrs.item_ids.ItemIDs.OAK_PLANK.value, quantity=True) < min_OAK_PLANKs
+                and not qh.get_inventory(osrs.item_ids.OAK_PLANK + 1)
+                and qh.get_inventory(osrs.item_ids.OAK_PLANK, quantity=True) < min_OAK_PLANKs
         ):
             return
         # exchange all noted OAK_PLANKs with phials
@@ -58,16 +58,16 @@ def main(min_OAK_PLANKs):
             osrs.keeb.write(str(qh.get_chat_options('Exchange All', fuzzy=True)))
         # use OAK_PLANKs on phials
         elif (
-                qh.get_inventory(osrs.item_ids.ItemIDs.OAK_PLANK.value, quantity=True) < min_OAK_PLANKs
+                qh.get_inventory(osrs.item_ids.OAK_PLANK, quantity=True) < min_OAK_PLANKs
                 and (datetime.datetime.now() - last_phials_click).total_seconds() > 8
                 and len(qh.get_npcs_by_name()) > 0):
-            osrs.move.fast_click(qh.get_inventory(osrs.item_ids.ItemIDs.OAK_PLANK.value + 1))
+            osrs.move.fast_click(qh.get_inventory(osrs.item_ids.OAK_PLANK + 1))
             res = osrs.move.right_click_v6(qh.get_npcs_by_name()[0], 'Use', qh.get_canvas(), in_inv=True)
             if res:
                 last_phials_click = datetime.datetime.now()
         # have OAK_PLANKs, click the house portal
         elif (
-                qh.get_inventory(osrs.item_ids.ItemIDs.OAK_PLANK.value, quantity=True) >= min_OAK_PLANKs
+                qh.get_inventory(osrs.item_ids.OAK_PLANK, quantity=True) >= min_OAK_PLANKs
                 and (datetime.datetime.now() - last_portal_click).total_seconds() > 8
                 and qh.get_objects_v2('game', portal_id)
         ):
@@ -79,7 +79,7 @@ def main(min_OAK_PLANKs):
         # i am in house
         elif qh.get_player_world_location('x') > 3500:
             # in house w OAK_PLANKs, build!
-            if qh.get_inventory(osrs.item_ids.ItemIDs.OAK_PLANK.value, quantity=True) >= min_OAK_PLANKs:
+            if qh.get_inventory(osrs.item_ids.OAK_PLANK, quantity=True) >= min_OAK_PLANKs:
                 if qh.get_widgets(build_widget) or qh.get_chat_options():
                     osrs.keeb.write('1')
                 # empty chair space - build a char

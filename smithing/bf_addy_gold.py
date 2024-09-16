@@ -27,9 +27,9 @@ def out_of_ore():
     qh.set_inventory()
     qh.query_backend()
     if not qh.get_inventory([
-        osrs.item_ids.ItemIDs.COAL.value,
-        osrs.item_ids.ItemIDs.ADAMANTITE_ORE.value,
-        osrs.item_ids.ItemIDs.GOLD_ORE.value,
+        osrs.item_ids.COAL,
+        osrs.item_ids.ADAMANTITE_ORE,
+        osrs.item_ids.GOLD_ORE,
     ]):
         return True
 
@@ -41,12 +41,12 @@ def put_ore_on_belt(tc, qh):
     )
     # put on gold smith gauntlets when smelting gold
     if tc != 0:
-        osrs.player.equip_item([osrs.item_ids.ItemIDs.GOLDSMITH_GAUNTLETS.value])
+        osrs.player.equip_item([osrs.item_ids.GOLDSMITH_GAUNTLETS])
     while True:
         qh.query_backend()
-        if qh.get_inventory(osrs.item_ids.ItemIDs.COAL_BAG_12019.value):
+        if qh.get_inventory(osrs.item_ids.COAL_BAG_12019):
             osrs.move.right_click_v6(
-                qh.get_inventory(osrs.item_ids.ItemIDs.COAL_BAG_12019.value),
+                qh.get_inventory(osrs.item_ids.COAL_BAG_12019),
                 'Empty',
                 qh.get_canvas(),
                 in_inv=True
@@ -55,9 +55,9 @@ def put_ore_on_belt(tc, qh):
     while True:
         qh.query_backend()
         if qh.get_inventory([
-            osrs.item_ids.ItemIDs.COAL.value,
-            osrs.item_ids.ItemIDs.GOLD_ORE.value,
-            osrs.item_ids.ItemIDs.ADAMANTITE_ORE.value,
+            osrs.item_ids.COAL,
+            osrs.item_ids.GOLD_ORE,
+            osrs.item_ids.ADAMANTITE_ORE,
         ]):
             break
     osrs.move.interact_with_object(
@@ -97,33 +97,33 @@ def click_bank(bank_chest):
 
 def bank(trip_count, qh):
     banking_config = {
-        'deposit': [{'id': osrs.item_ids.ItemIDs.GOLD_BAR.value}, {'id': osrs.item_ids.ItemIDs.ADAMANTITE_BAR.value}],
-        'withdraw_v2': [osrs.item_ids.ItemIDs.COAL.value]
+        'deposit': [{'id': osrs.item_ids.GOLD_BAR}, {'id': osrs.item_ids.ADAMANTITE_BAR}],
+        'withdraw_v2': [osrs.item_ids.COAL]
     }
     run_energy = qh.get_widgets('160,28')
     if run_energy and int(run_energy['text']) < 35:
         banking_config['withdraw_v2'] = [{
-            'id': osrs.item_ids.ItemIDs.STAMINA_POTION1.value,
+            'id': osrs.item_ids.STAMINA_POTION1,
             'quantity': 1,
             'consume': 'Drink'
         }] + banking_config['withdraw_v2']
     osrs.bank.banking_handler(banking_config, wait_on_deposited_items=False)
     while True:
         qh.query_backend()
-        if qh.get_inventory(osrs.item_ids.ItemIDs.COAL_BAG_12019.value):
-            osrs.move.fast_click(qh.get_inventory(osrs.item_ids.ItemIDs.COAL_BAG_12019.value))
+        if qh.get_inventory(osrs.item_ids.COAL_BAG_12019):
+            osrs.move.fast_click(qh.get_inventory(osrs.item_ids.COAL_BAG_12019))
             break
     osrs.bank.banking_handler({
         'withdraw_v2': [
-            osrs.item_ids.ItemIDs.GOLD_ORE.value if trip_count != 0 else osrs.item_ids.ItemIDs.ADAMANTITE_ORE.value
+            osrs.item_ids.GOLD_ORE if trip_count != 0 else osrs.item_ids.ADAMANTITE_ORE
         ]
     }, wait_on_deposited_items=False)
     while True:
         qh.query_backend()
         if qh.get_inventory([
-            osrs.item_ids.ItemIDs.COAL.value,
-            osrs.item_ids.ItemIDs.GOLD_ORE.value,
-            osrs.item_ids.ItemIDs.ADAMANTITE_ORE.value,
+            osrs.item_ids.COAL,
+            osrs.item_ids.GOLD_ORE,
+            osrs.item_ids.ADAMANTITE_ORE,
         ]):
             break
 
@@ -159,15 +159,15 @@ def confirm_bars():
     qh.set_inventory()
     qh.query_backend()
     if qh.get_inventory([
-        osrs.item_ids.ItemIDs.GOLD_BAR.value,
-        osrs.item_ids.ItemIDs.ADAMANTITE_BAR.value,
-    ]) and (osrs.inv.get_item_quantity_in_inv(qh.get_inventory(), osrs.item_ids.ItemIDs.GOLD_BAR.value) >= 26
-            or osrs.inv.get_item_quantity_in_inv(qh.get_inventory(), osrs.item_ids.ItemIDs.ADAMANTITE_BAR.value) >= 26):
+        osrs.item_ids.GOLD_BAR,
+        osrs.item_ids.ADAMANTITE_BAR,
+    ]) and (osrs.inv.get_item_quantity_in_inv(qh.get_inventory(), osrs.item_ids.GOLD_BAR) >= 26
+            or osrs.inv.get_item_quantity_in_inv(qh.get_inventory(), osrs.item_ids.ADAMANTITE_BAR) >= 26):
         return True
 
 
 def equip():
-    osrs.player.equip_item([osrs.item_ids.ItemIDs.ICE_GLOVES.value])
+    osrs.player.equip_item([osrs.item_ids.ICE_GLOVES])
 
 def main():
     trip_count = 1

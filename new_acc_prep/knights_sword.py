@@ -41,7 +41,7 @@ def wait_for_pic():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.PORTRAIT.value):
+    if qh.get_inventory(osrs.item_ids.PORTRAIT):
         return True
 
 
@@ -56,7 +56,7 @@ def mine_rock():
         osrs.combat_utils.prayer_handler(None, ['protect_melee'])
         osrs.combat_utils.pot_handler(None, {})
         qh.query_backend()
-        if qh.get_inventory(osrs.item_ids.ItemIDs.BLURITE_ORE.value):
+        if qh.get_inventory(osrs.item_ids.BLURITE_ORE):
             return
         elif qh.get_objects_v2('game', 11378) and (datetime.datetime.now() - last_rock_click).total_seconds() > 30:
             rocks = sorted(qh.get_objects_v2('game', 11378), key=lambda rock: rock['dist'])

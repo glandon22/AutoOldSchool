@@ -9,7 +9,7 @@ def cook_fish(qh: osrs.queryHelper.QueryHelper, fish):
     last_click = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
         qh.query_backend()
-        if qh.get_widgets_v2(osrs.widget_ids.WidgetIDs.CHATBOX_SKILLING_INPUT_BOX.value) or not qh.get_inventory(fish):
+        if qh.get_widgets_v2(osrs.widget_ids.CHATBOX_SKILLING_INPUT_BOX) or not qh.get_inventory(fish):
             osrs.keeb.press_key('space')
             osrs.clock.sleep_one_tick()
             osrs.clock.sleep_one_tick()
@@ -25,8 +25,8 @@ def main(fish, goal=99):
     qh.set_npcs_by_name(['emerald benedict'])
     qh.set_inventory()
     qh.set_widgets_v2({
-        osrs.widget_ids.WidgetIDs.CHATBOX_SKILLING_INPUT_BOX.value,
-        osrs.widget_ids.WidgetIDs.LEVEL_UP_SKILL.value,
+        osrs.widget_ids.CHATBOX_SKILLING_INPUT_BOX,
+        osrs.widget_ids.LEVEL_UP_SKILL,
     })
     qh.set_objects_v2('game', {fire_id})
     qh.set_skills({'cooking'})
@@ -38,7 +38,7 @@ def main(fish, goal=99):
             return
 
         if (qh.get_inventory(fish)
-                and (qh.get_widgets_v2(osrs.widget_ids.WidgetIDs.LEVEL_UP_SKILL.value)
+                and (qh.get_widgets_v2(osrs.widget_ids.LEVEL_UP_SKILL)
                      or (datetime.datetime.now() - last_cooked).total_seconds() > 75)):
             cook_fish(qh, fish)
             last_cooked = datetime.datetime.now()

@@ -21,7 +21,7 @@ def get_picture():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.PICTURE.value):
+    if qh.get_inventory(osrs.item_ids.PICTURE):
         return True
 
 
@@ -29,7 +29,7 @@ def get_key():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.A_SMALL_KEY.value):
+    if qh.get_inventory(osrs.item_ids.A_SMALL_KEY):
         return True
 
 
@@ -37,8 +37,8 @@ def click_water():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.BUCKET_OF_WATER.value):
-        osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.BUCKET_OF_WATER.value))
+    if qh.get_inventory(osrs.item_ids.BUCKET_OF_WATER):
+        osrs.move.click(qh.get_inventory(osrs.item_ids.BUCKET_OF_WATER))
 
 
 def click_spade():
@@ -46,9 +46,9 @@ def click_spade():
     qh.set_inventory()
     qh.set_canvas()
     qh.query_backend()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.SPADE.value):
+    if qh.get_inventory(osrs.item_ids.SPADE):
         osrs.move.right_click_v6(
-            qh.get_inventory(osrs.item_ids.ItemIDs.SPADE.value),
+            qh.get_inventory(osrs.item_ids.SPADE),
             'Use',
             qh.get_canvas(),
             in_inv=True
@@ -60,9 +60,9 @@ def click_rope():
     qh.set_inventory()
     qh.set_canvas()
     qh.query_backend()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.ROPE.value):
+    if qh.get_inventory(osrs.item_ids.ROPE):
         osrs.move.right_click_v6(
-            qh.get_inventory(osrs.item_ids.ItemIDs.ROPE.value),
+            qh.get_inventory(osrs.item_ids.ROPE),
             'Use',
             qh.get_canvas(),
             in_inv=True
@@ -73,15 +73,15 @@ def click_mask():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.GAS_MASK.value):
-        osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.GAS_MASK.value))
+    if qh.get_inventory(osrs.item_ids.GAS_MASK):
+        osrs.move.click(qh.get_inventory(osrs.item_ids.GAS_MASK))
 
 
 def use_all_water():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if not qh.get_inventory(osrs.item_ids.ItemIDs.BUCKET_OF_WATER.value):
+    if not qh.get_inventory(osrs.item_ids.BUCKET_OF_WATER):
         return True
 
 
@@ -90,20 +90,20 @@ def make_cure():
     qh.set_inventory()
     while True:
         qh.query_backend()
-        if qh.get_inventory(osrs.item_ids.ItemIDs.HANGOVER_CURE.value):
+        if qh.get_inventory(osrs.item_ids.HANGOVER_CURE):
             osrs.clock.sleep_one_tick()
             osrs.keeb.press_key('space')
             return
-        elif (qh.get_inventory(osrs.item_ids.ItemIDs.CHOCOLATE_DUST.value)
-              and qh.get_inventory(osrs.item_ids.ItemIDs.BUCKET_OF_MILK.value)):
-            osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.CHOCOLATE_DUST.value))
-            osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.BUCKET_OF_MILK.value))
+        elif (qh.get_inventory(osrs.item_ids.CHOCOLATE_DUST)
+              and qh.get_inventory(osrs.item_ids.BUCKET_OF_MILK)):
+            osrs.move.click(qh.get_inventory(osrs.item_ids.CHOCOLATE_DUST))
+            osrs.move.click(qh.get_inventory(osrs.item_ids.BUCKET_OF_MILK))
             osrs.clock.sleep_one_tick()
             osrs.clock.sleep_one_tick()
-        elif (qh.get_inventory(osrs.item_ids.ItemIDs.SNAPE_GRASS.value)
-              and qh.get_inventory(osrs.item_ids.ItemIDs.CHOCOLATEY_MILK.value)):
-            osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.SNAPE_GRASS.value))
-            osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.CHOCOLATEY_MILK.value))
+        elif (qh.get_inventory(osrs.item_ids.SNAPE_GRASS)
+              and qh.get_inventory(osrs.item_ids.CHOCOLATEY_MILK)):
+            osrs.move.click(qh.get_inventory(osrs.item_ids.SNAPE_GRASS))
+            osrs.move.click(qh.get_inventory(osrs.item_ids.CHOCOLATEY_MILK))
             osrs.clock.sleep_one_tick()
             osrs.clock.sleep_one_tick()
 
@@ -126,8 +126,8 @@ def read_scroll():
             osrs.clock.sleep_one_tick()
             util_functions.dialogue_handler([])
             return
-        elif qh.get_inventory(osrs.item_ids.ItemIDs.ARDOUGNE_TELEPORT_SCROLL.value):
-            osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.ARDOUGNE_TELEPORT_SCROLL.value))
+        elif qh.get_inventory(osrs.item_ids.ARDOUGNE_TELEPORT_SCROLL):
+            osrs.move.click(qh.get_inventory(osrs.item_ids.ARDOUGNE_TELEPORT_SCROLL))
             osrs.clock.random_sleep(1, 1.1)
 
 

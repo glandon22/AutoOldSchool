@@ -66,20 +66,20 @@ def cast_magic_imbue():
 def click_pouches(qh, empty=False):
     if empty:
         osrs.move.right_click_v6(
-            qh.get_inventory(osrs.item_ids.ItemIDs.GIANT_POUCH.value),
+            qh.get_inventory(osrs.item_ids.GIANT_POUCH),
             'Empty',
             qh.get_canvas(),
             in_inv=True
         )
         osrs.move.right_click_v6(
-            qh.get_inventory(osrs.item_ids.ItemIDs.LARGE_POUCH.value),
+            qh.get_inventory(osrs.item_ids.LARGE_POUCH),
             'Empty',
             qh.get_canvas(),
             in_inv=True
         )
     else:
-        osrs.move.fast_click(qh.get_inventory(osrs.item_ids.ItemIDs.GIANT_POUCH.value))
-        osrs.move.fast_click(qh.get_inventory(osrs.item_ids.ItemIDs.LARGE_POUCH.value))
+        osrs.move.fast_click(qh.get_inventory(osrs.item_ids.GIANT_POUCH))
+        osrs.move.fast_click(qh.get_inventory(osrs.item_ids.LARGE_POUCH))
 
 
 def tele_to_earth_altar():
@@ -110,15 +110,15 @@ def click_water_rune():
     qh.query_backend()
     if not qh.get_varbit():
         cast_magic_imbue()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.WATER_RUNE.value):
-        osrs.move.fast_click(qh.get_inventory(osrs.item_ids.ItemIDs.WATER_RUNE.value))
+    if qh.get_inventory(osrs.item_ids.WATER_RUNE):
+        osrs.move.fast_click(qh.get_inventory(osrs.item_ids.WATER_RUNE))
 
 
 def crafted_runes():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if not qh.get_inventory(osrs.item_ids.ItemIDs.PURE_ESSENCE.value):
+    if not qh.get_inventory(osrs.item_ids.PURE_ESSENCE):
         return True
 
 
@@ -129,14 +129,14 @@ def make_muds(qh):
     )
     qh.query_backend()
     osrs.move.right_click_v6(
-        qh.get_inventory(osrs.item_ids.ItemIDs.COLOSSAL_POUCH.value),
+        qh.get_inventory(osrs.item_ids.COLOSSAL_POUCH),
         'Empty',
         qh.get_canvas(),
         in_inv=True
     )
     while True:
         qh.query_backend()
-        if qh.get_inventory(osrs.item_ids.ItemIDs.PURE_ESSENCE.value):
+        if qh.get_inventory(osrs.item_ids.PURE_ESSENCE):
             break
     osrs.move.interact_with_object(
         34763, 'y', 4800, True, pre_interact=click_water_rune,
@@ -144,14 +144,14 @@ def make_muds(qh):
     )
     qh.query_backend()
     osrs.move.right_click_v6(
-        qh.get_inventory(osrs.item_ids.ItemIDs.COLOSSAL_POUCH.value),
+        qh.get_inventory(osrs.item_ids.COLOSSAL_POUCH),
         'Empty',
         qh.get_canvas(),
         in_inv=True
     )
     while True:
         qh.query_backend()
-        if qh.get_inventory(osrs.item_ids.ItemIDs.PURE_ESSENCE.value):
+        if qh.get_inventory(osrs.item_ids.PURE_ESSENCE):
             break
     osrs.move.interact_with_object(
         34763, 'y', 4800, True, pre_interact=click_water_rune,
@@ -209,33 +209,33 @@ def main(goal_lvl=99):
             qh.query_backend()
 
         items_to_withdraw = []
-        if not qh.get_equipment(osrs.item_ids.ItemIDs.BINDING_NECKLACE.value):
+        if not qh.get_equipment(osrs.item_ids.BINDING_NECKLACE):
             items_to_withdraw += [{
-                'id': osrs.item_ids.ItemIDs.BINDING_NECKLACE.value,
+                'id': osrs.item_ids.BINDING_NECKLACE,
                 'quantity': '1',
                 'consume': 'Wear'
             }]
             if qh.get_widgets(run_energy_widget) and int(qh.get_widgets(run_energy_widget)['text']) <= 35:
                 items_to_withdraw += [{
-                    'id': osrs.item_ids.ItemIDs.STAMINA_POTION1.value, 'quantity': 1, 'consume': 'Drink'
+                    'id': osrs.item_ids.STAMINA_POTION1, 'quantity': 1, 'consume': 'Drink'
                 }]
         items_to_withdraw += [
             {
-                'id': osrs.item_ids.ItemIDs.PURE_ESSENCE.value,
+                'id': osrs.item_ids.PURE_ESSENCE,
                 'consume': 'Fill',
-                'consume_id_override': osrs.item_ids.ItemIDs.COLOSSAL_POUCH.value
+                'consume_id_override': osrs.item_ids.COLOSSAL_POUCH
             },
             {
-                'id': osrs.item_ids.ItemIDs.PURE_ESSENCE.value,
+                'id': osrs.item_ids.PURE_ESSENCE,
                 'consume': 'Fill',
-                'consume_id_override': osrs.item_ids.ItemIDs.COLOSSAL_POUCH.value
+                'consume_id_override': osrs.item_ids.COLOSSAL_POUCH
             },
             {
-                'id': osrs.item_ids.ItemIDs.PURE_ESSENCE.value,
+                'id': osrs.item_ids.PURE_ESSENCE,
             }
         ]
         osrs.bank.banking_handler({
-            'deposit': [{'id': osrs.item_ids.ItemIDs.MUD_RUNE.value}, {'id': osrs.item_ids.ItemIDs.EARTH_RUNE.value}],
+            'deposit': [{'id': osrs.item_ids.MUD_RUNE}, {'id': osrs.item_ids.EARTH_RUNE}],
             'withdraw_v2': items_to_withdraw,
         })
 

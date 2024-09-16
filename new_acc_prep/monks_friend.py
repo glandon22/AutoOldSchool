@@ -16,7 +16,7 @@ def wait_for_blanket():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.CHILDS_BLANKET.value):
+    if qh.get_inventory(osrs.item_ids.CHILDS_BLANKET):
         return True
 
 

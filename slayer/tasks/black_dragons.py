@@ -3,7 +3,7 @@
 # then exit
 # 2134,9305,0
 import osrs
-from osrs.item_ids import ItemIDs
+
 from slayer import transport_functions
 from combat import slayer_killer
 
@@ -12,50 +12,50 @@ fally_tele_widget_id = '218,29'
 
 
 items = [
-    ItemIDs.RUNE_POUCH.value,
-    ItemIDs.DRAMEN_STAFF.value,
-    ItemIDs.AMULET_OF_FURY.value,
-    ItemIDs.ARCHERS_RING.value,
-    ItemIDs.AVAS_ACCUMULATOR.value,
-    ItemIDs.SNAKESKIN_BOOTS.value,
-    ItemIDs.ANTIDRAGON_SHIELD.value,
-    ItemIDs.DRAGON_HUNTER_CROSSBOW.value,
-    ItemIDs.VOID_RANGER_HELM.value,
-    ItemIDs.VOID_KNIGHT_TOP.value,
-    ItemIDs.VOID_KNIGHT_ROBE.value,
-    ItemIDs.VOID_KNIGHT_GLOVES.value,
-    {'id': ItemIDs.RUNITE_BOLTS.value, 'quantity': 'All'},
+    osrs.item_ids.RUNE_POUCH,
+    osrs.item_ids.DRAMEN_STAFF,
+    osrs.item_ids.AMULET_OF_FURY,
+    osrs.item_ids.ARCHERS_RING,
+    osrs.item_ids.AVAS_ACCUMULATOR,
+    osrs.item_ids.SNAKESKIN_BOOTS,
+    osrs.item_ids.ANTIDRAGON_SHIELD,
+    osrs.item_ids.DRAGON_HUNTER_CROSSBOW,
+    osrs.item_ids.VOID_RANGER_HELM,
+    osrs.item_ids.VOID_KNIGHT_TOP,
+    osrs.item_ids.VOID_KNIGHT_ROBE,
+    osrs.item_ids.VOID_KNIGHT_GLOVES,
+    {'id': osrs.item_ids.RUNITE_BOLTS, 'quantity': 'All'},
     {
         'id': [
-            ItemIDs.SLAYER_RING_1.value,
-            ItemIDs.SLAYER_RING_2.value,
-            ItemIDs.SLAYER_RING_3.value,
-            ItemIDs.SLAYER_RING_4.value,
-            ItemIDs.SLAYER_RING_5.value,
-            ItemIDs.SLAYER_RING_6.value,
-            ItemIDs.SLAYER_RING_7.value,
-            ItemIDs.SLAYER_RING_8.value,
+            osrs.item_ids.SLAYER_RING_1,
+            osrs.item_ids.SLAYER_RING_2,
+            osrs.item_ids.SLAYER_RING_3,
+            osrs.item_ids.SLAYER_RING_4,
+            osrs.item_ids.SLAYER_RING_5,
+            osrs.item_ids.SLAYER_RING_6,
+            osrs.item_ids.SLAYER_RING_7,
+            osrs.item_ids.SLAYER_RING_8,
         ],
         'quantity': '1'
     },
-    {'id': ItemIDs.MONKFISH.value, 'quantity': '5'},
-    ItemIDs.RANGING_POTION4.value,
-    ItemIDs.RANGING_POTION4.value,
-    ItemIDs.RANGING_POTION4.value,
+    {'id': osrs.item_ids.MONKFISH, 'quantity': '5'},
+    osrs.item_ids.RANGING_POTION4,
+    osrs.item_ids.RANGING_POTION4,
+    osrs.item_ids.RANGING_POTION4,
 ]
 
 equipment = [
-    ItemIDs.DRAMEN_STAFF.value,
-    ItemIDs.AMULET_OF_FURY.value,
-    ItemIDs.ARCHERS_RING.value,
-    ItemIDs.AVAS_ACCUMULATOR.value,
-    ItemIDs.SNAKESKIN_BOOTS.value,
-    ItemIDs.ANTIDRAGON_SHIELD.value,
-    ItemIDs.VOID_RANGER_HELM.value,
-    ItemIDs.VOID_KNIGHT_TOP.value,
-    ItemIDs.VOID_KNIGHT_ROBE.value,
-    ItemIDs.VOID_KNIGHT_GLOVES.value,
-    ItemIDs.RUNITE_BOLTS.value,
+    osrs.item_ids.DRAMEN_STAFF,
+    osrs.item_ids.AMULET_OF_FURY,
+    osrs.item_ids.ARCHERS_RING,
+    osrs.item_ids.AVAS_ACCUMULATOR,
+    osrs.item_ids.SNAKESKIN_BOOTS,
+    osrs.item_ids.ANTIDRAGON_SHIELD,
+    osrs.item_ids.VOID_RANGER_HELM,
+    osrs.item_ids.VOID_KNIGHT_TOP,
+    osrs.item_ids.VOID_KNIGHT_ROBE,
+    osrs.item_ids.VOID_KNIGHT_GLOVES,
+    osrs.item_ids.RUNITE_BOLTS,
 ]
 
 banking_config = {
@@ -80,7 +80,7 @@ def main():
         osrs.game.cast_spell(fally_tele_widget_id)
         transport_functions.taverley_dungeon()
         qh.query_backend()
-        osrs.move.click(qh.get_inventory(ItemIDs.DRAGON_HUNTER_CROSSBOW.value))
+        osrs.move.click(qh.get_inventory(osrs.item_ids.DRAGON_HUNTER_CROSSBOW))
         success = slayer_killer.main('baby black dragon', pot_config.asdict(), 35)
         osrs.game.cast_spell(varrock_tele_widget_id)
         if success:

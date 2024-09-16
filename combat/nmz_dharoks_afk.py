@@ -129,7 +129,7 @@ def kill_monsters():
             last_overload_click = datetime.datetime.now()
         elif qh.get_skills('hitpoints') and qh.get_skills('hitpoints')['boostedLevel'] != 1 \
                 and (datetime.datetime.now() - last_overload_click).total_seconds() > 10:
-            osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.DWARVEN_ROCK_CAKE_7510.value))
+            osrs.move.click(qh.get_inventory(osrs.item_ids.DWARVEN_ROCK_CAKE_7510))
         elif (datetime.datetime.now() - last_rapid_heal_flick).total_seconds() > 30:
             osrs.player.flick_all_prayers()
             last_rapid_heal_flick = datetime.datetime.now()
@@ -180,7 +180,7 @@ def get_absorps_and_overloads():
             last_over_click = datetime.datetime.now() - datetime.timedelta(hours=1)
             break
     for item in qh.get_inventory():
-        if item['id'] != osrs.item_ids.ItemIDs.DWARVEN_ROCK_CAKE_7510.value:
+        if item['id'] != osrs.item_ids.DWARVEN_ROCK_CAKE_7510:
             osrs.move.right_click_v5(item, 'Drop', in_inv=True)
     while True:
         qh.query_backend()

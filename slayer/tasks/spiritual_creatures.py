@@ -2,7 +2,7 @@ import datetime
 
 import osrs
 import osrs.move
-from osrs.item_ids import ItemIDs
+
 from slayer import transport_functions
 from combat import slayer_killer
 from slayer.utils import bank
@@ -13,40 +13,40 @@ trollheim_tele_widget_id = '218,54'
 
 
 supplies = [
-    ItemIDs.SUPER_ATTACK4.value,
-    ItemIDs.SUPER_ATTACK4.value,
-    ItemIDs.SUPER_STRENGTH4.value,
-    ItemIDs.SUPER_STRENGTH4.value,
-    ItemIDs.RUNE_POUCH.value,
-    ItemIDs.SUPER_RESTORE4.value,
+    osrs.item_ids.SUPER_ATTACK4,
+    osrs.item_ids.SUPER_ATTACK4,
+    osrs.item_ids.SUPER_STRENGTH4,
+    osrs.item_ids.SUPER_STRENGTH4,
+    osrs.item_ids.RUNE_POUCH,
+    osrs.item_ids.SUPER_RESTORE4,
     {
-        'id': ItemIDs.NATURE_RUNE.value,
+        'id': osrs.item_ids.NATURE_RUNE,
         'quantity': 'All'
     },
-    ItemIDs.KARAMJA_GLOVES_4.value,
+    osrs.item_ids.KARAMJA_GLOVES_4,
     {
-        'id': ItemIDs.MONKFISH.value,
+        'id': osrs.item_ids.MONKFISH,
         'quantity': 'X',
         'amount': '9'
     },
     {
-        'id': ItemIDs.PRAYER_POTION4.value,
+        'id': osrs.item_ids.PRAYER_POTION4,
         'quantity': '10'
     },
 ]
 
 equipment = [
-    {'id': ItemIDs.DRAGON_DEFENDER.value, 'consume': 'Wield'},
-    {'id': ItemIDs.ZAMORAK_CLOAK.value, 'consume': 'Wear'},
-    {'id': ItemIDs.SLAYER_HELMET_I.value, 'consume': 'Wear'},
-    {'id': ItemIDs.ARMADYL_BRACERS.value, 'consume': 'Wear'},
-    {'id': ItemIDs.BRIMSTONE_RING.value, 'consume': 'Wear'},
-    {'id': ItemIDs.DRAGON_BOOTS.value, 'consume': 'Wear'},
-    {'id': ItemIDs.BANDOS_CHESTPLATE.value, 'consume': 'Wear'},
-    {'id': ItemIDs.BANDOS_TASSETS.value, 'consume': 'Wear'},
-    {'id': ItemIDs.AMULET_OF_FURY.value, 'consume': 'Wear'},
-    {'id': ItemIDs.OSMUMTENS_FANG.value, 'consume': 'Wield'},
-    {'id': ItemIDs.HOLY_BLESSING.value, 'consume': 'Equip'},
+    {'id': osrs.item_ids.DRAGON_DEFENDER, 'consume': 'Wield'},
+    {'id': osrs.item_ids.ZAMORAK_CLOAK, 'consume': 'Wear'},
+    {'id': osrs.item_ids.SLAYER_HELMET_I, 'consume': 'Wear'},
+    {'id': osrs.item_ids.ARMADYL_BRACERS, 'consume': 'Wear'},
+    {'id': osrs.item_ids.BRIMSTONE_RING, 'consume': 'Wear'},
+    {'id': osrs.item_ids.DRAGON_BOOTS, 'consume': 'Wear'},
+    {'id': osrs.item_ids.BANDOS_CHESTPLATE, 'consume': 'Wear'},
+    {'id': osrs.item_ids.BANDOS_TASSETS, 'consume': 'Wear'},
+    {'id': osrs.item_ids.AMULET_OF_FURY, 'consume': 'Wear'},
+    {'id': osrs.item_ids.OSMUMTENS_FANG, 'consume': 'Wield'},
+    {'id': osrs.item_ids.HOLY_BLESSING, 'consume': 'Equip'},
 ]
 
 banking_config_equipment = {
@@ -82,8 +82,8 @@ def main():
         task_started = True
         while True:
             qh.query_backend()
-            if qh.get_inventory(ItemIDs.SUPER_RESTORE4.value):
-                osrs.move.fast_click(qh.get_inventory(ItemIDs.SUPER_RESTORE4.value))
+            if qh.get_inventory(osrs.item_ids.SUPER_RESTORE4):
+                osrs.move.fast_click(qh.get_inventory(osrs.item_ids.SUPER_RESTORE4))
             else:
                 break
         success = slayer_killer.main('spiritual mage', pot_config.asdict(), 35, prayers=['protect_mage'], ignore_interacting=True, pre_hop=pre_log)

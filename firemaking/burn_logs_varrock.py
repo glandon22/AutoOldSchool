@@ -24,7 +24,7 @@ def burn_logs(log):
         elif qh.get_skills('firemaking') and qh.get_skills('firemaking')['xp'] != last_xp_count:
             last_xp_count = qh.get_skills('firemaking')['xp']
             time_since_last_burn = datetime.datetime.now()
-            osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.TINDERBOX.value))
+            osrs.move.click(qh.get_inventory(osrs.item_ids.TINDERBOX))
             osrs.move.click(qh.get_inventory(log))
             osrs.clock.sleep_one_tick()
 
@@ -32,10 +32,10 @@ def burn_logs(log):
 def main(goal_lvl, log):
     iterations = 0
     bank_config_initial = [
-        osrs.item_ids.ItemIDs.TINDERBOX.value,
+        osrs.item_ids.TINDERBOX,
         {
             'id': [
-                osrs.item_ids.ItemIDs.VARROCK_TELEPORT.value,
+                osrs.item_ids.VARROCK_TELEPORT,
             ],
             'quantity': 'All'
         },

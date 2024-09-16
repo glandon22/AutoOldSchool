@@ -28,8 +28,8 @@ def main(required_runes: list, darts: int):
 
         if not qh.get_interating_with():
             if qh.get_skills('hitpoints') and qh.get_skills('hitpoints')['boostedLevel'] <= 9:
-                if qh.get_inventory(osrs.item_ids.ItemIDs.TROUT.value):
-                    osrs.move.click(qh.get_inventory(osrs.item_ids.ItemIDs.TROUT.value))
+                if qh.get_inventory(osrs.item_ids.TROUT):
+                    osrs.move.click(qh.get_inventory(osrs.item_ids.TROUT))
                 else:
                     return
             osrs.game.break_manager_v4({

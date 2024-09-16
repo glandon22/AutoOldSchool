@@ -2,7 +2,7 @@
 import datetime
 
 import osrs
-from osrs.item_ids import ItemIDs
+
 from slayer import transport_functions
 from combat import slayer_killer
 from slayer.tasks import gear
@@ -11,24 +11,24 @@ varrock_tele_widget_id = '218,23'
 
 
 supplies = [
-    ItemIDs.SUPER_ATTACK4.value,
-    ItemIDs.SUPER_ATTACK4.value,
-    ItemIDs.SUPER_STRENGTH4.value,
-    ItemIDs.SUPER_STRENGTH4.value,
-    ItemIDs.EXTENDED_ANTIFIRE4.value,
-    ItemIDs.EXTENDED_ANTIFIRE4.value,
-    ItemIDs.RUNE_POUCH.value,
-    ItemIDs.KARAMJA_GLOVES_3.value,
+    osrs.item_ids.SUPER_ATTACK4,
+    osrs.item_ids.SUPER_ATTACK4,
+    osrs.item_ids.SUPER_STRENGTH4,
+    osrs.item_ids.SUPER_STRENGTH4,
+    osrs.item_ids.EXTENDED_ANTIFIRE4,
+    osrs.item_ids.EXTENDED_ANTIFIRE4,
+    osrs.item_ids.RUNE_POUCH,
+    osrs.item_ids.KARAMJA_GLOVES_3,
     {
-        'id': ItemIDs.PRAYER_POTION4.value,
+        'id': osrs.item_ids.PRAYER_POTION4,
         'quantity': '10'
     },
     {
-        'id': ItemIDs.NATURE_RUNE.value,
+        'id': osrs.item_ids.NATURE_RUNE,
         'quantity': 'All'
     },
     {
-        'id': ItemIDs.MONKFISH.value,
+        'id': osrs.item_ids.MONKFISH,
         'quantity': 'All'
     },
 ]
@@ -56,45 +56,45 @@ def loot_builder():
         'loot': []
     }
 
-    item = osrs.loot.LootConfig(ItemIDs.ADAMANT_PLATELEGS.value, 6, alch=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.ADAMANT_PLATELEGS, 6, alch=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.RUNE_LONGSWORD.value, 6, alch=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.RUNE_LONGSWORD, 6, alch=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.BLUE_DHIDE_BODY.value, 5, alch=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.BLUE_DHIDE_BODY, 5, alch=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.DRAGON_DAGGER.value, 6, alch=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.DRAGON_DAGGER, 6, alch=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.DRAGON_LONGSWORD.value, 6, alch=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.DRAGON_LONGSWORD, 6, alch=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.DRAGON_MED_HELM.value, 6, alch=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.DRAGON_MED_HELM, 6, alch=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.RUNE_FULL_HELM.value, 6, alch=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.RUNE_FULL_HELM, 6, alch=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.RUNE_PLATEBODY.value, 6, alch=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.RUNE_PLATEBODY, 6, alch=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.CHAOS_RUNE.value, 3, stackable=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.CHAOS_RUNE, 3, stackable=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.DEATH_RUNE.value, 3, stackable=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.DEATH_RUNE, 3, stackable=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.LAW_RUNE.value, 3, stackable=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.LAW_RUNE, 3, stackable=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.DRAGON_DART_TIP.value, 8, stackable=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.DRAGON_DART_TIP, 8, stackable=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.DRAGON_ARROWTIPS.value, 8, stackable=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.DRAGON_ARROWTIPS, 8, stackable=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.RUNITE_ORE.value + 1, 8, stackable=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.RUNITE_ORE + 1, 8, stackable=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.DRAGON_JAVELIN_HEADS.value, 8, stackable=True)
+    item = osrs.loot.LootConfig(osrs.item_ids.DRAGON_JAVELIN_HEADS, 8, stackable=True)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.DRACONIC_VISAGE.value, 93)
+    item = osrs.loot.LootConfig(osrs.item_ids.DRACONIC_VISAGE, 93)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.ANCIENT_SHARD.value, 9)
+    item = osrs.loot.LootConfig(osrs.item_ids.ANCIENT_SHARD, 9)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.DARK_TOTEM_TOP.value, 9)
+    item = osrs.loot.LootConfig(osrs.item_ids.DARK_TOTEM_TOP, 9)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.DARK_TOTEM_BASE.value, 9)
+    item = osrs.loot.LootConfig(osrs.item_ids.DARK_TOTEM_BASE, 9)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(ItemIDs.DARK_TOTEM_MIDDLE.value, 9)
+    item = osrs.loot.LootConfig(osrs.item_ids.DARK_TOTEM_MIDDLE, 9)
     config['loot'].append(item)
 
     return config

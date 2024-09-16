@@ -4,7 +4,7 @@ import osrs.move as move
 import osrs.queryHelper
 import osrs.server as server
 import osrs.dev as dev
-from osrs.widget_ids import WidgetIDs
+
 
 def toggle_prayer_slow(desired_state, port):
     """

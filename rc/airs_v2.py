@@ -17,14 +17,14 @@ import datetime
 import osrs
 
 duelings = [
-    osrs.item_ids.ItemIDs.RING_OF_DUELING8.value,
-    osrs.item_ids.ItemIDs.RING_OF_DUELING7.value,
-    osrs.item_ids.ItemIDs.RING_OF_DUELING6.value,
-    osrs.item_ids.ItemIDs.RING_OF_DUELING5.value,
-    osrs.item_ids.ItemIDs.RING_OF_DUELING4.value,
-    osrs.item_ids.ItemIDs.RING_OF_DUELING3.value,
-    osrs.item_ids.ItemIDs.RING_OF_DUELING2.value,
-    osrs.item_ids.ItemIDs.RING_OF_DUELING1.value,
+    osrs.item_ids.RING_OF_DUELING8,
+    osrs.item_ids.RING_OF_DUELING7,
+    osrs.item_ids.RING_OF_DUELING6,
+    osrs.item_ids.RING_OF_DUELING5,
+    osrs.item_ids.RING_OF_DUELING4,
+    osrs.item_ids.RING_OF_DUELING3,
+    osrs.item_ids.RING_OF_DUELING2,
+    osrs.item_ids.RING_OF_DUELING1,
 ]
 
 
@@ -43,7 +43,7 @@ def main(goal_level=99):
     while True:
         qh.query_backend()
         osrs.player.toggle_run('on')
-        if not qh.get_inventory(osrs.item_ids.ItemIDs.PURE_ESSENCE.value):
+        if not qh.get_inventory(osrs.item_ids.PURE_ESSENCE):
             # in ferox enclave
             if (3121 <= qh.get_player_world_location('x') <= 3155
                 and 3611 <= qh.get_player_world_location('y') <= 3646) and \
@@ -53,14 +53,14 @@ def main(goal_level=99):
                 osrs.move.go_to_loc(3135, 3631)
                 osrs.clock.random_sleep(1, 1.2)
                 items_to_withdraw = [
-                    {'id': osrs.item_ids.ItemIDs.PURE_ESSENCE.value, 'quantity': 'All'}
+                    {'id': osrs.item_ids.PURE_ESSENCE, 'quantity': 'All'}
                 ]
                 if not qh.get_inventory(duelings):
                     items_to_withdraw = [{'id': duelings, 'quantity': 1}] + items_to_withdraw
                 # need to think about whether or not i want to set the withdraw quantity and how
                 osrs.bank.banking_handler({
                     'deposit': [
-                        {'id': osrs.item_ids.ItemIDs.AIR_RUNE.value, 'quantity': 'all'}
+                        {'id': osrs.item_ids.AIR_RUNE, 'quantity': 'all'}
                     ],
                     'withdraw': [{'items': items_to_withdraw}]
                 })
@@ -73,7 +73,7 @@ def main(goal_level=99):
             if 3264 <= qh.get_player_world_location('x') <= 3390 and qh.get_player_world_location('y') >= 4500:
                 if (datetime.datetime.now() - last_tele).total_seconds() > 15:
                     success = osrs.move.right_click_v6(
-                        qh.get_inventory(osrs.item_ids.ItemIDs.TELEPORT_TO_HOUSE.value),
+                        qh.get_inventory(osrs.item_ids.TELEPORT_TO_HOUSE),
                         'Outside',
                         qh.get_canvas(),
                         in_inv=True

@@ -56,30 +56,30 @@ def cast_magic_imbue():
 def click_pouches(qh, empty=False):
     if empty:
         osrs.move.right_click_v6(
-            qh.get_inventory(osrs.item_ids.ItemIDs.GIANT_POUCH.value),
+            qh.get_inventory(osrs.item_ids.GIANT_POUCH),
             'Empty',
             qh.get_canvas(),
             in_inv=True
         )
         osrs.move.right_click_v6(
-            qh.get_inventory(osrs.item_ids.ItemIDs.LARGE_POUCH.value),
+            qh.get_inventory(osrs.item_ids.LARGE_POUCH),
             'Empty',
             qh.get_canvas(),
             in_inv=True
         )
     else:
-        osrs.move.fast_click(qh.get_inventory(osrs.item_ids.ItemIDs.GIANT_POUCH.value))
-        osrs.move.fast_click(qh.get_inventory(osrs.item_ids.ItemIDs.LARGE_POUCH.value))
+        osrs.move.fast_click(qh.get_inventory(osrs.item_ids.GIANT_POUCH))
+        osrs.move.fast_click(qh.get_inventory(osrs.item_ids.LARGE_POUCH))
 
 
 def fill_pouches(qh):
     qh.query_backend()
     osrs.bank.banking_handler({
         'withdraw': [{'items': [{
-            'id': osrs.item_ids.ItemIDs.PURE_ESSENCE.value,
+            'id': osrs.item_ids.PURE_ESSENCE,
             'quantity': 'All'
         }]}],
-        'deposit': [{'id': osrs.item_ids.ItemIDs.MUD_RUNE.value, 'quantity': 'All'}]
+        'deposit': [{'id': osrs.item_ids.MUD_RUNE, 'quantity': 'All'}]
     })
     click_pouches(qh)
 
@@ -112,15 +112,15 @@ def click_water_rune():
     qh.query_backend()
     if not qh.get_varbit():
         cast_magic_imbue()
-    if qh.get_inventory(osrs.item_ids.ItemIDs.WATER_RUNE.value):
-        osrs.move.fast_click(qh.get_inventory(osrs.item_ids.ItemIDs.WATER_RUNE.value))
+    if qh.get_inventory(osrs.item_ids.WATER_RUNE):
+        osrs.move.fast_click(qh.get_inventory(osrs.item_ids.WATER_RUNE))
 
 
 def crafted_runes():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.query_backend()
-    if not qh.get_inventory(osrs.item_ids.ItemIDs.PURE_ESSENCE.value):
+    if not qh.get_inventory(osrs.item_ids.PURE_ESSENCE):
         return True
 
 
@@ -134,7 +134,7 @@ def make_muds(qh, final_run=False):
         click_pouches(qh, True)
         while True:
             qh.query_backend()
-            if qh.get_inventory(osrs.item_ids.ItemIDs.PURE_ESSENCE.value):
+            if qh.get_inventory(osrs.item_ids.PURE_ESSENCE):
                 return
 
 
@@ -186,19 +186,19 @@ def main(goal_lvl=99):
         if iters % 7 == 0:
             osrs.bank.banking_handler({
                 'withdraw': [{'items': [{
-                    'id': osrs.item_ids.ItemIDs.COSMIC_RUNE.value,
+                    'id': osrs.item_ids.COSMIC_RUNE,
                     'quantity': '1'
                 }]}]
             })
             repair_pouches()
 
-        if not qh.get_equipment(osrs.item_ids.ItemIDs.BINDING_NECKLACE.value):
+        if not qh.get_equipment(osrs.item_ids.BINDING_NECKLACE):
             items_to_withdraw = [{
-                'id': osrs.item_ids.ItemIDs.BINDING_NECKLACE.value,
+                'id': osrs.item_ids.BINDING_NECKLACE,
                 'quantity': '1'
             }]
             if qh.get_widgets(run_energy_widget) and int(qh.get_widgets(run_energy_widget)['text']) <= 35:
-                items_to_withdraw += [{'id': osrs.item_ids.ItemIDs.STAMINA_POTION1.value, 'quantity': 1}]
+                items_to_withdraw += [{'id': osrs.item_ids.STAMINA_POTION1, 'quantity': 1}]
             osrs.bank.banking_handler({
                 'withdraw': [{'items': items_to_withdraw}]
             })
@@ -206,11 +206,11 @@ def main(goal_lvl=99):
             while True:
                 qh.query_backend()
                 if qh.get_inventory(
-                        [osrs.item_ids.ItemIDs.BINDING_NECKLACE.value, osrs.item_ids.ItemIDs.STAMINA_POTION1.value]
+                        [osrs.item_ids.BINDING_NECKLACE, osrs.item_ids.STAMINA_POTION1]
                 ):
                     osrs.move.click(
                         qh.get_inventory(
-                            [osrs.item_ids.ItemIDs.BINDING_NECKLACE.value, osrs.item_ids.ItemIDs.STAMINA_POTION1.value])
+                            [osrs.item_ids.BINDING_NECKLACE, osrs.item_ids.STAMINA_POTION1])
                     )
                     equipped = True
                 elif equipped:

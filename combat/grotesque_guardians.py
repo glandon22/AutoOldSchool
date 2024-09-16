@@ -34,7 +34,7 @@ stairs to grot - 31681 3428,3543,2
 import datetime
 
 import osrs
-from osrs.item_ids import ItemIDs
+
 
 prayer_map = {
     'protect_melee': 4118,
@@ -54,58 +54,58 @@ prayer_map_widgets = {
 
 pot_matcher = {
     "SUPER_COMBATS": [
-        ItemIDs.SUPER_COMBAT_POTION4.value,
-        ItemIDs.SUPER_COMBAT_POTION3.value,
-        ItemIDs.SUPER_COMBAT_POTION2.value,
-        ItemIDs.SUPER_COMBAT_POTION1.value
+        osrs.item_ids.SUPER_COMBAT_POTION4,
+        osrs.item_ids.SUPER_COMBAT_POTION3,
+        osrs.item_ids.SUPER_COMBAT_POTION2,
+        osrs.item_ids.SUPER_COMBAT_POTION1
     ],
     "SUPER_ATTACK": [
-        ItemIDs.SUPER_ATTACK4.value,
-        ItemIDs.SUPER_ATTACK3.value,
-        ItemIDs.SUPER_ATTACK2.value,
-        ItemIDs.SUPER_ATTACK1.value,
+        osrs.item_ids.SUPER_ATTACK4,
+        osrs.item_ids.SUPER_ATTACK3,
+        osrs.item_ids.SUPER_ATTACK2,
+        osrs.item_ids.SUPER_ATTACK1,
     ],
     "SUPER_STRENGTH": [
-        ItemIDs.SUPER_STRENGTH4.value,
-        ItemIDs.SUPER_STRENGTH3.value,
-        ItemIDs.SUPER_STRENGTH2.value,
-        ItemIDs.SUPER_STRENGTH1.value,
+        osrs.item_ids.SUPER_STRENGTH4,
+        osrs.item_ids.SUPER_STRENGTH3,
+        osrs.item_ids.SUPER_STRENGTH2,
+        osrs.item_ids.SUPER_STRENGTH1,
     ],
     "RANGING_POTION": [
-        ItemIDs.RANGING_POTION4.value,
-        ItemIDs.RANGING_POTION3.value,
-        ItemIDs.RANGING_POTION2.value,
-        ItemIDs.RANGING_POTION1.value,
+        osrs.item_ids.RANGING_POTION4,
+        osrs.item_ids.RANGING_POTION3,
+        osrs.item_ids.RANGING_POTION2,
+        osrs.item_ids.RANGING_POTION1,
     ],
     "MAGIC_POTION": [
-        ItemIDs.MAGIC_POTION4.value,
-        ItemIDs.MAGIC_POTION3.value,
-        ItemIDs.MAGIC_POTION2.value,
-        ItemIDs.MAGIC_POTION1.value,
+        osrs.item_ids.MAGIC_POTION4,
+        osrs.item_ids.MAGIC_POTION3,
+        osrs.item_ids.MAGIC_POTION2,
+        osrs.item_ids.MAGIC_POTION1,
     ],
     "SUPER_ANTI_POISION": [
-        ItemIDs.SUPERANTIPOISON4.value,
-        ItemIDs.SUPERANTIPOISON3.value,
-        ItemIDs.SUPERANTIPOISON2.value,
-        ItemIDs.SUPERANTIPOISON1.value,
+        osrs.item_ids.SUPERANTIPOISON4,
+        osrs.item_ids.SUPERANTIPOISON3,
+        osrs.item_ids.SUPERANTIPOISON2,
+        osrs.item_ids.SUPERANTIPOISON1,
     ],
     "EXTENDED_ANTIFIRE": [
-        ItemIDs.EXTENDED_ANTIFIRE4.value,
-        ItemIDs.EXTENDED_ANTIFIRE3.value,
-        ItemIDs.EXTENDED_ANTIFIRE2.value,
-        ItemIDs.EXTENDED_ANTIFIRE1.value,
+        osrs.item_ids.EXTENDED_ANTIFIRE4,
+        osrs.item_ids.EXTENDED_ANTIFIRE3,
+        osrs.item_ids.EXTENDED_ANTIFIRE2,
+        osrs.item_ids.EXTENDED_ANTIFIRE1,
     ],
     "PRAYER": [
-        ItemIDs.PRAYER_POTION4.value,
-        ItemIDs.PRAYER_POTION3.value,
-        ItemIDs.PRAYER_POTION2.value,
-        ItemIDs.PRAYER_POTION1.value,
+        osrs.item_ids.PRAYER_POTION4,
+        osrs.item_ids.PRAYER_POTION3,
+        osrs.item_ids.PRAYER_POTION2,
+        osrs.item_ids.PRAYER_POTION1,
     ],
     "SUPER_RESTORE": [
-        ItemIDs.SUPER_RESTORE4.value,
-        ItemIDs.SUPER_RESTORE3.value,
-        ItemIDs.SUPER_RESTORE2.value,
-        ItemIDs.SUPER_RESTORE1.value,
+        osrs.item_ids.SUPER_RESTORE4,
+        osrs.item_ids.SUPER_RESTORE3,
+        osrs.item_ids.SUPER_RESTORE2,
+        osrs.item_ids.SUPER_RESTORE1,
     ]
 }
 
@@ -203,8 +203,8 @@ def phase_1_dawn(anchor):
         if len(qh.get_npcs()) == 0 and seen_dawn:
             return
         elif qh.get_skills('hitpoints')['boostedLevel'] < 35:
-            if qh.get_inventory(ItemIDs.ANGLERFISH.value):
-                osrs.move.fast_click(ItemIDs.ANGLERFISH.value)
+            if qh.get_inventory(osrs.item_ids.ANGLERFISH):
+                osrs.move.fast_click(osrs.item_ids.ANGLERFISH)
             else:
                 return osrs.game.tele_home()
         elif qh.get_skills('prayer')['boostedLevel'] < 20:
