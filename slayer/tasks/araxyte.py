@@ -50,15 +50,27 @@ pot_config = slayer_killer.PotConfig(super_str=True, super_atk=True, antivenom=T
 
 
 def pre_log():
-    osrs.player.turn_off_all_prayers()
-    osrs.move.go_to_loc(3679, 9800)
+    steps = osrs.move.run_towards_square(
+        {'x': 3661, 'y': 9836, 'z': 0},
+        steps_only=True
+    )
+    osrs.move.fixed_follow_path(steps)
+    steps = osrs.move.run_towards_square(
+        {'x': 3679, 'y': 9800, 'z': 0},
+        steps_only=True
+    )
+    osrs.move.fixed_follow_path(steps)
     osrs.move.interact_with_object(42595, 'y', 9000, False)
     osrs.clock.random_sleep(5, 5.5)
 
 
 def post():
     osrs.move.interact_with_object(42594, 'y', 9000, True)
-    osrs.move.go_to_loc(3669, 9816)
+    steps = osrs.move.run_towards_square(
+        {'x': 3674, 'y': 9837, 'z': 0},
+        steps_only=True
+    )
+    osrs.move.fixed_follow_path(steps)
 
 
 # need to change the pre log func
@@ -79,7 +91,11 @@ def run_to_spiders():
             osrs.move.fast_click(qh.get_tiles('3600,3492,0'))
     osrs.move.go_to_loc(3655, 3404)
     osrs.move.interact_with_object(42594, 'y', 9000, True)
-    osrs.move.go_to_loc(3669, 9816)
+    steps = osrs.move.run_towards_square(
+        {'x': 3674, 'y': 9837, 'z': 0},
+        steps_only=True
+    )
+    osrs.move.fixed_follow_path(steps)
 
 
 def main():
@@ -97,7 +113,7 @@ def main():
         task_started = True
         success = slayer_killer.main(
             ['araxyte'], pot_config.asdict(), 35,
-            attackable_area={'x_min': 3658, 'x_max': 3674, 'y_min': 9811, 'y_max': 9825},
+            attackable_area={'x_min': 3671, 'x_max': 3690, 'y_min': 9835, 'y_max': 9847},
             pre_hop=pre_log, post_login=post, prayers=['protect_melee']
         )
         qh.query_backend()

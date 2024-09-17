@@ -305,10 +305,6 @@ def hop_handler(qh: osrs.queryHelper.QueryHelper, pre_hop, last_seen, post_login
                 (player['name'] != 'DJT Fan 14' and attackable_area
                  and attackable_area['x_min'] <= player['worldPoint']['x'] <= attackable_area['x_max']
                  and attackable_area['y_min'] <= player['worldPoint']['y'] <= attackable_area['y_max']):
-            print('a', (attackable_area and player['name'] != 'DJT Fan 14'))
-            print('b', (player['name'] != 'DJT Fan 14'
-                 and attackable_area['x_min'] <= player['worldPoint']['x'] <= attackable_area['x_max']
-                 and attackable_area['y_min'] <= player['worldPoint']['y'] <= attackable_area['y_max']))
             osrs.dev.logger.warn('Found a player in my slayer spot.')
             if last_seen is None:
                 return datetime.datetime.now()

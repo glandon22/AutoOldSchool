@@ -56,8 +56,8 @@ def main():
             return False
         while True:
             qh.query_backend()
-            if qh.get_inventory(osrs.item_ids.osrs.item_ids.DRAMEN_STAFF):
-                osrs.move.click(qh.get_inventory(osrs.item_ids.osrs.item_ids.DRAMEN_STAFF))
+            if qh.get_inventory(osrs.osrs.item_ids.DRAMEN_STAFF):
+                osrs.move.click(qh.get_inventory(osrs.osrs.item_ids.DRAMEN_STAFF))
                 break
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
@@ -65,7 +65,7 @@ def main():
         osrs.game.tele_home_fairy_ring('ajr')
         transport_functions.frem_dungeon_turoth()
         task_started = True
-        osrs.move.click(qh.get_inventory(osrs.item_ids.osrs.item_ids.LEAFBLADED_BATTLEAXE))
+        osrs.move.click(qh.get_inventory(osrs.osrs.item_ids.LEAFBLADED_BATTLEAXE))
         success = slayer_killer.main('turoth', pot_config.asdict(), 35, hop=True, pre_hop=pre_log)
         qh.query_backend()
         osrs.game.cast_spell(varrock_tele_widget_id)

@@ -831,8 +831,3 @@ def tab_to_varrock():
             osrs.move.click(qh.get_inventory(osrs.item_ids.VARROCK_TELEPORT))
             last_tab = datetime.datetime.now()
 
-
-'''
-will not properly exit when game is over
-
-'''

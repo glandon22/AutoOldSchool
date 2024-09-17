@@ -5,7 +5,7 @@ import osrs
 
 from slayer import transport_functions
 from combat import slayer_killer
-from slayer.tasks import gear
+from slayer.utils import bank
 
 
 varrock_tele_widget_id = '218,23'
@@ -21,7 +21,7 @@ supplies = [
     osrs.item_ids.SUPER_STRENGTH4,
     osrs.item_ids.SUPER_STRENGTH4,
     osrs.item_ids.RUNE_POUCH,
-    osrs.item_ids.KARAMJA_GLOVES_3,
+    osrs.item_ids.KARAMJA_GLOVES_4,
     {
         'id': [
             osrs.item_ids.SLAYER_RING_2,
@@ -41,19 +41,20 @@ supplies = [
     },
 ]
 
-equipment = gear.slayer_leafbladed_melee['equipment']
+equipment = [
+    {'id': osrs.item_ids.DRAGON_DEFENDER, 'consume': 'Wield'},
+    {'id': osrs.item_ids.FIRE_CAPE, 'consume': 'Wear'},
+    {'id': osrs.item_ids.SLAYER_HELMET_I, 'consume': 'Wear'},
+    {'id': osrs.item_ids.BARROWS_GLOVES, 'consume': 'Wear'},
+    {'id': osrs.item_ids.BRIMSTONE_RING, 'consume': 'Wear'},
+    {'id': osrs.item_ids.DRAGON_BOOTS, 'consume': 'Wear'},
+    {'id': osrs.item_ids.BANDOS_CHESTPLATE, 'consume': 'Wear'},
+    {'id': osrs.item_ids.BANDOS_TASSETS, 'consume': 'Wear'},
+    {'id': osrs.item_ids.AMULET_OF_FURY, 'consume': 'Wear'},
+    {'id': osrs.item_ids.LEAFBLADED_BATTLEAXE, 'consume': 'Wield'},
+    {'id': osrs.item_ids.HOLY_BLESSING, 'consume': 'Equip'},
+]
 
-banking_config_equipment = {
-    'dump_inv': True,
-    'dump_equipment': True,
-    'search': [{'query': 'slayer', 'items': equipment}]
-}
-
-banking_config_supplies = {
-    'dump_inv': True,
-    'dump_equipment': False,
-    'search': [{'query': 'slayer', 'items': supplies}]
-}
 
 pot_config = slayer_killer.PotConfig(super_atk=True, super_str=True)
 
@@ -131,28 +132,16 @@ def main():
     qh.set_inventory()
     task_started = False
     while True:
-        qh.query_backend()
-        print('starting function')
-        if not task_started:
-            success = osrs.bank.banking_handler(banking_config_equipment)
-            if not success:
-                print('failed to withdraw equipment.')
-                return False
-            osrs.clock.sleep_one_tick()
-            qh.query_backend()
-            for item in qh.get_inventory():
-                osrs.move.click(item)
-            qh.query_backend()
-        success = osrs.bank.banking_handler(banking_config_supplies)
-        if not success:
-            print('failed to withdraw supplies.')
-            return False
+        bank(qh, task_started, equipment, supplies)
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
         qh.query_backend()
         transport_functions.frem_dungeon_kurask()
         task_started = True
-        success = slayer_killer.main('kurask', pot_config.asdict(), 35, hop=True, pre_hop=pre_log, loot_config=loot_builder())
+        success = slayer_killer.main(
+            'kurask', pot_config.asdict(), 35, hop=True, pre_hop=pre_log, loot_config=loot_builder(),
+            attackable_area={'x_min': 2690, 'x_max': 2708, 'y_min': 9990, 'y_max': 10007},
+        )
         qh.query_backend()
         osrs.game.cast_spell(varrock_tele_widget_id)
         if success:

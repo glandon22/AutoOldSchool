@@ -982,10 +982,10 @@ def duradel():
     glove_click = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
         qh.query_backend()
-        if qh.get_inventory() and qh.get_inventory(osrs.item_ids.osrs.item_ids.KARAMJA_GLOVES_3) \
+        if qh.get_inventory() and qh.get_inventory(osrs.osrs.item_ids.KARAMJA_GLOVES_3) \
                 and (datetime.datetime.now() - glove_click).total_seconds() > 10:
             osrs.move.right_click_v6(
-                qh.get_inventory(osrs.item_ids.osrs.item_ids.KARAMJA_GLOVES_3),
+                qh.get_inventory(osrs.osrs.item_ids.KARAMJA_GLOVES_3),
                 'Gem Mine',
                 qh.get_canvas(),
                 in_inv=True
@@ -1050,10 +1050,10 @@ def duradel_gloves_4():
         if qh.get_slayer() and qh.get_slayer()['monster']:
             print('got a new task')
             return True
-        elif qh.get_inventory() and qh.get_inventory(osrs.item_ids.osrs.item_ids.KARAMJA_GLOVES_4) \
+        elif qh.get_inventory() and qh.get_inventory(osrs.osrs.item_ids.KARAMJA_GLOVES_4) \
                 and (datetime.datetime.now() - glove_click).total_seconds() > 10:
             osrs.move.right_click_v6(
-                qh.get_inventory(osrs.item_ids.osrs.item_ids.KARAMJA_GLOVES_4),
+                qh.get_inventory(osrs.osrs.item_ids.KARAMJA_GLOVES_4),
                 'Slayer master',
                 qh.get_canvas(),
                 in_inv=True
@@ -1352,9 +1352,9 @@ def iorworth_dungeon_dark_beasts():
         qh.query_backend()
         if 3150 <= qh.get_player_world_location('x') <= 3300 and 6000 <= qh.get_player_world_location('y') <= 6100:
             break
-        elif qh.get_inventory(osrs.item_ids.osrs.item_ids.ETERNAL_TELEPORT_CRYSTAL) and (datetime.datetime.now() - last_crystal).total_seconds() > 7:
+        elif qh.get_inventory(osrs.osrs.item_ids.ETERNAL_TELEPORT_CRYSTAL) and (datetime.datetime.now() - last_crystal).total_seconds() > 7:
             osrs.move.right_click_v6(
-                qh.get_inventory(osrs.item_ids.osrs.item_ids.ETERNAL_TELEPORT_CRYSTAL),
+                qh.get_inventory(osrs.osrs.item_ids.ETERNAL_TELEPORT_CRYSTAL),
                 'Prifddinas',
                 qh.get_canvas(),
                 in_inv=True
@@ -1382,9 +1382,9 @@ def iorworth_dungeon_elves():
         qh.query_backend()
         if 3150 <= qh.get_player_world_location('x') <= 3300 and 6000 <= qh.get_player_world_location('y') <= 6100:
             break
-        elif qh.get_inventory(osrs.item_ids.osrs.item_ids.ETERNAL_TELEPORT_CRYSTAL) and (datetime.datetime.now() - last_crystal).total_seconds() > 7:
+        elif qh.get_inventory(osrs.osrs.item_ids.ETERNAL_TELEPORT_CRYSTAL) and (datetime.datetime.now() - last_crystal).total_seconds() > 7:
             osrs.move.right_click_v6(
-                qh.get_inventory(osrs.item_ids.osrs.item_ids.ETERNAL_TELEPORT_CRYSTAL),
+                qh.get_inventory(osrs.osrs.item_ids.ETERNAL_TELEPORT_CRYSTAL),
                 'Prifddinas',
                 qh.get_canvas(),
                 in_inv=True
