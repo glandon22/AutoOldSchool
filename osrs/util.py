@@ -146,7 +146,10 @@ def combine_objects(objects):
     if not objects:
         return reduced
     for k in objects:
-        reduced = reduced + objects[k]
+        target = objects[k]
+        # allow combining lists or objects
+        target = target if type(target) is list else [target]
+        reduced = reduced + target
     return reduced
 
 

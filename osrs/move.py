@@ -856,14 +856,17 @@ def should_exit(qh, coord_type, coord_value, greater_than, custom_exit_function,
     return False
 
 
-def handle_interaction(qh, target_obj, last_click, pre_interact, pre_interact_arg, timeout, right_click_option):
+def handle_interaction(
+        qh, target_obj, last_click, pre_interact,
+        pre_interact_arg, timeout, right_click_option, in_inv=False
+):
     current_time = datetime.datetime.now()
     if (current_time - last_click).total_seconds() > timeout:
         if pre_interact:
             pre_interact(pre_interact_arg) if pre_interact_arg else pre_interact()
 
         if right_click_option:
-            success = osrs.move.right_click_v6(target_obj[0], right_click_option, qh.get_canvas())
+            success = osrs.move.right_click_v6(target_obj[0], right_click_option, qh.get_canvas(), in_inv=in_inv)
             if success:
                 last_click = current_time
         else:
@@ -895,6 +898,7 @@ def interact_with_object_v3(
     :param pre_interact: function()
     :param obj_tile: tile object :: {'x': 1234, 'y': 3456, 'z': 0}
     :param right_click_option: string :: 'Take'
+    :param pre_interact_arg: any :: arguments to pass to the pre interact function
     :return: None
     """
 
@@ -921,3 +925,49 @@ def interact_with_object_v3(
             )
         elif intermediate_tile and qh.get_tiles(intermediate_tile):
             osrs.move.instant_click_v2(qh.get_tiles(intermediate_tile))
+
+
+def interact_with_widget_v3(
+        widget_id, timeout=3,
+        custom_exit_function=None, custom_exit_function_arg=None,
+        pre_interact=None, right_click_option=None,
+        pre_interact_arg=None
+):
+    """
+    Interacts with objects in the game world based on given parameters.
+
+    :param widget_id: int or set :: 12345 || {1234, 687}
+    :param coord_type: char :: 'x' || 'y' || 'z'
+    :param timeout: int (seconds) :: 3
+    :param custom_exit_function: function()
+    :param custom_exit_function_arg: single arg or list of args
+    :param pre_interact: function()
+    :param right_click_option: string :: 'Take'
+    :param pre_interact_arg: any :: arguments to pass to the pre interact function
+    :return: None
+    """
+
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_canvas()
+    qh.set_widgets({widget_id} if isinstance(widget_id, str) else set(widget_id))
+    last_click = datetime.datetime.now() - datetime.timedelta(hours=1)
+
+    while True:
+        if pre_interact is not None:
+            pre_interact()
+        qh.query_backend()
+        target_widget = qh.get_widgets()
+
+        if target_widget:
+            target_widget = osrs.util.combine_objects(target_widget)
+
+        if custom_exit_function_arg is not None and custom_exit_function(custom_exit_function_arg):
+            return True
+        elif custom_exit_function_arg is None and custom_exit_function():
+            return True
+
+        if target_widget:
+            last_click = handle_interaction(
+                qh, target_widget, last_click, None, None,
+                timeout, right_click_option, in_inv=True
+            )

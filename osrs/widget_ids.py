@@ -436,3 +436,26 @@ WORLD_MAP_SURFACE_SELECTOR = 38993954
 WORLD_MAP_TOOLTIP = 38993961
 WORLD_SWITCHER_WORLD_LIST = 4522002
 ZEAH_MESS_HALL_COOKING_DISPLAY = 15400962
+
+##Custom Widgets##
+##SPELLS
+varrock_tele_widget_id = '218,23'
+home_tele_slow_widget_id = '218,7'
+lumbridge_tele_widget_id = '218,26'
+tele_grab_widget_id = '218,27'
+fally_tele_widget_id = '218,29'
+house_poh_tele_widget_id = '218,31'
+superheat_spell_widget_id = '218,33'
+camelot_tele_spell_widget_id = '218,34'
+kourend_telly_spell_widget_id = '218,36'
+ardy_tele_spell_widget_id = '218,41'
+high_alch_spell_widget_id = '218,44'
+
+## F KEY INV WIDGETS
+combat_options_inv_widget_id = '161,59'
+levels_inv_widget_id = '161,60'
+quests_inv_widget_id = '161,61'
+inv_inv_widget_id = '161,62'
+equipment_inv_widget_id = '161,63'
+prayer_inv_widget_id = '161,64'
+spells_inv_widget_id = '161,65'
