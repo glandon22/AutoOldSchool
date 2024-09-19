@@ -328,7 +328,6 @@ def break_manager_v4(script_config):
     """
     current_time = datetime.datetime.now()
     timings = config['{}_intensity_script'.format(script_config['intensity'])]
-    print('zz', config)
     # Initialize timings on script start
     if not config['timings']['script_start']:
         set_timings(timings, current_time)

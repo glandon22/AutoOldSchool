@@ -2,7 +2,6 @@ import datetime
 import osrs
 
 enriched_bone_id = '21553'
-logger = osrs.dev.instantiate_logger()
 
 run_energy_widget_id = '160,28'
 bank_dump_widget_id = '12,42'
@@ -32,22 +31,22 @@ def mushtree_to_meadow():
     )
     qh.set_widgets({mush_meadow_button_id, bank_dump_widget_id})
     qh.set_player_world_location()
-    logger.info('searching for mushtree to travel to meadow.')
+    osrs.dev.logger.info('searching for mushtree to travel to meadow.')
     last_mushtree_click = datetime.datetime.now() - datetime.timedelta(hours=1)
     last_swamp_press = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
         qh.query_backend()
         if qh.get_widgets(mush_meadow_button_id) and (datetime.datetime.now() - last_swamp_press).total_seconds() > 5:
-            logger.info('mushtree teleport menu open, selecting meadow.')
+            osrs.dev.logger.info('mushtree teleport menu open, selecting meadow.')
             osrs.keeb.write('4')
             last_swamp_press = datetime.datetime.now()
         elif qh.get_player_world_location() and qh.get_player_world_location()['x'] < 3700:
-            logger.info('in mushroom meadow.')
+            osrs.dev.logger.info('in mushroom meadow.')
             return
         elif qh.get_game_objects(mush_tree_id) and (datetime.datetime.now() - last_mushtree_click).total_seconds() > 8:
             osrs.move.click(qh.get_game_objects(mush_tree_id)[0])
             last_mushtree_click = datetime.datetime.now()
-            logger.info('Clicked mushtree.')
+            osrs.dev.logger.info('Clicked mushtree.')
 
 
 def click_mounted_digsite_pendant():
@@ -59,14 +58,14 @@ def click_mounted_digsite_pendant():
     qh.set_widgets({mush_meadow_button_id, bank_dump_widget_id, run_energy_widget_id})
     qh.set_player_world_location()
     qh.set_script_stats({'Status': 'Returning to Fossil Island.'})
-    logger.info('Looking for digsite pendant')
+    osrs.dev.logger.info('Looking for digsite pendant')
     tile_map = None
     last_pendant_click = datetime.datetime.now() - datetime.timedelta(hours=1)
     last_pool_click = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
         qh.query_backend()
         if qh.get_player_world_location('x') > 4000 and not tile_map:
-            logger.info('in house, generating tile map.')
+            osrs.dev.logger.info('in house, generating tile map.')
             tile_map = osrs.util.generate_game_tiles_in_coords(
                 qh.get_player_world_location('x') - 15,
                 qh.get_player_world_location('x') + 15,
@@ -80,7 +79,7 @@ def click_mounted_digsite_pendant():
                 (datetime.datetime.now() - last_pool_click).total_seconds() > 12 \
                 and (qh.get_widgets(run_energy_widget_id) and int(qh.get_widgets(run_energy_widget_id)['text']) < 95):
 
-            logger.info('Click on ornate rejuvenation pool.')
+            osrs.dev.logger.info('Click on ornate rejuvenation pool.')
             osrs.move.click(
                 qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value)[fancy_restore_pool_id][0]
             )
@@ -88,13 +87,13 @@ def click_mounted_digsite_pendant():
         elif qh.get_objects(osrs.queryHelper.ObjectTypes.DECORATIVE.value, mounted_digsite_pendant_id) and \
                 (datetime.datetime.now() - last_pendant_click).total_seconds() > 7 \
                 and (qh.get_widgets(run_energy_widget_id) and int(qh.get_widgets(run_energy_widget_id)['text']) == 100):
-            logger.info('clicking on digsite pendant')
+            osrs.dev.logger.info('clicking on digsite pendant')
             osrs.move.click(
                 qh.get_objects(osrs.queryHelper.ObjectTypes.DECORATIVE.value)[mounted_digsite_pendant_id][0]
             )
             last_pendant_click = datetime.datetime.now()
         elif 3840 < qh.get_player_world_location('y') < 3900:
-            logger.info('successfully teleported to fossil island.')
+            osrs.dev.logger.info('successfully teleported to fossil island.')
             return
 
 
@@ -134,10 +133,10 @@ def add_fossils():
     while True:
         qh.query_backend()
         if qh.get_inventory() and len(qh.get_inventory()) > 4:
-            logger.info('loading fossils')
+            osrs.dev.logger.info('loading fossils')
             if qh.get_widgets(unid_fossil_widget_id):
                 osrs.move.fast_click(qh.get_widgets(unid_fossil_widget_id))
-                logger.info('adding more fossils')
+                osrs.dev.logger.info('adding more fossils')
         elif qh.get_widgets(calcium_amount_widget) and qh.get_widgets(calcium_amount_widget)['textColor'] != target_text_color:
             if qh.get_widgets(add_calcium_widget):
                 osrs.move.click(qh.get_widgets(add_calcium_widget))
@@ -147,7 +146,7 @@ def add_fossils():
         elif qh.get_inventory() and len(qh.get_inventory()) == 4 \
             and qh.get_widgets(calcium_amount_widget)['textColor'] == target_text_color \
                 and qh.get_widgets(phosphate_amount_widget)['textColor'] == target_text_color:
-            logger.info('fossils and chemicals loaded')
+            osrs.dev.logger.info('fossils and chemicals loaded')
             osrs.keeb.press_key('esc')
             return
 
@@ -175,7 +174,7 @@ def mushtree_to_house_on_hill():
     )
     qh.set_widgets({mush_meadow_button_id, bank_dump_widget_id})
     qh.set_player_world_location()
-    logger.info('searching for mushtree to travel to house.')
+    osrs.dev.logger.info('searching for mushtree to travel to house.')
     qh.query_backend()
     osrs.move.follow_path(qh.get_player_world_location(), {'x': 3678, 'y': 3871, 'z': 0})
     last_mushtree_click = datetime.datetime.now() - datetime.timedelta(hours=1)
@@ -183,17 +182,17 @@ def mushtree_to_house_on_hill():
     while True:
         qh.query_backend()
         if qh.get_widgets(mush_meadow_button_id) and (datetime.datetime.now() - last_swamp_press).total_seconds() > 5:
-            logger.info('mushtree teleport menu open, selecting meadow.')
+            osrs.dev.logger.info('mushtree teleport menu open, selecting meadow.')
             osrs.keeb.write('1')
             last_swamp_press = datetime.datetime.now()
         elif qh.get_player_world_location() and 3760 <= qh.get_player_world_location()['x'] < 3768 \
                 and 3876 <= qh.get_player_world_location()['y'] < 3883:
-            logger.info('in house on hill.')
+            osrs.dev.logger.info('in house on hill.')
             return
         elif qh.get_game_objects(mush_tree_id_meadow) and (datetime.datetime.now() - last_mushtree_click).total_seconds() > 8:
             osrs.move.click(qh.get_game_objects(mush_tree_id_meadow)[0])
             last_mushtree_click = datetime.datetime.now()
-            logger.info('Clicked mushtree.')
+            osrs.dev.logger.info('Clicked mushtree.')
 
 
 def add_bones_to_strange_machine():

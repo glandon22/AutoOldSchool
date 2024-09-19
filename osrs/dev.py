@@ -40,20 +40,6 @@ class CustomFormatter(logging.Formatter):
         return formatter.format(record)
 
 
-def instantiate_logger():
-    logger = logging.getLogger("GoonLite")
-    logger.setLevel(logging.DEBUG)
-
-    # create console handler with a higher log level
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
-
-    ch.setFormatter(CustomFormatter())
-    ch.addFilter(DuplicateFilter())
-    logger.addHandler(ch)
-    return logger
-
-
 def point_dist(x1, y1, x2, y2):
     return abs(math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2))
 

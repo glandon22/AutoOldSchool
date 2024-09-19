@@ -30,6 +30,9 @@ def press_key(key):
     elif key == 'space':
         keyboard.press(Key.space)
         keyboard.release(Key.space)
+    elif key == 'shift':
+        keyboard.press(Key.shift)
+        keyboard.release(Key.space)
 
 
 def write(phrase):

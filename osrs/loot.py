@@ -119,7 +119,10 @@ class Loot:
     def clear_config(self):
         self.config = {}
 
-    def retrieve_loot(self, dist=10, min_val_to_loot_other_players=20):
+    def retrieve_loot(
+            self, dist=10, min_val_to_loot_other_players=20,
+            loot_area=None
+    ):
         '''
 
         :param dist:
@@ -149,6 +152,12 @@ class Loot:
                 if item['id'] not in self.config or (
                     item['ownership'] != 1 and self.config[item['id']]['priority'] < min_val_to_loot_other_players
                 ):
+                    continue
+                elif loot_area and not (
+                        loot_area['x_min'] <= item['x_coord'] <= loot_area['x_max']
+                        and loot_area['y_min'] <= item['y_coord'] <= loot_area['y_max']
+                ):
+                    osrs.dev.logger.warn('Item on the ground but it is outside of my configured looting zone.')
                     continue
                 item_config = self.config[item['id']]
                 # dont pick up small amouts of something, i.e. coins

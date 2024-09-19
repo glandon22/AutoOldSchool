@@ -2,8 +2,6 @@ import datetime
 import osrs
 from threading import Thread
 
-logger = osrs.dev.instantiate_logger()
-
 boat_plank_tile = '2637,2653,0'
 boat_plank_id = '25632'
 tower_ladder_id = '14296'
@@ -15,7 +13,7 @@ game_state = osrs.queryHelper.QueryHelper()
 
 
 def query_server(gs: osrs.queryHelper.QueryHelper):
-    logger.info('Starting server querying thread.')
+    osrs.dev.logger.info('Starting server querying thread.')
     qh = osrs.queryHelper.QueryHelper()
     qh.set_npcs_by_name([])
     qh.set_player_world_location()

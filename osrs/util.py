@@ -1,6 +1,7 @@
 import datetime
 import math
-
+from collections.abc import Callable
+import osrs.dev as dev
 import pyautogui
 
 import osrs.server as server
@@ -147,3 +148,26 @@ def combine_objects(objects):
     for k in objects:
         reduced = reduced + objects[k]
     return reduced
+
+
+# instead of using game distance to calculate
+# the closest target, it uses screen coordinates
+# i.e. which target will the mouse travel the shortest distance
+def find_closest_target_on_screen(targets: list[dict], additional_filter: Callable = None):
+    '''
+
+    :param targets: List<Targets> items in list MUST contain 'x' and 'y' keys which correspond to on-screen coordinates
+    :param additional_filter: fn() :: this is optional filter logic to remove unwanted elements
+    :return: {'x': 235, 'y': 243} :: object with coords to click on screen
+    '''
+    mouse_position = pyautogui.position()
+    if not targets:
+        return None
+    if additional_filter is not None:
+        targets = list(filter(additional_filter, targets))
+    closest = None
+    for targ in targets:
+        dist_from_mouse = dev.point_dist(mouse_position[0], mouse_position[1], targ['x'], targ['y'])
+        if not closest or (dist_from_mouse < closest['dist']):
+            closest = {**targ, 'dist': dist_from_mouse}
+    return closest

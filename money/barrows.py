@@ -2,7 +2,6 @@ import datetime
 
 import osrs
 
-logger = osrs.dev.instantiate_logger()
 varrock_tele_widget_id = '218,23'
 tunnel_monsters_for_points = [
     1678,
@@ -98,7 +97,7 @@ def find_my_target(brother):
 def find_my_target_in_chest_room(args):
     brother = args[0]
     time = args[1]
-    logger.info(f"total time searching for final brother: {(datetime.datetime.now() - time).total_seconds()}")
+    osrs.dev.logger.info(f"total time searching for final brother: {(datetime.datetime.now() - time).total_seconds()}")
     # sometimes the brother spawns close to the chest room
     # and when i open the chest it just despawns
     # instead of spawning again in the chest room
@@ -120,7 +119,7 @@ def find_my_target_in_chest_room(args):
                     and npc['interacting'].lower() == 'DJT Fan 14'
                     and 3546 <= npc['x_coord'] <= 3557
                     and 9689 <= npc['y_coord'] <= 9700):
-                logger.info("found final brother, attacking!")
+                osrs.dev.logger.info("found final brother, attacking!")
                 osrs.move.fast_click(npc)
                 osrs.move.fast_click(npc)
                 osrs.move.fast_click(npc)
@@ -137,16 +136,16 @@ def loot_popup():
 
 # loot widget 155,1
 def awaken_brother(brother: BarrowsBrother, tunnel):
-    logger.info("Running to mound.")
+    osrs.dev.logger.info("Running to mound.")
     osrs.move.go_to_loc(*brother.as_dict()['mound_tile'])
     enter_mound()
-    logger.info("searching crypt.")
+    osrs.dev.logger.info("searching crypt.")
     osrs.move.interact_with_object(
         brother.as_dict()['crypt_id'], 'a', 1, False, right_click_option='Search',
         custom_exit_function=find_my_target, custom_exit_function_arg=brother.as_dict()['npc_id'], timeout=8
     )
     not_found = kill_brother(brother.as_dict()['npc_id'], brother.as_dict()['prayer'])
-    logger.info(f"killed brother. not found: {not_found}")
+    osrs.dev.logger.info(f"killed brother. not found: {not_found}")
     osrs.move.interact_with_object(
         brother.as_dict()['staircase_id'], 'z', 0, False
     )
@@ -165,10 +164,10 @@ def kill_brother(brother, prayer):
         qh.query_backend()
         target = qh.get_npcs(brother, interacting_with_me=True)
         if qh.get_widgets('229,1'):
-            logger.info('found chat dialogue')
+            osrs.dev.logger.info('found chat dialogue')
             return True
         if not target or target['health'] == 0:
-            logger.info('killed brother')
+            osrs.dev.logger.info('killed brother')
             return
 
         if not target and not qh.get_interating_with():
@@ -190,10 +189,10 @@ def kill_brother_final(brother, prayer):
         qh.query_backend()
         target = qh.get_npcs(brother, interacting_with_me=True)
         if not (3546 <= target['x_coord'] <= 3557 and 9689 <= target['y_coord'] <= 9700):
-            logger.info('brother is outside of the throne room, unable to kill. exiting.')
+            osrs.dev.logger.info('brother is outside of the throne room, unable to kill. exiting.')
             return
         if not target or target['health'] == 0:
-            logger.info('killed brother')
+            osrs.dev.logger.info('killed brother')
             return
 
         if not target and not qh.get_interating_with():
@@ -216,18 +215,18 @@ brothers = [
 
 
 def kill_all_brothers():
-    logger.info("Starting to kill all brothers.")
+    osrs.dev.logger.info("Starting to kill all brothers.")
     brother_in_tunnel = None
     for brother in brothers:
         if brother.as_dict()['npc_id'] == 1672:
-            logger.info("equipping ranging gear to fight ahrim.")
+            osrs.dev.logger.info("equipping ranging gear to fight ahrim.")
             osrs.player.equip_item([
                 osrs.item_ids.TOXIC_BLOWPIPE,
                 osrs.item_ids.AVAS_ACCUMULATOR,
             ])
         brother_in_tunnel = awaken_brother(brother, brother_in_tunnel)
         if brother.as_dict()['npc_id'] == 1672:
-            logger.info("equiping mage gear after ahrim fight.")
+            osrs.dev.logger.info("equiping mage gear after ahrim fight.")
             osrs.player.equip_item([
                 osrs.item_ids.TRIDENT_OF_THE_SWAMP,
                 osrs.item_ids.ELIDINIS_WARD,
@@ -237,7 +236,7 @@ def kill_all_brothers():
 
 
 def enter_crypt(brother: BarrowsBrother):
-    logger.info("five brothers killed. entering crypt")
+    osrs.dev.logger.info("five brothers killed. entering crypt")
     osrs.move.go_to_loc(*brother.as_dict()['mound_tile'], exact_tile=True)
     enter_mound()
     osrs.move.interact_with_object(

@@ -11,11 +11,9 @@ intensity_widget_id = '437,55'
 essence_widget_id = '437,45'
 energy_widget_id = '437,35'
 
-logger = osrs.dev.instantiate_logger()
-
 
 def click_ladder():
-    logger.info('Clicking ladder to board ship.')
+    osrs.dev.logger.info('Clicking ladder to board ship.')
     ladder_id = '41305'
     qh = osrs.queryHelper.QueryHelper()
     qh.set_objects(
@@ -32,7 +30,7 @@ def click_ladder():
 
 
 def determine_side():
-    logger.info('Determining which ship we are on.')
+    osrs.dev.logger.info('Determining which ship we are on.')
     bucket_bin_id = '40966'
     water_spout_id = '41000'
     while True:
@@ -48,7 +46,7 @@ def determine_side():
         )
         qh.query_backend()
         if qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, bucket_bin_id) and qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, water_spout_id):
-            logger.info('On ship, found buckets and ropes.')
+            osrs.dev.logger.info('On ship, found buckets and ropes.')
             # there are multiple places to get buckets
             buckets = osrs.util.find_closest_target(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, bucket_bin_id))
             tap = qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, water_spout_id)[0]
@@ -57,10 +55,10 @@ def determine_side():
                 obj_dist=9, right_click_option='Take'
             )
             if buckets['y_coord'] > tap['y_coord']:
-                logger.info('Playing on left side.')
+                osrs.dev.logger.info('Playing on left side.')
                 return {'side': 'L', 'x': buckets['x_coord'], 'y': buckets['y_coord']}
             else:
-                logger.info('Playing on right side.')
+                osrs.dev.logger.info('Playing on right side.')
                 return {'side': 'R', 'x': buckets['x_coord'], 'y': buckets['y_coord']}
 
 
@@ -81,7 +79,7 @@ def have_buckets():
 
 
 def cast_humidify():
-    logger.info('Casting humidify.')
+    osrs.dev.logger.info('Casting humidify.')
     humidify_icon_id = '218,110'
     qh = osrs.queryHelper.QueryHelper()
     qh.set_widgets({humidify_icon_id})
@@ -97,7 +95,7 @@ def cast_humidify():
 
 
 def build_tiles(area_info):
-    logger.info('Building reference tile strings.')
+    osrs.dev.logger.info('Building reference tile strings.')
     output = {
         'cannon': None,
         'spirit': None,
@@ -118,7 +116,7 @@ def build_tiles(area_info):
 
 
 def untether():
-    logger.info('Unexpectedly tethered, untethering!')
+    osrs.dev.logger.info('Unexpectedly tethered, untethering!')
     qh = osrs.queryHelper.QueryHelper()
     qh.set_spot_anims()
     qh.set_player_world_location()
@@ -147,13 +145,13 @@ def have_tethered():
     qh.set_inventory()
     qh.query_backend()
     if 1845 in qh.get_spot_anims() or 1844 in qh.get_spot_anims():
-        logger.info('Successfully tethered for big wave.')
+        osrs.dev.logger.info('Successfully tethered for big wave.')
         return True
     elif 7211 in qh.get_spot_anims() or 534 in qh.get_spot_anims():
-        logger.warn('failed to tether, washed.')
+        osrs.dev.logger.warn('failed to tether, washed.')
         return True
     elif not qh.get_inventory(osrs.item_ids.ROPE):
-        logger.warn('lost my rope')
+        osrs.dev.logger.warn('lost my rope')
         return True
 
 
@@ -162,7 +160,7 @@ def have_untethered():
     qh.set_spot_anims()
     qh.query_backend()
     if len(qh.get_spot_anims()) == 0:
-        logger.info('Successfully untethered after timeout for big wave.')
+        osrs.dev.logger.info('Successfully untethered after timeout for big wave.')
         return True
 
 
@@ -175,12 +173,12 @@ def tether_handler_v2(area_info):
     qh.set_player_world_location()
     qh.query_backend()
     if not qh.get_inventory(rope):
-        logger.info('no rope in inv, not trying to tether')
+        osrs.dev.logger.info('no rope in inv, not trying to tether')
         return
     if qh.get_npcs_by_name():
         deri = qh.get_npcs_by_name()[0]
         if 'overheadText' in deri and 'drawing in water' in deri['overheadText']:
-            logger.info('Tempoross is drawing in water.')
+            osrs.dev.logger.info('Tempoross is drawing in water.')
             osrs.move.interact_with_multiple_objects(
                 {north_totem_id, south_totem_id, left_mast_id, right_mast_id}, 'x', 1, False,
                 custom_exit_function=have_tethered, right_click_option='Tether'
@@ -189,10 +187,10 @@ def tether_handler_v2(area_info):
             while True:
                 qh.query_backend()
                 if len(qh.get_spot_anims()) == 0:
-                    logger.info('successfully handled wave, exiting.')
+                    osrs.dev.logger.info('successfully handled wave, exiting.')
                     return
                 elif (datetime.datetime.now() - wait_start).total_seconds() > 10:
-                    logger.warn('failed to handle a colossal wave, timed out.')
+                    osrs.dev.logger.warn('failed to handle a colossal wave, timed out.')
                     break
             osrs.move.interact_with_multiple_objects(
                 {north_totem_id, south_totem_id, left_mast_id, right_mast_id}, 'x',
@@ -202,7 +200,7 @@ def tether_handler_v2(area_info):
 
 
 def tempoross_state_parser(qh: osrs.queryHelper.QueryHelper):
-    logger.info('parsing tempoross energy, essence, and storm intensity.')
+    osrs.dev.logger.info('parsing tempoross energy, essence, and storm intensity.')
     try:
         intensity_widget_id = '437,55'
         essence_widget_id = '437,45'
@@ -232,7 +230,7 @@ def tempoross_state_parser(qh: osrs.queryHelper.QueryHelper):
 def ground_fire_handler(qh: osrs.queryHelper.QueryHelper):
     if qh.get_objects_v2('game', ground_fire_id, dist=5):
         if not qh.get_inventory(osrs.item_ids.BUCKET_OF_WATER):
-            logger.warn('fire on the ground but dont have any buckets of water.')
+            osrs.dev.logger.warn('fire on the ground but dont have any buckets of water.')
             return
         c = osrs.util.find_closest_target(qh.get_objects_v2('game', ground_fire_id, dist=5))
         if c:
@@ -296,7 +294,7 @@ def tempoross_handler():
     bucket_of_water_id = '1929'
     bucket_id = '1925'
     area_info = determine_side()
-    logger.info('Grabbing ropes.')
+    osrs.dev.logger.info('Grabbing ropes.')
     osrs.move.interact_with_object(
         40965, 'x', 1, False, custom_exit_function=have_ropes
     )
@@ -325,14 +323,14 @@ def tempoross_handler():
         ground_fire_handler(qh)
         tether_handler_v2(area_info)
         if 3136 <= qh.get_player_world_location('x') <= 3163 and 2835 <= qh.get_player_world_location('y') <= 2845:
-            return logger.info('game is over')
+            return osrs.dev.logger.info('game is over')
         elif game_over(tempoross_state) and (datetime.datetime.now() - game_start).total_seconds() > 30:
-            logger.info('tempoross down, game is over')
+            osrs.dev.logger.info('tempoross down, game is over')
             return leave_game()
 
 
         if tempoross_state['energy'] and tempoross_state['energy'] < 7:
-            logger.info('Spirit pool is nearly active, heading there.')
+            osrs.dev.logger.info('Spirit pool is nearly active, heading there.')
             fish_spirit_pool(important_area_tiles)
             continue
         if not qh.get_inventory(bucket_of_water_id) and qh.get_inventory(bucket_id) and (datetime.datetime.now() - last_humidify).total_seconds() > 4:
@@ -347,7 +345,7 @@ def tempoross_handler():
                 and tempoross_state['essence'] != 100
         ) \
                 or (qh.get_inventory() and len(qh.get_inventory()) == 28):
-            logger.info('Heading to ship to shoot fish at tempoross')
+            osrs.dev.logger.info('Heading to ship to shoot fish at tempoross')
             shoot_fish(important_area_tiles, area_info)
             continue
         if (not qh.get_interating_with() or 'Fishing spot' not in qh.get_interating_with()) and (tempoross_state['essence'] and tempoross_state['essence'] != 0):
@@ -357,7 +355,7 @@ def tempoross_handler():
 
 
 def shoot_fish(important_area_tiles, area_info):
-    logger.info('shooting fish')
+    osrs.dev.logger.info('shooting fish')
     fish_id = '25564'
     ammo_crates_ids = {40968, 40969, 40970, 40971, ground_fire_id}
     qh = osrs.queryHelper.QueryHelper()
@@ -377,21 +375,21 @@ def shoot_fish(important_area_tiles, area_info):
         ground_fire_handler(qh)
         tether_handler_v2(area_info)
         if qh.get_npcs():
-            logger.info('spirit pool came up while shooting fish, heading to spirit pool instead')
+            osrs.dev.logger.info('spirit pool came up while shooting fish, heading to spirit pool instead')
             # the spirit pool opened while i was doing this - fish that instead!!!
             return fish_spirit_pool(important_area_tiles)
 
         if qh.get_interating_with() and 'Ammunition' in qh.get_interating_with():
-            logger.info('still loading crate')
+            osrs.dev.logger.info('still loading crate')
             continue
         elif not qh.get_inventory(fish_id):
-            logger.info('inv is empty - done shooting fish')
+            osrs.dev.logger.info('inv is empty - done shooting fish')
             return
         if qh.get_objects_v2('game'):
             closest = osrs.util.find_closest_target(qh.get_objects_v2('game'))
             if closest and closest['dist'] < 5:
                 osrs.move.fast_click(closest)
-                logger.info('found a crate to load my fish - clicking')
+                osrs.dev.logger.info('found a crate to load my fish - clicking')
                 continue
 
         if qh.get_tiles(important_area_tiles['cannon']) and osrs.move.is_clickable(qh.get_tiles(important_area_tiles['cannon'])):
@@ -406,7 +404,7 @@ def shoot_fish(important_area_tiles, area_info):
 
 
 def fish_spirit_pool(important_area_tiles):
-    logger.info('fishing spirit pool')
+    osrs.dev.logger.info('fishing spirit pool')
     qh = osrs.queryHelper.QueryHelper()
     qh.set_player_world_location()
     qh.set_is_fishing()
@@ -427,13 +425,13 @@ def fish_spirit_pool(important_area_tiles):
         tempoross_state = tempoross_state_parser(qh)
         ground_fire_handler(qh)
         if 3136 <= qh.get_player_world_location('x') <= 3163 and 2835 <= qh.get_player_world_location('y') <= 2845:
-            logger.info('game ended while at spirit pool. ending function')
+            osrs.dev.logger.info('game ended while at spirit pool. ending function')
             return
 
         if osrs.dev.point_dist(
                 qh.get_player_world_location('x'), qh.get_player_world_location('y'), int(parsed_spirit_tile[0]), int(parsed_spirit_tile[1])
         ) < 3:
-            logger.info('close to spirit pool - beginning to fish')
+            osrs.dev.logger.info('close to spirit pool - beginning to fish')
             break
         elif qh.get_tiles(important_area_tiles['spirit']) and osrs.move.is_clickable(
                 qh.get_tiles(important_area_tiles['spirit'])):
@@ -449,27 +447,27 @@ def fish_spirit_pool(important_area_tiles):
         qh.query_backend()
 
         if 3136 <= qh.get_player_world_location('x') <= 3163 and 2835 <= qh.get_player_world_location('y') <= 2845:
-            logger.info('game ended while at spirit pool - exiting')
+            osrs.dev.logger.info('game ended while at spirit pool - exiting')
             return
 
         if qh.get_interating_with():
-            logger.info('fishing')
+            osrs.dev.logger.info('fishing')
             have_fished = True
             continue
         elif not qh.get_interating_with() and have_fished and not len(qh.get_npcs()):
             print('tps', tempoross_state)
-            logger.info('spirit pool closed')
+            osrs.dev.logger.info('spirit pool closed')
             return
         elif qh.get_npcs() and (datetime.datetime.now() - last_pool_click).total_seconds() > 3:
             closest = osrs.util.find_closest_target(qh.get_npcs())
             if closest:
                 osrs.move.fast_click(closest)
-                logger.info('clicking spirit pool')
+                osrs.dev.logger.info('clicking spirit pool')
                 last_pool_click = datetime.datetime.now()
 
 
 def empty_inv(qh):
-    logger.info('cleaning up my inventory')
+    osrs.dev.logger.info('cleaning up my inventory')
     bucket_of_water_id = '1929'
     bucket_id = '1925'
     rope_id = '954'
@@ -494,7 +492,7 @@ def main():
     while True:
         qh.query_backend()
         if 3125 <= qh.get_player_world_location('x') <= 3135:
-            logger.info('waiting for game')
+            osrs.dev.logger.info('waiting for game')
             #empty_inv(qh)
             continue
         elif qh.get_player_world_location('x') > 5000:

@@ -2,7 +2,6 @@ import datetime
 
 import osrs
 
-logger = osrs.dev.instantiate_logger()
 ore_veins = {
     '26661',
     '26662',
@@ -61,20 +60,20 @@ def mine_ore():
                 osrs.move.fast_click(qh.get_tiles('3761,5672,0'))
                 last_return_tile_click = datetime.datetime.now()
         elif qh.get_inventory() and len(qh.get_inventory()) == 28:
-            logger.info('inv is full, done mining.')
+            osrs.dev.logger.info('inv is full, done mining.')
             return osrs.inv.get_item_quantity_in_inv(qh.get_inventory(), osrs.item_ids.PAYDIRT)
         elif not qh.get_is_mining() and (datetime.datetime.now() - last_mining).total_seconds() > 1.5:
-            logger.info('have not been mining for over 1.5 seconds.')
+            osrs.dev.logger.info('have not been mining for over 1.5 seconds.')
             if qh.get_objects(osrs.queryHelper.ObjectTypes.WALL.value) and (
                     datetime.datetime.now() - last_ore_click).total_seconds() > 3:
                 all_veins = osrs.util.combine_objects(qh.get_objects(osrs.queryHelper.ObjectTypes.WALL.value))
                 c = osrs.util.find_closest_target(all_veins)
                 if c:
-                    logger.info('clicking another ore vein.')
+                    osrs.dev.logger.info('clicking another ore vein.')
                     osrs.move.fast_click(c)
                     last_ore_click = datetime.datetime.now()
         elif qh.get_is_mining():
-            logger.info('currently mining.')
+            osrs.dev.logger.info('currently mining.')
             last_mining = datetime.datetime.now()
 
 
@@ -111,7 +110,7 @@ def ascended_ladder():
 
 
 def collect_ore():
-    logger.info('beginning ore collection.')
+    osrs.dev.logger.info('beginning ore collection.')
     deposit_all_button = '192,4'
     ore_sack = '26688'
     deposit_box = '25937'
@@ -134,20 +133,20 @@ def collect_ore():
     while True:
         qh.query_backend()
         if (not qh.get_varbit() or qh.get_varbit() == 0) and not qh.get_inventory(loot):
-            logger.info('Sack emptied, exiting.')
+            osrs.dev.logger.info('Sack emptied, exiting.')
             return
         elif not qh.get_inventory(loot) and qh.get_objects(osrs.queryHelper.ObjectTypes.GROUND.value, ore_sack):
             osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GROUND.value, ore_sack)[0])
-            logger.info('clicking ore sack.')
+            osrs.dev.logger.info('clicking ore sack.')
         elif qh.get_inventory(loot):
             if qh.get_widgets(deposit_all_button):
-                logger.info('at deposit box, depositing all ore.')
+                osrs.dev.logger.info('at deposit box, depositing all ore.')
                 osrs.move.fast_click(qh.get_widgets(deposit_all_button))
                 osrs.clock.sleep_one_tick()
                 osrs.keeb.press_key('esc')
             elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, deposit_box) and \
                     (datetime.datetime.now() - last_deposit_box_click).total_seconds() > 3:
-                logger.info('depositing ore and nuggets in bank.')
+                osrs.dev.logger.info('depositing ore and nuggets in bank.')
                 res = osrs.move.right_click_v6(
                     qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, deposit_box)[0],
                     'Deposit',
@@ -164,15 +163,15 @@ while True:
         'logout': False
     })
     paydirt_count = mine_ore()
-    logger.info('heading to lower level.')
+    osrs.dev.logger.info('heading to lower level.')
     osrs.move.interact_with_object(
         19045, 'y', 5673, False,
         custom_exit_function=descended_ladder, right_click_option='Climb', timeout=3
     )
-    logger.info('depositing ore')
+    osrs.dev.logger.info('depositing ore')
     osrs.move.interact_with_object(26674, 'y', 5673, False, custom_exit_function=deposit_ore, timeout=1)
     if should_collect(paydirt_count):
-        logger.info('need to collect ore, going to ore sack.')
+        osrs.dev.logger.info('need to collect ore, going to ore sack.')
         osrs.move.go_to_loc(3748, 5659)
         collect_ore()
     osrs.move.interact_with_object(

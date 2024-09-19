@@ -50,18 +50,6 @@ equipment = [
     {'id': osrs.item_ids.HOLY_BLESSING, 'consume': 'Equip'},
 ]
 
-banking_config_equipment = {
-    'dump_inv': True,
-    'dump_equipment': True,
-    'search': [{'query': 'slayer', 'items': equipment}]
-}
-
-banking_config_supplies = {
-    'dump_inv': True,
-    'dump_equipment': False,
-    'search': [{'query': 'slayer', 'items': supplies}]
-}
-
 pot_config = slayer_killer.PotConfig(super_atk=True, super_str=True)
 
 

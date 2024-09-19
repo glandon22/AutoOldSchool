@@ -3,8 +3,6 @@ from threading import Thread
 import osrs
 import sys
 
-logger = osrs.dev.instantiate_logger()
-
 fish_to_catch_config = {
     '1': 'shrimp',
     '2': 'salmon',
@@ -17,7 +15,7 @@ fish_to_catch_config = {
 
 fish_to_catch = fish_to_catch_config['7']
 
-logger.info(f'fishing for: {fish_to_catch}')
+osrs.dev.logger.info(f'fishing for: {fish_to_catch}')
 
 fish_spot_ids = {
     'shrimp': [
@@ -80,7 +78,7 @@ game_state = osrs.queryHelper.QueryHelper()
 
 
 def query_server(gs: osrs.queryHelper.QueryHelper):
-    logger.info('Starting server querying thread.')
+    osrs.dev.logger.info('Starting server querying thread.')
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.set_npcs(fish_spot_ids[fish_to_catch])
@@ -110,19 +108,19 @@ def main():
     while True:
         osrs.game.break_manager_v4(script_config)
         if game_state.get_inventory() and len(game_state.get_inventory()) == 28:
-            logger.info(f'Full inv, beginning to drop fish {fish_to_catch}.')
+            osrs.dev.logger.info(f'Full inv, beginning to drop fish {fish_to_catch}.')
             osrs.inv.power_drop(game_state.get_inventory(), [], fish_to_drop_ids[fish_to_catch])
         elif game_state.get_is_fishing():
-            logger.info('Currently fishing.')
+            osrs.dev.logger.info('Currently fishing.')
             continue
         elif not game_state.get_is_fishing():
-            logger.info('No longer fishing.')
+            osrs.dev.logger.info('No longer fishing.')
             c = osrs.util.find_closest_target(game_state.get_npcs())
             if c and (
                     (c['x_coord'] != spot_data['x_coord'] and c['y_coord'] != spot_data['y_coord'])
                     or (datetime.datetime.now() - last_spot_click).total_seconds() > 15
             ):
-                logger.info(
+                osrs.dev.logger.info(
                     f'''
                     Clicking a new fishing spot. 
                     New spot: {(c['x_coord'] != spot_data['x_coord'] or c['y_coord'] != spot_data['y_coord'])}'

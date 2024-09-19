@@ -2,7 +2,6 @@ import datetime
 
 import osrs
 
-logger = osrs.dev.instantiate_logger()
 
 # osrs.move.follow_path(qh.get_player_world_location(), osrs.models.tile(3182, 3434, 0).dict)
 # Objects I click to start an herbi hunt
@@ -82,22 +81,22 @@ def mushtree_to_swamp():
     )
     qh.set_widgets({mush_meadow_button_id, bank_dump_widget_id})
     qh.set_player_world_location()
-    logger.info('searching for mushtree to travel to sticky swamp.')
+    osrs.dev.logger.info('searching for mushtree to travel to sticky swamp.')
     last_mushtree_click = datetime.datetime.now() - datetime.timedelta(hours=1)
     last_swamp_press = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
         qh.query_backend()
         if qh.get_widgets(mush_meadow_button_id) and (datetime.datetime.now() - last_swamp_press).total_seconds() > 5:
-            logger.info('mushtree teleport menu open, selecting sticky swamp.')
+            osrs.dev.logger.info('mushtree teleport menu open, selecting sticky swamp.')
             osrs.keeb.write('4')
             last_swamp_press = datetime.datetime.now()
         elif qh.get_player_world_location() and qh.get_player_world_location()['x'] < 3700:
-            logger.info('in mushroom meadow.')
+            osrs.dev.logger.info('in mushroom meadow.')
             return
         elif qh.get_game_objects(mush_tree_id) and (datetime.datetime.now() - last_mushtree_click).total_seconds() > 8:
             osrs.move.click(qh.get_game_objects(mush_tree_id)[0])
             last_mushtree_click = datetime.datetime.now()
-            logger.info('Clicked mushtree.')
+            osrs.dev.logger.info('Clicked mushtree.')
 
 
 def start_herbi():
@@ -234,14 +233,14 @@ def click_mounted_digsite_pendant():
     qh.set_widgets({mush_meadow_button_id, bank_dump_widget_id, run_energy_widget_id})
     qh.set_player_world_location()
     qh.set_script_stats({'Status': 'Returning to Fossil Island.'})
-    logger.info('Looking for digsite pendant')
+    osrs.dev.logger.info('Looking for digsite pendant')
     tile_map = None
     last_pendant_click = datetime.datetime.now() - datetime.timedelta(hours=1)
     last_pool_click = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
         qh.query_backend()
         if qh.get_player_world_location('x') > 4000 and not tile_map:
-            logger.info('in house, generating tile map.')
+            osrs.dev.logger.info('in house, generating tile map.')
             tile_map = osrs.util.generate_game_tiles_in_coords(
                 qh.get_player_world_location('x') - 15,
                 qh.get_player_world_location('x') + 15,
@@ -255,7 +254,7 @@ def click_mounted_digsite_pendant():
                 (datetime.datetime.now() - last_pool_click).total_seconds() > 12 \
                 and (qh.get_widgets(run_energy_widget_id) and int(qh.get_widgets(run_energy_widget_id)['text']) < 95):
 
-            logger.info('Click on ornate rejuvenation pool.')
+            osrs.dev.logger.info('Click on ornate rejuvenation pool.')
             osrs.move.click(
                 qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value)[fancy_restore_pool_id][0]
             )
@@ -263,13 +262,13 @@ def click_mounted_digsite_pendant():
         elif qh.get_objects(osrs.queryHelper.ObjectTypes.DECORATIVE.value, mounted_digsite_pendant_id) and \
                 (datetime.datetime.now() - last_pendant_click).total_seconds() > 7 \
                 and (qh.get_widgets(run_energy_widget_id) and int(qh.get_widgets(run_energy_widget_id)['text']) == 100):
-            logger.info('clicking on digsite pendant')
+            osrs.dev.logger.info('clicking on digsite pendant')
             osrs.move.click(
                 qh.get_objects(osrs.queryHelper.ObjectTypes.DECORATIVE.value)[mounted_digsite_pendant_id][0]
             )
             last_pendant_click = datetime.datetime.now()
         elif 3840 < qh.get_player_world_location('y') < 3900:
-            logger.info('successfully teleported to fossil island.')
+            osrs.dev.logger.info('successfully teleported to fossil island.')
             return
 
 
@@ -284,17 +283,17 @@ def bank_in_varrock():
     qh.set_inventory()
     qh.set_bank()
     qh.set_script_stats({'status': 'Banking.'})
-    logger.info('beginning banking sequence.')
+    osrs.dev.logger.info('beginning banking sequence.')
     last_tele_attempt = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
         qh.query_backend()
         if 3420 < qh.get_player_world_location('y') < 3440 and 3203 < qh.get_player_world_location('x') < 3222:
-            logger.info('arrived in varrock.')
+            osrs.dev.logger.info('arrived in varrock.')
             break
         elif (datetime.datetime.now() - last_tele_attempt).total_seconds() > 7:
             osrs.game.cast_spell(varrock_tele_widget_id)
             last_tele_attempt = datetime.datetime.now()
-            logger.info('teleported to varrock')
+            osrs.dev.logger.info('teleported to varrock')
     last_bank_booth_click = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
         qh.query_backend()
@@ -303,9 +302,9 @@ def bank_in_varrock():
             if closest:
                 osrs.move.click(closest)
                 last_bank_booth_click = datetime.datetime.now()
-                logger.info(f'clicked bank booth: {closest}')
+                osrs.dev.logger.info(f'clicked bank booth: {closest}')
         elif qh.get_widgets(bank_dump_widget_id):
-            logger.info('bank interface opened.')
+            osrs.dev.logger.info('bank interface opened.')
             break
     while True:
         qh.query_backend()
@@ -317,13 +316,13 @@ def bank_in_varrock():
     while True:
         qh.query_backend()
         if len(qh.get_inventory()) == 0:
-            logger.info('inventory dumped in bank.')
+            osrs.dev.logger.info('inventory dumped in bank.')
             osrs.clock.sleep_one_tick()
             break
     while True:
         qh.query_backend()
         if qh.get_bank() and len(qh.get_bank()) > 0:
-            logger.info('withdrawing items for another sully trip.')
+            osrs.dev.logger.info('withdrawing items for another sully trip.')
             osrs.move.click(qh.get_bank()[0])
             osrs.move.click(qh.get_bank()[1])
             osrs.move.click(qh.get_bank()[1])

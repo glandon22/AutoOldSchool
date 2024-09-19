@@ -6,6 +6,7 @@ import time
 
 import numpy as np
 import pyautogui
+from Xlib.Xcursorfont import target
 from scipy import interpolate
 
 import osrs.dev as dev
@@ -831,3 +832,92 @@ def tab_to_varrock():
             osrs.move.click(qh.get_inventory(osrs.item_ids.VARROCK_TELEPORT))
             last_tab = datetime.datetime.now()
 
+
+def initialize_query_helper(obj_id, obj_type, intermediate_tile):
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_player_world_location()
+    qh.set_canvas()
+    qh.set_objects_v2(obj_type, {obj_id} if isinstance(obj_id, int) else set(obj_id))
+    if intermediate_tile:
+        qh.set_tiles({intermediate_tile})
+    return qh
+
+
+def should_exit(qh, coord_type, coord_value, greater_than, custom_exit_function, custom_exit_function_arg):
+    if coord_type is not None and coord_value is not None:
+        player_location = qh.get_player_world_location(coord_type)
+        if (greater_than and player_location >= coord_value) or (
+                not greater_than and player_location <= coord_value):
+            return True
+    if custom_exit_function:
+        return custom_exit_function(
+            custom_exit_function_arg
+        ) if custom_exit_function_arg is not None else custom_exit_function()
+    return False
+
+
+def handle_interaction(qh, target_obj, last_click, pre_interact, pre_interact_arg, timeout, right_click_option):
+    current_time = datetime.datetime.now()
+    if (current_time - last_click).total_seconds() > timeout:
+        if pre_interact:
+            pre_interact(pre_interact_arg) if pre_interact_arg else pre_interact()
+
+        if right_click_option:
+            success = osrs.move.right_click_v6(target_obj[0], right_click_option, qh.get_canvas())
+            if success:
+                last_click = current_time
+        else:
+            osrs.move.instant_click_v2(target_obj[0])
+            last_click = current_time
+    return last_click
+
+
+def interact_with_object_v3(
+        obj_id, coord_type=None, coord_value=None, greater_than=True, obj_dist=15,
+        intermediate_tile=None, obj_type='game', timeout=0.1,
+        custom_exit_function=None, custom_exit_function_arg=None,
+        pre_interact=None, obj_tile=None, right_click_option=None,
+        pre_interact_arg=None
+):
+    """
+    Interacts with objects in the game world based on given parameters.
+
+    :param obj_id: int or set :: 12345 || {1234, 687}
+    :param coord_type: char :: 'x' || 'y' || 'z'
+    :param coord_value: int :: 1234
+    :param greater_than: bool :: True || False
+    :param obj_dist: int :: 10
+    :param intermediate_tile: tile string :: '3456,3453,3'
+    :param obj_type: 'wall' || 'game' || 'ground' || 'decorative' || 'ground_items'
+    :param timeout: int (seconds) :: 3
+    :param custom_exit_function: function()
+    :param custom_exit_function_arg: single arg or list of args
+    :param pre_interact: function()
+    :param obj_tile: tile object :: {'x': 1234, 'y': 3456, 'z': 0}
+    :param right_click_option: string :: 'Take'
+    :return: None
+    """
+
+    # Main function logic
+    qh = initialize_query_helper(obj_id, obj_type, intermediate_tile)
+    last_click = datetime.datetime.now() - datetime.timedelta(hours=1)
+
+    while True:
+        qh.query_backend()
+        target_obj = qh.get_objects_v2(obj_type, dist=obj_dist)
+
+        if target_obj:
+            target_obj = sorted(target_obj, key=lambda obj: obj['dist'])
+            if obj_tile:
+                target_obj = [obj for obj in target_obj if
+                              obj['x_coord'] == obj_tile['x'] and obj['y_coord'] == obj_tile['y']]
+
+        if should_exit(qh, coord_type, coord_value, greater_than, custom_exit_function, custom_exit_function_arg):
+            return True
+
+        if target_obj:
+            last_click = handle_interaction(
+                qh, target_obj, last_click, pre_interact, pre_interact_arg, timeout, right_click_option
+            )
+        elif intermediate_tile and qh.get_tiles(intermediate_tile):
+            osrs.move.instant_click_v2(qh.get_tiles(intermediate_tile))

@@ -2,8 +2,6 @@ import datetime
 import osrs
 from slayer.transport_functions import kraken_cove_private
 
-logger = osrs.dev.instantiate_logger()
-
 
 script_config = {
     'intensity': 'high',
@@ -26,20 +24,20 @@ def main():
     while True:
         qh.query_backend()
         if not qh.get_slayer() or not qh.get_slayer()['monster']:
-            logger.info('task complete')
+            osrs.dev.logger.info('task complete')
             return True
 
         asleep_kraken = list(filter(lambda npc: str(npc['id']) == asleep_kraken_id, qh.get_npcs()))
         awake_kraken = list(filter(lambda npc: str(npc['id']) == awake_kraken_id, qh.get_npcs()))
         if qh.get_skills('hitpoints')['boostedLevel'] < 40:
-            logger.info('Health below 40, eating.')
+            osrs.dev.logger.info('Health below 40, eating.')
             result = osrs.combat_utils.food_handler(qh, 40)
             if not result:
                 return False
         elif qh.get_interating_with() and awake_kraken:
-            logger.info('In combat with Kraken.')
+            osrs.dev.logger.info('In combat with Kraken.')
         elif len(awake_kraken) > 0 and awake_kraken[0]['health'] != 0:
-            logger.info('Attacking a vulnerable kraken')
+            osrs.dev.logger.info('Attacking a vulnerable kraken')
             osrs.move.fast_click(awake_kraken[0])
         elif not qh.get_interating_with() and len(asleep_kraken) > 0 and (datetime.datetime.now() - last_explosive).total_seconds() > 15:
             osrs.game.break_manager_v4(script_config)
@@ -48,7 +46,7 @@ def main():
             if not explosive:
                 return False
             if len(kraken) > 0:
-                logger.info('Throwing an explosive to awaken Kraken.')
+                osrs.dev.logger.info('Throwing an explosive to awaken Kraken.')
                 osrs.move.fast_click(explosive)
                 osrs.move.fast_click(kraken)
                 last_explosive = datetime.datetime.now()

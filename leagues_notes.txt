@@ -1,0 +1,9 @@
+agil:
+    wrote script for mory roofs
+
+fish:
+    wrote generic powerfisher
+mining:
+    wrote generic power fisher. its pretty slow so probably only good for leagues. can clean up
+wc:
+    made generic power cut script

@@ -2,8 +2,6 @@ import datetime
 
 import osrs
 
-logger = osrs.dev.instantiate_logger()
-
 
 prayer_restoring_pot_list = [
     osrs.item_ids.PRAYER_POTION4,
@@ -19,10 +17,10 @@ prayer_restoring_pot_list = [
 
 def end_trip(qh: osrs.queryHelper.QueryHelper):
     if not qh.get_slayer() or not qh.get_slayer()['monster']:
-        logger.info('task complete')
+        osrs.dev.logger.info('task complete')
         return True
     elif not qh.get_inventory(prayer_restoring_pot_list):
-        logger.info('out of prayer pots and super restores')
+        osrs.dev.logger.info('out of prayer pots and super restores')
         return True
     else:
         return False
