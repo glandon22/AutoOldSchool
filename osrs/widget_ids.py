@@ -459,3 +459,6 @@ inv_inv_widget_id = '161,62'
 equipment_inv_widget_id = '161,63'
 prayer_inv_widget_id = '161,64'
 spells_inv_widget_id = '161,65'
+
+run_energy_widget_id = '160,28'
+prayer_orb_widget_id = '160,21'

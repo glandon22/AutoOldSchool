@@ -85,55 +85,6 @@ def find_closest_target(targs):
         return closest
 
 
-def find_an_npc(npcs, min_dist):
-    closest = {
-        "dist": 999,
-        "x": None,
-        "y": None,
-        "id": None
-    }
-    for npc in npcs:
-        if closest["dist"] > npc["dist"] >= min_dist:
-            closest = {
-                "dist": npc["dist"],
-                "x": math.floor(npc["x"]),
-                "y": math.floor(npc["y"]),
-                "id": npc["id"]
-            }
-    if closest['x'] is None:
-        return False
-    else:
-        return closest
-
-
-'''
-|@@@@@@@@@@@@@@|
-|@@DEPRECATED@@|
-V@@@@@@@@@@@@@@V
-'''
-
-
-def rough_img_compare(img, confidence, region):
-    while True:
-        try:
-            loc = pyautogui.locateOnScreen(img, confidence=confidence, region=region)
-            if loc:
-                return loc
-            else:
-                return False
-        except Exception as e:
-            print('error calling screenshot, retrying.', e)
-
-
-def loop_timeout_handler(success_condition, timeout):
-    start_time = datetime.datetime.now()
-    while True:
-        if success_condition:
-            break
-        elif (datetime.datetime.now() - start_time).total_seconds() > timeout:
-            break
-
-
 def tile_objects_to_strings(tiles):
     parsed_tiles = []
     for tile in tiles:
@@ -173,4 +124,23 @@ def find_closest_target_on_screen(targets: list[dict], additional_filter: Callab
         dist_from_mouse = dev.point_dist(mouse_position[0], mouse_position[1], targ['x'], targ['y'])
         if not closest or (dist_from_mouse < closest['dist']):
             closest = {**targ, 'dist': dist_from_mouse}
+    return closest
+
+
+def find_closest_target_in_game(targets: list[dict], player_loc, additional_filter: Callable = None):
+    '''
+
+    :param targets: List<Targets> items in list MUST contain 'x' and 'y' keys which correspond to on-screen coordinates
+    :param additional_filter: fn() :: this is optional filter logic to remove unwanted elements
+    :return: {'x': 235, 'y': 243} :: object with coords to click on screen
+    '''
+    if not targets:
+        return None
+    if additional_filter is not None:
+        targets = list(filter(additional_filter, targets))
+    closest = None
+    for targ in targets:
+        dist_from_mouse = dev.point_dist(player_loc['x'], player_loc['y'], targ['x_coord'], targ['y_coord'])
+        if not closest or (dist_from_mouse < closest['dist']):
+            closest = targ
     return closest

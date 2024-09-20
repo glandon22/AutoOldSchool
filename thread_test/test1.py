@@ -8,7 +8,7 @@ qh = osrs.queryHelper.QueryHelper()
 qh.set_widgets({'161,96', '161,97'})
 qh.query_backend()
 print(osrs.util.combine_objects(qh.get_widgets()))'''
-def exx():
+'''def exx():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_player_world_location()
     qh.query_backend()
@@ -26,4 +26,9 @@ osrs.move.interact_with_widget_v3(
     right_click_option='Grand Exchange',
     custom_exit_function=exx,
     pre_interact=pre
-)
+)'''
+qh = osrs.queryHelper.QueryHelper()
+qh.set_projectiles_v2()
+while True:
+    qh.query_backend()
+    print(qh.get_projectiles_v2())

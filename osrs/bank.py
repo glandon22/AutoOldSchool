@@ -390,6 +390,7 @@ def banking_handler(params, wait_on_deposited_items=True):
     fally_banker_npc_ids = [
         1618, 1613, 3094
     ]
+    birds_eye_jack = 3472
     crafting_guild_bank_tile = '2936,3280,0'
     crafting_guild_bank_id = 14886
     bf_bank_tile = '1948,4956,0'
@@ -409,7 +410,7 @@ def banking_handler(params, wait_on_deposited_items=True):
     ferox_bank_tile = '3130,3632,0'
     ferox_bank_id = '26711'
     qh = osrs.queryHelper.QueryHelper()
-    qh.set_npcs([*ge_banker_npc_ids, *varr_banker_npc_ids, *fally_banker_npc_ids])
+    qh.set_npcs([*ge_banker_npc_ids, *varr_banker_npc_ids, *fally_banker_npc_ids, birds_eye_jack])
     qh.set_objects(
         {bf_bank_tile, crafting_guild_bank_tile, c_wars_bank_tile, v_west_bank_tile_1, lum_top_floor_bank_tile, draynor_bank_tile, barb_assault_bank_tile, gnome_strong_bank_tile, ferox_bank_tile},
         {bf_bank_id, crafting_guild_bank_id, c_wars_bank_id, v_west_bank_id_1, lum_top_floor_bank_id, draynor_bank_id, barb_assault_bank_id, gnome_strong_bank_id, ferox_bank_id},
@@ -912,7 +913,7 @@ def ge_handler(items):
 
         if qh.get_widgets(ge_widget) and not qh.get_widgets(ge_widget)['isHidden']:
             break
-        elif qh.get_objects_v2('wall', booth_id) and (datetime.datetime.now() - last_loc_change).total_seconds() > 3:
+        elif qh.get_objects_v2('wall', booth_id) and (datetime.datetime.now() - last_loc_change).total_seconds() > 3.0:
             last_loc_change = datetime.datetime.now()
             c = sorted(qh.get_objects_v2('wall', booth_id), key=lambda obj: obj['dist'])
             osrs.move.fast_click(c[0])

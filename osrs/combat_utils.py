@@ -150,6 +150,20 @@ def food_handler(qh, min_health):
     return True
 
 
+def fast_food_handler(qh, min_health):
+    if not qh:
+        qh = osrs.queryHelper.QueryHelper()
+        qh.set_inventory()
+        qh.set_skills({'hitpoints'})
+        qh.query_backend()
+    if qh.get_skills('hitpoints')['boostedLevel'] < min_health:
+        k = qh.get_inventory(food_ids)
+        if not k:
+            return False
+        osrs.move.fast_click_v2(k)
+    return True
+
+
 def pot_handler(qh: osrs.queryHelper.QueryHelper or None, pots):
     ANTIFIRE_VARBIT = '3981'
     if not qh:
@@ -226,3 +240,28 @@ def pot_handler(qh: osrs.queryHelper.QueryHelper or None, pots):
         else:
             return False
     return True
+
+
+def turn_on_quick_prayers(qh):
+    if not qh:
+        qh = osrs.queryHelper.QueryHelper()
+        qh.set_widgets({'160,21'})
+        qh.query_backend()
+    if qh.get_widgets('160,21'):
+        if qh.get_widgets('160,21')['spriteID'] == 1066:
+            return
+        else:
+            osrs.move.fast_click_v2(qh.get_widgets('160,21'))
+
+
+def turn_off_quick_prayers(qh):
+    if not qh:
+        qh = osrs.queryHelper.QueryHelper()
+        qh.set_widgets({'160,21'})
+        qh.query_backend()
+    if qh.get_widgets('160,21'):
+        if qh.get_widgets('160,21')['spriteID'] == 1063:
+            return
+        else:
+            osrs.move.fast_click_v2(qh.get_widgets('160,21'))
+

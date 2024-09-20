@@ -12,11 +12,11 @@ import osrs.move as move
 import osrs.dev as dev
 import osrs.queryHelper as QueryHelper
 
-
 config = dev.load_yaml()
 
 main_chat_widget = '162,34'
 quest_complete_widget = '153,4'
+
 
 class ScriptConfiguration(object):
     def __init__(self, intensity, login, logout):
@@ -339,7 +339,8 @@ def break_manager_v4(script_config):
         if script_config['logout']:
             script_config['logout']()
         logout()
-        config['timings']['break_end'] += datetime.timedelta(seconds=(current_time - config['timings']['break_start']).total_seconds())
+        config['timings']['break_end'] += datetime.timedelta(
+            seconds=(current_time - config['timings']['break_start']).total_seconds())
         print(f"logging back in at: {config['timings']['break_end']}")
         while True:
             if datetime.datetime.now() < config['timings']['break_end']:
@@ -411,6 +412,25 @@ def tele_home():
                     return
                 elif (datetime.datetime.now() - start_time).total_seconds() > 15:
                     break
+
+
+def tele_home_v2():
+    def pre():
+        osrs.keeb.press_key('f6')
+
+    def in_house():
+        qh = osrs.queryHelper.QueryHelper()
+        qh.set_player_world_location()
+        qh.query_backend()
+        if qh.get_player_world_location('x') > 3967:
+            osrs.keeb.press_key('esc')
+            return True
+
+    osrs.move.interact_with_widget_v3(
+        osrs.widget_ids.house_poh_tele_widget_id,
+        custom_exit_function=in_house,
+        pre_interact=pre
+    )
 
 
 def cast_spell(widget):
@@ -506,41 +526,25 @@ def tele_home_fairy_ring(code):
             return
 
 
-def click_restore_pool():
-    fancy_restore_pool_id = '29241'
-    tile_map = None
-    run_energy_widget_id = '160,28'
-    last_pool_click = datetime.datetime.now() - datetime.timedelta(hours=1)
+def player_healed():
     qh = osrs.queryHelper.QueryHelper()
-    while True:
-        qh.set_widgets({run_energy_widget_id})
-        qh.set_player_world_location()
-        qh.set_skills({'hitpoints'})
-        qh.query_backend()
-        if qh.get_player_world_location('x') > 4000 and not tile_map:
-            tile_map = osrs.util.generate_game_tiles_in_coords(
-                qh.get_player_world_location('x') - 15,
-                qh.get_player_world_location('x') + 15,
-                qh.get_player_world_location('y') - 15,
-                qh.get_player_world_location('y') + 15,
-                1
-            )
-            qh.set_objects(set(tile_map), set(), osrs.queryHelper.ObjectTypes.DECORATIVE.value)
-            qh.set_objects(set(tile_map), {fancy_restore_pool_id}, osrs.queryHelper.ObjectTypes.GAME.value)
-        elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, fancy_restore_pool_id) and \
-                (datetime.datetime.now() - last_pool_click).total_seconds() > 12 \
-                and (
-                int(qh.get_widgets(run_energy_widget_id)['text']) < 95 or
-                qh.get_skills('hitpoints')['level'] != qh.get_skills('hitpoints')['boostedLevel']
-        ):
+    qh.set_widgets({osrs.widget_ids.run_energy_widget_id})
+    qh.set_skills({'hitpoints', 'prayer', 'attack', 'strength', 'defence'})
+    qh.query_backend()
+    if int(qh.get_widgets(osrs.widget_ids.run_energy_widget_id)['text']) > 95 and \
+            qh.get_skills('hitpoints')['level'] <= qh.get_skills('hitpoints')['boostedLevel'] and \
+            qh.get_skills('attack')['level'] <= qh.get_skills('attack')['boostedLevel'] and \
+            qh.get_skills('strength')['level'] <= qh.get_skills('strength')['boostedLevel'] and \
+            qh.get_skills('prayer')['level'] <= qh.get_skills('prayer')['boostedLevel'] and \
+            qh.get_skills('defence')['level'] <= qh.get_skills('defence')['boostedLevel']:
+        return True
 
-            osrs.move.click(
-                qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value)[fancy_restore_pool_id][0]
-            )
-            last_pool_click = datetime.datetime.now()
-        elif int(qh.get_widgets(run_energy_widget_id)['text']) > 95 \
-                and qh.get_skills('hitpoints')['level'] == qh.get_skills('hitpoints')['boostedLevel']:
-            return
+
+def click_restore_pool():
+    osrs.move.interact_with_object_v3(
+        29241,
+        custom_exit_function=player_healed
+    )
 
 
 def hop_worlds(pre_hop=False, total_level_worlds=True):
@@ -590,7 +594,7 @@ def hop_worlds(pre_hop=False, total_level_worlds=True):
             return
 
 
-def talk_to_npc(name, right_click=False, right_click_option='Talk-to'):
+def talk_to_npc(name, right_click=False, right_click_option='Talk-to', custom_exit=None):
     qh = osrs.queryHelper.QueryHelper()
     if type(name) is str:
         qh.set_npcs_by_name([name])
@@ -601,7 +605,7 @@ def talk_to_npc(name, right_click=False, right_click_option='Talk-to'):
     qh.set_canvas()
     while True:
         qh.query_backend()
-        if qh.get_chat_options() or qh.get_widgets(main_chat_widget):
+        if qh.get_chat_options() or qh.get_widgets(main_chat_widget) or (custom_exit is not None and custom_exit()):
             return
         elif qh.get_npcs_by_name():
             if right_click:
@@ -616,7 +620,6 @@ def talk_to_npc(name, right_click=False, right_click_option='Talk-to'):
 
 
 def dialogue_handler(desired_replies=None, timeout=3):
-
     npc_chat_head_widget = '231,4'
     player_chat_widget = '217,6'
     chat_holder_widget = '231,0'
@@ -694,4 +697,3 @@ def use_portal_nexus(destination):
                 qh.get_canvas()
             )
             last_click = datetime.datetime.now()
-
