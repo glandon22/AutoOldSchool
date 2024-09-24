@@ -161,6 +161,7 @@ def tether_handler_v2(area_info):
     qh.set_npcs_by_name(['first mate deri', 'captain dudi', 'first mate peri', 'captain pudi'])
     qh.set_inventory()
     qh.set_spot_anims()
+    qh.set_player_animation()
     qh.set_player_world_location()
     qh.query_backend()
     if qh.get_npcs_by_name():
@@ -180,6 +181,29 @@ def tether_handler_v2(area_info):
                 elif (datetime.datetime.now() - wait_start).total_seconds() > 10:
                     osrs.dev.logger.warn('failed to handle a colossal wave, timed out.')
                     break
+            osrs.move.interact_with_multiple_objects(
+                {north_totem_id, south_totem_id, left_mast_id, right_mast_id}, 'x',
+                1, False,
+                custom_exit_function=have_untethered, right_click_option='Untether', timeout=5
+            )
+
+
+def tether_handler_v3(area_info):
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_npcs_by_name(['first mate deri', 'captain dudi', 'first mate peri', 'captain pudi'])
+    qh.set_inventory()
+    qh.set_spot_anims()
+    qh.set_player_animation()
+    qh.set_player_world_location()
+    qh.query_backend()
+    if qh.get_npcs_by_name():
+        deri = qh.get_npcs_by_name()[0]
+        if 'overheadText' in deri and 'drawing in water' in deri['overheadText']:
+            osrs.dev.logger.info('Tempoross is drawing in water.')
+            osrs.move.interact_with_multiple_objects(
+                {north_totem_id, south_totem_id, left_mast_id, right_mast_id}, 'x', 1, False,
+                custom_exit_function=have_tethered
+            )
             osrs.move.interact_with_multiple_objects(
                 {north_totem_id, south_totem_id, left_mast_id, right_mast_id}, 'x',
                 1, False,
@@ -229,7 +253,7 @@ def ground_fire_handler(qh: osrs.queryHelper.QueryHelper):
 
 def fish_catching_handler(qh, important_area_tiles, area_info):
     while True:
-        tether_handler_v2(area_info)
+        tether_handler_v3(area_info)
         qh.query_backend()
         found_fire = ground_fire_handler(qh)
         if found_fire:
@@ -243,7 +267,7 @@ def fish_catching_handler(qh, important_area_tiles, area_info):
             # if the fish spot is not clickable, this will fall through and click a tile to get closer to the spots
             # otherwise, continue on from loop
             if closest and osrs.move.is_clickable(closest):
-                osrs.move.fast_click(closest)
+                osrs.move.fast_click_v2(closest)
                 continue
 
         if qh.get_tiles(important_area_tiles['spots']) and osrs.move.is_clickable(
@@ -308,7 +332,7 @@ def tempoross_handler():
         qh.query_backend()
         tempoross_state = tempoross_state_parser(qh)
         ground_fire_handler(qh)
-        tether_handler_v2(area_info)
+        tether_handler_v3(area_info)
         if 3136 <= qh.get_player_world_location('x') <= 3163 and 2835 <= qh.get_player_world_location('y') <= 2845:
             return osrs.dev.logger.info('game is over')
         elif game_over(tempoross_state) and (datetime.datetime.now() - game_start).total_seconds() > 30:
@@ -359,7 +383,7 @@ def shoot_fish(important_area_tiles, area_info):
     while True:
         qh.query_backend()
         ground_fire_handler(qh)
-        tether_handler_v2(area_info)
+        tether_handler_v3(area_info)
         if qh.get_npcs():
             osrs.dev.logger.info('spirit pool came up while shooting fish, heading to spirit pool instead')
             # the spirit pool opened while i was doing this - fish that instead!!!
@@ -475,4 +499,7 @@ def main():
 
 main()
 
-#I'm ready to leave.
+'''
+162,56,0 most recent message
+success - ''
+'''

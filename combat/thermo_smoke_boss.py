@@ -49,7 +49,7 @@ def main():
         osrs.combat_utils.pot_handler(qh, {})
         osrs.combat_utils.prayer_handler(qh, ['redemption'])
         # remove myself from the players list
-        filtered_players = [] if not qh.get_players() else list(filter(lambda player: player['name'].lower() != 'DJT Fan 14', qh.get_players()))
+        filtered_players = [] if not qh.get_players() else list(filter(lambda player: player['name'].lower() != 'UtahDogs', qh.get_players()))
         if not filtered_players:
             last_player_sighting = datetime.datetime.now()
         else:
@@ -61,7 +61,7 @@ def main():
                     and filtered_players and not qh.get_interating_with() \
                     and (not qh.get_npcs_by_name()
                         or 'interacting' not in qh.get_npcs_by_name()[0]
-                        or qh.get_npcs_by_name()[0]['interacting'].lower() != 'DJT Fan 14'
+                        or qh.get_npcs_by_name()[0]['interacting'].lower() != 'UtahDogs'
             ):
                 osrs.game.hop_worlds(lambda: osrs.clock.random_sleep(10.2, 10.3))
 
@@ -74,7 +74,7 @@ def main():
             })
         elif not qh.get_interating_with() and qh.get_npcs_by_name():
             thermy = qh.get_npcs_by_name()[0]
-            if 'interacting' in thermy and thermy['interacting'] == 'DJT Fan 14':
+            if 'interacting' in thermy and thermy['interacting'] == 'UtahDogs':
                 print('thermy is attacking me, letting auto retaliate get me back in combat')
             elif thermy['health'] != 0 and not filtered_players:
                 osrs.move.fast_click(thermy)

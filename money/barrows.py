@@ -87,7 +87,7 @@ def find_my_target(brother):
     if qh.get_npcs():
         for npc in qh.get_npcs():
             # make sure the final brother is in the chest room so i can attack!
-            if npc['id'] == brother and 'interacting' in npc and npc['interacting'].lower() == 'DJT Fan 14':
+            if npc['id'] == brother and 'interacting' in npc and npc['interacting'].lower() == 'UtahDogs':
                 osrs.move.fast_click(npc)
                 osrs.move.fast_click(npc)
                 osrs.move.fast_click(npc)
@@ -116,7 +116,7 @@ def find_my_target_in_chest_room(args):
             # make sure the final brother is in the chest room so i can attack!
             if (npc['id'] == brother
                     and 'interacting' in npc
-                    and npc['interacting'].lower() == 'DJT Fan 14'
+                    and npc['interacting'].lower() == 'UtahDogs'
                     and 3546 <= npc['x_coord'] <= 3557
                     and 9689 <= npc['y_coord'] <= 9700):
                 osrs.dev.logger.info("found final brother, attacking!")
@@ -269,7 +269,7 @@ def kill_tunnel_monster(x_min, x_max, y_min, y_max):
         if qh.get_npcs():
             sorted_npcs = sorted(qh.get_npcs(), key=lambda n: n['dist'])
             for npc in sorted_npcs:
-                if 'interacting' in npc and npc['interacting'].lower() == 'DJT Fan 14':
+                if 'interacting' in npc and npc['interacting'].lower() == 'UtahDogs':
                     if npc['id'] not in tunnel_monsters_for_points or npc['health'] == 0:
                         return
                     elif (not qh.get_interating_with()

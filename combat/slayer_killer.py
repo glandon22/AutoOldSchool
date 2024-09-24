@@ -173,7 +173,7 @@ def find_next_target(npcs, monster, ignore_interacting, attackable_area):
             return False
         # If this monster is already interacting with someone other than me,
         # check to see if i have ignore_interacting set. If not, ignore this monster
-        if 'interacting' in npc and 'DJT Fan 14' not in npc['interacting']:
+        if 'interacting' in npc and 'UtahDogs' not in npc['interacting']:
             if not ignore_interacting:
 
                 return False
@@ -183,7 +183,7 @@ def find_next_target(npcs, monster, ignore_interacting, attackable_area):
     if len(filtered_npcs) == 0:
         print('could not find a suitable monster on first pass')
         return False
-    monster_attacking_me = list(filter(lambda npc: 'interacting' in npc and 'DJT Fan 14' in npc['interacting'], filtered_npcs))
+    monster_attacking_me = list(filter(lambda npc: 'interacting' in npc and 'UtahDogs' in npc['interacting'], filtered_npcs))
     # there is a monster already attacking me - kill it
     if len(monster_attacking_me) > 0:
         print('there is a monster already attacking - targeting it')
@@ -301,8 +301,8 @@ def hop_handler(qh: osrs.queryHelper.QueryHelper, pre_hop, last_seen, post_login
     # sometimes there are other players around - confirm they are in the area that i will also be in
     # if I don't define an area, hop regardless of where other players are
     for player in qh.get_players():
-        if (not attackable_area and player['name'] != 'DJT Fan 14') or \
-                (player['name'] != 'DJT Fan 14' and attackable_area
+        if (not attackable_area and player['name'] != 'UtahDogs') or \
+                (player['name'] != 'UtahDogs' and attackable_area
                  and attackable_area['x_min'] <= player['worldPoint']['x'] <= attackable_area['x_max']
                  and attackable_area['y_min'] <= player['worldPoint']['y'] <= attackable_area['y_max']):
             osrs.dev.logger.warn('Found a player in my slayer spot.')
