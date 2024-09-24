@@ -575,7 +575,10 @@ def follow_path(start, end, right_click=False, exact_tile=False):
 
     path = dax.generate_path(start, end)
     if not path:
-        osrs.clock.sleep_one_tick()
+        '''# if dax failed fall back to my budget patching homebrewed deal
+        path = run_towards_square(
+            {'x': 3661, 'y': 9836, 'z': 0}, steps_only=True
+        )'''
         return
     parsed_tiles = util.tile_objects_to_strings(path)
     qh = queryHelper.QueryHelper()
@@ -797,6 +800,7 @@ def go_to_loc(dest_x, dest_y, dest_z=0, right_click=False, exact_tile=False):
     qh = osrs.queryHelper.QueryHelper()
     qh.set_player_world_location()
     qh.set_canvas()
+    qh.set_destination_tile()
     qh.set_tiles({f'{dest_x},{dest_y},{dest_z}'})
     while True:
         qh.query_backend()
@@ -806,6 +810,10 @@ def go_to_loc(dest_x, dest_y, dest_z=0, right_click=False, exact_tile=False):
             break
         elif exact_tile and qh.get_player_world_location('x') == dest_x and qh.get_player_world_location('y') == dest_y:
             break
+        elif qh.get_destination_tile() \
+                and qh.get_destination_tile()['x'] == dest_x \
+                and qh.get_destination_tile()['y'] == dest_y:
+            continue
         elif qh.get_tiles(f'{dest_x},{dest_y},{dest_z}') and is_clickable(qh.get_tiles(f'{dest_x},{dest_y},{dest_z}')):
             osrs.move.fast_click(qh.get_tiles(f'{dest_x},{dest_y},{dest_z}'))
         else:

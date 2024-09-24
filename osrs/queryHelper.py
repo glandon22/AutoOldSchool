@@ -432,14 +432,13 @@ class QueryHelper:
         if item:
             if 'equipment' in self.game_data:
                 for equipment in self.game_data['equipment']:
-                    if equipment - 2048 == int(item):
+                    if equipment:
                         return True
                 return False
             else:
                 return False
         return 'equipment' in self.game_data \
-               and self.game_data['equipment'] \
-               and [item - 2048 for item in self.game_data['equipment']]
+               and self.game_data['equipment']
 
     def set_canvas(self):
         self.query['canvas'] = True
@@ -597,6 +596,12 @@ class QueryHelper:
 
     def set_yaw(self, value):
         self.query['setYaw'] = value
+
+    def set_mta_data(self):
+        self.query['mta'] = True
+
+    def get_mta_data(self):
+        return 'mta' in self.game_data and self.game_data['mta']
 
     def query_backend(self):
         '''print("\t«{}»\tLine number in which the function is defined.".

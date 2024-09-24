@@ -27,8 +27,20 @@ osrs.move.interact_with_widget_v3(
     custom_exit_function=exx,
     pre_interact=pre
 )'''
-qh = osrs.queryHelper.QueryHelper()
+'''qh = osrs.queryHelper.QueryHelper()
+qh.set_destination_tile()
+qh.set_player_world_location()
 qh.set_projectiles_v2()
 while True:
     qh.query_backend()
+    print('-------------------')
     print(qh.get_projectiles_v2())
+    print(qh.get_player_world_location())
+    print('-------------------')
+'''
+#osrs.player.equip_item([osrs.item_ids.DIAMOND_DRAGON_BOLTS_E])
+qh = osrs.queryHelper.QueryHelper()
+qh.set_mta_data()
+while True:
+    qh.query_backend()
+    print(qh.get_mta_data())

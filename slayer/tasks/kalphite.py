@@ -31,7 +31,7 @@ equipment = [
     {'id': osrs.item_ids.DRAMEN_STAFF, 'consume': 'Wield'},
 ]
 
-pot_config = slayer_killer.PotConfig(super_combat=True)
+pot_config = slayer_killer.PotConfig(super_atk=True, super_str=True)
 
 
 def pre_log():

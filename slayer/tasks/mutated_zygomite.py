@@ -2,14 +2,14 @@ import osrs
 
 from slayer import transport_functions
 from combat import slayer_killer
-from slayer.tasks import gear
+from slayer.utils import bank
 
 varrock_tele_widget_id = '218,23'
 supplies = [
         osrs.item_ids.SUPER_COMBAT_POTION4,
         osrs.item_ids.RUNE_POUCH,
-        osrs.item_ids.KARAMJA_GLOVES_3,
-        osrs.item_ids.DRAMEN_STAFF,
+        osrs.item_ids.KARAMJA_GLOVES_4,
+        {'id': osrs.item_ids.DRAMEN_STAFF, 'consume': 'Wield'},
         {
             'id': osrs.item_ids.FUNGICIDE_SPRAY_10,
             'quantity': '5'
@@ -20,28 +20,18 @@ supplies = [
         },
     ]
 equipment = [
-        osrs.item_ids.ABYSSAL_WHIP,
-        osrs.item_ids.RUNE_DEFENDER,
-        osrs.item_ids.BARROWS_GLOVES,
-        osrs.item_ids.FIRE_CAPE,
-        osrs.item_ids.SLAYER_HELMET_I,
-        osrs.item_ids.BRIMSTONE_RING,
-        osrs.item_ids.DRAGON_BOOTS,
-        osrs.item_ids.BANDOS_CHESTPLATE,
-        osrs.item_ids.BANDOS_TASSETS,
-        osrs.item_ids.AMULET_OF_FURY,
-    ]
-banking_config_equipment = {
-    'dump_inv': True,
-    'dump_equipment': True,
-    'search': [{'query': 'slayer', 'items': equipment}]
-}
-
-banking_config_supplies = {
-    'dump_inv': True,
-    'dump_equipment': False,
-    'search': [{'query': 'slayer', 'items': supplies}]
-}
+    {'id': osrs.item_ids.DRAGON_DEFENDER, 'consume': 'Wield'},
+    {'id': osrs.item_ids.FIRE_CAPE, 'consume': 'Wear'},
+    {'id': osrs.item_ids.SLAYER_HELMET_I, 'consume': 'Wear'},
+    {'id': osrs.item_ids.BARROWS_GLOVES, 'consume': 'Wear'},
+    {'id': osrs.item_ids.BRIMSTONE_RING, 'consume': 'Wear'},
+    {'id': osrs.item_ids.DRAGON_BOOTS, 'consume': 'Wear'},
+    {'id': osrs.item_ids.BANDOS_CHESTPLATE, 'consume': 'Wear'},
+    {'id': osrs.item_ids.BANDOS_TASSETS, 'consume': 'Wear'},
+    {'id': osrs.item_ids.AMULET_OF_FURY, 'consume': 'Wear'},
+    {'id': osrs.item_ids.OSMUMTENS_FANG, 'consume': 'Wield'},
+    {'id': osrs.item_ids.HOLY_BLESSING, 'consume': 'Equip'},
+]
 
 pot_config = slayer_killer.PotConfig(super_combat=True)
 
@@ -54,24 +44,7 @@ def main():
         qh.query_backend()
         print('starting function')
         if not task_started:
-            success = osrs.bank.banking_handler(banking_config_equipment)
-            if not success:
-                print('failed to withdraw equipment.')
-                return False
-            osrs.clock.sleep_one_tick()
-            qh.query_backend()
-            for item in qh.get_inventory():
-                osrs.move.click(item)
-            qh.query_backend()
-        success = osrs.bank.banking_handler(banking_config_supplies)
-        if not success:
-            print('failed to withdraw supplies.')
-            return False
-        while True:
-            qh.query_backend()
-            if qh.get_inventory(osrs.item_ids.DRAMEN_STAFF):
-                osrs.move.click(qh.get_inventory(osrs.item_ids.DRAMEN_STAFF))
-                break
+            bank(qh, task_started, equipment, supplies)
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
         osrs.game.tele_home_fairy_ring('bks')
@@ -79,8 +52,8 @@ def main():
         qh.query_backend()
         while True:
             qh.query_backend()
-            if qh.get_inventory(osrs.item_ids.ABYSSAL_WHIP):
-                osrs.move.click(qh.get_inventory(osrs.item_ids.ABYSSAL_WHIP))
+            if qh.get_inventory(osrs.item_ids.OSMUMTENS_FANG):
+                osrs.move.click(qh.get_inventory(osrs.item_ids.OSMUMTENS_FANG))
                 break
         task_started = True
         finished = slayer_killer.main(['zygomite', 'fungi'], pot_config.asdict(), 35)

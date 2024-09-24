@@ -439,6 +439,14 @@ ZEAH_MESS_HALL_COOKING_DISPLAY = 15400962
 
 ##Custom Widgets##
 ##SPELLS
+enchant_sub_menu_widget_id = '218,12'
+l1_enchant_menu_widget_id = '218,13'
+l2_enchant_menu_widget_id = '218,24'
+l3_enchant_menu_widget_id = '218,37'
+l4_enchant_menu_widget_id = '218,46'
+l5_enchant_menu_widget_id = '218,61'
+l6_enchant_menu_widget_id = '218,74'
+l7_enchant_menu_widget_id = '218,77'
 varrock_tele_widget_id = '218,23'
 home_tele_slow_widget_id = '218,7'
 lumbridge_tele_widget_id = '218,26'
@@ -450,6 +458,7 @@ camelot_tele_spell_widget_id = '218,34'
 kourend_telly_spell_widget_id = '218,36'
 ardy_tele_spell_widget_id = '218,41'
 high_alch_spell_widget_id = '218,44'
+bones_banana_spell_widget_id = '218,17'
 
 ## F KEY INV WIDGETS
 combat_options_inv_widget_id = '161,59'

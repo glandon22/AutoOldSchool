@@ -75,6 +75,17 @@ def shark_eval(loot_priority):
     return False
 
 
+def karambwan_eval(loot_priority):
+    if loot_priority > 10:
+        return True
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_skills({'hitpoints'})
+    qh.query_backend()
+    if qh.get_skills('hitpoints')['level'] - qh.get_skills('hitpoints')['boostedLevel'] >= 18:
+        return True
+    return False
+
+
 def in_pile(target_item, ground_items):
     count = 0
     for item in ground_items:
@@ -121,7 +132,7 @@ class Loot:
 
     def retrieve_loot(
             self, dist=10, min_val_to_loot_other_players=20,
-            loot_area=None
+            loot_area=None, disable_alchs=False
     ):
         '''
 
@@ -186,7 +197,7 @@ class Loot:
                     received_item = wait_for_item_in_inv(prev_inv, qh1)
                     if received_item:
                         time_since_last_loot = datetime.datetime.now()
-                if item_config.get('alch'):
+                if item_config.get('alch') and not disable_alchs:
                     self.alch(item, qh)
                 break
             if not found_loot:
@@ -210,7 +221,7 @@ class Loot:
 
     def handle_full_inv(self, qh, loot_item_config):
         if qh.get_inventory(loot_item_config['item_id']) and loot_item_config['stackable']:
-            print('inv is full but item is stackable and in inv, no need to drop anything.')
+            osrs.dev.logger.info('inv is full but item is stackable and in inv, no need to drop anything.')
             return True
         # check if item is stackable and in inv, if so exit true
         for item in qh.get_inventory():
@@ -266,6 +277,8 @@ class Loot:
             LootConfig(osrs.item_ids.DRAGON_HARPOON, 1900),
             LootConfig(osrs.item_ids.DRAGON_SWORD, 70),
             LootConfig(osrs.item_ids.DRAGON_DAGGER, 17, alch=True),
+            LootConfig(osrs.item_ids.DRAGON_LONGSWORD, 60, alch=True),
+            LootConfig(osrs.item_ids.DRAGON_BATTLEAXE, 119, alch=True),
             LootConfig(osrs.item_ids.DRAGON_SPEAR, 37, alch=True),
             LootConfig(osrs.item_ids.DRAGON_MED_HELM, 58, alch=True),
             LootConfig(osrs.item_ids.DRAGON_PLATELEGS, 161, alch=True),
@@ -319,6 +332,7 @@ class Loot:
             LootConfig(osrs.item_ids.DUST_RUNE, 3, stackable=True, min_quantity=200),
             LootConfig(osrs.item_ids.MUD_RUNE, 3, stackable=True, min_quantity=200),
             LootConfig(osrs.item_ids.SMOKE_RUNE, 3, stackable=True, min_quantity=100),
+            LootConfig(osrs.item_ids.WRATH_RUNE, 9, stackable=True, min_quantity=30),
 
             # Catacombs Drops
             LootConfig(osrs.item_ids.ANCIENT_SHARD, 9, stackable=True),
@@ -356,11 +370,18 @@ class Loot:
             LootConfig(osrs.item_ids.RANARR_SEED, 25, stackable=True),
             LootConfig(osrs.item_ids.TORSTOL_SEED, 4, stackable=True),
             LootConfig(osrs.item_ids.MAGIC_SEED, 64, stackable=True),
+            LootConfig(osrs.item_ids.YEW_SEED, 23, stackable=True),
+            LootConfig(osrs.item_ids.SPIRIT_SEED, 100, stackable=True),
+            LootConfig(osrs.item_ids.PALM_TREE_SEED, 28, stackable=True),
+            LootConfig(osrs.item_ids.DRAGONFRUIT_TREE_SEED, 186, stackable=True),
+            LootConfig(osrs.item_ids.CELASTRUS_SEED, 65, stackable=True),
+            LootConfig(osrs.item_ids.REDWOOD_TREE_SEED, 23, stackable=True),
 
             # Bars and Ores
             LootConfig(osrs.item_ids.MITHRIL_BAR + 1, 4, stackable=True, min_quantity=5),
             LootConfig(osrs.item_ids.ADAMANTITE_BAR + 1, 8, stackable=True, min_quantity=3),
             LootConfig(osrs.item_ids.RUNITE_ORE, 11),
+            LootConfig(osrs.item_ids.ADAMANTITE_ORE + 1, 5, min_quantity=5),
             LootConfig(osrs.item_ids.RUNITE_BAR, 11),
             LootConfig(osrs.item_ids.RUNITE_BAR + 1, 11, stackable=True),
             LootConfig(osrs.item_ids.GOLD_ORE + 1, 2, stackable=True, min_quantity=10),
@@ -391,13 +412,37 @@ class Loot:
             LootConfig(osrs.item_ids.ENHANCED_CRYSTAL_TELEPORT_SEED, 1),
             LootConfig(osrs.item_ids.SOUL_FRAGMENT, 1),
             LootConfig(osrs.item_ids.SOUL_FRAGMENT_25201, 1),
+
+            ## Vorkath
+            LootConfig(osrs.item_ids.SUPERIOR_DRAGON_BONES, 20),
+            LootConfig(osrs.item_ids.DRAGON_BONES + 1, 62, min_quantity=2, stackable=True),
+            LootConfig(osrs.item_ids.BLUE_DRAGONHIDE + 1, 48, min_quantity=2, stackable=True),
+            LootConfig(osrs.item_ids.GREEN_DRAGONHIDE + 1, 38, min_quantity=2, stackable=True),
+            LootConfig(osrs.item_ids.RED_DRAGONHIDE + 1, 56, min_quantity=2, stackable=True),
+            LootConfig(osrs.item_ids.BLACK_DRAGONHIDE + 1, 68, min_quantity=2, stackable=True),
+            LootConfig(osrs.item_ids.DRAGON_BOLTS_UNF, 47, min_quantity=2, stackable=True),
+            LootConfig(osrs.item_ids.DRAGON_DART_TIP, 21, min_quantity=2, stackable=True),
+            LootConfig(osrs.item_ids.RUNE_DART_TIP, 93, min_quantity=2, stackable=True),
+            LootConfig(osrs.item_ids.DRAGONSTONE_BOLT_TIPS, 10, min_quantity=2, stackable=True),
+            LootConfig(osrs.item_ids.ONYX_BOLT_TIPS, 10, stackable=True),
+            LootConfig(osrs.item_ids.DRAGON_ARROWTIPS, 35, stackable=True),
+            LootConfig(osrs.item_ids.MANTA_RAY + 1, 66, stackable=True, min_quantity=2),
+            LootConfig(osrs.item_ids.DRAGONSTONE + 1, 22, stackable=True),
+            LootConfig(osrs.item_ids.VORKATHS_HEAD, 101),
+            LootConfig(osrs.item_ids.VORKATHS_HEAD_21907, 101),
+            LootConfig(osrs.item_ids.VORKATHS_HEAD_21912, 101),
+            LootConfig(osrs.item_ids.VORKATHS_HEAD, 101),
+            LootConfig(osrs.item_ids.DRAGONBONE_NECKLACE, 67),
+            LootConfig(osrs.item_ids.JAR_OF_DECAY, 111),
+            LootConfig(osrs.item_ids.SKELETAL_VISAGE, 12695),
         ]
         return config
 
     def default_inv_config(self):
         config = [
             InvConfig(osrs.item_ids.MONKFISH, osrs.loot.monkfish_eval),
-            InvConfig(osrs.item_ids.SHARK, osrs.loot.shark_eval)
+            InvConfig(osrs.item_ids.SHARK, osrs.loot.shark_eval),
+            InvConfig(osrs.item_ids.COOKED_KARAMBWAN, osrs.loot.karambwan_eval)
         ]
 
         return config

@@ -421,8 +421,10 @@ def tele_home_v2():
     def in_house():
         qh = osrs.queryHelper.QueryHelper()
         qh.set_player_world_location()
+        qh.set_objects_v2('game', {4525})
         qh.query_backend()
-        if qh.get_player_world_location('x') > 3967:
+        # ensure i am in house and see portal, otherwise i cant tele out of an instance bc my x value is already large
+        if qh.get_player_world_location('x') > 3967 and qh.get_objects_v2('game', 4525):
             osrs.keeb.press_key('esc')
             return True
 

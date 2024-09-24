@@ -33,7 +33,7 @@ equipment = [
     {'id': osrs.item_ids.BANDOS_CHESTPLATE, 'consume': 'Wear'},
     {'id': osrs.item_ids.BANDOS_TASSETS, 'consume': 'Wear'},
     {'id': osrs.item_ids.AMULET_OF_FURY, 'consume': 'Wear'},
-    {'id': osrs.item_ids.OSMUMTENS_FANG, 'consume': 'Wield'},
+    {'id': osrs.item_ids.ABYSSAL_WHIP, 'consume': 'Wield'},
     {'id': osrs.item_ids.HOLY_BLESSING, 'consume': 'Equip'},
 ]
 

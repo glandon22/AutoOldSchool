@@ -50,6 +50,7 @@ def turn_off_all_prayers():
             osrs.move.click(qh.get_widgets('160,21'))
             last_click = datetime.datetime.now()
 
+
 def flick_all_prayers():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_active_prayers()
