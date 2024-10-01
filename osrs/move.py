@@ -980,3 +980,67 @@ def interact_with_widget_v3(
                 qh, target_widget, last_click, None, None,
                 timeout, right_click_option, in_inv=True
             )
+
+
+def handle_npc_interaction(
+        qh, target_obj, last_click, timeout, right_click_option, in_inv=False
+):
+    current_time = datetime.datetime.now()
+    if (current_time - last_click).total_seconds() > timeout:
+        if right_click_option:
+            success = osrs.move.right_click_v6(target_obj, right_click_option, qh.get_canvas(), in_inv=in_inv)
+            if success:
+                last_click = current_time
+        else:
+            osrs.move.instant_click_v2(target_obj)
+            last_click = current_time
+    return last_click
+
+
+def interact_with_npc(
+        npc_id, timeout=3,
+        custom_exit_function=None, custom_exit_function_arg=None,
+        pre_interact=None, right_click_option=None, additional_filter=None, exit_on_interact=False, exit_on_dialogue=False
+):
+
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_canvas()
+    qh.set_npcs(npc_id if type(npc_id) is list else [npc_id])
+    qh.set_player_world_location()
+    qh.set_interating_with()
+    qh.set_widgets({osrs.widget_ids.main_chat_widget})
+    last_click = datetime.datetime.now() - datetime.timedelta(hours=1)
+
+    while True:
+        if pre_interact is not None:
+            pre_interact()
+        qh.query_backend()
+        target_npcs = qh.get_npcs()
+
+        if target_npcs:
+            target_npcs = osrs.util.find_closest_target_in_game(
+                target_npcs,
+                qh.get_player_world_location(),
+                additional_filter=additional_filter if additional_filter is not None else None
+            )
+
+        if custom_exit_function_arg is not None and custom_exit_function(custom_exit_function_arg):
+            osrs.dev.logger.info('NPC handler configured to exit with custom func and arg and succeeded.')
+            return True
+        elif custom_exit_function_arg is None and custom_exit_function():
+            osrs.dev.logger.info('NPC handler configured to exit with custom func (no arg) and succeeded.')
+            return True
+        elif exit_on_interact and qh.get_interating_with():
+            osrs.dev.logger.info('NPC handler configured to exit on interact, have interaction. Exiting.')
+            return True
+        elif exit_on_dialogue \
+                and qh.get_widgets(osrs.widget_ids.main_chat_widget) \
+                and not qh.get_widgets(osrs.widget_ids.main_chat_widget)['isHidden']:
+            osrs.dev.logger.info('NPC handler configured to exit on dialogue, found dialogue. Exiting.')
+            return True
+
+        if target_npcs:
+            last_click = handle_npc_interaction(
+                qh, target_npcs, last_click,
+                timeout, right_click_option, in_inv=True
+            )
