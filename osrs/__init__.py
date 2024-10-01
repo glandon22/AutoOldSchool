@@ -17,7 +17,8 @@ __all__ = [
     'widget_ids',
     'loot',
     'combat_utils',
-    'transport'
+    'transport',
+    'emergency_exit'
 ]
 
 import osrs.dev
@@ -39,3 +40,4 @@ import osrs.widget_ids
 import osrs.loot
 import osrs.combat_utils
 import osrs.transport
+import osrs.emergency_exit

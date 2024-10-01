@@ -40,7 +40,7 @@ while True:
 '''
 #osrs.player.equip_item([osrs.item_ids.DIAMOND_DRAGON_BOLTS_E])
 qh = osrs.queryHelper.QueryHelper()
-qh.set_mta_data()
+qh.set_objects_v2('game', {31421})
 while True:
     qh.query_backend()
-    print(qh.get_mta_data())
+    print(qh.get_objects_v2('game'))

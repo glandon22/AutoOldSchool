@@ -136,7 +136,7 @@ class QueryHelper:
         self.query['projectilesV2'] = True
 
     def get_projectiles_v2(self):
-        return 'projectilesV2' in self.game_data and self.game_data['projectilesV2']
+        return ('projectilesV2' in self.game_data and self.game_data['projectilesV2']) or []
 
     def set_chat_options(self):
         self.query['chatOptions'] = True

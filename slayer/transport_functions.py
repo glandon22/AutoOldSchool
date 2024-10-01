@@ -1401,13 +1401,6 @@ def iorworth_dungeon_elves():
 
 
 def rune_dragons():
-    '''
-    3547,10455,0 in dungeon
-click 32113 y< 10468
-click 32117 y> 10000
-click 32153 x < 1574
-break
-    '''
     def in_lithkren():
         qh = osrs.queryHelper.QueryHelper()
         qh.set_player_world_location()

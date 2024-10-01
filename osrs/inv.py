@@ -158,11 +158,6 @@ def dump_inv_right_click(qh, items_to_drop: list):
             move.right_click_v6(item, 'Drop', qh.get_canvas(), in_inv=True)
 
 
-def test():
-    print('im here')
-    osrs.keeb.keyboard.press(osrs.keeb.key.shift)
-    osrs.keeb.write('sdfsdfsfd')
-
 
 def power_drop_v2(qh, items_to_drop):
     pattern = random.randint(0, len(patterns * 2) - 1)
@@ -181,3 +176,19 @@ def power_drop_v2(qh, items_to_drop):
         elif qh.get_inventory()[num]["id"] in items_to_drop:
             move.fast_click_v2(qh.get_inventory()[num])
     osrs.keeb.keyboard.release(osrs.keeb.key.shift)
+
+
+def in_inv_check(item):
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_inventory()
+    qh.query_backend()
+    if qh.get_inventory(item):
+        return True
+
+
+def not_in_inv_check(item):
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_inventory()
+    qh.query_backend()
+    if not qh.get_inventory(item):
+        return True

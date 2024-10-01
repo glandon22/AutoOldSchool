@@ -1,5 +1,6 @@
 import datetime
 import math
+from re import search
 
 import osrs.inv as inv_util
 import osrs.clock as clock
@@ -153,15 +154,15 @@ def withdraw_configured_items(item, game_state: osrs.queryHelper.QueryHelper):
         osrs.dev.logger.warn('note enough found: %s', item)
         return False
     if 'noted' in item and item['noted']:
-        osrs.move.fast_click(game_state.get_widgets(withdraw_noted_widget))
+        osrs.move.fast_click_v2(game_state.get_widgets(withdraw_noted_widget))
 
     if 'quantity' in item:
         osrs.move.right_click_v3(banked_item, f'Withdraw-{item["quantity"]}')
     else:
-        osrs.move.fast_click(banked_item)
+        osrs.move.fast_click_v2(banked_item)
 
     if 'noted' in item and item['noted']:
-        osrs.move.fast_click(game_state.get_widgets(withdraw_item_widget))
+        osrs.move.fast_click_v2(game_state.get_widgets(withdraw_item_widget))
 
     if 'quantity' in item and item['quantity'] == 'X':
         osrs.clock.sleep_one_tick()
@@ -178,7 +179,9 @@ def withdraw_configured_items(item, game_state: osrs.queryHelper.QueryHelper):
         while True:
             qh1.query_backend()
             for i in range(27):
-                if qh1.get_widgets(f"15,3,{i}") and qh1.get_widgets(f"15,3,{i}")['itemID'] == search_id:
+                if qh1.get_widgets(f"15,3,{i}") and (qh1.get_widgets(f"15,3,{i}")['itemID'] == search_id or \
+                    (type(search_id) is list and qh1.get_widgets(f"15,3,{i}")['itemID'] in search_id)
+                ):
                     res = osrs.move.right_click_v6(
                         qh1.get_widgets(f"15,3,{i}"),
                         item['consume'],
@@ -238,7 +241,7 @@ def withdraw_v2(items, game_state: osrs.queryHelper.QueryHelper):
                 osrs.dev.logger.warn('item not found: %s', item)
                 return False
             else:
-                osrs.move.fast_click(banked_item)
+                osrs.move.fast_click_v2(banked_item)
 
     return True
 
@@ -250,29 +253,7 @@ def search_and_withdraw(searches, game_state: osrs.queryHelper.QueryHelper):
         osrs.keeb.press_key('enter')
         osrs.clock.sleep_one_tick()
         game_state.query_backend()
-        filtered_items = [item for item in search['items'] if type(item) is not dict]
-        print('o', filtered_items)
-        # if there are no dicts in this list it will return a nested list
-        # if that happens i have to flatten it
-        if len(filtered_items) > 0 and type(filtered_items[0]) is list:
-            filtered_items = sum(filtered_items, [])
-        print('u', filtered_items)
-        quantities = Counter(filtered_items)
-        for item in search['items']:
-            print(item, type(search['items']), search['items'])
-            if type(item) is dict:
-                success = withdraw_configured_items(item, game_state)
-                if not success:
-                    return False
-                if 'quantity' in item and item['quantity'] == 'X':
-                    osrs.move.click(game_state.get_widgets_v2(osrs.widget_ids.BANK_SEARCH_BUTTON_BACKGROUND))
-                    osrs.clock.random_sleep(0.1, 0.2)
-                    osrs.keeb.write(search['query'])
-                    osrs.keeb.press_key('enter')
-            else:
-                success = withdraw_items(item, quantities, game_state)
-                if not success:
-                    return False
+        return withdraw_v2(search['items'], game_state)
     return True
 
 
@@ -398,6 +379,8 @@ def banking_handler(params, wait_on_deposited_items=True):
     bf_bank_id = 26707
     lum_top_floor_bank_tile = '3208,3221,2'
     lum_top_floor_bank_id = 18491
+    lum_basement_bank_tile = '3219,9623,0'
+    lum_basement_bank_id = 12308
     draynor_bank_tile = '3091,3245,0'
     draynor_bank_id = 10355
     c_wars_bank_tile = '2444,3083,0'
@@ -413,8 +396,8 @@ def banking_handler(params, wait_on_deposited_items=True):
     qh = osrs.queryHelper.QueryHelper()
     qh.set_npcs([*ge_banker_npc_ids, *varr_banker_npc_ids, *fally_banker_npc_ids])
     qh.set_objects(
-        {bf_bank_tile, crafting_guild_bank_tile, c_wars_bank_tile, v_west_bank_tile_1, lum_top_floor_bank_tile, lunar_bank_tile, draynor_bank_tile, barb_assault_bank_tile, gnome_strong_bank_tile, ferox_bank_tile},
-        {bf_bank_id, crafting_guild_bank_id, c_wars_bank_id, v_west_bank_id_1, lum_top_floor_bank_id, draynor_bank_id, lunar_id, barb_assault_bank_id, gnome_strong_bank_id, ferox_bank_id},
+        {lum_basement_bank_tile, bf_bank_tile, crafting_guild_bank_tile, c_wars_bank_tile, v_west_bank_tile_1, lum_top_floor_bank_tile, lunar_bank_tile, draynor_bank_tile, barb_assault_bank_tile, gnome_strong_bank_tile, ferox_bank_tile},
+        {lum_basement_bank_id, bf_bank_id, crafting_guild_bank_id, c_wars_bank_id, v_west_bank_id_1, lum_top_floor_bank_id, draynor_bank_id, lunar_id, barb_assault_bank_id, gnome_strong_bank_id, ferox_bank_id},
         osrs.queryHelper.ObjectTypes.GAME.value
     )
     qh.set_player_world_location()

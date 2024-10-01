@@ -326,6 +326,7 @@ def break_manager_v4(script_config):
         'click_to_play': True | False -> Instances like Tithe Farm dont display this button after login
     }
     """
+    took_break = False
     current_time = datetime.datetime.now()
     timings = config['{}_intensity_script'.format(script_config['intensity'])]
     # Initialize timings on script start
@@ -335,6 +336,7 @@ def break_manager_v4(script_config):
 
     # Begin break period
     if current_time > config['timings']['break_start']:
+        took_break = True
         # Run pre-logout logic supplied by script
         if script_config['logout']:
             script_config['logout']()
@@ -353,7 +355,7 @@ def break_manager_v4(script_config):
         if script_config['login']:
             script_config['login']()
         set_timings(timings, datetime.datetime.now())
-    return config
+    return {**config, 'took_break': took_break}
 
 
 # this simulates the login logout functionality for rapid testing
@@ -448,7 +450,13 @@ def cast_spell(widget):
 
 
 def tele_home_fairy_ring(code):
-    fairy_ring_id = '29228'
+    def widget_up():
+        qh1 = osrs.queryHelper.QueryHelper()
+        qh1.set_widgets_v2({osrs.widget_ids.FAIRY_RING_TELEPORT_BUTTON})
+        qh1.query_backend()
+        if qh1.get_widgets_v2(osrs.widget_ids.FAIRY_RING_TELEPORT_BUTTON):
+            return True
+
     instructions = [
         [],
         [],
@@ -486,27 +494,12 @@ def tele_home_fairy_ring(code):
         osrs.widget_ids.FAIRY_RING_MIDDLE_WHEEL_CENTER,
         osrs.widget_ids.FAIRY_RING_RIGHT_WHEEL_CENTER,
     })
-    tile_map = None
-    last_ring_click = datetime.datetime.now() - datetime.timedelta(hours=1)
+    osrs.move.interact_with_object_v3(
+        29228, right_click_option='Configure', timeout=7, custom_exit_function=widget_up
+    )
     while True:
         qh.query_backend()
-        if qh.get_player_world_location('x') > 4000 and not tile_map:
-            tile_map = osrs.util.generate_game_tiles_in_coords(
-                qh.get_player_world_location('x') - 15,
-                qh.get_player_world_location('x') + 15,
-                qh.get_player_world_location('y') - 15,
-                qh.get_player_world_location('y') + 15,
-                1
-            )
-            qh.set_objects(set(tile_map), set(), osrs.queryHelper.ObjectTypes.GAME.value)
-            qh.set_objects(set(tile_map), {fairy_ring_id}, osrs.queryHelper.ObjectTypes.GAME.value)
-        elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, fairy_ring_id) \
-                and (datetime.datetime.now() - last_ring_click).total_seconds() > 7 \
-                and not qh.get_widgets_v2(osrs.widget_ids.FAIRY_RING_TELEPORT_BUTTON):
-            osrs.move.right_click_v3(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, fairy_ring_id)[0],
-                                     'Configure')
-            last_ring_click = datetime.datetime.now()
-        elif qh.get_widgets_v2(osrs.widget_ids.FAIRY_RING_TELEPORT_BUTTON):
+        if qh.get_widgets_v2(osrs.widget_ids.FAIRY_RING_TELEPORT_BUTTON):
             # Each instruction set is for a wheel of the fairy ring interface. it always opens with A I P selected.
             # I add 50px to the y value to move from the center of the wheel widget to the letter where i click to turn
             for op in instructions[0]:
@@ -699,3 +692,85 @@ def use_portal_nexus(destination):
                 qh.get_canvas()
             )
             last_click = datetime.datetime.now()
+
+
+def slow_lumb_tele():
+    def pre():
+        qh = osrs.queryHelper.QueryHelper()
+        qh.set_widgets({'161,65'})
+        qh.query_backend()
+        if qh.get_widgets('161,65') and qh.get_widgets('161,65')['spriteID'] != 1027:
+            osrs.keeb.press_key('f6')
+            osrs.clock.random_sleep(0.2, 0.3)
+
+    def in_house():
+        qh = osrs.queryHelper.QueryHelper()
+        qh.set_player_world_location()
+        qh.set_objects_v2('game', {4525})
+        qh.query_backend()
+        # ensure i am in house and see portal, otherwise i cant tele out of an instance bc my x value is already large
+        if 3197 <= qh.get_player_world_location('x') <= 3236 and 3204 <= qh.get_player_world_location('y') <= 3234:
+            osrs.keeb.press_key('esc')
+            return True
+
+    osrs.move.interact_with_widget_v3(
+        osrs.widget_ids.home_tele_slow_widget_id,
+        custom_exit_function=in_house,
+        pre_interact=pre,
+        right_click_option='Cast',
+        timeout=30
+    )
+
+
+def skills_tele(dest):
+    '''
+
+    :param dest: Fishing || Mining || Crafting || Cooking || Woodcutting || Farming
+    :return:
+    '''
+
+    locs = {
+        'Fishing': [2601, 2625, 3381, 3408],
+        'Mining': [3044, 3060, 9753, 9771],
+        'Crafting': [2924, 2947, 2934, 3304],
+        'Cooking': [3134, 3157, 3434, 3466],
+        'Woodcutting': [1655, 31669, 3496, 3519],
+        'Farming': [1243, 1255, 3715, 3739],
+    }
+    def pre():
+        qh = osrs.queryHelper.QueryHelper()
+        qh.set_widgets({'161,63'})
+        qh.query_backend()
+        if qh.get_widgets('161,63') or qh.get_widgets('161,63')['spriteID'] != 1030:
+            osrs.keeb.press_key('f4')
+
+    def in_dest():
+        qh = osrs.queryHelper.QueryHelper()
+        qh.set_player_world_location()
+        qh.set_objects_v2('game', {4525})
+        qh.set_widgets({'387,17,1'})
+        qh.query_backend()
+        if locs[dest][0] <= qh.get_player_world_location('x') <= locs[dest][1] \
+                and locs[dest][2] <= qh.get_player_world_location('y') <= locs[dest][3]:
+            osrs.keeb.press_key('esc')
+            osrs.dev.logger.info(f'Successfully teled on skills necklace to {dest} Guild.')
+            return True
+        elif qh.get_widgets('387,17,1') and qh.get_widgets('387,17,1')['itemID'] not in [
+            osrs.item_ids.SKILLS_NECKLACE1,
+            osrs.item_ids.SKILLS_NECKLACE2,
+            osrs.item_ids.SKILLS_NECKLACE3,
+            osrs.item_ids.SKILLS_NECKLACE4,
+            osrs.item_ids.SKILLS_NECKLACE5,
+            osrs.item_ids.SKILLS_NECKLACE6,
+        ]:
+            osrs.dev.logger.warning('Tried to use skills necklace to tele without having one equipped')
+            return True
+
+
+    osrs.move.interact_with_widget_v3(
+        '387,17,1',
+        custom_exit_function=in_dest,
+        pre_interact=pre,
+        right_click_option=f"{dest} Guild",
+        timeout=15
+    )

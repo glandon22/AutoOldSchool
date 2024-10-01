@@ -574,13 +574,14 @@ def follow_path(start, end, right_click=False, exact_tile=False):
     report_player_widget = '875,22'
 
     path = dax.generate_path(start, end)
+    parsed_tiles = []
     if not path:
-        '''# if dax failed fall back to my budget patching homebrewed deal
-        path = run_towards_square(
-            {'x': 3661, 'y': 9836, 'z': 0}, steps_only=True
-        )'''
-        return
-    parsed_tiles = util.tile_objects_to_strings(path)
+        # if dax failed fall back to my budget patching homebrewed deal
+        parsed_tiles = run_towards_square(
+            {'x': end['x'], 'y': end['y'], 'z': 0}, steps_only=True
+        )
+    else:
+        parsed_tiles = util.tile_objects_to_strings(path)
     qh = queryHelper.QueryHelper()
     qh.set_tiles(set(parsed_tiles))
     qh.set_destination_tile()

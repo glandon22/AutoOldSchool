@@ -176,3 +176,41 @@ def equip_item(items):
                 if item['id'] in items and (item['id'] not in clicked or (datetime.datetime.now() - clicked[item['id']]).total_seconds() > 1):
                     osrs.move.fast_click(item)
                     clicked[item['id']] = datetime.datetime.now()
+
+def unequip(slots: list):
+    lookup = {
+        'helm': '15',
+        'cape': '16',
+        'necklace': '17',
+        'ammo': '25',
+        'weapon': '18',
+        'chest': '19',
+        'shield': '20',
+        'legs': '21',
+        'gloves': '22',
+        'boots': '23',
+        'ring': '24',
+    }
+
+    def pre():
+        qh = osrs.queryHelper.QueryHelper()
+        qh.set_widgets({'161,63'})
+        qh.query_backend()
+        if qh.get_widgets('161,63') or qh.get_widgets('161,63')['spriteID'] != 1030:
+            osrs.keeb.press_key('f4')
+
+    def unequipped(widget):
+        qh = osrs.queryHelper.QueryHelper()
+        qh.set_widgets({widget, '387,0'})
+        qh.query_backend()
+        if qh.get_widgets('387,0') and (not qh.get_widgets(widget) or (qh.get_widgets(widget) and qh.get_widgets(widget)['itemID'] in [0, -1])):
+            return True
+
+    for slot in slots:
+        osrs.move.interact_with_widget_v3(
+            f'387,{lookup[slot]},1',
+            custom_exit_function=unequipped,
+            custom_exit_function_arg=f'387,{lookup[slot]},1',
+            pre_interact=pre
+        )
+    osrs.keeb.press_key('esc')
