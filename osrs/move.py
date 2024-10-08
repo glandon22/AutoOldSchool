@@ -1027,7 +1027,7 @@ def interact_with_npc(
         if custom_exit_function_arg is not None and custom_exit_function(custom_exit_function_arg):
             osrs.dev.logger.info('NPC handler configured to exit with custom func and arg and succeeded.')
             return True
-        elif custom_exit_function_arg is None and custom_exit_function():
+        elif custom_exit_function_arg is None and custom_exit_function and custom_exit_function():
             osrs.dev.logger.info('NPC handler configured to exit with custom func (no arg) and succeeded.')
             return True
         elif exit_on_interact and qh.get_interating_with():
