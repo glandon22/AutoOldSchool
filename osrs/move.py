@@ -286,6 +286,38 @@ def run_towards_square_v2(destination, port='56799'):
     run_to_loc_v2(steps)
 
 
+def run_towards_square_v3(destination, steps_only=False):
+    """
+
+    :param steps_only: true || False
+    :param destination: obj {x: 2341, y: 687, z:0}
+    :type port: str
+    """
+
+    loc = server.get_world_location()
+    steps = []
+    while loc['x'] != destination['x'] or loc['y'] != destination['y']:
+        x_diff = destination['x'] - loc['x']
+        x_inc = 0
+        if x_diff > 0:
+            x_inc = min(2, x_diff)
+        else:
+            x_inc = max(-2, x_diff)
+        y_diff = destination['y'] - loc['y']
+        y_inc = 0
+        if y_diff > 0:
+            y_inc = min(2, y_diff)
+        else:
+            y_inc = max(-2, y_diff)
+        loc['x'] = loc['x'] + x_inc
+        loc['y'] = loc['y'] + y_inc
+        next_sq = '{},{},{}'.format(loc['x'], loc['y'], loc['z'])
+        steps.append(next_sq)
+    if steps_only:
+        return steps
+    run_to_loc(steps)
+
+
 def click_off_screen(x1=3000, x2=3100, y1=100, y2=200, click=True):
     bezier_movement(x1, y1, x2, y2)
     clock.random_sleep(0.15, 0.25)
@@ -505,7 +537,7 @@ def check_right_click_options(item, action, canvas, in_inv=False):
 
 def right_click_v6(item, action, canvas, in_inv=False):
     osrs.move.fast_click_v2(item, 'RIGHT')
-    osrs.clock.random_sleep(0.2, 0.21)
+    #osrs.clock.random_sleep(0.2, 0.21)
     curr_pos = pyautogui.position()
     qh = osrs.queryHelper.QueryHelper()
     qh.set_right_click_menu()
@@ -514,22 +546,19 @@ def right_click_v6(item, action, canvas, in_inv=False):
     additional_offset = 0
     while True:
         qh.query_backend()
-        if qh.get_right_click_menu():
-            if curr_pos[1] + qh.get_right_click_menu()['height'] > max_canvas_y:
+        rcm = qh.get_right_click_menu()
+        if rcm:
+            # this is the y coord of the very top of the menu
+            menu_top = rcm['y'] + canvas['yOffset']
+            if curr_pos[1] + rcm['height'] > max_canvas_y:
                 # the extra "- 15" is because this doesnt account for the menu header, which is 15px on a 1080p screen
-                additional_offset = qh.get_right_click_menu()['y'] + 40 - curr_pos[1] - 15
-            entry_data = qh.get_right_click_menu()
+                additional_offset = rcm['y'] + 40 - curr_pos[1] - 15
+            entry_data = rcm
             choose_option_offset = entry_data['height'] - (len(entry_data['entries']) * 15)
             parsed_entries = reversed(entry_data['entries'])
             for i, entry in enumerate(parsed_entries):
                 if action.upper() == entry[0].upper() and (in_inv or item['id'] == int(entry[1])):
-                    additional = choose_option_offset + (i * 15)
-                    osrs.move.move_and_click(
-                        curr_pos[0],
-                        curr_pos[1] + additional + additional_offset,
-                        0,
-                        0
-                    )
+                    osrs.move.fast_click_v2({'x': curr_pos[0], 'y': menu_top + choose_option_offset + (i * 15)})
                     return True
             pyautogui.click()
             return False
@@ -577,7 +606,7 @@ def follow_path(start, end, right_click=False, exact_tile=False):
     parsed_tiles = []
     if not path:
         # if dax failed fall back to my budget patching homebrewed deal
-        parsed_tiles = run_towards_square(
+        parsed_tiles = run_towards_square_v3(
             {'x': end['x'], 'y': end['y'], 'z': 0}, steps_only=True
         )
     else:
