@@ -1,28 +1,17 @@
-'''
-notes
-
-entrance 26624 -> wall 20932
-
-26622
-26623
-26625
-
-mummy 1779 right click Start-minigame
-rm1
-21280 Pass -> spear trap succes when y<= 4471
-search 26616
-wall 26620 Pick-lock then Enter
-wall 26621 Pick-lock then Enter
-wall 26618 Pick-lock then Enter
-wall 26618 Pick-lock then Enter
-26619
-'''
 import datetime
 
 
 import osrs
-# use this to track which room i am in
 room = 1
+
+
+def passed_traps(dest):
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_player_world_location()
+    qh.query_backend()
+    if dest['x_min'] <= qh.get_player_world_location('x') <= dest['x_max'] \
+        and dest['y_min'] <= qh.get_player_world_location('x') <= dest['y_max']:
+        return True
 
 
 def in_game():
