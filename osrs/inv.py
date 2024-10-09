@@ -55,7 +55,7 @@ def get_inv(port='56799', reject_empty=True):
 def get_item_quantity_in_inv(inv, targ):
     quantity = 0
     for item in inv:
-        if item['id'] == int(targ) or (type(targ) is list and item['id'] in targ):
+        if (type(targ) is list and item['id'] in targ) or (type(targ) in [str, int] and item['id'] == int(targ)):
             quantity += item['quantity']
     return quantity
 

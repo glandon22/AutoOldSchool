@@ -774,3 +774,105 @@ def skills_tele(dest):
         right_click_option=f"{dest} Guild",
         timeout=15
     )
+
+
+def dueling_tele(dest):
+    '''
+
+    :param dest: Arena || Castle || Ferox || Fortis
+    :return:
+    '''
+
+    locs = {
+        "Emir's Arena": [3310, 3329, 3224, 32407],
+        'Castle Wars': [2434, 2446, 3081, 3099],
+        'Ferox Enclave': [3117, 3160, 3615, 3648],
+        #'Fortis': [3134, 3157, 3434, 3466]
+    }
+    def pre():
+        qh = osrs.queryHelper.QueryHelper()
+        qh.set_widgets({'161,63'})
+        qh.query_backend()
+        if qh.get_widgets('161,63') or qh.get_widgets('161,63')['spriteID'] != 1030:
+            osrs.keeb.press_key('f4')
+
+    def in_dest():
+        qh = osrs.queryHelper.QueryHelper()
+        qh.set_player_world_location()
+        qh.set_objects_v2('game', {4525})
+        qh.set_widgets({'387,24,1'})
+        qh.query_backend()
+        if locs[dest][0] <= qh.get_player_world_location('x') <= locs[dest][1] \
+                and locs[dest][2] <= qh.get_player_world_location('y') <= locs[dest][3]:
+            osrs.keeb.press_key('esc')
+            osrs.dev.logger.info(f'Successfully teled on ring of dueling to {dest}.')
+            return True
+        elif qh.get_widgets('387,24,1') and qh.get_widgets('387,24,1')['itemID'] not in [
+            osrs.item_ids.RING_OF_DUELING1,
+            osrs.item_ids.RING_OF_DUELING2,
+            osrs.item_ids.RING_OF_DUELING3,
+            osrs.item_ids.RING_OF_DUELING4,
+            osrs.item_ids.RING_OF_DUELING5,
+            osrs.item_ids.RING_OF_DUELING6,
+            osrs.item_ids.RING_OF_DUELING7,
+            osrs.item_ids.RING_OF_DUELING8,
+
+        ]:
+            osrs.dev.logger.warning('Tried to use ring of dueling to tele without having one equipped')
+            return True
+
+
+    osrs.move.interact_with_widget_v3(
+        '387,24,1',
+        custom_exit_function=in_dest,
+        pre_interact=pre,
+        right_click_option=dest,
+        timeout=15
+    )
+
+
+def standard_spells_tele(dest):
+    '''
+
+    :param dest: Varrock || Ardougne || Camelot || Falador
+    :return:
+    '''
+
+    locs = {
+        'Varrock': [3201, 3227, 3418, 3438],
+        'Ardougne': [2650, 2672, 3292, 3319],
+        'Camelot': [2743, 2772, 3467, 3487],
+        'Falador': [2956, 2972, 3371, 3394]
+    }
+    widget_map = {
+        'Varrock': osrs.widget_ids.varrock_tele_widget_id,
+        'Ardougne': osrs.widget_ids.ardy_tele_spell_widget_id,
+        'Camelot': osrs.widget_ids.camelot_tele_spell_widget_id,
+        'Falador': osrs.widget_ids.fally_tele_widget_id
+    }
+    def pre():
+        qh = osrs.queryHelper.QueryHelper()
+        qh.set_widgets({osrs.widget_ids.home_tele_slow_widget_id})
+        qh.query_backend()
+        if not qh.get_widgets(osrs.widget_ids.home_tele_slow_widget_id):
+            osrs.keeb.press_key('f6')
+
+    def in_dest():
+        qh = osrs.queryHelper.QueryHelper()
+        qh.set_player_world_location()
+        qh.set_objects_v2('game', {4525})
+        qh.set_widgets({widget_map[dest]})
+        qh.query_backend()
+        if locs[dest][0] <= qh.get_player_world_location('x') <= locs[dest][1] \
+                and locs[dest][2] <= qh.get_player_world_location('y') <= locs[dest][3]:
+            osrs.keeb.press_key('esc')
+            osrs.dev.logger.info(f'Successfully teled on standard spell book to {dest}.')
+            return True
+
+    osrs.move.interact_with_widget_v3(
+        widget_map[dest],
+        custom_exit_function=in_dest,
+        pre_interact=pre,
+        right_click_option='Cast',
+        timeout=32
+    )

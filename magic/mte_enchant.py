@@ -11,11 +11,11 @@ def full_inv():
 
 def begin_casting():
     qh = osrs.queryHelper.QueryHelper()
-    qh.set_widgets({'161,65', osrs.widget_ids.enchant_sub_menu_widget_id, osrs.widget_ids.l6_enchant_menu_widget_id})
+    qh.set_widgets({'161,65', osrs.widget_ids.enchant_sub_menu_widget_id, osrs.widget_ids.l5_enchant_menu_widget_id})
     qh.set_canvas()
     while True:
         qh.query_backend()
-        if qh.get_widgets(osrs.widget_ids.l6_enchant_menu_widget_id):
+        if qh.get_widgets(osrs.widget_ids.l5_enchant_menu_widget_id):
             return
         elif qh.get_widgets(osrs.widget_ids.enchant_sub_menu_widget_id):
             osrs.move.fast_click_v2(qh.get_widgets(osrs.widget_ids.enchant_sub_menu_widget_id))
@@ -28,15 +28,22 @@ def cast_enchant():
     qh.set_inventory()
     qh.set_widgets({
         osrs.widget_ids.inv_inv_widget_id,
-        osrs.widget_ids.l6_enchant_menu_widget_id
+        osrs.widget_ids.l5_enchant_menu_widget_id
     })
     item_last_clicked = True
     while True:
         qh.query_backend()
         if not qh.get_inventory([osrs.item_ids.CYLINDER, osrs.item_ids.DRAGONSTONE_6903]):
-            osrs.keeb.press_key('esc')
-            osrs.keeb.press_key('esc')
-            return
+            if qh.get_widgets(osrs.widget_ids.inv_inv_widget_id) and \
+                    qh.get_widgets(osrs.widget_ids.inv_inv_widget_id)['spriteID'] == 1030:
+                osrs.clock.sleep_one_tick()
+                osrs.clock.sleep_one_tick()
+                osrs.clock.sleep_one_tick()
+                osrs.keeb.press_key('esc')
+                return
+            else:
+                osrs.keeb.press_key('esc')
+                osrs.keeb.press_key('esc')
         elif qh.get_widgets(osrs.widget_ids.inv_inv_widget_id) and \
                 qh.get_widgets(osrs.widget_ids.inv_inv_widget_id)['spriteID'] == 1030 \
                 and osrs.inv.are_items_in_inventory_v2(reversed(qh.get_inventory()), [osrs.item_ids.CYLINDER, osrs.item_ids.DRAGONSTONE_6903]) \
@@ -45,8 +52,8 @@ def cast_enchant():
                 osrs.inv.are_items_in_inventory_v2(reversed(qh.get_inventory()), [osrs.item_ids.CYLINDER, osrs.item_ids.DRAGONSTONE_6903])
             )
             item_last_clicked = True
-        elif qh.get_widgets(osrs.widget_ids.l6_enchant_menu_widget_id) and item_last_clicked:
-            osrs.move.fast_click_v2(qh.get_widgets(osrs.widget_ids.l6_enchant_menu_widget_id))
+        elif qh.get_widgets(osrs.widget_ids.l5_enchant_menu_widget_id) and item_last_clicked:
+            osrs.move.fast_click_v2(qh.get_widgets(osrs.widget_ids.l5_enchant_menu_widget_id))
             item_last_clicked = False
 
 

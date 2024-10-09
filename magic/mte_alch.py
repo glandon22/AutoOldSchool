@@ -1,3 +1,5 @@
+import datetime
+
 import pyautogui
 
 import osrs
@@ -34,6 +36,7 @@ def cast_alch():
         osrs.widget_ids.high_alch_spell_widget_id
     })
     item_last_clicked = True
+    last_alch = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
         osrs.game.break_manager_v4({
             'intensity': 'high',
@@ -55,9 +58,12 @@ def cast_alch():
                 osrs.inv.are_items_in_inventory_v2(reversed(qh.get_inventory()), items_to_alch)
             )
             item_last_clicked = True
+            last_alch = datetime.datetime.now()
         elif qh.get_widgets(osrs.widget_ids.high_alch_spell_widget_id) and item_last_clicked:
             osrs.move.fast_click_v2(qh.get_widgets(osrs.widget_ids.high_alch_spell_widget_id))
             item_last_clicked = False
+        elif (datetime.datetime.now() - last_alch).total_seconds() > 30:
+            osrs.keeb.press_key('f6')
 
 
 def main():

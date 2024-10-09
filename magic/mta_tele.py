@@ -7,18 +7,30 @@ def get_on_tile():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_mta_data()
     qh.set_player_world_location()
-
+    qh.set_objects_v2('wall', {10755})
+    qh.set_destination_tile()
+    qh.set_npcs(['5979'])
     while True:
         qh.query_backend()
         if qh.get_mta_data() and 'teleTile' in qh.get_mta_data():
+            qh.set_tiles({f"{qh.get_mta_data()['teleTile']['x']},{qh.get_mta_data()['teleTile']['y']},0"})
             if qh.get_player_world_location()['x'] == qh.get_mta_data()['teleTile']['x'] and \
                     qh.get_player_world_location()['y'] == qh.get_mta_data()['teleTile']['y']:
                 break
-            else:
-                # all instanced so cant use dax calls
-                osrs.move.go_to_loc(
-                    qh.get_mta_data()['teleTile']['x'], qh.get_mta_data()['teleTile']['y'], exact_tile=True
+            elif qh.get_destination_tile() and qh.get_destination_tile()['x'] == qh.get_mta_data()['teleTile']['x'] \
+                    and qh.get_destination_tile()['y'] == qh.get_mta_data()['teleTile']['y']:
+                osrs.dev.logger.info('headed to correct mta tele tile')
+                continue
+            elif qh.get_tiles(f"{qh.get_mta_data()['teleTile']['x']},{qh.get_mta_data()['teleTile']['y']},0"):
+                osrs.move.fast_click_v2(
+                    qh.get_tiles(f"{qh.get_mta_data()['teleTile']['x']},{qh.get_mta_data()['teleTile']['y']},0")
                 )
+            elif qh.get_objects_v2('wall', 10755):
+                osrs.move.fast_click_v2(sorted(qh.get_objects_v2('wall', 10755), key=lambda wall: wall['dist'])[0])
+        elif qh.get_objects_v2('wall', 10755):
+            osrs.move.fast_click_v2(sorted(qh.get_objects_v2('wall', 10755), key=lambda wall: wall['dist'])[0])
+        elif qh.get_npcs():
+            osrs.move.fast_click_v2(qh.get_npcs()[0])
 
 
 def open_spells():
@@ -33,6 +45,7 @@ def open_spells():
 
 
 def cast_on_guardian():
+    osrs.dev.logger.info('casting')
     qh = osrs.queryHelper.QueryHelper()
     qh.set_npcs(['6777', '6778', '6779'])
     qh.set_widgets({'161,65', osrs.widget_ids.tele_grab_widget_id})
@@ -57,8 +70,10 @@ def cast_on_guardian():
                 if c:
                     res = osrs.move.right_click_v6(c, 'Cast', qh.get_canvas(), in_inv=True)
                     if res:
+                        osrs.clock.sleep_one_tick()
+                        osrs.clock.sleep_one_tick()
                         continue
-            osrs.move.fast_click_v2(qh.get_widgets(osrs.widget_ids.tele_grab_widget_id))
+            #osrs.move.fast_click_v2(qh.get_widgets(osrs.widget_ids.tele_grab_widget_id))
 
 
 def reset():
@@ -78,6 +93,7 @@ def reset():
 
 
 def enter_room():
+    osrs.dev.logger.info('entering in')
     osrs.move.interact_with_object_v3(23673, 'x', 4000, True)
 
 def main():
@@ -90,4 +106,5 @@ def main():
         status = cast_on_guardian()
         if status == 2:
             reset()
+enter_room()
 main()

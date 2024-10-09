@@ -2234,6 +2234,7 @@ kourend_telly_spell_widget_id = '218,36'
 ardy_tele_spell_widget_id = '218,41'
 high_alch_spell_widget_id = '218,44'
 bones_banana_spell_widget_id = '218,17'
+bones_peaches_spell_widget_id = '218,50'
 
 ## F KEY INV WIDGETS
 combat_options_inv_widget_id = '161,59'

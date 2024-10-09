@@ -39,6 +39,7 @@ food_ids = [
     3144,  # karambwan
     379,  # lobster
     385,  # shark
+    osrs.item_ids.PEACH
 ]
 
 pot_matcher = {
