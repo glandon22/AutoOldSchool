@@ -274,7 +274,7 @@ def kill_tunnel_monster(x_min, x_max, y_min, y_max):
                         return
                     elif (not qh.get_interating_with()
                           and x_min <= npc['x_coord'] <= x_max and y_min <= npc['y_coord'] <= y_max):
-                        osrs.move.instant_click_v2(npc)
+                        osrs.move.fast_click_v2(npc)
                         break
 
 

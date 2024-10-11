@@ -6,7 +6,7 @@ def click_start():
     qh.set_tiles({'3508,3489,0'})
     qh.query_backend()
     if qh.get_tiles('3508,3489,0'):
-        osrs.move.instant_click_v2(qh.get_tiles('3508,3489,0'))
+        osrs.move.fast_click_v2(qh.get_tiles('3508,3489,0'))
     else:
         steps = osrs.move.run_towards_square(
             {'x': 3508, 'y': 3489, 'z': 0},

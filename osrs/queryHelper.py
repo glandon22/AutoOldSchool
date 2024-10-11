@@ -119,9 +119,9 @@ class QueryHelper:
                 else:
                     return inv.is_item_in_inventory_v2(self.game_data['inv'], item)
             else:
-                return False
+                return []
         else:
-            return 'inv' in self.game_data and self.game_data['inv']
+            return ('inv' in self.game_data and self.game_data['inv']) or []
 
     def projectiles(self):
         self.query['projectiles'] = True

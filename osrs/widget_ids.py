@@ -2250,3 +2250,4 @@ prayer_orb_widget_id = '160,21'
 chat_input_request_widget = '162,42'
 
 main_chat_widget = '162,34'
+run_energy_widget_id = '160,28'

@@ -1,11 +1,14 @@
 import osrs
 
-
 pot_handler_required_prayer_widgets = {'233,0', '541,23', '541,22', '541,21', '161,62', '541,25'}
 pot_handler_required_skills = {'hitpoints', 'strength', 'ranged', 'magic', 'attack', 'defence', 'prayer'}
+
+
 class PotConfig:
     def __init__(self, super_combat=False, ranging=False, magic=False, antipoision=False, antifire=False,
-                 super_str=False, super_atk=False, super_def=False, antivenom=False, prayer=False, superantifire=True):
+                 super_str=False, super_atk=False, super_def=False, antivenom=False, prayer=False,
+                 superantifire=False, stamina=False
+                 ):
         self.SUPER_COMBATS = super_combat
         self.RANGING_POTION = ranging
         self.MAGIC_POTION = magic
@@ -17,6 +20,7 @@ class PotConfig:
         self.SUPER_DEF = super_def
         self.ANTIVENOM = antivenom
         self.PRAYER = prayer
+        self.STAMINA = stamina
 
     def asdict(self):
         return {
@@ -30,7 +34,8 @@ class PotConfig:
             'SUPER_STRENGTH': self.SUPER_STR,
             'SUPER_DEFENCE': self.SUPER_DEF,
             'ANTIVENOM': self.ANTIVENOM,
-            'PRAYER': self.PRAYER
+            'PRAYER': self.PRAYER,
+            'STAMINA': self.STAMINA
         }
 
 
@@ -43,6 +48,12 @@ food_ids = [
 ]
 
 pot_matcher = {
+    "STAMINA": [
+        osrs.item_ids.STAMINA_POTION1,
+        osrs.item_ids.STAMINA_POTION2,
+        osrs.item_ids.STAMINA_POTION3,
+        osrs.item_ids.STAMINA_POTION4,
+    ],
     "SUPER_COMBATS": [
         osrs.item_ids.SUPER_COMBAT_POTION4,
         osrs.item_ids.SUPER_COMBAT_POTION3,
@@ -88,6 +99,18 @@ pot_matcher = {
         osrs.item_ids.SUPERANTIPOISON3,
         osrs.item_ids.SUPERANTIPOISON2,
         osrs.item_ids.SUPERANTIPOISON1,
+        osrs.item_ids.ANTIPOISON1,
+        osrs.item_ids.ANTIPOISON2,
+        osrs.item_ids.ANTIPOISON3,
+        osrs.item_ids.ANTIPOISON4,
+        osrs.item_ids.ANTIDOTE1,
+        osrs.item_ids.ANTIDOTE2,
+        osrs.item_ids.ANTIDOTE3,
+        osrs.item_ids.ANTIDOTE4,
+        osrs.item_ids.ANTIDOTE1_5958,
+        osrs.item_ids.ANTIDOTE2_5956,
+        osrs.item_ids.ANTIDOTE3_5954,
+        osrs.item_ids.ANTIDOTE4_5952,
     ],
     "ANTIFIRE": [
         osrs.item_ids.ANTIFIRE_POTION1,
@@ -206,14 +229,14 @@ def fast_food_handler(qh, min_health):
     return True
 
 
-def pot_handler(qh: osrs.queryHelper.QueryHelper or None, pots, min_prayer=15):
+def pot_handler(qh: osrs.queryHelper.QueryHelper or None, pots, min_prayer=15, min_run=35):
     ANTIFIRE_VARBIT = '3981'
     SUPER_ANTIFIRE_VARBIT = '6101'
     if not qh:
         qh = osrs.queryHelper.QueryHelper()
         qh.set_skills({'hitpoints', 'strength', 'ranged', 'magic', 'attack', 'defence', 'prayer'})
         qh.set_inventory()
-        qh.set_widgets({'233,0', '541,23', '541,22', '541,21', '161,62'})
+        qh.set_widgets({'233,0', '541,23', '541,22', '541,21', '161,62', osrs.widget_ids.run_energy_widget_id})
         qh.set_varbit(ANTIFIRE_VARBIT if 'ANTIFIRE' in pots else SUPER_ANTIFIRE_VARBIT)
         qh.set_active_prayers()
         qh.query_backend()
@@ -299,6 +322,14 @@ def pot_handler(qh: osrs.queryHelper.QueryHelper or None, pots, min_prayer=15):
             osrs.move.fast_click_v2(p)
         else:
             return False
+    if 'STAMINA' in pots \
+            and qh.get_widgets(osrs.widget_ids.run_energy_widget_id) \
+            and int(qh.get_widgets(osrs.widget_ids.run_energy_widget_id)['text']) <= min_run:
+        p = osrs.inv.are_items_in_inventory_v2(qh.get_inventory(), pot_matcher['STAMINA'])
+        if p:
+            osrs.move.fast_click_v2(p)
+        else:
+            return False
     return True
 
 
@@ -324,4 +355,3 @@ def turn_off_quick_prayers(qh):
             return
         else:
             osrs.move.fast_click_v2(qh.get_widgets('160,21'))
-

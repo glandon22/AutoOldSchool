@@ -134,7 +134,8 @@ def fast_click(obj):
 
 def fast_click_v2(obj, button='PRIMARY'):
     pyautogui.moveTo(obj['x'], obj['y'])
-    osrs.clock.random_sleep(0.11, 0.12)
+    if button == 'PRIMARY':
+        osrs.clock.random_sleep(0.11, 0.12)
     pyautogui.click(button=button)
 
 
@@ -337,10 +338,8 @@ def instant_click(x, y):
     pyautogui.click()
 
 
-def instant_click_v2(obj):
+def instant_move(obj):
     pyautogui.moveTo(obj['x'], obj['y'])
-    clock.random_sleep(0.1, 0.11)
-    pyautogui.click()
 
 
 def spam_click(tile, seconds, port='56799'):
@@ -537,13 +536,11 @@ def check_right_click_options(item, action, canvas, in_inv=False):
 
 def right_click_v6(item, action, canvas, in_inv=False):
     osrs.move.fast_click_v2(item, 'RIGHT')
-    #osrs.clock.random_sleep(0.2, 0.21)
+    osrs.clock.random_sleep(0.05, 0.051)
     curr_pos = pyautogui.position()
     qh = osrs.queryHelper.QueryHelper()
     qh.set_right_click_menu()
     max_canvas_y = canvas['yMax']
-    # if i right click something that is low on the screen, the menu would open off the screen so the game pushes it up
-    additional_offset = 0
     while True:
         qh.query_backend()
         rcm = qh.get_right_click_menu()
@@ -765,14 +762,14 @@ def interact_with_object(
             if pre_interact:
                 pre_interact()
             if right_click_option is None:
-                osrs.move.instant_click_v2(target_obj[0])
+                osrs.move.fast_click_v2(target_obj[0])
                 last_click = datetime.datetime.now()
             else:
                 success = osrs.move.right_click_v6(target_obj[0], right_click_option, qh.get_canvas())
                 if success:
                     last_click = datetime.datetime.now()
         elif intermediate_tile and qh.get_tiles(intermediate_tile) and not target_obj:
-            osrs.move.instant_click_v2(qh.get_tiles(intermediate_tile))
+            osrs.move.fast_click_v2(qh.get_tiles(intermediate_tile))
 
 
 def interact_with_multiple_objects(
@@ -812,14 +809,14 @@ def interact_with_multiple_objects(
             if pre_interact:
                 pre_interact()
             if right_click_option is None:
-                osrs.move.instant_click_v2(closest)
+                osrs.move.fast_click_v2(closest)
                 last_click = datetime.datetime.now()
             else:
                 success = osrs.move.right_click_v6(closest, right_click_option, qh.get_canvas())
                 if success:
                     last_click = datetime.datetime.now()
         elif intermediate_tile and qh.get_tiles(intermediate_tile) and not target_obj:
-            osrs.move.instant_click_v2(qh.get_tiles(intermediate_tile))
+            osrs.move.fast_click_v2(qh.get_tiles(intermediate_tile))
 
 
 def go_to_loc(dest_x, dest_y, dest_z=0, right_click=False, exact_tile=False):
@@ -875,6 +872,7 @@ def initialize_query_helper(obj_id, obj_type, intermediate_tile):
     qh = osrs.queryHelper.QueryHelper()
     qh.set_player_world_location()
     qh.set_canvas()
+    qh.set_right_click_menu()
     qh.set_objects_v2(obj_type, {obj_id} if isinstance(obj_id, int) else set(obj_id))
     if intermediate_tile:
         qh.set_tiles({intermediate_tile})
@@ -896,7 +894,7 @@ def should_exit(qh, coord_type, coord_value, greater_than, custom_exit_function,
 
 def handle_interaction(
         qh, target_obj, last_click, pre_interact,
-        pre_interact_arg, timeout, right_click_option, in_inv=False
+        pre_interact_arg, timeout, right_click_option, in_inv=False, conditional_click=None
 ):
     current_time = datetime.datetime.now()
     if (current_time - last_click).total_seconds() > timeout:
@@ -907,8 +905,15 @@ def handle_interaction(
             success = osrs.move.right_click_v6(target_obj[0], right_click_option, qh.get_canvas(), in_inv=in_inv)
             if success:
                 last_click = current_time
+        elif conditional_click is not None:
+            osrs.move.instant_move(target_obj)
+            if qh.get_right_click_menu() and qh.get_right_click_menu()['entries']:
+                for option in qh.get_right_click_menu()['entries']:
+                    if option[0] == conditional_click and str(option[1]) == str(target_obj['id']):
+                        pyautogui.click()
+                        return True
         else:
-            osrs.move.instant_click_v2(target_obj[0])
+            osrs.move.fast_click_v2(target_obj[0])
             last_click = current_time
     return last_click
 
@@ -918,11 +923,13 @@ def interact_with_object_v3(
         intermediate_tile=None, obj_type='game', timeout=0.1,
         custom_exit_function=None, custom_exit_function_arg=None,
         pre_interact=None, obj_tile=None, right_click_option=None,
-        pre_interact_arg=None
+        pre_interact_arg=None,
+        conditional_click=None
 ):
     """
     Interacts with objects in the game world based on given parameters.
 
+    :param conditional_click: the desired left click option if necessary
     :param obj_id: int or set :: 12345 || {1234, 687}
     :param coord_type: char :: 'x' || 'y' || 'z'
     :param coord_value: int :: 1234
@@ -959,10 +966,10 @@ def interact_with_object_v3(
 
         if target_obj:
             last_click = handle_interaction(
-                qh, target_obj, last_click, pre_interact, pre_interact_arg, timeout, right_click_option
+                qh, target_obj, last_click, pre_interact, pre_interact_arg, timeout, right_click_option, conditional_click
             )
         elif intermediate_tile and qh.get_tiles(intermediate_tile):
-            osrs.move.instant_click_v2(qh.get_tiles(intermediate_tile))
+            osrs.move.fast_click_v2(qh.get_tiles(intermediate_tile))
 
 
 def interact_with_widget_v3(
@@ -1021,7 +1028,7 @@ def handle_npc_interaction(
             if success:
                 last_click = current_time
         else:
-            osrs.move.instant_click_v2(target_obj)
+            osrs.move.fast_click_v2(target_obj)
             last_click = current_time
     return last_click
 

@@ -27,20 +27,19 @@ osrs.move.interact_with_widget_v3(
     custom_exit_function=exx,
     pre_interact=pre
 )'''
-'''qh = osrs.queryHelper.QueryHelper()
-qh.set_destination_tile()
-qh.set_player_world_location()
-qh.set_projectiles_v2()
-while True:
-    qh.query_backend()
-    print('-------------------')
-    print(qh.get_projectiles_v2())
-    print(qh.get_player_world_location())
-    print('-------------------')
-'''
-#osrs.player.equip_item([osrs.item_ids.DIAMOND_DRAGON_BOLTS_E])
 qh = osrs.queryHelper.QueryHelper()
-qh.set_objects_v2('game', {31421})
+qh.set_objects_v2('game', {21280})
+qh.set_player_world_location()
 while True:
     qh.query_backend()
-    print(qh.get_objects_v2('game'))
+    print('-------------------')
+    obs = qh.get_objects_v2('game')
+    obs = osrs.util.find_closest_target_on_screen(list(
+        sorted(
+            obs,
+            key=lambda x: x['dist']
+        )
+    ))
+    print(obs)
+
+#pyautogui.moveTo(858, 591)

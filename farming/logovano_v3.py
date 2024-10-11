@@ -259,17 +259,18 @@ def get_boxes():
 
 
 def send_herbs_to_bank():
-    start = datetime.datetime.now()
+    start_time = datetime.datetime.now()
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.set_canvas()
-    last_click = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
         qh.query_backend()
         if not qh.get_inventory(osrs.item_ids.HERB_BOX):
+            osrs.keeb.press_key('esc')
+            osrs.keeb.press_key('esc')
             return
 
-        elif (datetime.datetime.now() - start).total_seconds() > 300:
+        elif (datetime.datetime.now() - start_time).total_seconds() > 300:
             return
         else:
             osrs.move.right_click_v6(
@@ -283,8 +284,8 @@ def send_herbs_to_bank():
 def collect_rewards(qh):
     qh.query_backend()
     if qh.get_widgets('241,6'):
-        parsed = int(qh.get_widgets('241,6')['text'].split(': ')[1])
-        if parsed > 1900:
+        parsed = int(qh.get_widgets('241,6')['text'].split(': ')[1].replace(',',''))
+        if parsed > 900:
             osrs.move.interact_with_object_v3(
                 27445, obj_type='wall', coord_type='x', coord_value=5000, greater_than=False
             )

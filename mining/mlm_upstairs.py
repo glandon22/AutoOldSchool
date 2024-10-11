@@ -3,6 +3,9 @@ import random
 
 import osrs
 
+max_ore = 189
+unlocked_top_hopper = True
+
 ore_veins = {
     '26661',
     '26662',
@@ -16,8 +19,6 @@ ore_locs = {
     '3753,5680,0',
     '3749,5682,0',
     '3748,5682,0',
-    '3754,5682,0', ##
-    '3754,5683,0', ##
     '3752,5684,0',
 }
 
@@ -31,11 +32,11 @@ loot = [
 ]
 
 equipment = [
-    {'id': osrs.item_ids.GRACEFUL_TOP, 'consume': 'Wear'},
+    {'id': osrs.item_ids.PROSPECTOR_JACKET, 'consume': 'Wear'},
     {'id': osrs.item_ids.GRACEFUL_CAPE, 'consume': 'Wear'},
-    {'id': osrs.item_ids.GRACEFUL_HOOD, 'consume': 'Wear'},
-    {'id': osrs.item_ids.GRACEFUL_LEGS, 'consume': 'Wear'},
-    {'id': osrs.item_ids.GRACEFUL_BOOTS, 'consume': 'Wear'},
+    {'id': osrs.item_ids.PROSPECTOR_HELMET, 'consume': 'Wear'},
+    {'id': osrs.item_ids.PROSPECTOR_LEGS, 'consume': 'Wear'},
+    {'id': osrs.item_ids.PROSPECTOR_BOOTS, 'consume': 'Wear'},
     {'id': osrs.item_ids.GRACEFUL_GLOVES, 'consume': 'Wear'},
     {'id': osrs.item_ids.DRAGON_PICKAXE, 'consume': 'Wield'},
     {'id': [
@@ -107,7 +108,7 @@ def mine_ore():
     last_return_tile_click = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
         qh.query_backend()
-        if qh.get_varbit() and qh.get_varbit() + osrs.inv.get_item_quantity_in_inv(qh.get_inventory() or [], osrs.item_ids.PAYDIRT) >= 108:
+        if qh.get_varbit() and qh.get_varbit() + osrs.inv.get_item_quantity_in_inv(qh.get_inventory() or [], osrs.item_ids.PAYDIRT) >= max_ore:
             osrs.dev.logger.info('at 189 paydirt.')
             return True
         elif qh.get_inventory() and len(qh.get_inventory()) == 28:
@@ -138,7 +139,7 @@ def deposit_ore():
     qh.set_inventory()
     qh.set_varbit('5558')
     qh.query_backend()
-    if not qh.get_inventory(osrs.item_ids.PAYDIRT) or qh.get_varbit() >= 108:
+    if not qh.get_inventory(osrs.item_ids.PAYDIRT) or qh.get_varbit() >= max_ore:
         return True
 
 
@@ -146,7 +147,7 @@ def should_collect(current_paydirt):
     qh = osrs.queryHelper.QueryHelper()
     qh.set_varbit('5558')
     qh.query_backend()
-    if qh.get_varbit() and qh.get_varbit() + current_paydirt >= 108:
+    if qh.get_varbit() and qh.get_varbit() + current_paydirt >= max_ore:
         return True
 
 
@@ -187,6 +188,8 @@ def collect_ore():
         osrs.queryHelper.ObjectTypes.GAME.value
     )
     last_deposit_box_click = datetime.datetime.now() - datetime.timedelta(hours=1)
+    qh.query_backend()
+    osrs.inv.power_drop_v2(qh, [osrs.item_ids.PAYDIRT])
     while True:
         qh.query_backend()
         if (not qh.get_varbit() or qh.get_varbit() == 0) and not qh.get_inventory(loot):
@@ -228,23 +231,42 @@ def main(endless_loop=True):
         elif 'took_break' in break_info and break_info['took_break']:
             iter_count -= 1
         paydirt_count = mine_ore()
-        osrs.dev.logger.info('heading to lower level.')
-        osrs.move.interact_with_object(
-            19045, 'y', 5673, False,
-            custom_exit_function=descended_ladder, right_click_option='Climb', timeout=3
-        )
-        osrs.dev.logger.info('depositing ore')
-        osrs.move.interact_with_object(
-            26674, 'y', 5673, False, custom_exit_function=deposit_ore, timeout=9,
-            right_click_option='Deposit'
-        )
-        if should_collect(paydirt_count):
-            osrs.dev.logger.info('need to collect ore, going to ore sack.')
-            osrs.move.go_to_loc(3748, 5659)
-            collect_ore()
-        osrs.move.interact_with_object(
-            19044, 'y', 5674, True, intermediate_tile='3755,5668,0',
-            custom_exit_function=ascended_ladder, right_click_option='Climb', timeout=6
-        )
-
+        if unlocked_top_hopper:
+            osrs.dev.logger.info('depositing ore upstairs.')
+            osrs.move.interact_with_object(
+                26674, 'y', 5673, False, custom_exit_function=deposit_ore, timeout=9,
+                right_click_option='Deposit', obj_tile={'x': 3755, 'y': 5677, 'z': 0}
+            )
+            if should_collect(paydirt_count):
+                osrs.dev.logger.info('need to collect ore, going to ore sack.')
+                osrs.dev.logger.info('heading to lower level.')
+                osrs.move.interact_with_object(
+                    19045, 'y', 5673, False,
+                    custom_exit_function=descended_ladder, right_click_option='Climb', timeout=3
+                )
+                osrs.move.go_to_loc(3748, 5659)
+                collect_ore()
+                osrs.move.interact_with_object(
+                    19044, 'y', 5674, True, intermediate_tile='3755,5668,0',
+                    custom_exit_function=ascended_ladder, right_click_option='Climb', timeout=6
+                )
+        else:
+            osrs.dev.logger.info('heading to lower level.')
+            osrs.move.interact_with_object(
+                19045, 'y', 5673, False,
+                custom_exit_function=descended_ladder, right_click_option='Climb', timeout=3
+            )
+            osrs.dev.logger.info('depositing ore')
+            osrs.move.interact_with_object(
+                26674, 'y', 5673, False, custom_exit_function=deposit_ore, timeout=9,
+                right_click_option='Deposit'
+            )
+            if should_collect(paydirt_count):
+                osrs.dev.logger.info('need to collect ore, going to ore sack.')
+                osrs.move.go_to_loc(3748, 5659)
+                collect_ore()
+            osrs.move.interact_with_object(
+                19044, 'y', 5674, True, intermediate_tile='3755,5668,0',
+                custom_exit_function=ascended_ladder, right_click_option='Climb', timeout=6
+            )
 
