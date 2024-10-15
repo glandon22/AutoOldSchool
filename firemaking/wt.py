@@ -1,9 +1,3 @@
-'''
-notes
-396,20 warm parse text Your Warmth: 100%
-396,26 wintertody energy Wintertodt's Energy: 100% or The Wintertodt returns in: 0:02
-chopping tile: 1622,3988,0
-'''
 from datetime import datetime, timedelta
 
 import osrs
@@ -109,6 +103,14 @@ def load_brazier(qh: osrs.queryHelper.QueryHelper):
         if game_status['next_game_in']:
             osrs.dev.logger.info('Game ended while loading brazier.')
             return
+        elif game_status['warmth'] and game_status['warmth'] <= 40:
+            food_to_eat = qh.get_inventory(food_ids)
+            if not food_to_eat:
+                osrs.dev.logger.warning('In game with low warmth but Im out of food - resupplying.')
+                return resupply()
+            else:
+                osrs.move.fast_click_v2(food_to_eat)
+                osrs.clock.sleep_one_tick()
         elif not qh.get_inventory(osrs.item_ids.BRUMA_ROOT):
             osrs.dev.logger.info('Finished loading bruma roots into brazier.')
             return
@@ -182,5 +184,3 @@ def main():
             )
 
 main()
-
-# 26990 falling snow in z pattern

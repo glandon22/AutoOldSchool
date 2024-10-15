@@ -1,5 +1,6 @@
 # 2134,9305,0
 import time
+from datetime import datetime
 
 import pyautogui
 import osrs
@@ -27,19 +28,18 @@ osrs.move.interact_with_widget_v3(
     custom_exit_function=exx,
     pre_interact=pre
 )'''
-qh = osrs.queryHelper.QueryHelper()
-qh.set_objects_v2('game', {21280})
-qh.set_player_world_location()
-while True:
+'''def pre():
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_tiles({'3372,11492,0'})
+    qh.set_player_world_location()
     qh.query_backend()
-    print('-------------------')
-    obs = qh.get_objects_v2('game')
-    obs = osrs.util.find_closest_target_on_screen(list(
-        sorted(
-            obs,
-            key=lambda x: x['dist']
-        )
-    ))
-    print(obs)
+    if qh.get_tiles('3372,11492,0') and qh.get_player_world_location('x') == 3374 and qh.get_player_world_location('y') == 11491:
+        osrs.move.fast_click_v2(qh.get_tiles('3372,11492,0'))'''
+'''osrs.move.interact_with_object_v3(
+        44776,
+        custom_exit_function=lambda start: (datetime.now() - start).total_seconds() > 9,
+        custom_exit_function_arg=datetime.now(),
+    #pre_interact=pre
+    )'''
 
-#pyautogui.moveTo(858, 591)
+pyautogui.moveTo(516, 953)

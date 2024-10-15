@@ -16,9 +16,11 @@ def check_session_time():
     qh1.set_widgets({'162,33'})
     while True:
         qh1.query_backend()
-        if qh1.get_widgets('162,33') and qh1.get_widgets('162,33')['text']:
+        if (qh1.get_widgets('162,33')
+                and qh1.get_widgets('162,33')['text']
+                and 'Report' not in qh1.get_widgets('162,33')['text']):
             parsed_time = qh1.get_widgets('162,33')['text'].split(':')
-            if int(parsed_time[0]) >= 1 and int(parsed_time[1]) > 10:
+            if int(parsed_time[0]) >= 1:
                 dev.logger.critical('Script is malfunctioning, ran for over 1 hour. Emergency exit.')
                 for process in psutil.process_iter():
                     cmdline = process.cmdline()
