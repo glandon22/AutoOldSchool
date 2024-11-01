@@ -258,8 +258,10 @@ def sleepwalker_handler():
     qh.set_right_click_menu()
     qh.set_player_world_location()
     qh.set_detailed_interating_with()
+    qh.set_equipment()
     while True:
         qh.query_backend()
+        osrs.player.equip_item_no_wait([osrs.item_ids.ADAMANT_KNIFE], qh.get_equipment())
         closest = osrs.util.find_closest_target_in_game(qh.get_npcs(), qh.get_player_world_location(),
                                                         lambda npc: npc['health'] != 0)
         if not closest:
