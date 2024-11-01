@@ -1174,13 +1174,19 @@ def interact_with_npc(
             )
 
 
-def conditional_click(qh, obj, action):
+def conditional_click(qh: osrs.queryHelper.QueryHelper, obj, action, target_field='name'):
     if not obj or not action or not qh:
         return
-    elif (qh.get_right_click_menu()
-          and qh.get_right_click_menu()['entries']
-          and action in qh.get_right_click_menu()['entries'][-1][0]
-          and obj['name'] in qh.get_right_click_menu()['entries'][-1][2]):
+
+    action_found = (qh.get_right_click_menu()
+                    and qh.get_right_click_menu()['entries']
+                    and action in qh.get_right_click_menu()['entries'][-1][0])
+    target_found = False
+    for item in qh.get_right_click_menu()['entries'][-1]:
+        if str(obj[target_field]) in item:
+            target_found = True
+            break
+    if action_found and target_found:
         pyautogui.click()
     elif obj:
         osrs.move.instant_move(obj)

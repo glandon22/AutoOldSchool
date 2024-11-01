@@ -106,7 +106,4 @@ while True:
     qh.set_npcs_by_name(['Sister Senga'])
     qh.set_right_click_menu()
     qh.query_backend()
-    if qh.get_npcs():
-        osrs.move.conditional_click(
-            qh, qh.get_npcs()[0], 'Talk-to'
-        )
+    print(qh.get_right_click_menu())

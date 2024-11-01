@@ -602,7 +602,8 @@ def main():
                     osrs.move.conditional_click(
                         qh,
                         target_pillar,
-                        'Charge'
+                        'Charge',
+                        target_field='id'
                     )
                 elif not any_spore and not any_claws and not quadrant_attack:
                     # pillar is up but not on screen - walk towards these coords
@@ -613,7 +614,8 @@ def main():
                         osrs.move.conditional_click(
                             qh,
                             target_pillar,
-                            'Charge'
+                            'Charge',
+                            target_field='id'
                         )
 
 
