@@ -359,7 +359,7 @@ def returned_sword():
         osrs.keeb.write(str(qh.get_chat_options('Yes.')))
         return True
 
-# todo it misclicks the crucible when i am standing to the right of it and trying to pour
+
 while True:
     osrs.game.break_manager_v4({
         'intensity': 'high',

@@ -4,6 +4,8 @@ import random
 import time
 import re
 
+import pyautogui
+
 import osrs.move
 import osrs.server as server
 import osrs.clock as clock
@@ -535,6 +537,14 @@ def player_healed():
         return True
 
 
+def run_restored():
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_widgets({osrs.widget_ids.run_energy_widget_id})
+    qh.query_backend()
+    if int(qh.get_widgets(osrs.widget_ids.run_energy_widget_id)['text']) > 95:
+        return True
+
+
 def click_restore_pool():
     osrs.move.interact_with_object_v3(
         29241,
@@ -876,3 +886,66 @@ def standard_spells_tele(dest):
         right_click_option='Cast',
         timeout=32
     )
+
+
+def buy_item_from_shop(items):
+    '''
+
+    :param items: [{'id': 1234, 'quantity': 200, 'increment': 1 | 5 | 10 | 50, 'left_click': True | False, spam_duration: 30}]:
+    :return: null
+    '''
+    def have_all_items(items_1, qh_1):
+        for item_search in items_1:
+            item_amount = osrs.inv.get_item_quantity_in_inv(qh_1.get_shop_inventory(), item_search['id'])
+            if item_amount < item_search['quantity']:
+                return False
+        return True
+
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_inventory()
+    qh.set_canvas()
+    qh.set_shop_inventory()
+    qh.query_backend()
+    quantity_checker = {}
+    for item in items:
+        quantity_checker[item['id']] = item['quantity'] - osrs.inv.get_item_quantity_in_inv(qh.get_inventory(), item['id'])
+    # save shop location of item so i can spam click it if necessary
+    while True:
+        qh.query_backend()
+        for i in range(1, 100):
+            item_str = f"300,16,{i}"
+            qh.set_widgets({item_str})
+
+        qh.query_backend()
+        if have_all_items(items, qh):
+            osrs.dev.logger.info("Successfully purchased all required items.")
+            osrs.keeb.press_key('esc')
+            return True
+
+        for widget in qh.get_widgets():
+            if qh.get_widgets(widget):
+                for item in items:
+                    if qh.get_widgets(widget)['itemID'] == item['id'] and quantity_checker[item['id']] > 0:
+                        osrs.dev.logger.info("Buying item: %s from store", item['id'])
+                        if 'left_click' in item:
+                            if 'spam_duration' in item:
+                                start = datetime.datetime.now()
+                                while (datetime.datetime.now() - start).total_seconds() < item['spam_duration']:
+                                    print((datetime.datetime.now() - start).total_seconds())
+                                    pyautogui.click(qh.get_widgets(widget)['x'], qh.get_widgets(widget)['y'])
+                            else:
+                                osrs.move.fast_click_v2(qh.get_widgets(widget))
+                                osrs.clock.sleep_one_tick()
+                        else:
+                            res = osrs.move.right_click_v6(
+                                qh.get_widgets(widget),
+                                f"Buy {item['increment']}",
+                                qh.get_canvas(),
+                                in_inv=True
+                            )
+                            osrs.clock.sleep_one_tick()
+                            if res:
+                                quantity_checker[item['id']] = quantity_checker[item['id']] - item['increment']
+                                osrs.dev.logger.info(
+                                    "Purchased %s. %s still left to purchase", item['id'], quantity_checker[item['id']]
+                                )

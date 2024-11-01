@@ -1,3 +1,7 @@
+from datetime import datetime
+
+import pyautogui
+
 import osrs
 
 pot_handler_required_prayer_widgets = {'233,0', '541,23', '541,22', '541,21', '161,62', '541,25'}
@@ -174,11 +178,11 @@ prayer_map_widgets = {
     'piety': '541,35'
 }
 
+prayer_widget_cache = {}
 
-def prayer_handler(qh: osrs.queryHelper.QueryHelper or None, prayers):
-    # pre load the prayer widget locations
-    osrs.keeb.press_key('f5')
-    osrs.keeb.press_key('esc')
+
+def prayer_handler(qh: osrs.queryHelper.QueryHelper or None, prayers, cached_locations=False):
+    curr_pos = pyautogui.position()
     if qh is None:
         qh = osrs.queryHelper.QueryHelper()
         qh.set_skills({'prayer'})
@@ -190,13 +194,30 @@ def prayer_handler(qh: osrs.queryHelper.QueryHelper or None, prayers):
     if qh.get_skills('prayer') and qh.get_skills('prayer')['boostedLevel'] == 0:
         print('tried to turn on prayer but i have no prayer points!')
         return False
+    moved = False
     for prayer in prayers:
         if prayer_map[prayer] not in qh.get_active_prayers():
             osrs.keeb.press_key('f5')
-            osrs.clock.random_sleep(0.1, 0.11)
-            qh.query_backend()
-            if qh.get_widgets(prayer_map_widgets[prayer]):
-                osrs.move.fast_click(qh.get_widgets(prayer_map_widgets[prayer]))
+            start = datetime.now()
+            if cached_locations and prayer_widget_cache[prayer_map_widgets[prayer]]:
+                osrs.clock.random_sleep(0.1, 0.11)
+                osrs.move.fast_click_v2(prayer_widget_cache[prayer_map_widgets[prayer]])
+                osrs.dev.logger.info("Prayer switch wait time: %s", (datetime.now() - start).total_seconds())
+            while True:
+                qh.query_backend()
+                if qh.get_widgets(prayer_map_widgets[prayer]):
+                    prayer_widget_cache[prayer_map_widgets[prayer]] = qh.get_widgets(prayer_map_widgets[prayer])
+                    osrs.move.fast_click(qh.get_widgets(prayer_map_widgets[prayer]))
+                    moved = True
+                    osrs.dev.logger.info("Prayer switch wait time: %s", (datetime.now() - start).total_seconds())
+                    break
+                elif (datetime.now() - start).total_seconds() > 1:
+                    osrs.dev.logger.info("Time out waiting to prayer switch")
+                    break
+                else:
+                    print('prayers not found')
+    if moved:
+        pyautogui.moveTo(curr_pos[0], curr_pos[1])
     osrs.keeb.press_key('esc')
 
 

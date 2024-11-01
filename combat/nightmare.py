@@ -100,20 +100,18 @@ def husk_handler(qh):
     # Attack husks if they are out
     if husk1:
         osrs.player.equip_item_no_wait([osrs.item_ids.ZOMBIE_AXE], qh.get_equipment())
-        osrs.move.right_click_v7(
+        osrs.move.conditional_click(
+            qh,
             husk1[0],
-            'Attack',
-            qh.get_canvas(),
-            'Husk'
+            'Attack'
         )
         return True
     elif husk2:
         osrs.player.equip_item_no_wait([osrs.item_ids.ZOMBIE_AXE], qh.get_equipment())
-        osrs.move.right_click_v7(
+        osrs.move.conditional_click(
+            qh,
             husk2[0],
-            'Attack',
-            qh.get_canvas(),
-            'Husk'
+            'Attack'
         )
         return True
 
@@ -133,11 +131,10 @@ def parasite_handler(qh: osrs.queryHelper.QueryHelper, interacting, claws):
     if parasite:
         osrs.player.equip_item_no_wait([osrs.item_ids.ZOMBIE_AXE], qh.get_equipment())
         if not interacting or 'Parasite' not in interacting:
-            osrs.move.right_click_v7(
+            osrs.move.conditional_click(
+                qh,
                 parasite[0],
-                'Attack',
-                qh.get_canvas(),
-                target='Parasite'
+                'Attack'
             )
         return True
 
@@ -348,10 +345,8 @@ def curse_handler(qh):
 
         if (qh.get_widgets(widget)
                 and ('The Nightmare has awoken' in qh.get_widgets(widget)['text'] or 'curse wear off' in qh.get_widgets(widget)['text'])):
-            osrs.dev.logger.debug("I am not cursed.")
             return False
         if qh.get_widgets(widget) and 'has cursed you' in qh.get_widgets(widget)['text']:
-            osrs.dev.logger.debug("I am cursed.")
             return True
     osrs.dev.logger.warning("No curse status found in chat box - defaulting to not cursed. Is the chat box closed?")
     return False
@@ -369,8 +364,7 @@ def determine_pillar_to_attack(qh, nw_totem, ne_totem, se_totem, sw_totem, any_s
         'xMin'] < 60:
         # dont attack totems if they are out of range during spore phase
         if se_totem:
-            if not any_spore or se_totem['dist'] <= 6:
-                return se_totem
+            return se_totem
         # If I am too far north I will be unable to see these pillars, so run south
         elif qh.get_tiles(f"{qh.get_player_world_location('x')},{qh.get_player_world_location('y') - 3},3"):
             return {'x_coord': qh.get_player_world_location('x'), 'y_coord': qh.get_player_world_location('y') - 3}
@@ -380,8 +374,7 @@ def determine_pillar_to_attack(qh, nw_totem, ne_totem, se_totem, sw_totem, any_s
         osrs.player.equip_item_no_wait([osrs.item_ids.TRIDENT_OF_THE_SWAMP], qh.get_equipment())
         # dont attack totems if they are out of range during spore phase
         if sw_totem:
-            if not any_spore or sw_totem['dist'] <= 6:
-                return sw_totem
+            return sw_totem
         # If I am too far north I will be unable to see these pillars, so run south
         elif qh.get_tiles(f"{qh.get_player_world_location('x')},{qh.get_player_world_location('y') - 3},3"):
             return {'x_coord': qh.get_player_world_location('x'), 'y_coord': qh.get_player_world_location('y') - 3}
@@ -465,8 +458,8 @@ def main():
             osrs.util.combine_objects(qh.get_tiles())
         )
         bad_tiles = add_phosanis_tiles(set(), pnm)
-
-        if (claw_tile or spore_tile or len(osrs.util.combine_objects(qh.get_tiles())) != len(safe_tiles)
+        quadrant_attack = len(osrs.util.combine_objects(qh.get_tiles())) != len(safe_tiles)
+        if (claw_tile or spore_tile or quadrant_attack
                 or (
                         f"{qh.get_player_world_location('x')},{qh.get_player_world_location('y')}" in bad_tiles
                         and pillar_overlay
@@ -485,7 +478,6 @@ def main():
                 bad_tiles = add_unsafe_spore_tiles(bad_tiles, qh.get_objects_v2('game', 37739))
             elif qh.get_objects_v2('game', 37738):
                 bad_tiles = add_unsafe_spore_tiles(bad_tiles, qh.get_objects_v2('game', 37738))
-            osrs.dev.logger.info("claws + phosani + pillars + spores: %s", bad_tiles)
             nearby_tiles = osrs.util.combine_objects(qh.get_tiles())
             # filter out the tiles that are dangerous
             nearby_tiles = [tile for tile in nearby_tiles if f"{tile['x_coord']},{tile['y_coord']}" not in bad_tiles]
@@ -504,7 +496,6 @@ def main():
                 anchor,
                 nearby_tiles
             )
-            osrs.dev.logger.info("all near tiles not bad in arena + quadrant: %s", nearby_tiles)
             # get the tiles around phosani
             pnm_perim = osrs.util.monster_perimeter_coordinates(7, pnm, 3)
             preferred_tiles = [tile for tile in nearby_tiles if f"{tile['x_coord']},{tile['y_coord']},3" in pnm_perim]
@@ -602,43 +593,28 @@ def main():
                 )
             # we should be attacking pillars right now
             elif pillar_overlay:
+                osrs.player.equip_item_no_wait([osrs.item_ids.TRIDENT_OF_THE_SWAMP], qh.get_equipment())
                 target_pillar = determine_pillar_to_attack(
                     qh, nw_totem, ne_totem, se_totem, sw_totem, any_spore
                 )
-                # NW totem is still alive
-                if nw_totem:
-                    osrs.player.equip_item_no_wait([osrs.item_ids.TRIDENT_OF_THE_SWAMP], qh.get_equipment())
-                    if not any_spore or nw_totem['dist'] <= 6:
-                        osrs.move.fast_click_v2(nw_totem)
-                # NE totem is still alive
-                elif ne_totem:
-                    osrs.player.equip_item_no_wait([osrs.item_ids.TRIDENT_OF_THE_SWAMP], qh.get_equipment())
-                    if not any_spore or ne_totem['dist'] <= 6:
-                        osrs.move.fast_click_v2(ne_totem)
-                # SE Totem is still up
-                elif qh.get_widgets('413,27') and qh.get_widgets('413,27')['xMax'] - qh.get_widgets('413,27')[
-                    'xMin'] < 60:
-                    osrs.player.equip_item_no_wait([osrs.item_ids.TRIDENT_OF_THE_SWAMP], qh.get_equipment())
-                    # dont attack totems if they are out of range during spore phase
-                    if se_totem:
-                        if not any_spore or se_totem['dist'] <= 6:
-                            osrs.move.fast_click_v2(se_totem)
-                    # If I am too far north I will be unable to see these pillars, so run south
-                    elif qh.get_tiles(f"{qh.get_player_world_location('x')},{qh.get_player_world_location('y') - 3},3"):
+                # a pillar is visible to attack
+                if target_pillar and 'name' in target_pillar and target_pillar['dist'] <= 6:
+                    osrs.move.conditional_click(
+                        qh,
+                        target_pillar,
+                        'Charge'
+                    )
+                elif not any_spore and not any_claws and not quadrant_attack:
+                    # pillar is up but not on screen - walk towards these coords
+                    if target_pillar and 'name' not in target_pillar:
                         osrs.move.fast_click_v2(qh.get_tiles(
-                            f"{qh.get_player_world_location('x')},{qh.get_player_world_location('y') - 3},3"))
-                # SW Totem is still up
-                elif (qh.get_widgets('413,21')
-                      and qh.get_widgets('413,21')['xMax'] - qh.get_widgets('413,21')['xMin'] < 60):
-                    osrs.player.equip_item_no_wait([osrs.item_ids.TRIDENT_OF_THE_SWAMP], qh.get_equipment())
-                    # dont attack totems if they are out of range during spore phase
-                    if sw_totem:
-                        if not any_spore or sw_totem['dist'] <= 6:
-                            osrs.move.fast_click_v2(sw_totem)
-                    # If I am too far north I will be unable to see these pillars, so run south
-                    elif qh.get_tiles(f"{qh.get_player_world_location('x')},{qh.get_player_world_location('y') - 3},3"):
-                        osrs.move.fast_click_v2(qh.get_tiles(
-                            f"{qh.get_player_world_location('x')},{qh.get_player_world_location('y') - 3},3"))
+                            f"{target_pillar['x_coord']},{target_pillar['y_coord']},3"))
+                    elif target_pillar and 'name' in target_pillar:
+                        osrs.move.conditional_click(
+                            qh,
+                            target_pillar,
+                            'Charge'
+                        )
 
 
 #go_to_nightmare()

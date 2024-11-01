@@ -10,11 +10,11 @@ fish_to_cut = [
 ]
 
 equipment = [
-    {'id': osrs.item_ids.GRACEFUL_TOP, 'consume': 'Wear'},
+    {'id': osrs.item_ids.ANGLER_TOP, 'consume': 'Wear'},
     {'id': osrs.item_ids.GRACEFUL_CAPE, 'consume': 'Wear'},
-    {'id': osrs.item_ids.GRACEFUL_HOOD, 'consume': 'Wear'},
-    {'id': osrs.item_ids.GRACEFUL_LEGS, 'consume': 'Wear'},
-    {'id': osrs.item_ids.GRACEFUL_BOOTS, 'consume': 'Wear'},
+    {'id': osrs.item_ids.ANGLER_HAT, 'consume': 'Wear'},
+    {'id': osrs.item_ids.ANGLER_WADERS, 'consume': 'Wear'},
+    {'id': osrs.item_ids.ANGLER_BOOTS, 'consume': 'Wear'},
     {'id': osrs.item_ids.GRACEFUL_GLOVES, 'consume': 'Wear'},
     {'id': osrs.item_ids.DRAMEN_STAFF, 'consume': 'Wield'},
     osrs.item_ids.RUNE_POUCH,
@@ -101,4 +101,3 @@ def main(endless_loop=True):
             if c:
                 osrs.move.fast_click_v2(c)
                 continue
-

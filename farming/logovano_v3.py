@@ -79,7 +79,7 @@ script_config = {
 
     'intensity': 'high',
     'logout': False,
-    'login': False,
+    'login': lambda: osrs.clock.random_sleep(10, 10.1),
 }
 
 # there are water buckets at each corner, so make sure i found the right bucket that is the western corner
@@ -98,27 +98,22 @@ def translate_tiles():
     # Figure out my current tile now that I am in an instance, in order to translate
     # what tiles the patches are on in the instance.
     qh.set_player_world_location()
-    qh.set_objects_v2('game', {5598})
-    qh.query_backend()
+    qh.set_objects_v2('wall', {27445})
+    while True:
+        qh.query_backend()
+        if qh.get_objects_v2('wall', 27445):
+            break
     # This water bucket is my anchor point
-    water_bucket = osrs.util.find_closest_target_in_game(
-        qh.get_objects_v2('game', 5598), qh.get_player_world_location()
-    )
-    x_diff = water_bucket['x_coord'] - 1809
-    y_diff = water_bucket['y_coord'] - 3500
+    door = qh.get_objects_v2('wall', 27445)[0]
+    x_diff = door['x_coord'] - 1805
+    y_diff = door['y_coord'] - 3501
     # Update the farming patch tiles now that I know where my instance has spawned on the world map
     for spot in raw_farming_spots:
         instanced_farming_spots.append(
             [str(spot[0] + x_diff), str(spot[1] + y_diff), '0']
         )
 
-    # Also translate the running path tiles that i need to start the run
-    for spot in raw_path_to_start:
-        instance_path_to_start.append(
-            f'{str(spot[0] + x_diff)},{str(spot[1] + y_diff)},0'
-        )
-
-    return [water_bucket, instance_path_to_start, instanced_farming_spots]
+    return [{'x': x_diff, 'y': y_diff}, instanced_farming_spots]
 
 
 def plant_handler(current_state, desired_state, instanced_farming_spots):
@@ -176,21 +171,20 @@ def run_to_start(instance_path_to_start, trips):
 
 def fill_can(water_bucket, trips):
     # only fill up every three trips
-    if trips % 3 != 0:
+    if trips % 10 != 0:
         return
+    last_fill = datetime.datetime.now()
     while True:
         qh = osrs.queryHelper.QueryHelper()
         qh.set_inventory()
-        qh.set_objects(
-            {f'{water_bucket["x_coord"]},{water_bucket["y_coord"]},0'},
-            {water_bucket_id},
-            osrs.queryHelper.ObjectTypes.GAME.value
-        )
+        qh.set_player_animation()
+        qh.set_objects_v2('game', {5598})
         qh.query_backend()
-        if qh.get_inventory(gricollers_can_id) and qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, water_bucket_id):
+        if qh.get_inventory(gricollers_can_id) and qh.get_objects_v2('game', 5598) and (datetime.datetime.now() - last_fill).total_seconds() > 9:
             osrs.move.click(qh.get_inventory(gricollers_can_id))
-            osrs.move.click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, water_bucket_id)[0])
-            osrs.clock.random_sleep(10, 10.1)
+            osrs.move.click(qh.get_objects_v2('game', 5598)[0])
+            last_fill = datetime.datetime.now()
+        elif qh.get_player_animation() == 832:
             return
 
 
@@ -310,14 +304,14 @@ def main(endless_loop=True):
     qh.set_widgets({'241,6'})
     while True:
         qh.query_backend()
-        water_bucket, instance_path_to_start, instanced_farming_spots = translate_tiles()
-        run_to_start(instance_path_to_start, trips)
+        anchor, instanced_farming_spots = translate_tiles()
+        osrs.move.go_to_loc(1813 + anchor['x'], 3488 + anchor['y'], skip_dax=True, exact_tile=True)
         osrs.inv.power_drop_v2(qh, [osrs.item_ids.GRICOLLERS_FERTILISER])
         plant_handler(EMPTY_PATCH, WATERED_STAGE_1, instanced_farming_spots)
         plant_handler(UNWATERED_SEED_STAGE_2, WATERED_STAGE_2, instanced_farming_spots)
         plant_handler(UNWATERED_SEED_STAGE_3, WATERED_STAGE_3, instanced_farming_spots)
         plant_handler(HEALTHY_STAGE_4, EMPTY_PATCH, instanced_farming_spots)
-        fill_can(water_bucket, trips)
+        fill_can(anchor, trips)
         trips += 1
         osrs.move.interact_with_object_v3(
             {27431, 27432}, custom_exit_function=osrs.inv.not_in_inv_check,

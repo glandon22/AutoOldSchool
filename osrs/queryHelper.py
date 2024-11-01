@@ -54,11 +54,22 @@ class QueryHelper:
     def get_interating_with(self):
         return 'interactingWith' in self.game_data and self.game_data['interactingWith']
 
+    def set_detailed_interating_with(self):
+        self.query['detailedInteracting'] = True
+
+    def get_detailed_interating_with(self):
+        return 'detailedInteracting' in self.game_data and self.game_data['detailedInteracting']
+
     def set_players(self):
         self.query['players'] = True
 
-    def get_players(self):
-        return 'players' in self.game_data and self.game_data['players']
+    def get_players(self, get_own_player=False):
+        if get_own_player:
+            players = self.game_data.get('players', [])
+            myself = next((player for player in players if player['name'] == 'UtahDogs'), False)
+            return myself if myself else False
+        else:
+            return self.game_data.get('players')
 
     def set_world(self):
         self.query['world'] = True
@@ -122,6 +133,30 @@ class QueryHelper:
                 return []
         else:
             return ('inv' in self.game_data and self.game_data['inv']) or []
+
+    def set_shop_inventory(self):
+        self.query['shopInv'] = True
+
+    def get_shop_inventory(self, item=False, quantity=False):
+        """
+
+        :param item: None, String, List<String>
+        No item returns the full inv, a string returns that item or False, a list of strings returns the first of
+        those items to be found or False
+        :return: {'x': 1738, 'y': 768, 'index': 0, 'id': 8007, 'quantity': 77} || False
+        """
+        if item:
+            if 'shopInv' in self.game_data:
+                if quantity:
+                    return inv.get_item_quantity_in_inv(self.game_data['shopInv'], item)
+                elif type(item) is list:
+                    return inv.are_items_in_inventory_v2(self.game_data['shopInv'], item)
+                else:
+                    return inv.is_item_in_inventory_v2(self.game_data['shopInv'], item)
+            else:
+                return []
+        else:
+            return ('shopInv' in self.game_data and self.game_data['shopInv']) or []
 
     def projectiles(self):
         self.query['projectiles'] = True
@@ -282,6 +317,9 @@ class QueryHelper:
         else:
             self.query['tiles'] = list(tiles)
 
+    def clear_tiles(self):
+        self.query['tiles'] = []
+
     def get_tiles(self, tile=False):
         """
 
@@ -300,6 +338,17 @@ class QueryHelper:
 
     def get_varbit(self):
         return 'varBit' in self.game_data and self.game_data['varBit']
+
+    def set_varbits(self, varbits):
+        self.query['varBits'] = varbits
+
+    def get_varbits(self, varbit=False):
+        if varbit:
+            if 'varBits' in self.game_data and varbit in self.game_data['varBits']:
+                return self.game_data['varBits'][varbit]
+            else:
+                return False
+        return 'varBits' in self.game_data and self.game_data['varBits']
 
     def set_skills(self, skills):
         if type(skills) is not set:
@@ -545,7 +594,7 @@ class QueryHelper:
     def clear_query(self):
         self.query = {}
 
-    def set_objects_v2(self, object_type: str, objects):
+    def set_objects_v2(self, object_type: str, objects, dist=-1):
         object_type = object_type.lower()
         if type(objects) is not set:
             raise Exception('objects must be a set, {} is not a valid value.'.format(objects))
@@ -567,14 +616,16 @@ class QueryHelper:
                 'wall': [],
                 'decorative': [],
                 'ground': [],
-                'ground_items': []
+                'ground_items': [],
+                'graphics': [],
+                'dist': dist
             }
             self.query['allObjects'][object_type] = list(objects)
 
     def get_objects_v2(self, object_type: str, game_object=False, dist=104):
         """
 
-        :param object_type: 'wall' || 'game' || 'ground' || 'decorative' || 'ground_items'
+        :param object_type: 'wall' || 'game' || 'ground' || 'decorative' || 'ground_items' || 'graphics'
         :param game_object: string - '30920'
         :return: [{'x': 836, 'y': 189, 'dist': 13, 'x_coord': 3765, 'y_coord': 3880, 'id': 30920}] || []
         """

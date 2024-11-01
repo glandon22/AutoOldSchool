@@ -1,7 +1,7 @@
 import osrs
 import random
 from mining import mlm_upstairs
-from agility import frem_v2
+from agility import frem_v2, ardy_v3
 from fishing import aerial
 from woodcutting import sullys
 from farming import bologano_v2, logovano_v3
@@ -18,7 +18,7 @@ config = [
         'func': mlm_upstairs.main, 'args': [False]
     },
     {
-        'func': frem_v2.main, 'args': [99, False]
+        'func': ardy_v3.main, 'args': [99, False]
     },
     {
         'func': aerial.main, 'args': [False]

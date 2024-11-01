@@ -1,5 +1,7 @@
 import datetime
 
+import pyautogui
+
 import osrs.move as move
 import osrs.queryHelper
 import osrs.server as server
@@ -59,7 +61,6 @@ def flick_all_prayers():
         qh.query_backend()
         if qh.get_widgets('160,21'):
             osrs.move.fast_click(qh.get_widgets('160,21'))
-            osrs.clock.random_sleep(0.2, 0.3)
             osrs.move.fast_click(qh.get_widgets('160,21'))
             return
 
@@ -104,11 +105,13 @@ def toggle_auto_retaliate(state):
                 (datetime.datetime.now() - last_key_press).total_seconds() > 0.8:
             osrs.keeb.press_key('f1')
             last_key_press = datetime.datetime.now()
-        elif qh.get_widgets(auto_retaliate_widget) and qh.get_widgets(auto_retaliate_widget)['spriteID'] == desired_outcome:
+        elif qh.get_widgets(auto_retaliate_widget) and qh.get_widgets(auto_retaliate_widget)[
+            'spriteID'] == desired_outcome:
             osrs.clock.sleep_one_tick()
             osrs.keeb.press_key('esc')
             return
-        elif qh.get_widgets(auto_retaliate_widget) and (datetime.datetime.now() - last_widget_click).total_seconds() > 1.3:
+        elif qh.get_widgets(auto_retaliate_widget) and (
+                datetime.datetime.now() - last_widget_click).total_seconds() > 1.3:
             osrs.move.click(qh.get_widgets(auto_retaliate_widget))
             last_widget_click = datetime.datetime.now()
 
@@ -160,7 +163,18 @@ def dialogue_handler(desired_replies=None, timeout=3):
             had_dialogue = True
 
 
-def equip_item(items):
+def is_equipped(items: list[int]):
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_equipment()
+    qh.query_backend()
+    if qh.get_equipment() and set(items).issubset(qh.get_equipment()):
+        return True
+    return False
+
+
+def equip_item(items, current_equipment=None):
+    if current_equipment is not None and items and set(items).issubset(current_equipment):
+        return
     qh = osrs.queryHelper.QueryHelper()
     qh.set_equipment()
     qh.set_inventory()
@@ -173,9 +187,32 @@ def equip_item(items):
             return
         elif qh.get_inventory():
             for item in qh.get_inventory():
-                if item['id'] in items and (item['id'] not in clicked or (datetime.datetime.now() - clicked[item['id']]).total_seconds() > 1):
-                    osrs.move.fast_click(item)
+                if item['id'] in items and (item['id'] not in clicked or (
+                        datetime.datetime.now() - clicked[item['id']]).total_seconds() > 1):
+                    osrs.move.fast_click_v2(item)
                     clicked[item['id']] = datetime.datetime.now()
+
+
+no_wait_timeouts = {}
+
+
+def equip_item_no_wait(items, current_equipment=None):
+    if current_equipment is not None and items and set(items).issubset(current_equipment):
+        return
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_equipment()
+    qh.set_inventory()
+    qh.query_backend()
+    if qh.get_equipment() and set(items).issubset(qh.get_equipment()):
+        return
+    elif qh.get_inventory():
+        for item in qh.get_inventory():
+            if item['id'] in items and (
+                    item['id'] not in no_wait_timeouts or (
+                    datetime.datetime.now() - no_wait_timeouts[item['id']]).total_seconds() > 1):
+                osrs.move.fast_click_v2(item)
+                no_wait_timeouts[item['id']] = datetime.datetime.now()
+
 
 def unequip(slots: list):
     lookup = {
@@ -203,7 +240,8 @@ def unequip(slots: list):
         qh = osrs.queryHelper.QueryHelper()
         qh.set_widgets({widget, '387,0'})
         qh.query_backend()
-        if qh.get_widgets('387,0') and (not qh.get_widgets(widget) or (qh.get_widgets(widget) and qh.get_widgets(widget)['itemID'] in [0, -1])):
+        if qh.get_widgets('387,0') and (
+                not qh.get_widgets(widget) or (qh.get_widgets(widget) and qh.get_widgets(widget)['itemID'] in [0, -1])):
             return True
 
     for slot in slots:

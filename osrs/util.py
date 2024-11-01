@@ -1,5 +1,3 @@
-import datetime
-import math
 from collections.abc import Callable
 import osrs.dev as dev
 import pyautogui
@@ -59,7 +57,7 @@ def generate_surrounding_tiles(dist, port='56799'):
     return tiles
 
 
-def generate_surrounding_tiles_from_point(dist, player_loc, port='56799'):
+def generate_surrounding_tiles_from_point(dist, player_loc):
     tiles = []
     for x in range(player_loc['x'] - dist, player_loc['x'] + dist):
         for y in range(player_loc['y'] - dist, player_loc['y'] + dist):
@@ -134,7 +132,7 @@ def find_closest_target_in_game(targets: list[dict], player_loc, additional_filt
     :param additional_filter: fn() :: this is optional filter logic to remove unwanted elements
     :return: {'x': 235, 'y': 243} :: object with coords to click on screen
     '''
-    if not targets:
+    if not targets or not player_loc:
         return None
     if additional_filter is not None:
         targets = list(filter(additional_filter, targets))
@@ -144,3 +142,47 @@ def find_closest_target_in_game(targets: list[dict], player_loc, additional_filt
         if not closest or (dist_from_mouse < closest['dist']):
             closest = targ
     return closest
+
+
+def is_point_in_rectangle(x, y, x1, y1, x2, y2):
+    return x1 <= x <= x2 and y1 <= y <= y2
+
+
+def determine_large_monster_area(sw_tile, size: int):
+    area = []
+    for x in range(sw_tile['x_coord'], sw_tile['x_coord'] + size):
+        for y in range(sw_tile['y_coord'], sw_tile['y_coord'] + size):
+            area.append({
+                'x': x,
+                'x_coord': x,
+                'y': y,
+                'y_coord': y,
+            })
+    return area
+
+
+def monster_perimeter_coordinates(size, sw_tile, z=0):
+    #coordinates = []
+    coordinates = {}
+    x_start = sw_tile['x_coord'] - 1
+    y_start = sw_tile['y_coord'] - 1
+    # Bottom edge (excluding corners)
+    for x in range(x_start + 1, x_start + size - 1):
+        #coordinates.append({'x': x, 'y': y_start, 'z': z})
+        coordinates[f"{x},{y_start},{z}"] = True
+
+    # Right edge (excluding corners)
+    for y in range(y_start + 1, y_start + size - 1):
+        #coordinates.append({'x': x_start + size - 1, 'y': y, 'z': z})
+        coordinates[f"{x_start + size - 1},{y},{z}"] = True
+
+    # Top edge (excluding corners)
+    for x in range(x_start + size - 2, x_start, -1):
+        #coordinates.append({'x': x, 'y': y_start + size - 1, 'z': z})
+        coordinates[f"{x},{y_start + size - 1},{z}"] = True
+    # Left edge (excluding corners)
+    for y in range(y_start + size - 2, y_start, -1):
+        #coordinates.append({'x': x_start, 'y': y, 'z': z})
+        coordinates[f"{x_start},{y},{z}"] = True
+
+    return coordinates

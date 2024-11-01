@@ -491,7 +491,7 @@ def dodge_arrow(anchor, direction, dest, x_min, x_max, y_min, y_max):
             arrow = list(filter(
                 lambda npc: is_point_in_rectangle(npc['x_coord'], npc['y_coord'], x_min + anchor['x'],
                                                   y_min + anchor['y'], x_max + anchor['x'], y_max + anchor['y'])
-                            and (direction is not 'east' or npc['x_coord'] > qh.get_player_world_location('x')),
+                            and (direction != 'east' or npc['x_coord'] > qh.get_player_world_location('x')),
                 arrow
             ))
         elif qh.get_objects_v2('game', 38444):
@@ -503,13 +503,8 @@ def dodge_arrow(anchor, direction, dest, x_min, x_max, y_min, y_max):
             ))
         if arrow:
             arrow = arrow[0]
-        if direction == 'east':
-            if arrow:
-                arrow = arrow[0]
-                if arrow['x_coord'] < qh.get_player_world_location('x'):
-                    if qh.get_tiles(dest):
-                        osrs.move.fast_click_v2(qh.get_tiles(dest))
-                elif arrow['y_coord'] == qh.get_player_world_location('y'):
+            if direction == 'east':
+                if arrow['y_coord'] == qh.get_player_world_location('y'):
                     print('here112')
                     north_tile = f"{qh.get_player_world_location('x') + 1},{qh.get_player_world_location('y') + 1},{qh.get_player_world_location('z')}"
                     south_tile = f"{qh.get_player_world_location('x') + 1},{qh.get_player_world_location('y') - 1},{qh.get_player_world_location('z')}"
@@ -519,9 +514,7 @@ def dodge_arrow(anchor, direction, dest, x_min, x_max, y_min, y_max):
                         osrs.move.fast_click_v2(qh.get_tiles(south_tile))
                 elif qh.get_tiles(dest):
                     osrs.move.fast_click_v2(qh.get_tiles(dest))
-        elif direction == 'west':
-            if arrow:
-                arrow = arrow[0]
+            elif direction == 'west':
                 if arrow['x_coord'] > qh.get_player_world_location('x'):
                     print('here')
                     if qh.get_tiles(dest):
@@ -536,9 +529,7 @@ def dodge_arrow(anchor, direction, dest, x_min, x_max, y_min, y_max):
                         osrs.move.fast_click_v2(qh.get_tiles(south_tile))
                 elif qh.get_tiles(dest):
                     osrs.move.fast_click_v2(qh.get_tiles(dest))
-        elif direction == 'south':
-            if arrow:
-                arrow = arrow[0]
+            elif direction == 'south':
                 if arrow['y_coord'] > qh.get_player_world_location('y'):
                     if qh.get_tiles(dest):
                         osrs.dev.logger.debug('wuld click ss')
@@ -555,13 +546,17 @@ def dodge_arrow(anchor, direction, dest, x_min, x_max, y_min, y_max):
                 elif qh.get_tiles(dest):
                     osrs.dev.logger.debug('wuld click d')
                     osrs.move.fast_click_v2(qh.get_tiles(dest))
+        elif qh.get_tiles(dest):
+            osrs.dev.logger.debug('wuld click d')
+            osrs.move.fast_click_v2(qh.get_tiles(dest))
+
 
 
 # 8682-4
 
 def floor_1_scenario_4(anchor):
     osrs.dev.logger.info("Floor 1 - Scenario 4 - Anchor: %s", anchor)
-    '''osrs.move.go_to_loc(2244 + anchor['x'], 5977 + anchor['y'], 2, skip_dax=True, exit_on_dest=True)
+    osrs.move.go_to_loc(2244 + anchor['x'], 5977 + anchor['y'], 2, skip_dax=True, exit_on_dest=True)
     step1 = {
         'coord_type': 'y', 'coord_val': 5984, 'obj_id': 38412,
         'dest_x': 2244, 'dest_y': 5984, 'dest_z': 2
@@ -580,7 +575,7 @@ def floor_1_scenario_4(anchor):
             'y_min': 6004 + anchor['y'], 'y_max': 6006 + anchor['y']
         },
         38437
-    )'''
+    )
     dodge_arrow(
         anchor, 'east', f"{2261 + anchor['x']},{6000 + anchor['y']},2",
         2246, 2263, 6001, 6003
@@ -1182,5 +1177,5 @@ def main():
         determine_floor_2_layout()
 
 
-#main()
-floor_1_scenario_4({'x': 7696, 'y': -1072})
+main()
+

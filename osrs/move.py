@@ -287,15 +287,15 @@ def run_towards_square_v2(destination, port='56799'):
     run_to_loc_v2(steps)
 
 
-def run_towards_square_v3(destination, steps_only=False):
+def run_towards_square_v3(destination, steps_only=False, loc=None):
     """
 
     :param steps_only: true || False
     :param destination: obj {x: 2341, y: 687, z:0}
     :type port: str
     """
-
-    loc = server.get_world_location()
+    if not loc:
+        loc = server.get_world_location()
     steps = []
     while loc['x'] != destination['x'] or loc['y'] != destination['y']:
         x_diff = destination['x'] - loc['x']
@@ -561,6 +561,57 @@ def right_click_v6(item, action, canvas, in_inv=False):
             return False
 
 
+def right_click_v7(item, action, canvas, target=None):
+    osrs.move.fast_click_v2(item, 'RIGHT')
+    osrs.clock.random_sleep(0.05, 0.051)
+    curr_pos = pyautogui.position()
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_right_click_menu()
+    max_canvas_y = canvas['yMax']
+    while True:
+        qh.query_backend()
+        rcm = qh.get_right_click_menu()
+        if rcm:
+            # this is the y coord of the very top of the menu
+            menu_top = rcm['y'] + canvas['yOffset']
+            if curr_pos[1] + rcm['height'] > max_canvas_y:
+                # the extra "- 15" is because this doesnt account for the menu header, which is 15px on a 1080p screen
+                additional_offset = rcm['y'] + 40 - curr_pos[1] - 15
+            entry_data = rcm
+            choose_option_offset = entry_data['height'] - (len(entry_data['entries']) * 15)
+            parsed_entries = reversed(entry_data['entries'])
+            for i, entry in enumerate(parsed_entries):
+                if action.upper() == entry[0].upper() and (not target or target.lower() in entry[2].lower()):
+                    osrs.move.fast_click_v2({'x': curr_pos[0], 'y': menu_top + choose_option_offset + (i * 15)})
+                    return True
+            pyautogui.click()
+            return False
+
+
+def right_click_v8(item, action, qh: osrs.queryHelper.QueryHelper, tg=None):
+    canvas = qh.get_canvas()
+    rcm = qh.get_right_click_menu()
+    if rcm:
+        curr_pos = pyautogui.position()
+        max_canvas_y = canvas['yMax']
+        # this is the y coord of the very top of the menu
+        menu_top = rcm['server_y'] + canvas['yOffset']
+        entry_data = rcm
+        choose_option_offset = 21
+        parsed_entries = reversed(entry_data['entries'])
+        for i, entry in enumerate(parsed_entries):
+            if action.upper() == entry[0].upper() and (not tg or tg.lower() in entry[2].lower()):
+                pyautogui.click(button='RIGHT')
+                osrs.clock.random_sleep(0.1, 0.11)
+                pyautogui.click(curr_pos[0], menu_top + choose_option_offset + (i * 15))
+                return True
+        osrs.move.fast_move(item)
+    else:
+        osrs.move.fast_move(item)
+    return False
+
+
+
 def mac_right_click_menu_select(item, entry_action=None):
     move_and_click(item['x'], item['y'], 3, 3, 'right')
     clock.random_sleep(0.2, 0.3)
@@ -588,7 +639,10 @@ def move_around_center_screen(x1=800, y1=400, x2=1000, y2=600):
     clock.random_sleep(0.15, 0.25)
 
 
-def follow_path(start, end, right_click=False, exact_tile=False):
+def follow_path(
+        start, end, right_click=False, exact_tile=False, skip_dax=False,
+        player_loc=None
+):
     # selected = 3053
     all_chat_widget = '162,5'
     game_chat_widget = '162,8'
@@ -598,13 +652,14 @@ def follow_path(start, end, right_click=False, exact_tile=False):
     clan_chat_widget = '162,24'
     trade_chat_widget = '162,28'
     report_player_widget = '875,22'
-
-    path = dax.generate_path(start, end)
+    path = None
+    if not skip_dax:
+        path = dax.generate_path(start, end)
     parsed_tiles = []
     if not path:
         # if dax failed fall back to my budget patching homebrewed deal
         parsed_tiles = run_towards_square_v3(
-            {'x': end['x'], 'y': end['y'], 'z': 0}, steps_only=True
+            {'x': end['x'], 'y': end['y'], 'z': 0}, steps_only=True, loc=player_loc
         )
     else:
         parsed_tiles = util.tile_objects_to_strings(path)
@@ -618,12 +673,30 @@ def follow_path(start, end, right_click=False, exact_tile=False):
     time_on_same_tile = datetime.datetime.now()
     while True:
         if (datetime.datetime.now() - time_on_same_tile).total_seconds() > 2.5:
-            print('2.5 seconds on same tile, ending')
+            osrs.dev.logger.warning('2.5 seconds on same tile, ending')
             return
+
         if qh.get_player_world_location() != prev_loc:
             prev_loc = qh.get_player_world_location()
             time_on_same_tile = datetime.datetime.now()
+
         qh.query_backend()
+
+        if qh.get_destination_tile() == end:
+            last_tile = None
+            time_on_tile = datetime.datetime.now()
+            while True:
+                qh.query_backend()
+                if qh.get_player_world_location('x') == end['x'] and qh.get_player_world_location('y') == end['y']:
+                    osrs.dev.logger.info("Arrived at destination.")
+                    return
+                elif qh.get_player_world_location() != last_tile:
+                    last_tile = qh.get_player_world_location()
+                    time_on_tile = datetime.datetime.now()
+                elif (datetime.datetime.now() - time_on_tile).total_seconds() > 1:
+                    osrs.dev.logger.info("Timed out trying to go to loc")
+                    break
+            continue
         # ensure that the chat box isnt open bc it blocks my clicks
         if qh.get_widgets(report_player_widget):
             osrs.keeb.press_key('esc')
@@ -641,8 +714,10 @@ def follow_path(start, end, right_click=False, exact_tile=False):
         # in that case, i still want to break if i am at the end of the path
         if dist_to_end <= 3 and not exact_tile:
             break
+        elif exact_tile and dist_to_end == 0:
+            osrs.dev.logger.info("On desired tile - exiting")
         for tile in reversed(parsed_tiles):
-            if is_clickable(qh.get_tiles(tile)):
+            if qh.get_tiles(tile):
                 if right_click:
                     osrs.move.right_click_v6(qh.get_tiles(tile), 'Walk here', qh.get_canvas(), in_inv=True)
                 else:
@@ -672,7 +747,7 @@ def fixed_follow_path(path, right_click=False, exact_tile=False):
     time_on_same_tile = datetime.datetime.now()
     while True:
         if (datetime.datetime.now() - time_on_same_tile).total_seconds() > 2.5:
-            print('2.5 seconds on same tile, ending')
+            print('2.5 seconds on same tile, ending - fixed')
             return
         if qh.get_player_world_location() != prev_loc:
             prev_loc = qh.get_player_world_location()
@@ -819,7 +894,10 @@ def interact_with_multiple_objects(
             osrs.move.fast_click_v2(qh.get_tiles(intermediate_tile))
 
 
-def go_to_loc(dest_x, dest_y, dest_z=0, right_click=False, exact_tile=False):
+def go_to_loc(
+        dest_x, dest_y, dest_z=0, right_click=False, exact_tile=False,
+        skip_dax=False, exit_on_dest=False, player_loc=None
+):
     x_min = dest_x - 3
     y_min = dest_y - 3
     x_max = dest_x + 3
@@ -840,13 +918,27 @@ def go_to_loc(dest_x, dest_y, dest_z=0, right_click=False, exact_tile=False):
         elif qh.get_destination_tile() \
                 and qh.get_destination_tile()['x'] == dest_x \
                 and qh.get_destination_tile()['y'] == dest_y:
+            if exit_on_dest:
+                last_tile = None
+                time_on_tile = datetime.datetime.now()
+                while True:
+                    qh.query_backend()
+                    if qh.get_player_world_location('x') == dest_x and qh.get_player_world_location('y') == dest_y:
+                        osrs.dev.logger.info("Arrived at destination.")
+                        return
+                    elif qh.get_player_world_location() != last_tile:
+                        last_tile = qh.get_player_world_location()
+                        time_on_tile = datetime.datetime.now()
+                    elif (datetime.datetime.now() - time_on_tile).total_seconds() > 1:
+                        osrs.dev.logger.info("Timed out trying to go to loc")
+                        break
             continue
         elif qh.get_tiles(f'{dest_x},{dest_y},{dest_z}') and is_clickable(qh.get_tiles(f'{dest_x},{dest_y},{dest_z}')):
             osrs.move.fast_click(qh.get_tiles(f'{dest_x},{dest_y},{dest_z}'))
         else:
             osrs.move.follow_path(
                 qh.get_player_world_location(), {'x': dest_x, 'y': dest_y, 'z': dest_z},
-                right_click=right_click, exact_tile=exact_tile
+                right_click=right_click, exact_tile=exact_tile, skip_dax=skip_dax, player_loc=player_loc
             )
 
 
@@ -956,7 +1048,7 @@ def interact_with_object_v3(
         target_obj = qh.get_objects_v2(obj_type, dist=obj_dist)
 
         if target_obj:
-            target_obj = sorted(target_obj, key=lambda obj: obj['dist'])
+            #target_obj = sorted(target_obj, key=lambda obj: obj['dist'])
             if obj_tile:
                 target_obj = [obj for obj in target_obj if
                               obj['x_coord'] == obj_tile['x'] and obj['y_coord'] == obj_tile['y']]
@@ -1080,3 +1172,15 @@ def interact_with_npc(
                 qh, target_npcs, last_click,
                 timeout, right_click_option, in_inv=True
             )
+
+
+def conditional_click(qh, obj, action):
+    if not obj or not action or not qh:
+        return
+    elif (qh.get_right_click_menu()
+          and qh.get_right_click_menu()['entries']
+          and action in qh.get_right_click_menu()['entries'][-1][0]
+          and obj['name'] in qh.get_right_click_menu()['entries'][-1][2]):
+        pyautogui.click()
+    elif obj:
+        osrs.move.instant_move(obj)

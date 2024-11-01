@@ -398,8 +398,8 @@ def banking_handler(params, wait_on_deposited_items=True):
     qh = osrs.queryHelper.QueryHelper()
     qh.set_npcs([*ge_banker_npc_ids, *varr_banker_npc_ids, *fally_banker_npc_ids])
     qh.set_objects(
-        {'3375,11493,0', wt_bank_tile, lum_basement_bank_tile, bf_bank_tile, crafting_guild_bank_tile, c_wars_bank_tile, v_west_bank_tile_1, lum_top_floor_bank_tile, lunar_bank_tile, draynor_bank_tile, barb_assault_bank_tile, gnome_strong_bank_tile, ferox_bank_tile},
-        {'44630', wt_bank_id, lum_basement_bank_id, bf_bank_id, crafting_guild_bank_id, c_wars_bank_id, v_west_bank_id_1, lum_top_floor_bank_id, draynor_bank_id, lunar_id, barb_assault_bank_id, gnome_strong_bank_id, ferox_bank_id},
+        {'2405,5986,0', '3375,11493,0', wt_bank_tile, lum_basement_bank_tile, bf_bank_tile, crafting_guild_bank_tile, c_wars_bank_tile, v_west_bank_tile_1, lum_top_floor_bank_tile, lunar_bank_tile, draynor_bank_tile, barb_assault_bank_tile, gnome_strong_bank_tile, ferox_bank_tile},
+        {'30087', '44630', wt_bank_id, lum_basement_bank_id, bf_bank_id, crafting_guild_bank_id, c_wars_bank_id, v_west_bank_id_1, lum_top_floor_bank_id, draynor_bank_id, lunar_id, barb_assault_bank_id, gnome_strong_bank_id, ferox_bank_id},
         osrs.queryHelper.ObjectTypes.GAME.value
     )
     qh.set_player_world_location()
