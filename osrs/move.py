@@ -934,7 +934,15 @@ def go_to_loc(
                         break
             continue
         elif qh.get_tiles(f'{dest_x},{dest_y},{dest_z}') and is_clickable(qh.get_tiles(f'{dest_x},{dest_y},{dest_z}')):
-            osrs.move.fast_click(qh.get_tiles(f'{dest_x},{dest_y},{dest_z}'))
+            if right_click:
+                osrs.move.right_click_v6(
+                    qh.get_tiles(f'{dest_x},{dest_y},{dest_z}'),
+                    'Walk here',
+                    qh.get_canvas(),
+                    in_inv=True
+                )
+            else:
+                osrs.move.fast_click(qh.get_tiles(f'{dest_x},{dest_y},{dest_z}'))
         else:
             osrs.move.follow_path(
                 qh.get_player_world_location(), {'x': dest_x, 'y': dest_y, 'z': dest_z},

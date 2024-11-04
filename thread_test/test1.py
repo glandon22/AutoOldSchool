@@ -101,9 +101,81 @@ osrs.move.right_click_v7(
     'Wield',
     qh.get_canvas()
 )'''
-while True:
+'''while True:
     qh = osrs.queryHelper.QueryHelper()
     qh.set_npcs_by_name(['Sister Senga'])
     qh.set_right_click_menu()
     qh.query_backend()
-    print(qh.get_right_click_menu())
+    print(qh.get_right_click_menu())'''
+
+'''
+qh = osrs.qh_v2.QueryHelper()
+chat_lines = set()
+for i in range(0, 50):
+    chat_lines.add(f"162,56,{i * 4}")
+qh.set_widgets(chat_lines)
+qh.set_widgets({'162,56,0'})
+# leaving this empty matches all npcs which i can filter later
+qh.set_npcs([])
+qh.set_objects_v2('graphics', {1767}, dist=8)
+qh.set_objects_v2('game', {37738, 37739, 37743, 37744, 37745})
+qh.set_varbits(['10151'])
+qh.set_player_world_location()
+qh.set_inventory()
+qh.set_canvas()
+qh.set_skills({'hitpoints', 'strength', 'ranged', 'magic', 'attack', 'defence', 'prayer'})
+qh.set_widgets({'233,0', '541,23', '541,22', '541,21', '161,62', osrs.widget_ids.run_energy_widget_id, '541,25'})
+# Pillar overlay
+qh.set_widgets({'413,1', '413,6', '413,7', '413,8', '413,9', '413,15', '413,21', '413,27'})
+qh.set_active_prayers()
+qh.set_interating_with()
+qh.set_equipment()
+qh.set_canvas()
+qh.set_right_click_menu()
+qh.set_var_player(['101'])
+iters = 0
+time1 = 0.0
+max1 = 0
+min1 = 9.0
+while iters <= 1000:
+    start = datetime.datetime.now()
+    qh.query_backend()
+    val = (datetime.datetime.now() - start).total_seconds()
+    time1 += val
+    iters += 1
+    max1 = max(val, max1)
+    min1 = min(val, min1)
+    print('////////')
+    print('avg: ', time1 / iters)
+    print('min: ', min1)
+    print('max: ', max1)
+    print('////////')
+'''
+qh = osrs.qh_v2.QueryHelper()
+chat_lines = set()
+for i in range(0, 50):
+    chat_lines.add(f"162,56,{i * 4}")
+qh.set_widgets(chat_lines)
+qh.set_widgets({'162,56,0'})
+# leaving this empty matches all npcs which i can filter later
+qh.set_npcs([])
+qh.set_objects_v2('graphics', {1767}, dist=8)
+qh.set_objects_v2('game', {37738, 37739, 37743, 37744, 37745})
+qh.set_varbits(['10151'])
+qh.set_player_world_location()
+qh.set_inventory()
+qh.set_canvas()
+qh.set_skills({'hitpoints', 'strength', 'ranged', 'magic', 'attack', 'defence', 'prayer'})
+qh.set_widgets({'233,0', '541,23', '541,22', '541,21', '161,62', osrs.widget_ids.run_energy_widget_id, '541,25'})
+# Pillar overlay
+qh.set_widgets({'413,1', '413,6', '413,7', '413,8', '413,9', '413,15', '413,21', '413,27'})
+qh.set_active_prayers()
+qh.set_interating_with()
+qh.set_equipment()
+qh.set_canvas()
+qh.set_right_click_menu()
+qh.set_var_player(['101'])
+
+
+osrs.combat_utils.prayer_handler(qh, ['protect_range'], cached_locations=True)
+osrs.combat_utils.prayer_handler(qh, ['protect_mage'], cached_locations=True)

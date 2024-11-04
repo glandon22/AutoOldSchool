@@ -178,10 +178,12 @@ prayer_map_widgets = {
     'piety': '541,35'
 }
 
+# save values so i dont query over and over since this never really changes
 prayer_widget_cache = {}
+prayer_timeout = {}
 
 
-def prayer_handler(qh: osrs.queryHelper.QueryHelper or None, prayers, cached_locations=False):
+def prayer_handler(qh: osrs.queryHelper.QueryHelper or None, prayers, cached_locations=False, ):
     curr_pos = pyautogui.position()
     if qh is None:
         qh = osrs.queryHelper.QueryHelper()
@@ -199,15 +201,26 @@ def prayer_handler(qh: osrs.queryHelper.QueryHelper or None, prayers, cached_loc
         if prayer_map[prayer] not in qh.get_active_prayers():
             osrs.keeb.press_key('f5')
             start = datetime.now()
-            if cached_locations and prayer_widget_cache[prayer_map_widgets[prayer]]:
-                osrs.clock.random_sleep(0.1, 0.11)
+            if cached_locations and prayer_widget_cache and prayer_map_widgets[prayer] in prayer_widget_cache:
+                if prayer in prayer_timeout and (datetime.now() - prayer_timeout[prayer]).total_seconds() < 0.6:
+                    osrs.dev.logger.warning("Tried turning on the same prayer too quickly - blocking action.")
+                    osrs.keeb.press_key('esc')
+                    return
                 osrs.move.fast_click_v2(prayer_widget_cache[prayer_map_widgets[prayer]])
+                prayer_timeout[prayer] = datetime.now()
                 osrs.dev.logger.info("Prayer switch wait time: %s", (datetime.now() - start).total_seconds())
+                osrs.keeb.press_key('esc')
+                return
             while True:
                 qh.query_backend()
                 if qh.get_widgets(prayer_map_widgets[prayer]):
                     prayer_widget_cache[prayer_map_widgets[prayer]] = qh.get_widgets(prayer_map_widgets[prayer])
-                    osrs.move.fast_click(qh.get_widgets(prayer_map_widgets[prayer]))
+                    if prayer in prayer_timeout and (datetime.now() - prayer_timeout[prayer]).total_seconds() < 0.6:
+                        osrs.dev.logger.warning("Tried turning on the same prayer too quickly - blocking action.")
+                        osrs.keeb.press_key('esc')
+                        return
+                    osrs.move.fast_click_v2(qh.get_widgets(prayer_map_widgets[prayer]))
+                    prayer_timeout[prayer] = datetime.now()
                     moved = True
                     osrs.dev.logger.info("Prayer switch wait time: %s", (datetime.now() - start).total_seconds())
                     break

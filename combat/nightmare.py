@@ -1,22 +1,6 @@
-'''
-notes
-drakans to ver sinhaza run north to 3728, 3304
-game obj 32637 to z == 1
-run to 3808,9746,1
-nightmage asleep is 9460
-9432 in pre-fight, 9425 attackable
-anim id 8594 is melee attack
-anim id 8595 is mage attack
-anim id 8596 is range attack
-game objects 37444 are the safe flowers in the quartiles attack
-9467, 9466 are the husks to quickly kill
-1767 graphics obj is the black hands
-'''
-from datetime import datetime
+import datetime
 
 import pyautogui
-from scipy.stats import semicircular
-
 import osrs
 
 disease_pots = [
@@ -29,6 +13,87 @@ disease_pots = [
     osrs.item_ids.SANFEW_SERUM3,
     osrs.item_ids.SANFEW_SERUM4,
 ]
+
+
+def overhead_handler(qh, pnm, curse_start):
+    # Handle pnm's direct attacks
+    if pnm and pnm['animation'] == 8594:
+        osrs.dev.logger.debug("Phosani is about to melee me.")
+        if curse_start:
+            osrs.combat_utils.prayer_handler(qh, ['protect_range'], cached_locations=True)
+        else:
+            osrs.combat_utils.prayer_handler(qh, ['protect_melee'], cached_locations=True)
+    elif pnm and pnm['animation'] == 8595:
+        osrs.dev.logger.debug("Phosani is about to mage me.")
+        if curse_start:
+            osrs.combat_utils.prayer_handler(qh, ['protect_melee'], cached_locations=True)
+        else:
+            osrs.combat_utils.prayer_handler(qh, ['protect_mage'], cached_locations=True)
+    elif pnm and pnm['animation'] == 8596:
+        osrs.dev.logger.debug("Phosani is about to range me.")
+        if curse_start:
+            osrs.combat_utils.prayer_handler(qh, ['protect_mage'], cached_locations=True)
+        else:
+            osrs.combat_utils.prayer_handler(qh, ['protect_range'], cached_locations=True)
+    elif not pnm:
+        osrs.dev.logger.debug("phosani not found")
+
+
+def go_to_loc_local(
+        dest_x, dest_y, dest_z, qh, pnm, curse_start, right_click=False, exact_tile=False,
+        skip_dax=False, exit_on_dest=False, player_loc=None
+):
+    x_min = dest_x - 3
+    y_min = dest_y - 3
+    x_max = dest_x + 3
+    y_max = dest_y + 3
+    qh.set_player_world_location()
+    qh.set_canvas()
+    qh.set_destination_tile()
+    qh.set_tiles({f'{dest_x},{dest_y},{dest_z}'})
+    overhead_handler(qh, pnm, curse_start)
+    while True:
+        qh.query_backend()
+        overhead_handler(qh, pnm, curse_start)
+        if (x_min <= qh.get_player_world_location('x') <= x_max
+                and y_min <= qh.get_player_world_location('y') <= y_max
+                and not exact_tile):
+            break
+        elif exact_tile and qh.get_player_world_location('x') == dest_x and qh.get_player_world_location('y') == dest_y:
+            break
+        elif qh.get_destination_tile() \
+                and qh.get_destination_tile()['x'] == dest_x \
+                and qh.get_destination_tile()['y'] == dest_y:
+            if exit_on_dest:
+                last_tile = None
+                time_on_tile = datetime.datetime.now()
+                while True:
+                    qh.query_backend()
+                    if qh.get_player_world_location('x') == dest_x and qh.get_player_world_location('y') == dest_y:
+                        osrs.dev.logger.info("Arrived at destination.")
+                        return
+                    elif qh.get_player_world_location() != last_tile:
+                        last_tile = qh.get_player_world_location()
+                        time_on_tile = datetime.datetime.now()
+                    elif (datetime.datetime.now() - time_on_tile).total_seconds() > 1:
+                        osrs.dev.logger.info("Timed out trying to go to loc")
+                        break
+            continue
+        elif qh.get_tiles(f'{dest_x},{dest_y},{dest_z}') and osrs.move.is_clickable(qh.get_tiles(f'{dest_x},{dest_y},{dest_z}')):
+            if right_click:
+                osrs.move.right_click_v6(
+                    qh.get_tiles(f'{dest_x},{dest_y},{dest_z}'),
+                    'Walk here',
+                    qh.get_canvas(),
+                    in_inv=True
+                )
+            else:
+                osrs.move.fast_click(qh.get_tiles(f'{dest_x},{dest_y},{dest_z}'))
+        else:
+            osrs.move.follow_path(
+                qh.get_player_world_location(), {'x': dest_x, 'y': dest_y, 'z': dest_z},
+                right_click=right_click, exact_tile=exact_tile, skip_dax=skip_dax, player_loc=player_loc
+            )
 
 
 def add_unsafe_claw_tiles(bad_tiles: set, claws):
@@ -131,11 +196,12 @@ def parasite_handler(qh: osrs.queryHelper.QueryHelper, interacting, claws):
     if parasite:
         osrs.player.equip_item_no_wait([osrs.item_ids.ZOMBIE_AXE], qh.get_equipment())
         if not interacting or 'Parasite' not in interacting:
-            osrs.move.conditional_click(
+            '''osrs.move.conditional_click(
                 qh,
                 parasite[0],
                 'Attack'
-            )
+            )'''
+            osrs.move.right_click_v7(parasite[0], 'Attack', qh.get_canvas(), 'Parasite')
         return True
 
 
@@ -171,9 +237,6 @@ def wave_dash_handler(initial_pnm, anchor, main_qh):
     qh.set_active_prayers()
     while True:
         qh.query_backend()
-        # no need to user overheads during this phase
-        if qh.get_active_prayers():
-            osrs.player.flick_all_prayers()
         pnm = osrs.util.find_closest_target_in_game(
             qh.get_npcs(),
             qh.get_player_world_location(),
@@ -208,9 +271,9 @@ def wave_dash_handler(initial_pnm, anchor, main_qh):
                 osrs.move.fast_click_v2(nearest_safe_tile[0])
         else:
             osrs.dev.logger.info("I am on a safe tile - waiting for wave dash to end.")
-            osrs.dev.logger.info('player: %s',
-                                 f"{qh.get_player_world_location('x')},{qh.get_player_world_location('y')},3")
-            osrs.dev.logger.info('safe_tiles: %s', safe_tiles)
+            # no need to user overheads during this phase
+            if qh.get_active_prayers():
+                osrs.player.flick_all_prayers()
 
 
 def find_safe_quadrant(objects, anchor, tiles):
@@ -356,6 +419,8 @@ def curse_handler(qh):
 
 def determine_pillar_to_attack(qh, nw_totem, ne_totem, se_totem, sw_totem, any_spore):
     # NW totem is still alive
+    osrs.dev.logger.info("se widget: %s", qh.get_widgets('413,27'))
+    osrs.dev.logger.info("sw widget: %s", qh.get_widgets('413,21'))
     if nw_totem:
         return nw_totem
     # NE totem is still alive
@@ -369,6 +434,7 @@ def determine_pillar_to_attack(qh, nw_totem, ne_totem, se_totem, sw_totem, any_s
             return se_totem
         # If I am too far north I will be unable to see these pillars, so run south
         elif qh.get_tiles(f"{qh.get_player_world_location('x')},{qh.get_player_world_location('y') - 3},3"):
+            osrs.dev.logger.info("se pillar up but off screen")
             return {'x_coord': qh.get_player_world_location('x'), 'y_coord': qh.get_player_world_location('y') - 3}
     # SW Totem is still up
     elif (qh.get_widgets('413,21')
@@ -379,18 +445,19 @@ def determine_pillar_to_attack(qh, nw_totem, ne_totem, se_totem, sw_totem, any_s
             return sw_totem
         # If I am too far north I will be unable to see these pillars, so run south
         elif qh.get_tiles(f"{qh.get_player_world_location('x')},{qh.get_player_world_location('y') - 3},3"):
+            osrs.dev.logger.info("sw pillar up but off screen")
             return {'x_coord': qh.get_player_world_location('x'), 'y_coord': qh.get_player_world_location('y') - 3}
 
 
 def main():
-    qh = osrs.queryHelper.QueryHelper()
+    qh = osrs.qh_v2.QueryHelper()
     chat_lines = set()
     for i in range(0, 50):
         chat_lines.add(f"162,56,{i * 4}")
     qh.set_widgets(chat_lines)
     qh.set_widgets({'162,56,0'})
     # leaving this empty matches all npcs which i can filter later
-    qh.set_npcs_by_name([])
+    qh.set_npcs([])
     qh.set_objects_v2('graphics', {1767}, dist=8)
     qh.set_objects_v2('game', {37738, 37739, 37743, 37744, 37745})
     qh.set_varbits(['10151'])
@@ -408,6 +475,7 @@ def main():
     qh.set_right_click_menu()
     anchor = None
     pots = osrs.combat_utils.PotConfig(prayer=True, super_str=True, super_atk=True).asdict()
+    curse_start = None
     while True:
         qh.query_backend()
         (pnm, nw_totem, se_totem, sw_totem, ne_totem, nw_totem_charged,
@@ -498,59 +566,70 @@ def main():
                 anchor,
                 nearby_tiles
             )
-            # get the tiles around phosani
-            pnm_perim = osrs.util.monster_perimeter_coordinates(7, pnm, 3)
-            preferred_tiles = [tile for tile in nearby_tiles if f"{tile['x_coord']},{tile['y_coord']},3" in pnm_perim]
-            closest_preferred_tile = osrs.util.find_closest_target_in_game(
-                preferred_tiles,
-                qh.get_player_world_location()
-            )
-
-            '''if pillar_overlay:
-                return'''
-            # no need to be close to phosani when i am attacking the pillars
-            if closest_preferred_tile and closest_preferred_tile['dist'] <= 2 and not qh.get_widgets('413,1'):
-                osrs.dev.logger.info("Found a tile on phosanis perimeter")
-                # i right click here because sometimes quickly clicking will wind up clicking phosani and stalling my run
-                # which will cause me to get hit by a portal
-                osrs.move.go_to_loc(
-                    closest_preferred_tile['x_coord'], closest_preferred_tile['y_coord'], 3,
-                    skip_dax=True, exact_tile=True, right_click=True
-                )
-            else:
-                osrs.dev.logger.info("No tile on phosanis perimeter safe - finding a safe tile elsewhere. %s, %s, %s",
-                                     pnm_perim, preferred_tiles, nearby_tiles)
-                closest_safe_tile = osrs.util.find_closest_target_in_game(
+            if pillar_overlay:
+                osrs.dev.logger.info("going around phosani during pillars")
+                targ = None
+                if ne_totem:
+                    osrs.dev.logger.info("finding sq between ne pillar")
+                    targ = ne_totem
+                elif nw_totem:
+                    osrs.dev.logger.info("finding sq between nw pillar")
+                    targ = nw_totem
+                elif se_totem:
+                    osrs.dev.logger.info("finding sq between se pillar")
+                    targ = se_totem
+                elif sw_totem:
+                    osrs.dev.logger.info("finding sq between sw pillar")
+                    targ = sw_totem
+                else:
+                    osrs.dev.logger.info("finding sq between southern pillar")
+                    targ = {
+                        'x_coord': qh.get_player_world_location('x'),
+                        'y_coord': qh.get_player_world_location('y') - 8,
+                    }
+                closest_tile = sorted(
                     nearby_tiles,
+                    key=lambda tile: (
+                        osrs.dev.point_dist(qh.get_player_world_location('x'), qh.get_player_world_location('y'), targ['x_coord'], targ['y_coord']),
+                        osrs.dev.point_dist(qh.get_player_world_location('x'), qh.get_player_world_location('y'), tile['x_coord'], tile['y_coord']),
+                    )
+                )
+                if closest_tile:
+                    go_to_loc_local(closest_tile[0]['x_coord'], closest_tile[0]['y_coord'], 3, qh, pnm, curse_start, skip_dax=True,
+                                        exact_tile=True)
+            else:
+                # get the tiles around phosani
+                pnm_perim = osrs.util.monster_perimeter_coordinates(7, pnm, 3)
+                preferred_tiles = [tile for tile in nearby_tiles if f"{tile['x_coord']},{tile['y_coord']},3" in pnm_perim]
+                closest_preferred_tile = osrs.util.find_closest_target_in_game(
+                    preferred_tiles,
                     qh.get_player_world_location()
                 )
-                osrs.move.go_to_loc(closest_safe_tile['x_coord'], closest_safe_tile['y_coord'], 3, skip_dax=True,
-                                    exact_tile=True)
+
+                # no need to be close to phosani when i am attacking the pillars
+                if closest_preferred_tile and closest_preferred_tile['dist'] <= 2 and not qh.get_widgets('413,1'):
+                    osrs.dev.logger.info("Found a tile on phosanis perimeter")
+                    # i right click here because sometimes quickly clicking will wind up clicking phosani and stalling my run
+                    # which will cause me to get hit by a portal
+                    go_to_loc_local(
+                        closest_preferred_tile['x_coord'], closest_preferred_tile['y_coord'], 3, qh, pnm, curse_start,
+                        skip_dax=True, exact_tile=True
+                    )
+                else:
+                    osrs.dev.logger.info("No tile on phosanis perimeter safe - finding a safe tile elsewhere. %s, %s, %s",
+                                         pnm_perim, preferred_tiles, nearby_tiles)
+                    closest_safe_tile = osrs.util.find_closest_target_in_game(
+                        nearby_tiles,
+                        qh.get_player_world_location()
+                    )
+                    go_to_loc_local(closest_safe_tile['x_coord'], closest_safe_tile['y_coord'], 3, qh, pnm, curse_start,
+                                    skip_dax=True, exact_tile=True)
             qh.query_backend()
 
         curse_start = curse_handler(qh)
 
         # Handle pnm's direct attacks
-        if pnm and pnm['animation'] == 8594:
-            osrs.dev.logger.debug("Phosani is about to melee me.")
-            if curse_start:
-                osrs.combat_utils.prayer_handler(qh, ['protect_range'])
-            else:
-                osrs.combat_utils.prayer_handler(qh, ['protect_melee'])
-        elif pnm and pnm['animation'] == 8595:
-            osrs.dev.logger.debug("Phosani is about to mage me.")
-            if curse_start:
-                osrs.combat_utils.prayer_handler(qh, ['protect_melee'])
-            else:
-                osrs.combat_utils.prayer_handler(qh, ['protect_mage'])
-        elif pnm and pnm['animation'] == 8596:
-            osrs.dev.logger.debug("Phosani is about to range me.")
-            if curse_start:
-                osrs.combat_utils.prayer_handler(qh, ['protect_mage'])
-            else:
-                osrs.combat_utils.prayer_handler(qh, ['protect_range'])
-        elif not pnm:
-            osrs.dev.logger.debug("phosani not found")
+        overhead_handler(qh, pnm, curse_start)
 
         if qh.get_varbits('10151'):
             osrs.dev.logger.warning("i am diseased")
@@ -590,8 +669,14 @@ def main():
                         continue
                 osrs.dev.logger.info("attacking phosani")
                 osrs.player.equip_item_no_wait([osrs.item_ids.ZOMBIE_AXE], qh.get_equipment())
-                osrs.move.conditional_click(
+                '''osrs.move.conditional_click(
                     qh, pnm, 'Attack'
+                )'''
+                osrs.move.right_click_v7(
+                    pnm,
+                    'Attack',
+                    qh.get_canvas(),
+                    "Phosani's Nightmare"
                 )
             # we should be attacking pillars right now
             elif pillar_overlay:
@@ -600,7 +685,7 @@ def main():
                     qh, nw_totem, ne_totem, se_totem, sw_totem, any_spore
                 )
                 # a pillar is visible to attack
-                if target_pillar and 'name' in target_pillar and target_pillar['dist'] <= 6:
+                if target_pillar and 'name' in target_pillar and target_pillar['dist'] <= 7:
                     osrs.move.conditional_click(
                         qh,
                         target_pillar,
@@ -610,6 +695,7 @@ def main():
                 elif not any_spore and not any_claws and not quadrant_attack:
                     # pillar is up but not on screen - walk towards these coords
                     if target_pillar and 'name' not in target_pillar:
+                        osrs.dev.logger.info("walking towars pillar offscreen!")
                         osrs.move.fast_click_v2(qh.get_tiles(
                             f"{target_pillar['x_coord']},{target_pillar['y_coord']},3"))
                     elif target_pillar and 'name' in target_pillar:
@@ -619,6 +705,8 @@ def main():
                             'Charge',
                             target_field='id'
                         )
+                else:
+                    osrs.dev.logger.info("t p: %s", target_pillar)
 
 
 #go_to_nightmare()
@@ -631,5 +719,7 @@ notes
 potentially try to pray against the husks
 need to figure out what graphics object is under phosani when he does the claw phase so that when attacking pillars i know to move if im under him 
 
-not always catching when phosani curse is lifted if too many chats come in at the same time
+
+IMPORTANT i need to not attack phosani after all four pillars are kill bc it stalls me trying to attack the first sleepwalker, 
+should probably check his animation and try to ignore off that
 '''

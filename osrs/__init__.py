@@ -19,6 +19,7 @@ __all__ = [
     'combat_utils',
     'transport',
     'emergency_exit'
+    'qh_v2'
 ]
 
 import osrs.dev
@@ -41,3 +42,4 @@ import osrs.loot
 import osrs.combat_utils
 import osrs.transport
 import osrs.emergency_exit
+import osrs.qh_v2
