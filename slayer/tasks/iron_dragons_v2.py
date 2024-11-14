@@ -5,11 +5,12 @@ import osrs
 
 from slayer import transport_functions
 from combat import slayer_killer
+from slayer.tasks import gear_loadouts
 from slayer.utils import bank
 
 varrock_tele_widget_id = '218,23'
 
-
+weapon = gear_loadouts.dragon_melee_weapon
 supplies = [
     {'id': osrs.item_ids.DRAMEN_STAFF, 'consume': 'Wield'},
     osrs.item_ids.SUPER_ATTACK4,
@@ -19,7 +20,7 @@ supplies = [
     osrs.item_ids.EXTENDED_ANTIFIRE4,
     osrs.item_ids.EXTENDED_ANTIFIRE4,
     osrs.item_ids.RUNE_POUCH,
-    osrs.item_ids.KARAMJA_GLOVES_4,
+    osrs.item_ids.KARAMJA_GLOVES_3,
     {
         'id': osrs.item_ids.MONKFISH,
         'quantity': '5'
@@ -36,17 +37,17 @@ supplies = [
 ]
 
 equipment = [
-    {'id': osrs.item_ids.DRAGONFIRE_SHIELD, 'consume': 'Wield'},
-    {'id': osrs.item_ids.FIRE_CAPE, 'consume': 'Wear'},
-    {'id': osrs.item_ids.SLAYER_HELMET_I, 'consume': 'Wear'},
-    {'id': osrs.item_ids.BARROWS_GLOVES, 'consume': 'Wear'},
-    {'id': osrs.item_ids.BRIMSTONE_RING, 'consume': 'Wear'},
-    {'id': osrs.item_ids.DRAGON_BOOTS, 'consume': 'Wear'},
-    {'id': osrs.item_ids.BANDOS_CHESTPLATE, 'consume': 'Wear'},
-    {'id': osrs.item_ids.BANDOS_TASSETS, 'consume': 'Wear'},
-    {'id': osrs.item_ids.AMULET_OF_FURY, 'consume': 'Wear'},
-    {'id': osrs.item_ids.DRAGON_HUNTER_LANCE},
-    {'id': osrs.item_ids.HOLY_BLESSING, 'consume': 'Equip'},
+    gear_loadouts.slayer_helm,
+    gear_loadouts.melee_necklace,
+    gear_loadouts.melee_str_chest,
+    gear_loadouts.melee_str_legs,
+    gear_loadouts.melee_boots,
+    gear_loadouts.dragon_melee_shield,
+    gear_loadouts.melee_cape,
+    gear_loadouts.melee_gloves,
+    gear_loadouts.melee_ring,
+    weapon,
+    gear_loadouts.prayer_ammo_slot
 ]
 
 pot_config = slayer_killer.PotConfig(super_atk=True, super_str=True, antifire=True)
@@ -81,33 +82,6 @@ def pre_log():
             osrs.move.follow_path(qh.get_player_world_location(), safe_tile)
 
 
-def loot_builder():
-    config = {
-        'inv': [],
-        'loot': []
-    }
-
-    item = osrs.loot.InvConfig(osrs.item_ids.MONKFISH, osrs.loot.monkfish_eval)
-    config['inv'].append(item)
-
-    item = osrs.loot.LootConfig(osrs.item_ids.DRAGON_PLATELEGS, 10, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(osrs.item_ids.DRAGON_PLATESKIRT, 10, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(osrs.item_ids.ADAMANT_2H_SWORD, 10, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(osrs.item_ids.RUNE_MED_HELM, 10, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(osrs.item_ids.RUNE_BATTLEAXE, 10, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(osrs.item_ids.RUNITE_LIMBS, 10, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(osrs.item_ids.DRACONIC_VISAGE, 999)
-    config['loot'].append(item)
-
-    return config
-
-
 def main():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
@@ -117,11 +91,11 @@ def main():
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
         osrs.game.tele_home_fairy_ring('bjp')
-        transport_functions.isle_of_souls_dungeon()
+        transport_functions.isle_of_souls_dungeon_v2(2145, 9296)
         qh.query_backend()
-        osrs.move.click(qh.get_inventory(osrs.item_ids.DRAGON_HUNTER_LANCE))
+        osrs.move.click(qh.get_inventory(weapon['id']))
         task_started = True
-        success = slayer_killer.main('iron dragon', pot_config.asdict(), 35, prayers=['protect_melee'], hop=True, pre_hop=pre_log, loot_config=loot_builder())
+        success = slayer_killer.main('iron dragon', pot_config.asdict(), 35, prayers=['protect_melee'], hop=True, pre_hop=pre_log)
         qh.query_backend()
         osrs.player.turn_off_all_prayers()
         osrs.game.cast_spell(varrock_tele_widget_id)

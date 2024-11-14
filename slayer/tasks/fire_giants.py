@@ -5,16 +5,22 @@ import osrs
 
 from slayer import transport_functions
 from combat import slayer_killer
+from slayer.tasks import gear_loadouts
 
 varrock_tele_widget_id = '218,23'
 
-
+weapon = gear_loadouts.high_def_weapon
 supplies = [
     osrs.item_ids.SUPER_COMBAT_POTION4,
     osrs.item_ids.SUPER_COMBAT_POTION4,
     osrs.item_ids.RUNE_POUCH,
     osrs.item_ids.KARAMJA_GLOVES_3,
-    osrs.item_ids.DRAMEN_STAFF,
+    {
+        'id': [
+            osrs.item_ids.DRAMEN_STAFF
+        ],
+        'consume': 'Wield'
+    },
     {
         'id': osrs.item_ids.MONKFISH,
         'quantity': 'All'
@@ -22,16 +28,17 @@ supplies = [
 ]
 
 equipment = [
-    osrs.item_ids.SLAYER_HELMET_I,
-    osrs.item_ids.ABYSSAL_WHIP,
-    osrs.item_ids.BARROWS_GLOVES,
-    osrs.item_ids.BRIMSTONE_RING,
-    osrs.item_ids.DRAGON_BOOTS,
-    osrs.item_ids.BANDOS_TASSETS,
-    osrs.item_ids.BANDOS_CHESTPLATE,
-    osrs.item_ids.AMULET_OF_FURY,
-    osrs.item_ids.RUNE_DEFENDER,
-    osrs.item_ids.FIRE_CAPE,
+    gear_loadouts.slayer_helm,
+    gear_loadouts.melee_necklace,
+    gear_loadouts.melee_str_chest,
+    gear_loadouts.melee_str_legs,
+    gear_loadouts.melee_boots,
+    gear_loadouts.melee_str_shield,
+    gear_loadouts.melee_cape,
+    gear_loadouts.melee_gloves,
+    gear_loadouts.melee_ring,
+    weapon,
+    gear_loadouts.prayer_ammo_slot
 ]
 
 banking_config_equipment = {
@@ -108,9 +115,9 @@ def main():
         osrs.game.click_restore_pool()
         osrs.clock.random_sleep(2, 2.1)
         osrs.game.tele_home_fairy_ring('bjp')
-        transport_functions.isle_of_souls_dungeon(2128, 9328)
+        transport_functions.isle_of_souls_dungeon_v2(2128, 9328)
         qh.query_backend()
-        osrs.move.click(qh.get_inventory(osrs.item_ids.ABYSSAL_WHIP))
+        osrs.move.click(qh.get_inventory(weapon['id']))
         task_started = True
         success = slayer_killer.main('fire giant', pot_config.asdict(), 35, hop=True, pre_hop=pre_log)
         osrs.game.cast_spell(varrock_tele_widget_id)

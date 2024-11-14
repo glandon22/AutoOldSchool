@@ -19,8 +19,8 @@ slayer task boolean
 '''
 # yak SUPER COMBATS 10 20
 
-npc_to_kill = 'ankou'
-pot = 'SUPER_COMBATS'
+npc_to_kill = 'jungle spider'
+pot = 'SUPER_STRENGTH_AND_ATTACK'
 pot_interval = 10
 min_health = 12
 ss_x = -1
@@ -87,7 +87,7 @@ def main():
         if returning_to_safespot:
             print('out of safespot')
             if qh.get_tiles(f'{ss_x},{ss_y},{ss_z}') and osrs.move.is_clickable(qh.get_tiles(f'{ss_x},{ss_y},{ss_z}')):
-                osrs.move.fast_click(qh.get_tiles(f'{ss_x},{ss_y},{ss_z}'))
+                osrs.move.fast_click_v2(qh.get_tiles(f'{ss_x},{ss_y},{ss_z}'))
 
         if not qh.get_interating_with():
             osrs.game.break_manager_v4(script_config)
@@ -96,8 +96,7 @@ def main():
             k = osrs.inv.are_items_in_inventory_v2(qh.get_inventory(), food_ids)
             if not k:
                 exit('out of food')
-            osrs.move.click(k)
-            osrs.clock.sleep_one_tick()
+            osrs.move.fast_click_v2(k)
         elif qh.get_interating_with():
             print('In combat.')
         else:
@@ -105,7 +104,7 @@ def main():
                 targ = find_next_target(qh.get_npcs())
                 if targ:
                     print(targ['health'])
-                    osrs.move.fast_click(targ)
+                    osrs.move.fast_click_v2(targ)
 
         if pot != 'NONE' and (datetime.datetime.now() - last_pot).total_seconds() / 60 > pot_interval:
             last_pot = datetime.datetime.now()
@@ -115,18 +114,18 @@ def main():
                 if not strpot:
                     print('out of str pots')
                 else:
-                    osrs.move.click(strpot)
+                    osrs.move.fast_click_v2(strpot)
 
                 if not atk:
                     print('out of atk pots')
                 else:
-                    osrs.move.click(atk)
+                    osrs.move.fast_click_v2(atk)
             else:
                 selected_pot = osrs.inv.are_items_in_inventory_v2(qh.get_inventory(), pot_matcher[pot])
                 if not selected_pot:
                     print('out of selected_pot')
                 else:
-                    osrs.move.click(selected_pot)
+                    osrs.move.fast_click_v2(selected_pot)
 
         # check if i leveled
         if qh.get_widgets('233,0'):

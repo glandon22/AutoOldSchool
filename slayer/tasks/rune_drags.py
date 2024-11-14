@@ -5,22 +5,22 @@ import osrs
 
 from slayer import transport_functions
 from combat import slayer_killer
+from slayer.tasks import gear_loadouts
 from slayer.utils import bank
 varrock_tele_widget_id = '218,23'
 
-
 equipment = [
-    {'id': osrs.item_ids.DRAGONFIRE_SHIELD, 'consume': 'Wield'},
-    {'id': osrs.item_ids.FIRE_CAPE, 'consume': 'Wear'},
-    {'id': osrs.item_ids.SLAYER_HELMET_I, 'consume': 'Wear'},
-    {'id': osrs.item_ids.BARROWS_GLOVES, 'consume': 'Wear'},
-    {'id': osrs.item_ids.BRIMSTONE_RING, 'consume': 'Wear'},
+    gear_loadouts.slayer_helm,
+    gear_loadouts.melee_necklace,
+    gear_loadouts.melee_str_chest,
+    gear_loadouts.melee_str_legs,
     {'id': osrs.item_ids.INSULATED_BOOTS, 'consume': 'Wear'},
-    {'id': osrs.item_ids.BANDOS_CHESTPLATE, 'consume': 'Wear'},
-    {'id': osrs.item_ids.BANDOS_TASSETS, 'consume': 'Wear'},
-    {'id': osrs.item_ids.AMULET_OF_FURY, 'consume': 'Wear'},
-    {'id': osrs.item_ids.DRAGON_HUNTER_LANCE, 'consume': 'Wield'},
-    {'id': osrs.item_ids.HOLY_BLESSING, 'consume': 'Equip'},
+    gear_loadouts.dragon_melee_shield,
+    gear_loadouts.melee_cape,
+    gear_loadouts.melee_gloves,
+    gear_loadouts.melee_ring,
+    gear_loadouts.dragon_melee_weapon,
+    gear_loadouts.prayer_ammo_slot
 ]
 
 supplies = [
@@ -33,7 +33,7 @@ supplies = [
     osrs.item_ids.PRAYER_POTION4,
     osrs.item_ids.EXTENDED_ANTIFIRE4,
     osrs.item_ids.RUNE_POUCH,
-    osrs.item_ids.KARAMJA_GLOVES_4,
+    osrs.item_ids.KARAMJA_GLOVES_3,
     {
         'id': osrs.item_ids.MONKFISH,
         'quantity': 'All'

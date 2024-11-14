@@ -33,7 +33,7 @@ supplies = [
 
 equipment = [
     osrs.item_ids.HOLY_BLESSING,
-    osrs.item_ids.SLAYER_HELMET_I,
+    osrs.item_ids.BLACK_MASK,
     osrs.item_ids.ZOMBIE_AXE,
     osrs.item_ids.BARROWS_GLOVES,
     osrs.item_ids.BRIMSTONE_RING,

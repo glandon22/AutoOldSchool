@@ -282,7 +282,7 @@ def pot_handler(qh: osrs.queryHelper.QueryHelper, pots):
 
     if 'EXTENDED_ANTIFIRE' in pots \
             and pots['EXTENDED_ANTIFIRE'] \
-            and qh.get_varbit() == 0:
+            and qh.get_varbits(ANTIFIRE_VARBIT) == 0:
         p = osrs.inv.are_items_in_inventory_v2(qh.get_inventory(), pot_matcher['EXTENDED_ANTIFIRE'])
         if p:
             osrs.move.click(p)
@@ -330,16 +330,16 @@ def main(
     player_last_seen = None
     monster = npc_to_kill if type(npc_to_kill) is list else [npc_to_kill]
     monster = [item.lower() for item in monster]
-    qh = osrs.queryHelper.QueryHelper()
-    qh.set_npcs_by_name([])
+    qh = osrs.qh_v2.qh()
+    qh.set_npcs([])
     qh.set_skills({'hitpoints', 'strength', 'ranged', 'magic', 'attack', 'defence', 'prayer'})
     qh.set_inventory()
-    qh.set_interating_with()
+    qh.set_detailed_interating_with()
     qh.set_widgets({'233,0', '541,23', '541,22', '541,21', '161,62', '541,35'})
     qh.set_player_world_location()
     qh.set_slayer()
     qh.set_var_player(['102'])
-    qh.set_varbit(ANTIFIRE_VARBIT)
+    qh.set_varbits([ANTIFIRE_VARBIT])
     qh.set_players()
     qh.set_active_prayers()
 
@@ -376,7 +376,8 @@ def main(
             loot_handler.retrieve_loot(12)
             return True
 
-        if not qh.get_interating_with():
+        if (not qh.get_detailed_interating_with() or
+                ('health' in qh.get_detailed_interating_with() and qh.get_detailed_interating_with()['health'] == 0)):
             # Look for any loot, and we dont want to count time looking for loot as time out of combat bc it
             # leads to weird behavior
             loot_handler.retrieve_loot(12)
@@ -389,14 +390,14 @@ def main(
                     continue
 
             monster_search_start = datetime.datetime.now()
-            qh2 = osrs.queryHelper.QueryHelper()
-            qh2.set_npcs_by_name([])
+            qh2 = osrs.qh_v2.qh()
+            qh2.set_npcs([])
             qh2.set_interating_with()
             while True:
                 qh2.query_backend()
                 if qh2.get_interating_with():
                     break
-                targets = qh2.get_npcs_by_name()
+                targets = qh2.get_npcs()
                 c = find_next_target(targets, monster, ignore_interacting, attackable_area)
                 if c:
                     osrs.move.fast_click(c)

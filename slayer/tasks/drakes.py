@@ -5,11 +5,11 @@ import osrs
 
 from slayer import transport_functions
 from combat import slayer_killer
-from slayer.tasks import gear
+from slayer.tasks import gear_loadouts
 
 varrock_tele_widget_id = '218,23'
 
-
+weapon = gear_loadouts.dragon_melee_weapon
 supplies = [
     osrs.item_ids.DRAMEN_STAFF,
     osrs.item_ids.SUPER_ATTACK4,
@@ -35,17 +35,17 @@ supplies = [
 ]
 
 equipment = [
-    osrs.item_ids.DRAGONFIRE_SHIELD,
-    osrs.item_ids.BARROWS_GLOVES,
-    osrs.item_ids.FIRE_CAPE,
-    osrs.item_ids.SLAYER_HELMET_I,
-    osrs.item_ids.BRIMSTONE_RING,
-    osrs.item_ids.BOOTS_OF_BRIMSTONE,
-    osrs.item_ids.BANDOS_CHESTPLATE,
-    osrs.item_ids.BANDOS_TASSETS,
-    osrs.item_ids.AMULET_OF_FURY,
-    osrs.item_ids.DRAGON_HUNTER_LANCE,
-    osrs.item_ids.HOLY_BLESSING,
+    gear_loadouts.slayer_helm,
+    gear_loadouts.melee_necklace,
+    gear_loadouts.melee_str_chest,
+    gear_loadouts.melee_str_legs,
+    gear_loadouts.melee_boots,
+    gear_loadouts.dragon_melee_shield,
+    gear_loadouts.melee_cape,
+    gear_loadouts.melee_gloves,
+    gear_loadouts.melee_ring,
+    weapon,
+    gear_loadouts.prayer_ammo_slot
 ]
 
 banking_config_equipment = {
@@ -173,7 +173,7 @@ def main():
         osrs.game.tele_home_fairy_ring('cir')
         transport_functions.mount_karuulm_drakes()
         qh.query_backend()
-        osrs.move.click(qh.get_inventory(osrs.item_ids.DRAGON_HUNTER_LANCE))
+        osrs.move.click(qh.get_inventory(weapon['id']))
         task_started = True
         success = slayer_killer.main('drake', pot_config.asdict(), 35, prayers=['protect_range'], pre_hop=pre_log, loot_config=loot_builder())
         qh.query_backend()

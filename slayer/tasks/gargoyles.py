@@ -5,6 +5,7 @@ import osrs
 
 from slayer import transport_functions
 from combat import slayer_killer
+from slayer.tasks import gear_loadouts
 from slayer.utils import bank
 
 varrock_tele_widget_id = '218,23'
@@ -23,7 +24,7 @@ supplies = [
     osrs.item_ids.SUPER_STRENGTH4,
     osrs.item_ids.SUPER_STRENGTH4,
     osrs.item_ids.RUNE_POUCH,
-    osrs.item_ids.KARAMJA_GLOVES_4,
+    osrs.item_ids.KARAMJA_GLOVES_3,
     {
         'id': [
             osrs.item_ids.SLAYER_RING_2,
@@ -45,17 +46,17 @@ supplies = [
 ]
 
 equipment = [
-    {'id': osrs.item_ids.DRAGON_DEFENDER, 'consume': 'Wield'},
-    {'id': osrs.item_ids.FIRE_CAPE, 'consume': 'Wear'},
-    {'id': osrs.item_ids.SLAYER_HELMET_I, 'consume': 'Wear'},
-    {'id': osrs.item_ids.BARROWS_GLOVES, 'consume': 'Wear'},
-    {'id': osrs.item_ids.BRIMSTONE_RING, 'consume': 'Wear'},
-    {'id': osrs.item_ids.DRAGON_BOOTS, 'consume': 'Wear'},
-    {'id': osrs.item_ids.BANDOS_CHESTPLATE, 'consume': 'Wear'},
-    {'id': osrs.item_ids.BANDOS_TASSETS, 'consume': 'Wear'},
-    {'id': osrs.item_ids.AMULET_OF_FURY, 'consume': 'Wear'},
-    {'id': osrs.item_ids.ZOMBIE_AXE, 'consume': 'Wield'},
-    {'id': osrs.item_ids.HOLY_BLESSING, 'consume': 'Equip'},
+    gear_loadouts.slayer_helm,
+    gear_loadouts.melee_necklace,
+    gear_loadouts.melee_str_chest,
+    gear_loadouts.melee_str_legs,
+    gear_loadouts.melee_boots,
+    gear_loadouts.melee_str_shield,
+    gear_loadouts.melee_cape,
+    gear_loadouts.melee_gloves,
+    gear_loadouts.melee_ring,
+    gear_loadouts.crush_weapon,
+    gear_loadouts.prayer_ammo_slot
 ]
 
 pot_config = slayer_killer.PotConfig(super_str=True, super_atk=True)

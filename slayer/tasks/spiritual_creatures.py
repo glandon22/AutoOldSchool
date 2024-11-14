@@ -23,7 +23,7 @@ supplies = [
         'id': osrs.item_ids.NATURE_RUNE,
         'quantity': 'All'
     },
-    osrs.item_ids.KARAMJA_GLOVES_4,
+    osrs.item_ids.KARAMJA_GLOVES_3,
     {
         'id': osrs.item_ids.MONKFISH,
         'quantity': 'X',
@@ -36,9 +36,9 @@ supplies = [
 ]
 
 equipment = [
-    {'id': osrs.item_ids.DRAGON_DEFENDER, 'consume': 'Wield'},
+    {'id': osrs.item_ids.TOKTZKETXIL, 'consume': 'Wield'},
     {'id': osrs.item_ids.ZAMORAK_CLOAK, 'consume': 'Wear'},
-    {'id': osrs.item_ids.SLAYER_HELMET_I, 'consume': 'Wear'},
+    {'id': [osrs.item_ids.BLACK_MASK, osrs.item_ids.SLAYER_HELMET, osrs.item_ids.SLAYER_HELMET_I], 'consume': 'Wear'},
     {'id': osrs.item_ids.ARMADYL_BRACERS, 'consume': 'Wear'},
     {'id': osrs.item_ids.BRIMSTONE_RING, 'consume': 'Wear'},
     {'id': osrs.item_ids.DRAGON_BOOTS, 'consume': 'Wear'},
@@ -86,7 +86,9 @@ def main():
                 osrs.move.fast_click(qh.get_inventory(osrs.item_ids.SUPER_RESTORE4))
             else:
                 break
-        success = slayer_killer.main('spiritual mage', pot_config.asdict(), 35, prayers=['protect_mage'], ignore_interacting=True, pre_hop=pre_log)
+        # success = slayer_killer.main('spiritual mage', pot_config.asdict(), 35, prayers=['protect_mage'], ignore_interacting=True, pre_hop=pre_log)
+        # success = slayer_killer.main('spiritual warrior', pot_config.asdict(), 35, prayers=['protect_melee'], ignore_interacting=True, pre_hop=pre_log)
+        success = slayer_killer.main('spiritual ranger', pot_config.asdict(), 35, prayers=['protect_range'], ignore_interacting=True, pre_hop=pre_log)
         osrs.player.turn_off_all_prayers()
         osrs.game.cast_spell(varrock_tele_widget_id)
         if success:

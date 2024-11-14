@@ -552,7 +552,7 @@ def click_restore_pool():
     )
 
 
-def hop_worlds(pre_hop=False, total_level_worlds=True):
+def hop_worlds(pre_hop=False, total_level_worlds=True, to_world=None):
     world_list = [
         421,
         422,
@@ -579,14 +579,12 @@ def hop_worlds(pre_hop=False, total_level_worlds=True):
     qh.set_world()
     qh.query_backend()
     index = qh.get_world() in world_list and world_list.index(qh.get_world())
-    print('i', index)
     if index is False or index == len(world_list) - 1:
         index = -1
-    print('ii', index, world_list[index + 1])
     osrs.keeb.press_key('enter')
     if pre_hop:
         pre_hop()
-    command = f'::hop {world_list[index + 1]}'
+    command = f'::hop {world_list[index + 1] if to_world is None else to_world}'
     print('entering command: ', command)
     osrs.keeb.write(command)
     osrs.keeb.press_key('enter')
@@ -786,6 +784,61 @@ def skills_tele(dest):
     )
 
 
+def games_tele(dest):
+    '''
+
+    :param dest: Burthorpe || Barbarian Outpost || Corporeal Beast || Tears of Guthix || Wintertodt Camp
+    :return:
+    '''
+
+    locs = {
+        'Burthorpe': [2881, 2914, 3546, 3581],
+        'Barbarian Outpost': [2514, 2527, 3561, 3579],
+        'Corporeal Beast': [2958, 2973, 4376, 4390],
+        'Tears of Guthix': [3237, 3251, 9495, 9508],
+        'Wintertodt Camp': [1616, 1644, 3926, 3956],
+    }
+    def pre():
+        qh = osrs.queryHelper.QueryHelper()
+        qh.set_widgets({'161,63'})
+        qh.query_backend()
+        if qh.get_widgets('161,63') or qh.get_widgets('161,63')['spriteID'] != 1030:
+            osrs.keeb.press_key('f4')
+
+    def in_dest():
+        qh = osrs.queryHelper.QueryHelper()
+        qh.set_player_world_location()
+        qh.set_objects_v2('game', {4525})
+        qh.set_widgets({'387,17,1'})
+        qh.query_backend()
+        if locs[dest][0] <= qh.get_player_world_location('x') <= locs[dest][1] \
+                and locs[dest][2] <= qh.get_player_world_location('y') <= locs[dest][3]:
+            osrs.keeb.press_key('esc')
+            osrs.dev.logger.info(f'Successfully teled on games necklace to {dest}.')
+            return True
+        elif qh.get_widgets('387,17,1') and qh.get_widgets('387,17,1')['itemID'] not in [
+            osrs.item_ids.GAMES_NECKLACE1,
+            osrs.item_ids.GAMES_NECKLACE2,
+            osrs.item_ids.GAMES_NECKLACE3,
+            osrs.item_ids.GAMES_NECKLACE4,
+            osrs.item_ids.GAMES_NECKLACE5,
+            osrs.item_ids.GAMES_NECKLACE6,
+            osrs.item_ids.GAMES_NECKLACE7,
+            osrs.item_ids.GAMES_NECKLACE8,
+        ]:
+            osrs.dev.logger.warning('Tried to use games necklace to tele without having one equipped')
+            return True
+
+
+    osrs.move.interact_with_widget_v3(
+        '387,17,1',
+        custom_exit_function=in_dest,
+        pre_interact=pre,
+        right_click_option=dest,
+        timeout=15
+    )
+
+
 def dueling_tele(dest):
     '''
 
@@ -949,3 +1002,59 @@ def buy_item_from_shop(items):
                                 osrs.dev.logger.info(
                                     "Purchased %s. %s still left to purchase", item['id'], quantity_checker[item['id']]
                                 )
+
+
+def sprit_tree(dest='Tree Gnome Village'):
+    dest_lookup = {
+        'tree gnome village': '1',
+        'gnome stronghold': '2',
+        'battlefield of khazard': '3',
+        'grand exchange': '4',
+        'feldip hills': '5',
+        'prifddinas': '6',
+        'port sarim': '7',
+        'etceteria': '8',
+        'brimhaven': '9',
+        'hosidius': 'A',
+        'farming guild': 'b',
+        'house': 'c',
+        'poison waste': 'd',
+    }
+
+    loc_lookup = {
+        'tree gnome village': [2531, 2548, 3157, 3176],
+        'gnome stronghold': [2454, 2466, 3440, 3450],
+        'battlefield of khazard': [2547, 2561, 3255, 3263],
+        'grand exchange': [3178, 3192, 3504, 3516],
+        'feldip hills': [2479, 2490, 2846, 2856],
+        'prifddinas': [3269, 3280, 6120, 6130],
+        'port sarim': [3051, 3066, 3253, 3263],
+        'etceteria': [2607, 2619, 3854, 3862],
+        'brimhaven': [2797, 2807, 3199, 3209],
+        'hosidius': [1686, 1689, 3532, 3549],
+        'farming guild': [1249, 1257, 3746, 3758],
+        # House is instanced so coord are pretty broad
+        'house': [4000, 50000, 0, 50000],
+        'poison waste': [2330, 2349, 3105, 3116],
+    }
+
+    def menu_up(dest1):
+        qh1 = osrs.qh_v2.qh()
+        qh1.set_widgets({'187,3'})
+        qh1.query_backend()
+        if qh1.get_widgets('187,3'):
+            osrs.keeb.write(dest_lookup[dest1.lower()])
+            osrs.keeb.press_key('enter')
+            return True
+    osrs.move.interact_with_object_v3(
+        [1295, 1293, 1294, 37329], custom_exit_function=menu_up, custom_exit_function_arg=dest, timeout=7, right_click_option='Travel'
+    )
+    qh = osrs.qh_v2.qh()
+    qh.set_player_world_location()
+    while True:
+        qh.query_backend()
+        if loc_lookup[dest.lower()][0] <= qh.get_player_world_location('x') <= loc_lookup[dest.lower()][1] and \
+                loc_lookup[dest.lower()][2] <= qh.get_player_world_location('y') <= loc_lookup[dest.lower()][3]:
+            return True
+
+

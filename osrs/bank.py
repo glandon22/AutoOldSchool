@@ -350,7 +350,7 @@ def set_withdrawl_and_deposit_quantity(value):
             return
 
 
-def banking_handler(params, wait_on_deposited_items=True):
+def banking_handler(params, wait_on_deposited_items=True, check_bank_in_sight=False):
     """
     Supports banking in GE, Varrock, Fally, C Wars, Crafting Guild, Camelot
 
@@ -421,7 +421,7 @@ def banking_handler(params, wait_on_deposited_items=True):
         qh.query_backend()
         # Exit Condition: successfully opened the banking interface
         if qh.get_bank():
-            print('Banking interface is open.')
+            osrs.dev.logger.debug('Banking interface is open.')
             break
 
         # combine the npcs and bank objects into one list
@@ -429,6 +429,12 @@ def banking_handler(params, wait_on_deposited_items=True):
         if qh.get_npcs():
             all_bank_objects += qh.get_npcs()
         c = osrs.util.find_closest_target(all_bank_objects)
+        # we are only seeing if we are near a bank, and we found one
+        if check_bank_in_sight:
+            if c:
+                return True
+            elif (datetime.datetime.now() - banker_search_duration).total_seconds() > 3:
+                return False
         if c and osrs.move.is_clickable(c) and (datetime.datetime.now() - time_on_same_tile).total_seconds() > 1.2:
             osrs.move.fast_click_v2(c)
 

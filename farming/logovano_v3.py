@@ -118,7 +118,6 @@ def translate_tiles():
 
 def plant_handler(current_state, desired_state, instanced_farming_spots):
     for i, spot in enumerate(instanced_farming_spots):
-        print(f'Looking for spot: {i}. current state: {current_state}. desired state: {desired_state}')
         last_click = datetime.datetime.now() - datetime.timedelta(hours=1)
         last_seed_click = datetime.datetime.now() - datetime.timedelta(hours=1)
         objects_to_search = {current_state, desired_state, UNWATERED_SEED_STAGE_1}.union(set(failed_state_ids))
@@ -131,7 +130,6 @@ def plant_handler(current_state, desired_state, instanced_farming_spots):
         )
         while True:
             qh.query_backend()
-            print(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value))
             # I'm planting the seed, so need to click gricollers can first.
             if desired_state == WATERED_STAGE_1:
                 if qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, UNWATERED_SEED_STAGE_1) and \

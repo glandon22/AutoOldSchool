@@ -1,4 +1,5 @@
 import datetime
+from fileinput import close
 
 import pyautogui
 import osrs
@@ -494,7 +495,7 @@ def main():
             qh.get_objects_v2('graphics', 1767),
             qh.get_player_world_location(),
             lambda obj: obj['x_coord'] == qh.get_player_world_location('x') and obj[
-                'y_coord'] == qh.get_player_world_location('y') and obj['animation'] <= 50
+                'y_coord'] == qh.get_player_world_location('y') and obj['animation'] <= 65
         )
         any_claws = osrs.util.find_closest_target_in_game(
             qh.get_objects_v2('graphics', 1767),
@@ -568,34 +569,48 @@ def main():
             )
             if pillar_overlay:
                 osrs.dev.logger.info("going around phosani during pillars")
-                targ = None
+                closest_tile = None
                 if ne_totem:
                     osrs.dev.logger.info("finding sq between ne pillar")
-                    targ = ne_totem
+                    closest_tile = osrs.util.find_closest_target_in_game(
+                        nearby_tiles,
+                        qh.get_player_world_location(),
+                        lambda tile: tile['x_coord'] > qh.get_player_world_location('x') or tile[
+                            'y_coord'] > qh.get_player_world_location('y')
+                    )
                 elif nw_totem:
                     osrs.dev.logger.info("finding sq between nw pillar")
-                    targ = nw_totem
+                    closest_tile = osrs.util.find_closest_target_in_game(
+                        nearby_tiles,
+                        qh.get_player_world_location(),
+                        lambda tile: tile['x_coord'] < qh.get_player_world_location('x') or tile['y_coord'] > qh.get_player_world_location('y')
+                    )
                 elif se_totem:
                     osrs.dev.logger.info("finding sq between se pillar")
-                    targ = se_totem
+                    closest_tile = osrs.util.find_closest_target_in_game(
+                        nearby_tiles,
+                        qh.get_player_world_location(),
+                        lambda tile: tile['x_coord'] > qh.get_player_world_location('x') or tile[
+                            'y_coord'] < qh.get_player_world_location('y')
+                    )
                 elif sw_totem:
                     osrs.dev.logger.info("finding sq between sw pillar")
-                    targ = sw_totem
+                    closest_tile = osrs.util.find_closest_target_in_game(
+                        nearby_tiles,
+                        qh.get_player_world_location(),
+                        lambda tile: tile['x_coord'] < qh.get_player_world_location('x') or tile[
+                            'y_coord'] < qh.get_player_world_location('y')
+                    )
                 else:
                     osrs.dev.logger.info("finding sq between southern pillar")
-                    targ = {
-                        'x_coord': qh.get_player_world_location('x'),
-                        'y_coord': qh.get_player_world_location('y') - 8,
-                    }
-                closest_tile = sorted(
-                    nearby_tiles,
-                    key=lambda tile: (
-                        osrs.dev.point_dist(qh.get_player_world_location('x'), qh.get_player_world_location('y'), targ['x_coord'], targ['y_coord']),
-                        osrs.dev.point_dist(qh.get_player_world_location('x'), qh.get_player_world_location('y'), tile['x_coord'], tile['y_coord']),
+                    closest_tile = osrs.util.find_closest_target_in_game(
+                        nearby_tiles,
+                        qh.get_player_world_location(),
+                        lambda tile: tile['y_coord'] < qh.get_player_world_location('y')
                     )
-                )
+
                 if closest_tile:
-                    go_to_loc_local(closest_tile[0]['x_coord'], closest_tile[0]['y_coord'], 3, qh, pnm, curse_start, skip_dax=True,
+                    go_to_loc_local(closest_tile['x_coord'], closest_tile['y_coord'], 3, qh, pnm, curse_start, skip_dax=True,
                                         exact_tile=True)
             else:
                 # get the tiles around phosani
@@ -658,9 +673,9 @@ def main():
                 wave_dash_handler(pnm, anchor, qh)
 
         # look for something to attack!
-        if not qh.get_interating_with() and not husk_present and not parasite_present:
+        if not husk_present and not parasite_present:
             # we should be attacking pnm because he is not asleep(8613) and pillars arent attackable
-            if pnm and pnm['poseAnimation'] != 8613 and not pillar_overlay:
+            if pnm and pnm['poseAnimation'] != 8613 and not pillar_overlay and not qh.get_interating_with():
                 # there are claws out and attacking pnm would cause me to change tiles, wait until its safe to attack
                 if any_claws:
                     pnm_perim = osrs.util.monster_perimeter_coordinates(7, pnm, 3)
@@ -669,29 +684,16 @@ def main():
                         continue
                 osrs.dev.logger.info("attacking phosani")
                 osrs.player.equip_item_no_wait([osrs.item_ids.ZOMBIE_AXE], qh.get_equipment())
-                '''osrs.move.conditional_click(
-                    qh, pnm, 'Attack'
-                )'''
-                osrs.move.right_click_v7(
-                    pnm,
-                    'Attack',
-                    qh.get_canvas(),
-                    "Phosani's Nightmare"
-                )
+                osrs.move.fast_click_v2(pnm)
             # we should be attacking pillars right now
-            elif pillar_overlay:
+            elif pillar_overlay and (not qh.get_interating_with() or 'Totem' not in qh.get_interating_with()):
                 osrs.player.equip_item_no_wait([osrs.item_ids.TRIDENT_OF_THE_SWAMP], qh.get_equipment())
                 target_pillar = determine_pillar_to_attack(
                     qh, nw_totem, ne_totem, se_totem, sw_totem, any_spore
                 )
                 # a pillar is visible to attack
                 if target_pillar and 'name' in target_pillar and target_pillar['dist'] <= 7:
-                    osrs.move.conditional_click(
-                        qh,
-                        target_pillar,
-                        'Charge',
-                        target_field='id'
-                    )
+                    osrs.move.fast_click_v2(target_pillar)
                 elif not any_spore and not any_claws and not quadrant_attack:
                     # pillar is up but not on screen - walk towards these coords
                     if target_pillar and 'name' not in target_pillar:
@@ -699,12 +701,7 @@ def main():
                         osrs.move.fast_click_v2(qh.get_tiles(
                             f"{target_pillar['x_coord']},{target_pillar['y_coord']},3"))
                     elif target_pillar and 'name' in target_pillar:
-                        osrs.move.conditional_click(
-                            qh,
-                            target_pillar,
-                            'Charge',
-                            target_field='id'
-                        )
+                        osrs.move.fast_click_v2(target_pillar)
                 else:
                     osrs.dev.logger.info("t p: %s", target_pillar)
 

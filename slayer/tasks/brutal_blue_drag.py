@@ -5,7 +5,7 @@ import osrs
 
 from slayer import transport_functions
 from combat import slayer_killer
-from slayer.tasks import gear
+from deprecated import gear
 
 varrock_tele_widget_id = '218,23'
 

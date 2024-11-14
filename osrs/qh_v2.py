@@ -15,7 +15,7 @@ class ObjectTypes(Enum):
     WALL = 'wall'
 
 
-class QueryHelper:
+class qh:
     query = {}
     game_data = {}
 

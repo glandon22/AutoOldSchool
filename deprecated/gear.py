@@ -6,7 +6,7 @@ slayer_melee = {
         osrs.item_ids.BARROWS_GLOVES,
         osrs.item_ids.FIRE_CAPE,
         osrs.item_ids.DRAMEN_STAFF,
-        osrs.item_ids.SLAYER_HELMET_I,
+        osrs.item_ids.BLACK_MASK,
         osrs.item_ids.BRIMSTONE_RING,
         osrs.item_ids.DRAGON_BOOTS,
         osrs.item_ids.BANDOS_CHESTPLATE,
@@ -85,7 +85,7 @@ slayer_ranged = {
 
 melee_prayer = {
     'equipment': [
-        osrs.item_ids.SLAYER_HELMET_I,
+        osrs.item_ids.BLACK_MASK,
         osrs.item_ids.ABYSSAL_WHIP,
         osrs.item_ids.BARROWS_GLOVES,
         osrs.item_ids.BRIMSTONE_RING,
@@ -130,7 +130,7 @@ slayer_leafbladed_melee = {
         osrs.item_ids.RUNE_DEFENDER,
         osrs.item_ids.BARROWS_GLOVES,
         osrs.item_ids.FIRE_CAPE,
-        osrs.item_ids.SLAYER_HELMET_I,
+        osrs.item_ids.BLACK_MASK,
         osrs.item_ids.BRIMSTONE_RING,
         osrs.item_ids.DRAGON_BOOTS,
         osrs.item_ids.BANDOS_CHESTPLATE,
@@ -155,7 +155,7 @@ melee_dragon = {
         osrs.item_ids.DRAGONFIRE_SHIELD,
         osrs.item_ids.BARROWS_GLOVES,
         osrs.item_ids.FIRE_CAPE,
-        osrs.item_ids.SLAYER_HELMET_I,
+        osrs.item_ids.BLACK_MASK,
         osrs.item_ids.BRIMSTONE_RING,
         osrs.item_ids.DRAGON_BOOTS,
         osrs.item_ids.BANDOS_CHESTPLATE,
@@ -172,99 +172,6 @@ melee_dragon = {
         osrs.item_ids.EXTENDED_ANTIFIRE4,
         osrs.item_ids.RUNE_POUCH,
         osrs.item_ids.KARAMJA_GLOVES_3,
-        {
-            'id': osrs.item_ids.MONKFISH,
-            'quantity': 'All'
-        },
-    ]
-}
-
-melee_mage_defence = {
-    'equipment': [
-        osrs.item_ids.DRAGONFIRE_SHIELD,
-        osrs.item_ids.BARROWS_GLOVES,
-        osrs.item_ids.FIRE_CAPE,
-        osrs.item_ids.SLAYER_HELMET_I,
-        osrs.item_ids.BRIMSTONE_RING,
-        osrs.item_ids.DRAGON_BOOTS,
-        {
-            'id': [
-                osrs.item_ids.KARILS_LEATHERTOP,
-                osrs.item_ids.KARILS_LEATHERTOP_25,
-                osrs.item_ids.KARILS_LEATHERTOP_50,
-                osrs.item_ids.KARILS_LEATHERTOP_75,
-                osrs.item_ids.KARILS_LEATHERTOP_100,
-            ],
-            'quantity': 1
-        },
-        {
-            'id': [
-                osrs.item_ids.KARILS_LEATHERSKIRT,
-                osrs.item_ids.KARILS_LEATHERSKIRT_25,
-                osrs.item_ids.KARILS_LEATHERSKIRT_50,
-                osrs.item_ids.KARILS_LEATHERSKIRT_75,
-                osrs.item_ids.KARILS_LEATHERSKIRT_100,
-            ],
-            'quantity': 1
-        },
-        osrs.item_ids.AMULET_OF_FURY,
-        osrs.item_ids.ABYSSAL_WHIP,
-    ],
-    'supplies': [
-        osrs.item_ids.SUPER_COMBAT_POTION4,
-        osrs.item_ids.SUPER_COMBAT_POTION4,
-        osrs.item_ids.RUNE_POUCH,
-        {
-            'id': [
-                osrs.item_ids.SLAYER_RING_1,
-                osrs.item_ids.SLAYER_RING_2,
-                osrs.item_ids.SLAYER_RING_3,
-                osrs.item_ids.SLAYER_RING_4,
-                osrs.item_ids.SLAYER_RING_5,
-                osrs.item_ids.SLAYER_RING_6,
-                osrs.item_ids.SLAYER_RING_7,
-                osrs.item_ids.SLAYER_RING_8,
-            ],
-            'quantity': '1'
-        },
-        {
-            'id': osrs.item_ids.MONKFISH,
-            'quantity': 'All'
-        },
-    ]
-}
-
-pure_melee = {
-    'equipment': [
-        osrs.item_ids.ABYSSAL_WHIP,
-        osrs.item_ids.RUNE_DEFENDER,
-        osrs.item_ids.BARROWS_GLOVES,
-        osrs.item_ids.FIRE_CAPE,
-        osrs.item_ids.SLAYER_HELMET_I,
-        osrs.item_ids.BRIMSTONE_RING,
-        osrs.item_ids.DRAGON_BOOTS,
-        osrs.item_ids.BANDOS_CHESTPLATE,
-        osrs.item_ids.BANDOS_TASSETS,
-        osrs.item_ids.AMULET_OF_FURY,
-    ],
-    'supplies': [
-        osrs.item_ids.SUPER_COMBAT_POTION4,
-        osrs.item_ids.SUPER_COMBAT_POTION4,
-        osrs.item_ids.SUPER_COMBAT_POTION4,
-        osrs.item_ids.RUNE_POUCH,
-        {
-            'id': [
-                osrs.item_ids.SLAYER_RING_1,
-                osrs.item_ids.SLAYER_RING_2,
-                osrs.item_ids.SLAYER_RING_3,
-                osrs.item_ids.SLAYER_RING_4,
-                osrs.item_ids.SLAYER_RING_5,
-                osrs.item_ids.SLAYER_RING_6,
-                osrs.item_ids.SLAYER_RING_7,
-                osrs.item_ids.SLAYER_RING_8,
-            ],
-            'quantity': '1'
-        },
         {
             'id': osrs.item_ids.MONKFISH,
             'quantity': 'All'

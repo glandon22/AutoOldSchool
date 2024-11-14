@@ -66,7 +66,7 @@ initial = [
 ]
 
 equipment = [
-    osrs.item_ids.SLAYER_HELMET_I,
+    osrs.item_ids.BLACK_MASK,
     osrs.item_ids.FIRE_CAPE,
     osrs.item_ids.OCCULT_NECKLACE,
     {

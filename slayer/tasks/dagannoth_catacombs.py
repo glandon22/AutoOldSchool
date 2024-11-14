@@ -5,6 +5,7 @@ import osrs
 
 from slayer import transport_functions
 from combat import slayer_killer
+from slayer.tasks import gear_loadouts
 
 varrock_tele_widget_id = '218,23'
 
@@ -23,17 +24,18 @@ supplies = [
 ]
 
 equipment = [
-        osrs.item_ids.RUNE_DEFENDER,
-        osrs.item_ids.BARROWS_GLOVES,
-        osrs.item_ids.FIRE_CAPE,
-        osrs.item_ids.ABYSSAL_WHIP,
-        osrs.item_ids.SLAYER_HELMET_I,
-        osrs.item_ids.BRIMSTONE_RING,
-        osrs.item_ids.DRAGON_BOOTS,
-        osrs.item_ids.BANDOS_CHESTPLATE,
-        osrs.item_ids.BANDOS_TASSETS,
-        osrs.item_ids.AMULET_OF_FURY,
-    ]
+    gear_loadouts.slayer_helm,
+    gear_loadouts.melee_necklace,
+    gear_loadouts.melee_str_chest,
+    gear_loadouts.melee_str_legs,
+    gear_loadouts.melee_boots,
+    gear_loadouts.melee_str_shield,
+    gear_loadouts.melee_cape,
+    gear_loadouts.melee_gloves,
+    gear_loadouts.melee_ring,
+    gear_loadouts.high_def_weapon,
+    gear_loadouts.prayer_ammo_slot
+]
 
 banking_config_equipment = {
     'dump_inv': True,

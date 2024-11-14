@@ -1056,7 +1056,7 @@ def interact_with_object_v3(
         target_obj = qh.get_objects_v2(obj_type, dist=obj_dist)
 
         if target_obj:
-            #target_obj = sorted(target_obj, key=lambda obj: obj['dist'])
+            target_obj = sorted(target_obj, key=lambda obj: obj['dist'])
             if obj_tile:
                 target_obj = [obj for obj in target_obj if
                               obj['x_coord'] == obj_tile['x'] and obj['y_coord'] == obj_tile['y']]
@@ -1198,3 +1198,14 @@ def conditional_click(qh: osrs.queryHelper.QueryHelper, obj, action, target_fiel
         pyautogui.click()
     elif obj:
         osrs.move.instant_move(obj)
+        qh.query_backend()
+        action_found = (qh.get_right_click_menu()
+                        and qh.get_right_click_menu()['entries']
+                        and action in qh.get_right_click_menu()['entries'][-1][0])
+        target_found = False
+        for item in qh.get_right_click_menu()['entries'][-1]:
+            if str(obj[target_field]) in item:
+                target_found = True
+                break
+        if action_found and target_found:
+            pyautogui.click()

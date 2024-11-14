@@ -1,7 +1,9 @@
+import random
+
 import osrs
 import slayer
 
-import transport_functions
+import slayer.transport_functions as transport_functions
 
 varrock_tele_widget_id = '218,23'
 
@@ -12,7 +14,7 @@ def skip_task():
         'cave horror',
         'cave horrors',
         'waterfiends',
-        'dagannoth',
+        #'dagannoth',
         'adamant dragons'
     ]
     task_widget = '426,12,6'
@@ -24,45 +26,72 @@ def skip_task():
     qh.set_canvas()
     qh.set_widgets({task_widget, cancel_widget, confirm_widget})
     while True:
-        qh.query_backend()
-        if qh.get_slayer():
-            if qh.get_slayer()['monster'].lower() not in skip_list:
-                return
-            else:
+        while True:
+            qh.query_backend()
+            if qh.get_slayer() and qh.get_slayer()['monster']:
+                print('got a new task in skip')
                 break
-    while True:
-        qh.query_backend()
-        if not qh.get_slayer():
-            osrs.clock.sleep_one_tick()
-            osrs.keeb.press_key('esc')
-            break
-        elif qh.get_widgets(confirm_widget) and not qh.get_widgets(confirm_widget)['isHidden']:
-            osrs.move.click(qh.get_widgets(confirm_widget))
-            osrs.clock.sleep_one_tick()
-        elif qh.get_widgets(cancel_widget) and not qh.get_widgets(cancel_widget)['isHidden']:
-            osrs.move.click(qh.get_widgets(cancel_widget))
-            osrs.clock.sleep_one_tick()
-        elif qh.get_widgets(task_widget) and not qh.get_widgets(task_widget)['isHidden']:
-            osrs.move.click(qh.get_widgets(task_widget))
-            osrs.clock.sleep_one_tick()
-        elif qh.get_npcs_by_name():
-            osrs.move.right_click_v6(
-                qh.get_npcs_by_name()[0],
-                'Rewards',
-                qh.get_canvas(),
-                in_inv=True
-            )
+            elif qh.get_npcs_by_name():
+                closest = osrs.util.find_closest_target(qh.get_npcs_by_name())
+                if closest:
+                    osrs.move.fast_click(closest)
+        while True:
+            qh.query_backend()
+            if qh.get_slayer():
+                if qh.get_slayer()['monster'].lower() not in skip_list:
+                    return
+                else:
+                    break
+        while True:
+            qh.query_backend()
+            if not qh.get_slayer():
+                osrs.clock.sleep_one_tick()
+                osrs.keeb.press_key('esc')
+                break
+            elif qh.get_widgets(confirm_widget) and not qh.get_widgets(confirm_widget)['isHidden']:
+                osrs.move.click(qh.get_widgets(confirm_widget))
+                osrs.clock.sleep_one_tick()
+            elif qh.get_widgets(cancel_widget) and not qh.get_widgets(cancel_widget)['isHidden']:
+                osrs.move.click(qh.get_widgets(cancel_widget))
+                osrs.clock.sleep_one_tick()
+            elif qh.get_widgets(task_widget) and not qh.get_widgets(task_widget)['isHidden']:
+                osrs.move.click(qh.get_widgets(task_widget))
+                osrs.clock.sleep_one_tick()
+            elif qh.get_npcs_by_name():
+                osrs.move.right_click_v6(
+                    qh.get_npcs_by_name()[0],
+                    'Rewards',
+                    qh.get_canvas(),
+                    in_inv=True
+                )
 
 
-def main():
+def start_function():
+    if not osrs.bank.banking_handler({}, check_bank_in_sight=True):
+        osrs.game.slow_lumb_tele()
+        osrs.move.go_to_loc(3208, 3211)
+        osrs.move.interact_with_object_v3(
+            14880, obj_type='ground', coord_type='y', coord_value=9000,
+            greater_than=True, right_click_option='Climb-down', timeout=8
+        )
+    osrs.bank.banking_handler({
+        'dump_inv': True,
+        'search': [{'query': 'slayer', 'items': [osrs.item_ids.RUNE_POUCH, osrs.item_ids.KARAMJA_GLOVES_3]}]
+    })
+
+
+def main(endless_loop=True):
+    iter_count = 9999 if endless_loop else random.randint(3, 5)
     qh = osrs.queryHelper.QueryHelper()
     qh.set_slayer()
     qh.set_inventory()
     qh.set_chat_options()
     qh.set_player_world_location()
+    start_function()
     while True:
         qh.query_backend()
         slayer_task = qh.get_slayer() and 'monster' in qh.get_slayer() and qh.get_slayer()['monster']
+        area = qh.get_slayer() and 'area' in qh.get_slayer() and qh.get_slayer()['area']
         if slayer_task:
             # Verified
             if slayer_task == 'Iron Dragons':
@@ -90,8 +119,8 @@ def main():
                 slayer.fire_giants_catacombs.main()
             # Verified
             elif slayer_task == 'Dagannoth':
-                # slayer.dagganoth.main()
-                slayer.dagannoth_catacombs.main()
+                slayer.dagganoth.main()
+                #slayer.dagannoth_catacombs.main()
             # Verified
             elif slayer_task == 'Hellhounds':
                 slayer.hellhounds.main()
@@ -125,7 +154,7 @@ def main():
                 slayer.spiritual_creatures.main()
             # Verified
             elif slayer_task == 'Kurask':
-                slayer.kurask.main()
+                slayer.kurask.main(area)
             # Verified
             elif slayer_task == 'Mutated Zygomites':
                 slayer.mutated_zygomite.main()
@@ -154,21 +183,18 @@ def main():
                 slayer.elves.main()
             elif slayer_task == 'Araxytes':
                 slayer.araxyte.main()
+            elif slayer_task == 'Fossil Island Wyverns':
+                slayer.fossil_island_wyvern.main()
 
             else:
                 return print(f'Can not parse {slayer_task}')
         else:
-            while True:
-                qh.query_backend()
-                # in varrock center
-                if 3195 <= qh.get_player_world_location('x') <= 3226 and 3419 <= qh.get_player_world_location(
-                        'y') <= 3438:
-                    osrs.clock.sleep_one_tick()
-                    osrs.clock.sleep_one_tick()
-                    break
-            transport_functions.duradel_gloves_4()
+            transport_functions.duradel()
             skip_task()
             osrs.game.cast_spell(varrock_tele_widget_id)
-
+            iter_count -= 1
+            if iter_count == 0:
+                osrs.dev.logger.debug("Completed iterations for slayer script.")
+                return
 
 main()

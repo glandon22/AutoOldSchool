@@ -24,35 +24,15 @@ def nieve():
             osrs.move.follow_path(qh.get_player_world_location(), {'x': 2435, 'y': 3423, 'z': 0})
 
 
-def isle_of_souls_dungeon(x=2145, y=9296):
-    dungeon_entrance_id = '40736'
-    qh = osrs.queryHelper.QueryHelper()
-    qh.set_player_world_location()
-    qh.set_objects(
-        {'2309,2918,0'},
-        {dungeon_entrance_id},
-        osrs.queryHelper.ObjectTypes.GAME.value
+def isle_of_souls_dungeon_v2(x, y):
+    # dax doesnt work if i am standing on the fairy ring - just run off it
+    osrs.move.go_to_loc(2280, 2967, skip_dax=True)
+    osrs.move.go_to_loc(2306, 2962)
+    osrs.move.go_to_loc(2310, 2918)
+    osrs.move.interact_with_object_v3(
+        40736, coord_type='y', coord_value=9000, greater_than=True
     )
-    qh.set_tiles({f'{x},{y},0', '2268,2973,0'})
-    while True:
-        qh.query_backend()
-        # I am in the dungeon
-        if qh.get_player_world_location('y') > 9300 and 2155 <= qh.get_player_world_location('x') <= 2174:
-            break
-        elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, dungeon_entrance_id):
-            osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, dungeon_entrance_id)[0])
-        else:
-            if qh.get_tiles('2268,2973,0'):
-                osrs.move.fast_click(qh.get_tiles('2268,2973,0'))
-            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2310, 'y': 2918, 'z': 0})
-    while True:
-        qh.query_backend()
-        if osrs.dev.point_dist(qh.get_player_world_location('x'), qh.get_player_world_location('y'), x, y) < 5:
-            return
-        elif qh.get_tiles(f'{x},{y},0'):
-            osrs.move.fast_click(qh.get_tiles(f'{x},{y},0'))
-        else:
-            osrs.move.follow_path(qh.get_player_world_location(), {'x': x, 'y': y, 'z': 0})
+    osrs.move.go_to_loc(x, y)
 
 
 def kalphite_layer():
@@ -174,107 +154,38 @@ def waterbirth_dungeon():
 
 
 def taverley_dungeon_hellhounds():
-    shortcut_id = '16510'
-    shortcut_tile = '2879,9813,0'
-    crumbled_wall_id = '24222'
-    crumbled_wall_tile = '2935,3355,0'
-    ladder_id = '16680'
-    ladder_tile = '2884,3397,0'
-    qh = osrs.queryHelper.QueryHelper()
-    qh.set_player_world_location()
-    qh.set_objects(
-        {crumbled_wall_tile, ladder_tile, shortcut_tile},
-        {crumbled_wall_id, ladder_id, shortcut_id},
-        osrs.queryHelper.ObjectTypes.GAME.value
+    osrs.dev.logger.debug('running to wall')
+    osrs.move.go_to_loc(2936, 3355)
+    osrs.move.interact_with_object_v3(
+        24222, coord_type='x', coord_value=2935, greater_than=False
     )
-    qh.set_tiles({'2868,9827,1'})
-    print('running to wall')
-    while True:
-        qh.query_backend()
-        # I am in the dungeon
-        if qh.get_player_world_location('x') <= 2935:
-            break
-        elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, crumbled_wall_id):
-            osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, crumbled_wall_id)[0])
-        else:
-            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2936, 'y': 3355, 'z': 0})
-    print('running to ladder')
-    while True:
-        qh.query_backend()
-        # I am in the dungeon
-        if qh.get_player_world_location('y') > 9000:
-            break
-        elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, ladder_id):
-            osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, ladder_id)[0])
-            osrs.clock.sleep_one_tick()
-        else:
-            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2884, 'y': 3396, 'z': 0})
-    print('running to steps')
-    while True:
-        qh.query_backend()
-        # I am in the dungeon
-        if qh.get_player_world_location('x') < 2878:
-            return
-        elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, shortcut_id):
-            osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, shortcut_id)[0])
-            osrs.clock.sleep_one_tick()
-        else:
-            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2882, 'y': 9813, 'z': 0})
+    osrs.dev.logger.debug('running to ladder')
+    osrs.move.go_to_loc(2885, 3393)
+    osrs.move.interact_with_object_v3(
+        16680, coord_type='y', coord_value=9000, greater_than=True, right_click_option='Climb-down', timeout=7
+    )
+    osrs.dev.logger.debug('running to steps')
+    osrs.move.go_to_loc(2882, 9813)
+    osrs.move.interact_with_object_v3(
+        16510, coord_type='x', coord_value=2878, greater_than=False, timeout=2
+    )
 
 
 def taverley_dungeon_black_demons():
-    shortcut_id = '16509'
-    shortcut_tile = '2887,9799,0'
-    crumbled_wall_id = '24222'
-    crumbled_wall_tile = '2935,3355,0'
-    ladder_id = '16680'
-    ladder_tile = '2884,3397,0'
-    qh = osrs.queryHelper.QueryHelper()
-    qh.set_player_world_location()
-    qh.set_objects(
-        {crumbled_wall_tile, ladder_tile, shortcut_tile},
-        {crumbled_wall_id, ladder_id, shortcut_id},
-        osrs.queryHelper.ObjectTypes.GAME.value
+    osrs.dev.logger.debug('running to wall')
+    osrs.move.go_to_loc(2936, 3355)
+    osrs.move.interact_with_object_v3(
+        24222, coord_type='x', coord_value=2935, greater_than=False
     )
-    qh.set_tiles({'2868,9773,0'})
-    print('running to wall')
-    while True:
-        qh.query_backend()
-        if qh.get_player_world_location('x') <= 2935:
-            break
-        elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, crumbled_wall_id):
-            osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, crumbled_wall_id)[0])
-        else:
-            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2936, 'y': 3355, 'z': 0})
-    print('running to ladder')
-    while True:
-        qh.query_backend()
-        # I am in the dungeon
-        if qh.get_player_world_location('y') > 9000:
-            break
-        elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, ladder_id):
-            osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, ladder_id)[0])
-            osrs.clock.sleep_one_tick()
-        else:
-            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2884, 'y': 3396, 'z': 0})
-    print('running to pipe')
-    while True:
-        qh.query_backend()
-        # I am in the dungeon
-        if qh.get_player_world_location('x') >= 2892:
-            break
-        elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, shortcut_id):
-            osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, shortcut_id)[0])
-            osrs.clock.sleep_one_tick()
-        else:
-            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2890, 'y': 9799, 'z': 0})
-    while True:
-        qh.query_backend()
-        # I am in the dungeon
-        if qh.get_tiles('2868,9773,0'):
-            return
-        else:
-            osrs.move.follow_path(qh.get_player_world_location(), {'x': 2868, 'y': 9773, 'z': 0})
+    osrs.dev.logger.debug('running to ladder')
+    osrs.move.go_to_loc(2885, 3393)
+    osrs.move.interact_with_object_v3(
+        16680, coord_type='y', coord_value=9000, greater_than=True, right_click_option='Climb-down', timeout=7
+    )
+    osrs.move.interact_with_object_v3(
+        16509, coord_type='x', coord_value=2888, greater_than=True
+    )
+    osrs.move.go_to_loc(2878, 9768)
 
 
 def frem_dungeon_turoth():
@@ -1050,10 +961,10 @@ def duradel_gloves_4():
         if qh.get_slayer() and qh.get_slayer()['monster']:
             print('got a new task')
             return True
-        elif qh.get_inventory() and qh.get_inventory(osrs.osrs.item_ids.KARAMJA_GLOVES_4) \
+        elif qh.get_inventory() and qh.get_inventory(osrs.osrs.item_ids.KARAMJA_GLOVES_3) \
                 and (datetime.datetime.now() - glove_click).total_seconds() > 10:
             osrs.move.right_click_v6(
-                qh.get_inventory(osrs.osrs.item_ids.KARAMJA_GLOVES_4),
+                qh.get_inventory(osrs.osrs.item_ids.KARAMJA_GLOVES_3),
                 'Slayer master',
                 qh.get_canvas(),
                 in_inv=True
@@ -1117,6 +1028,37 @@ def morytania_nechs():
 
 
 def catacombs(x, y):
+    dungeon_entrance_id = '27785'
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_objects(
+        {'1636,3673,0'},
+        {dungeon_entrance_id},
+        osrs.queryHelper.ObjectTypes.GAME.value
+    )
+    qh.set_player_world_location()
+    last_tele_cast = datetime.datetime.now() - datetime.timedelta(hours=1)
+    while True:
+        qh.query_backend()
+        if 1623 <= qh.get_player_world_location('x') <= 1656 and 3664 <= qh.get_player_world_location('y') <= 3684:
+            break
+        elif (datetime.datetime.now() - last_tele_cast).total_seconds() > 10:
+            osrs.game.cast_spell('218,36')
+            last_tele_cast = datetime.datetime.now()
+    while True:
+        qh.query_backend()
+        if 1658 <= qh.get_player_world_location('x') <= 1670 and qh.get_player_world_location('y') > 10000:
+            break
+        elif qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, dungeon_entrance_id):
+            osrs.move.fast_click(qh.get_objects(osrs.queryHelper.ObjectTypes.GAME.value, dungeon_entrance_id)[0])
+    while True:
+        qh.query_backend()
+        if osrs.dev.point_dist(qh.get_player_world_location('x'), qh.get_player_world_location('y'), x, y) < 5:
+            break
+        else:
+            osrs.move.follow_path(qh.get_player_world_location(), {'x': x, 'y': y, 'z': 0})
+
+
+def catacombs_v2(x, y):
     dungeon_entrance_id = '27785'
     qh = osrs.queryHelper.QueryHelper()
     qh.set_objects(
@@ -1426,3 +1368,61 @@ def rune_dragons():
         32153, 'x', 1574, True, obj_tile={'x': 1574, 'y': 5074, 'z': 0},
         right_click_option='Pass', timeout=10
     )
+
+
+def fossil_island_wyverns():
+    def in_house_on_hill():
+        qh = osrs.queryHelper.QueryHelper()
+        qh.set_player_world_location()
+        qh.set_widgets({'187,3'})
+        qh.query_backend()
+        if 3758 <= qh.get_player_world_location('x') <= 3772 and 3864 <= qh.get_player_world_location('y') <= 3882:
+            return True
+        elif qh.get_widgets('187,3'):
+            osrs.keeb.write('2')
+
+    def in_meadow():
+        qh = osrs.queryHelper.QueryHelper()
+        qh.set_player_world_location()
+        qh.set_widgets({'608,15'})
+        qh.query_backend()
+        if 3669 <= qh.get_player_world_location('x') <= 3683 and 3865 <= qh.get_player_world_location('y') <= 3879:
+            return True
+        elif qh.get_widgets('608,15'):
+            osrs.keeb.write('4')
+    mounted_pendant_id = 33417
+    osrs.move.interact_with_object(
+        mounted_pendant_id, 'z', 3, True,
+        obj_type='decorative', custom_exit_function=in_house_on_hill, right_click_option='Teleport menu',
+        timeout=7
+    )
+    osrs.move.interact_with_object_v3(
+        30920, custom_exit_function=in_meadow, timeout=7
+    )
+    osrs.move.go_to_loc(3680, 3854)
+    osrs.move.interact_with_object_v3(
+        30842, coord_type='y', coord_value=10000
+    )
+    osrs.move.go_to_loc(3602, 10291)
+    osrs.move.interact_with_object_v3(
+        31485, coord_type='x', coord_value=3607
+    )
+    osrs.move.go_to_loc(3611, 10275)
+
+
+def travel_to_priff():
+    osrs.game.standard_spells_tele('Varrock')
+    osrs.move.go_to_loc(3180, 3504)
+    osrs.game.sprit_tree('prifddinas')
+
+
+def iorworth_dungeon(x, y):
+    osrs.move.go_to_loc(3229, 6049)
+    osrs.move.interact_with_object(
+        36690, 'y', 10000, True, right_click_option='Enter'
+    )
+    osrs.move.go_to_loc(x, y)
+
+
+travel_to_priff()
+iorworth_dungeon(3255, 12381)

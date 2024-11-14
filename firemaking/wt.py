@@ -1,3 +1,4 @@
+import random
 from datetime import datetime, timedelta
 
 import osrs
@@ -21,6 +22,54 @@ food_ids = [
     osrs.item_ids._23_CAKE,
     osrs.item_ids.SLICE_OF_CAKE,
 ]
+
+
+equipment = [
+    {'id': osrs.item_ids.PYROMANCER_GARB, 'consume': 'Wear'},
+    {'id': osrs.item_ids.PYROMANCER_ROBE, 'consume': 'Wear'},
+    {'id': osrs.item_ids.PYROMANCER_BOOTS, 'consume': 'Wear'},
+    {'id': osrs.item_ids.HITPOINTS_CAPET, 'consume': 'Wear'},
+    {'id': osrs.item_ids.PYROMANCER_HOOD, 'consume': 'Wear'},
+    {'id': osrs.item_ids.WARM_GLOVES, 'consume': 'Wear'},
+    {'id': osrs.item_ids.DRAGON_AXE, 'consume': 'Wield'},
+    {'id': [
+            osrs.item_ids.GAMES_NECKLACE1,
+            osrs.item_ids.GAMES_NECKLACE2,
+            osrs.item_ids.GAMES_NECKLACE3,
+            osrs.item_ids.GAMES_NECKLACE4,
+            osrs.item_ids.GAMES_NECKLACE5,
+            osrs.item_ids.GAMES_NECKLACE6,
+            osrs.item_ids.GAMES_NECKLACE7,
+            osrs.item_ids.GAMES_NECKLACE8,
+        ],
+        'consume': 'Wear'
+    },
+    {'id': osrs.item_ids.HAMMER},
+    {'id': osrs.item_ids.TINDERBOX},
+    {'id': osrs.item_ids.CAKE},
+    {'id': osrs.item_ids.CAKE},
+    {'id': osrs.item_ids.CAKE},
+]
+
+
+def start_function():
+    osrs.game.slow_lumb_tele()
+    osrs.move.go_to_loc(3208, 3211)
+    osrs.move.interact_with_object_v3(
+        14880, obj_type='ground', coord_type='y', coord_value=9000,
+        greater_than=True, right_click_option='Climb-down', timeout=8
+    )
+    osrs.bank.banking_handler({
+        'dump_equipment': True,
+        'dump_inv': True,
+        'search': [{'query': 'wt', 'items': equipment}]
+    })
+    osrs.game.games_tele('Wintertodt Camp')
+    osrs.move.go_to_loc(1630, 3960)
+    osrs.game.hop_worlds(to_world='307')
+    osrs.move.interact_with_object_v3(
+        29322, coord_type='y', coord_value=3968, greater_than=True
+    )
 
 
 def game_state_parser(qh: osrs.queryHelper.QueryHelper):
@@ -136,7 +185,7 @@ def load_brazier(qh: osrs.queryHelper.QueryHelper):
             last_loading_anim = datetime.now()
 
 
-def main():
+def main(endless_loop=True):
     qh = osrs.queryHelper.QueryHelper()
     qh.set_widgets({wintertodt_status_widget_id, warmth_widget_id})
     qh.set_player_animation()
@@ -144,15 +193,23 @@ def main():
     qh.set_canvas()
     qh.set_player_world_location()
     qh.set_objects_v2('game', {tree, brazier, unlit_brazier, broken_brazier, falling_snow_attack})
+    # number of times to run this script
+    iter_count = 9999 if endless_loop else random.randint(3, 5)
+    start_function()
     while True:
         qh.query_backend()
         game_status = game_state_parser(qh)
         if game_status['next_game_in']:
-            osrs.game.break_manager_v4({
+            break_info = osrs.game.break_manager_v4({
                 'intensity': 'high',
                 'login': False,
                 'logout': False
             })
+            if iter_count == 0:
+                return
+            elif 'took_break' in break_info and break_info['took_break']:
+                iter_count -= 1
+
             if osrs.inv.get_item_quantity_in_inv(qh.get_inventory(), food_ids) < 2:
                 osrs.dev.logger.info("game is paused - need to resupply.")
                 resupply()
@@ -183,4 +240,3 @@ def main():
                 qh.get_canvas()
             )
 
-main()
