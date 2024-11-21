@@ -93,9 +93,42 @@ def main():
         osrs.game.tele_home_fairy_ring('bjp')
         transport_functions.isle_of_souls_dungeon_v2(2145, 9296)
         qh.query_backend()
-        osrs.move.click(qh.get_inventory(weapon['id']))
+        osrs.move.click(qh.get_inventory(weapon['id'][0]))
         task_started = True
         success = slayer_killer.main('iron dragon', pot_config.asdict(), 35, prayers=['protect_melee'], hop=True, pre_hop=pre_log)
+        qh.query_backend()
+        osrs.player.turn_off_all_prayers()
+        osrs.game.cast_spell(varrock_tele_widget_id)
+        if success:
+            return True
+
+
+def return_to_dragons():
+    osrs.game.tele_home()
+    osrs.game.click_restore_pool()
+    osrs.game.tele_home_fairy_ring('ckr')
+    transport_functions.brimhaven_dungeon_dragons(2681, 9461)
+
+
+def brimhaven():
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_inventory()
+    task_started = False
+    while True:
+        bank(qh, task_started, equipment, supplies)
+        osrs.game.tele_home()
+        osrs.game.click_restore_pool()
+        osrs.game.tele_home_fairy_ring('ckr')
+        transport_functions.brimhaven_dungeon_dragons(2681, 9461)
+        qh.query_backend()
+        osrs.move.click(qh.get_inventory(weapon['id'][0]))
+        task_started = True
+        success = slayer_killer.main(
+            'iron dragon', pot_config.asdict(), 35, prayers=['protect_melee'],
+            pre_hop=lambda: osrs.game.cast_spell(varrock_tele_widget_id), post_login=return_to_dragons,
+            attackable_area={'x_min': 2660, 'x_max': 2684, 'y_min': 9450, 'y_max': 9465}
+        )
+
         qh.query_backend()
         osrs.player.turn_off_all_prayers()
         osrs.game.cast_spell(varrock_tele_widget_id)

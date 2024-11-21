@@ -152,7 +152,7 @@ def main():
             return False
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
-        transport_functions.catacombs(1638, 10074)
+        transport_functions.catacombs_v2(1638, 10074)
         qh.query_backend()
         task_started = True
         success = slayer_killer.main(

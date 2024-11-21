@@ -70,7 +70,7 @@ def main():
         bank(qh, task_started, equipment, supplies)
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
-        transport_functions.catacombs(1693, 10015)
+        transport_functions.catacombs_v2(1693, 10015)
         qh.query_backend()
         task_started = True
         success = slayer_killer.main(

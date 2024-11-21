@@ -435,7 +435,8 @@ def tele_home_v2():
     osrs.move.interact_with_widget_v3(
         osrs.widget_ids.house_poh_tele_widget_id,
         custom_exit_function=in_house,
-        pre_interact=pre
+        pre_interact=pre,
+        timeout=7
     )
 
 
@@ -584,17 +585,24 @@ def hop_worlds(pre_hop=False, total_level_worlds=True, to_world=None):
     osrs.keeb.press_key('enter')
     if pre_hop:
         pre_hop()
-    command = f'::hop {world_list[index + 1] if to_world is None else to_world}'
-    print('entering command: ', command)
-    osrs.keeb.write(command)
-    osrs.keeb.press_key('enter')
-    osrs.clock.random_sleep(2, 2.1)
+    target_world = world_list[index + 1] if to_world is None else to_world
+    command = f'::hop {target_world}'
     while True:
+        osrs.keeb.write(command)
+        osrs.keeb.press_key('enter')
+        osrs.clock.sleep_one_tick()
         qh.query_backend()
-        if qh.get_game_state() == 'LOGGED_IN':
-            clock.sleep_one_tick()
-            keeb.press_key('esc')
-            return
+        if qh.get_world() == target_world and qh.get_game_state() == 'LOGGED_IN':
+            osrs.dev.logger.debug('Successfully hopped to world %s', target_world)
+            return osrs.keeb.press_key('esc')
+        elif qh.get_game_state() == 'HOPPING':
+            osrs.dev.logger.debug("Currently hopping worlds.")
+        else:
+            osrs.dev.logger.debug(
+                "Currently hopping worlds but I'm in combat or blocked from hopping, sleeping two ticks."
+            )
+            osrs.clock.sleep_one_tick()
+            osrs.clock.sleep_one_tick()
 
 
 def talk_to_npc(name, right_click=False, right_click_option='Talk-to', custom_exit=None):
@@ -905,13 +913,15 @@ def standard_spells_tele(dest):
         'Varrock': [3201, 3227, 3418, 3438],
         'Ardougne': [2650, 2672, 3292, 3319],
         'Camelot': [2743, 2772, 3467, 3487],
-        'Falador': [2956, 2972, 3371, 3394]
+        'Falador': [2956, 2972, 3371, 3394],
+        'Kourend': [1626, 1646, 3665, 3682],
     }
     widget_map = {
         'Varrock': osrs.widget_ids.varrock_tele_widget_id,
         'Ardougne': osrs.widget_ids.ardy_tele_spell_widget_id,
         'Camelot': osrs.widget_ids.camelot_tele_spell_widget_id,
-        'Falador': osrs.widget_ids.fally_tele_widget_id
+        'Falador': osrs.widget_ids.fally_tele_widget_id,
+        'Kourend': osrs.widget_ids.kourend_telly_spell_widget_id,
     }
     def pre():
         qh = osrs.queryHelper.QueryHelper()

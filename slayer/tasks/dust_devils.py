@@ -61,11 +61,10 @@ def main():
         osrs.game.click_restore_pool()
         osrs.game.tele_home_fairy_ring('biq')
         transport_functions.smoke_dungeon()
-        qh.query_backend()
         while True:
             qh.query_backend()
-            if qh.get_inventory(weapon['id']):
-                osrs.move.click(qh.get_inventory(weapon['id']))
+            if qh.get_inventory(weapon['id'][0]):
+                osrs.move.click(qh.get_inventory(weapon['id'][0]))
                 break
         task_started = True
         finished = slayer_killer.main('dust devil', pot_config.asdict(), 35, pre_hop=pre_log)

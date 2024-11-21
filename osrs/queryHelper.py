@@ -561,7 +561,7 @@ class QueryHelper:
         """
 
         return 'slayer' in self.game_data and self.game_data['slayer']
-        #return {'area': '', 'amount': '89', 'monster': 'Wyrms'}
+        #return {'area': 'Fremennik Slayer Dungeon', 'amount': '89', 'monster': 'Jellies'}
 
     def set_spot_anims(self):
         self.query['spotAnims'] = True

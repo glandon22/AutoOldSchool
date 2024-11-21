@@ -37,6 +37,10 @@ supplies = [
     osrs.item_ids.RUNE_POUCH,
     osrs.item_ids.KARAMJA_GLOVES_3,
     {
+        'id': osrs.item_ids.DRAMEN_STAFF,
+        'consume': 'Wield'
+    },
+    {
         'id': osrs.item_ids.MONKFISH,
         'quantity': '5'
     },
@@ -88,9 +92,9 @@ def main():
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
         osrs.game.tele_home_fairy_ring('ckr')
-        transport_functions.brimhaven_dungeon_steels()
+        transport_functions.brimhaven_dungeon_dragons(2650, 9425)
         qh.query_backend()
-        osrs.move.click(qh.get_inventory(weapon['id']))
+        osrs.move.click(qh.get_inventory(weapon['id'][0]))
         task_started = True
         success = slayer_killer.main('steel dragon', pot_config.asdict(), 35, prayers=['protect_melee'], hop=True, pre_hop=pre_log)
         qh.query_backend()

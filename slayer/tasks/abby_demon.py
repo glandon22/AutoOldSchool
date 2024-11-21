@@ -75,49 +75,28 @@ def loot_builder():
     return config
 
 
-def pre_log():
-    safe_tile = {
-        'x': 3443,
-        'y': 9975,
-        'z': 3
-    }
-    safe_tile_string = f'{safe_tile["x"]},{safe_tile["y"]},{safe_tile["z"]}'
-    qh = osrs.queryHelper.QueryHelper()
-    qh.set_tiles({safe_tile_string})
-    qh.set_player_world_location()
-    last_off_tile = datetime.datetime.now()
-    while True:
-        qh.query_backend()
-        if qh.get_player_world_location('x') != safe_tile["x"] \
-                or qh.get_player_world_location('y') != safe_tile["y"]:
-            last_off_tile = datetime.datetime.now()
-
-        if qh.get_player_world_location('x') == safe_tile["x"] \
-                and qh.get_player_world_location('y') == safe_tile["y"]:
-            if (datetime.datetime.now() - last_off_tile).total_seconds() > 11:
-                return
-            if (datetime.datetime.now() - last_off_tile).total_seconds() > 3:
-                osrs.player.turn_off_all_prayers()
-        elif qh.get_tiles(safe_tile_string):
-            osrs.move.fast_click(qh.get_tiles(safe_tile_string))
-        else:
-            osrs.move.follow_path(qh.get_player_world_location(), safe_tile)
-
-
-def main():
+def main(loc=None):
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     task_started = False
+    safe_tiles = []
+    attackable_area = {}
     while True:
         bank(qh, task_started, equipment, supplies)
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
-        transport_functions.morytania_abby_demons()
+        if loc is None or loc == 'Slayer Tower':
+            transport_functions.mory_slayer_tower('abby demons')
+            safe_tiles = [3443, 9975]
+            attackable_area = {'x_min': 3433, 'x_max': 3447, 'y_min': 9963, 'y_max': 9975}
+
         qh.query_backend()
         task_started = True
         success = slayer_killer.main(
-            'abyssal demon', pot_config.asdict(), 35, pre_hop=pre_log, prayers=['protect_melee'], loot_config=loot_builder(),
-            attackable_area={'x_min': 3433, 'x_max': 3447, 'y_min': 9963, 'y_max': 9975}
+            'abyssal demon', pot_config.asdict(), 35,
+            pre_hop=lambda: transport_functions.run_to_safe_spot(*safe_tiles),
+            prayers=['protect_melee'], loot_config=loot_builder(),
+            attackable_area=attackable_area, hop=True, max_players=2
         )
         qh.query_backend()
         osrs.player.turn_off_all_prayers()

@@ -110,7 +110,7 @@ def main():
         osrs.game.tele_home_fairy_ring('alq')
         run_to_spiders()
         qh.query_backend()
-        osrs.move.click(qh.get_inventory(weapon['id']))
+        osrs.move.click(qh.get_inventory(weapon['id'][0]))
         task_started = True
         success = slayer_killer.main(
             ['araxyte'], pot_config.asdict(), 35,

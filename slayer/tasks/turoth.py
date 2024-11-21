@@ -83,9 +83,9 @@ def main():
         osrs.game.click_restore_pool()
         qh.query_backend()
         osrs.game.tele_home_fairy_ring('ajr')
-        transport_functions.frem_dungeon_turoth()
+        transport_functions.frem_dungeon('turoth')
         task_started = True
-        osrs.move.click(qh.get_inventory(weapon['id']))
+        osrs.move.click(qh.get_inventory(weapon['id'][0]))
         success = slayer_killer.main('turoth', pot_config.asdict(), 35, hop=True, pre_hop=pre_log)
         qh.query_backend()
         osrs.game.cast_spell(varrock_tele_widget_id)

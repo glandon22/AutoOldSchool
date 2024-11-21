@@ -22,7 +22,6 @@ supplies = [
             'id': osrs.item_ids.NATURE_RUNE,
             'quantity': 'All'
         },
-        osrs.item_ids.ETERNAL_TELEPORT_CRYSTAL,
         {
             'id': osrs.item_ids.MONKFISH,
             'quantity': 'All'
@@ -84,7 +83,8 @@ def main():
         bank(qh, task_started, equipment, supplies)
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
-        transport_functions.iorworth_dungeon_elves()
+        transport_functions.travel_to_priff()
+        transport_functions.iorworth_dungeon(3189, 12409)
         qh.query_backend()
         task_started = True
         success = slayer_killer.main(

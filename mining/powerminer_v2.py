@@ -1,4 +1,5 @@
 import datetime
+import random
 
 import osrs
 
@@ -8,8 +9,6 @@ import osrs
 2. Position yourself near the rock you want to mine
 3. Start script
 '''
-
-rock_to_mine = 'mith'
 
 rock_map = {
     'copper': {10943, 11161},
@@ -36,17 +35,56 @@ ore_to_drop = [
 ]
 
 
-def main():
+equipment = [
+    {'id': osrs.item_ids.DRAGON_PICKAXE}, # chagne this whatever the leageues pickax is if i take that
+    {'id': osrs.item_ids.DRAMEN_STAFF, 'consume': 'Wield'},
+    {'id': osrs.item_ids.RUNE_POUCH},
+]
+
+
+def start_function():
+    osrs.game.slow_lumb_tele()
+    osrs.move.go_to_loc(3208, 3211)
+    osrs.move.interact_with_object_v3(
+        14880, obj_type='ground', coord_type='y', coord_value=9000,
+        greater_than=True, right_click_option='Climb-down', timeout=8
+    )
+    osrs.bank.banking_handler({
+        'dump_equipment': True,
+        'dump_inv': True,
+        'search': [{'query': 'mlm', 'items': equipment}]
+    })
+    osrs.game.tele_home_v2()
+    osrs.game.tele_home_fairy_ring('cir')
+    osrs.move.go_to_loc(1321, 3763, skip_dax=True)
+    osrs.move.go_to_loc(1323, 3775)
+    osrs.move.interact_with_object_v3(34397, 'y', 3780)
+    osrs.move.interact_with_object_v3(34396, 'y', 3790)
+    osrs.move.go_to_loc(1277, 3814)
+
+
+def main(endless_loop=False, rock_to_mine='iron'):
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.set_canvas()
     qh.set_is_mining()
     qh.set_objects_v2('game', rock_map[rock_to_mine])
+    start_function()
     last_click = datetime.datetime.now() - datetime.timedelta(hours=1)
+    iter_count = 9999 if endless_loop else random.randint(3, 5)
     while True:
+        break_info = osrs.game.break_manager_v4({
+            'intensity': 'high',
+            'login': False,
+            'logout': False
+        })
+        if iter_count == 0:
+            return
+        elif 'took_break' in break_info and break_info['took_break']:
+            iter_count -= 1
         qh.query_backend()
         rocks = qh.get_objects_v2('game')
-        if qh.get_inventory(ore_to_drop):
+        if qh.get_inventory() and len(qh.get_inventory()) == 28:
             osrs.dev.logger.info('Ore in inventory, dropping.')
             osrs.inv.power_drop_v2(qh, ore_to_drop)
         elif qh.get_is_mining():
@@ -58,6 +96,4 @@ def main():
             closest = osrs.util.find_closest_target_on_screen(rocks)
             if closest:
                 osrs.move.fast_click_v2(closest)
-
-
-main()
+                last_click = datetime.datetime.now()

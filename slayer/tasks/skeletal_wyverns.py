@@ -25,6 +25,10 @@ equipment = [
 ]
 
 supplies = [
+    {
+        'id': osrs.item_ids.DRAMEN_STAFF,
+        'consume': 'Wield'
+    },
     osrs.item_ids.SUPER_ATTACK4,
     osrs.item_ids.SUPER_ATTACK4,
     osrs.item_ids.SUPER_STRENGTH4,
@@ -47,35 +51,6 @@ supplies = [
 pot_config = slayer_killer.PotConfig(super_atk=True, super_str=True)
 
 
-def pre_log():
-    safe_tile = {
-        'x': 3595,
-        'y': 10280,
-        'z': 0
-    }
-    safe_tile_string = f'{safe_tile["x"]},{safe_tile["y"]},{safe_tile["z"]}'
-    qh = osrs.queryHelper.QueryHelper()
-    qh.set_tiles({safe_tile_string})
-    qh.set_player_world_location()
-    last_off_tile = datetime.datetime.now()
-    while True:
-        qh.query_backend()
-        if qh.get_player_world_location('x') != safe_tile["x"] \
-                or qh.get_player_world_location('y') != safe_tile["y"]:
-            last_off_tile = datetime.datetime.now()
-
-        if qh.get_player_world_location('x') == safe_tile["x"] \
-                and qh.get_player_world_location('y') == safe_tile["y"]:
-            if (datetime.datetime.now() - last_off_tile).total_seconds() > 11:
-                return
-            if (datetime.datetime.now() - last_off_tile).total_seconds() > 3:
-                osrs.player.turn_off_all_prayers()
-        elif qh.get_tiles(safe_tile_string):
-            osrs.move.fast_click(qh.get_tiles(safe_tile_string))
-        else:
-            osrs.move.follow_path(qh.get_player_world_location(), safe_tile)
-
-
 def main():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
@@ -85,10 +60,18 @@ def main():
         bank(qh, task_started, equipment, supplies)
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
-        transport_functions.fossil_island()
+        osrs.game.tele_home_fairy_ring('aiq')
+        transport_functions.skeletal_wyverns()
         qh.query_backend()
+        osrs.move.fast_click_v2(qh.get_inventory(gear_loadouts.dragon_melee_weapon['id'][0]))
         task_started = True
-        success = slayer_killer.main('spitting wyvern', pot_config.asdict(), 35, prayers=['protect_melee'], hop=True, pre_hop=pre_log)
+        success = slayer_killer.main(
+            'skeletal wyvern', pot_config.asdict(), 35, prayers=['protect_melee'],
+            pre_hop=lambda: osrs.move.interact_with_object_v3(53250, 'x', 3014),
+            post_login=lambda: osrs.move.interact_with_object_v3(
+                53251, 'x', 3024, greater_than=False
+            ),
+        )
         qh.query_backend()
         osrs.player.turn_off_all_prayers()
         osrs.game.cast_spell(varrock_tele_widget_id)

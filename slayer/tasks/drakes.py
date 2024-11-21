@@ -171,9 +171,9 @@ def main():
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
         osrs.game.tele_home_fairy_ring('cir')
-        transport_functions.mount_karuulm_drakes()
+        transport_functions.mount_karuulm('drakes')
         qh.query_backend()
-        osrs.move.click(qh.get_inventory(weapon['id']))
+        osrs.move.click(qh.get_inventory(weapon['id'][0]))
         task_started = True
         success = slayer_killer.main('drake', pot_config.asdict(), 35, prayers=['protect_range'], pre_hop=pre_log, loot_config=loot_builder())
         qh.query_backend()

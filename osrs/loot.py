@@ -131,7 +131,7 @@ class Loot:
         self.config = {}
 
     def retrieve_loot(
-            self, dist=10, min_val_to_loot_other_players=20,
+            self, dist=10, min_val_to_loot_other_players=100,
             loot_area=None, disable_alchs=False
     ):
         '''
@@ -435,6 +435,12 @@ class Loot:
             LootConfig(osrs.item_ids.DRAGONBONE_NECKLACE, 67),
             LootConfig(osrs.item_ids.JAR_OF_DECAY, 111),
             LootConfig(osrs.item_ids.SKELETAL_VISAGE, 12695),
+
+            LootConfig(osrs.item_ids.WARRIOR_HELM, 17),
+
+
+            LootConfig(osrs.item_ids.BRIMSTONE_KEY, 100, stackable=True),
+            LootConfig(osrs.item_ids.BRINE_SABRE, 300),
         ]
         return config
 

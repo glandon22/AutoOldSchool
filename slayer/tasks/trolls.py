@@ -82,11 +82,39 @@ def main():
         transport_functions.south_quidamortem_trolls()
         while True:
             qh.query_backend()
-            if qh.get_inventory(weapon['id']):
-                osrs.move.click(qh.get_inventory(weapon['id']))
+            if qh.get_inventory(weapon['id'][0]):
+                osrs.move.click(qh.get_inventory(weapon['id'][0]))
                 break
         task_started = True
         success = slayer_killer.main('mountain troll', pot_config.asdict(), 35, hop=True, pre_hop=pre_log)
+        osrs.game.cast_spell(varrock_tele_widget_id)
+        if success:
+            return True
+
+
+def return_to_kelda():
+    osrs.game.tele_home()
+    osrs.game.click_restore_pool()
+    osrs.game.tele_home_fairy_ring('dks')
+    transport_functions.kelda_trolls()
+
+
+def kelda():
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_inventory()
+    task_started = False
+    while True:
+        bank(qh, task_started, equipment, supplies)
+        osrs.game.tele_home()
+        osrs.game.click_restore_pool()
+        osrs.game.tele_home_fairy_ring('dks')
+        transport_functions.kelda_trolls()
+        qh.query_backend()
+        osrs.move.click(qh.get_inventory(weapon['id'][0]))
+        success = slayer_killer.main(
+            'mountain troll', pot_config.asdict(), 35,
+            pre_hop=lambda: osrs.game.tele_home_v2(), post_login=return_to_kelda
+        )
         osrs.game.cast_spell(varrock_tele_widget_id)
         if success:
             return True

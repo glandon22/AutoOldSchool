@@ -126,31 +126,30 @@ prayer_map_widgets = {
     'piety': '541,35'
 }
 
-
 random_event_npcs_to_ignore = [
-    6747, # beekeeper
-    5426, # arnav
-    12551, 12552, # count check
-    307, 314, # jekyll
-    322, # drunken dwarf
-    6749, # dunce
-    390, 6754, # evil bob
-    6744, # flippa
-    6748, # forester
-    5429, 5430, 5431, 5432, 312, 5434, 5435, # frogs
-    326, 327, # genie
-    5438, 5441, # giles
-    6746, # leo
-    5437, 5440, # miles
-    6750, 6751, 6752, 6753, # mys old man
-    5436, 5439, # niles
-    380, # pillory
-    6738, # postie
-    6755, # quiz master
-    375, 376, # turpentine
-    5510, # sandwich
-    6743, # sargeant damien
-    10, # Death spawn from nechryael. not a random but whatever
+    6747,  # beekeeper
+    5426,  # arnav
+    12551, 12552,  # count check
+    307, 314,  # jekyll
+    322,  # drunken dwarf
+    6749,  # dunce
+    390, 6754,  # evil bob
+    6744,  # flippa
+    6748,  # forester
+    5429, 5430, 5431, 5432, 312, 5434, 5435,  # frogs
+    326, 327,  # genie
+    5438, 5441,  # giles
+    6746,  # leo
+    5437, 5440,  # miles
+    6750, 6751, 6752, 6753,  # mys old man
+    5436, 5439,  # niles
+    380,  # pillory
+    6738,  # postie
+    6755,  # quiz master
+    375, 376,  # turpentine
+    5510,  # sandwich
+    6743,  # sargeant damien
+    10,  # Death spawn from nechryael. not a random but whatever
 ]
 
 
@@ -175,18 +174,19 @@ def find_next_target(npcs, monster, ignore_interacting, attackable_area):
         # check to see if i have ignore_interacting set. If not, ignore this monster
         if 'interacting' in npc and 'UtahDogs' not in npc['interacting']:
             if not ignore_interacting:
-
                 return False
         return True
+
     # remove monsters that are out of bounds, dead, fighting someone else or not what i want to kill
     filtered_npcs = list(filter(target_filter_function, npcs))
     if len(filtered_npcs) == 0:
         print('could not find a suitable monster on first pass')
         return False
-    monster_attacking_me = list(filter(lambda npc: 'interacting' in npc and 'UtahDogs' in npc['interacting'], filtered_npcs))
+    monster_attacking_me = list(
+        filter(lambda npc: 'interacting' in npc and 'UtahDogs' in npc['interacting'], filtered_npcs))
     # there is a monster already attacking me - kill it
     if len(monster_attacking_me) > 0:
-        print('there is a monster already attacking - targeting it')
+        osrs.dev.logger.debug('there is a monster already attacking - targeting it')
         return sorted(monster_attacking_me, key=lambda npc: npc['dist'])[0]
     # now filter out any monsters that are not my task since i have confirmed no other monsters are attacking me
     final_filter_list = list(filter(lambda npc: npc['name'].lower() in monster, filtered_npcs))
@@ -297,7 +297,8 @@ def pot_handler(qh: osrs.queryHelper.QueryHelper, pots):
     return True
 
 
-def hop_handler(qh: osrs.queryHelper.QueryHelper, pre_hop, last_seen, post_login=None, attackable_area=None):
+def hop_handler(qh: osrs.queryHelper.QueryHelper or osrs.qh_v2.qh, pre_hop, last_seen, post_login=None,
+                attackable_area=None):
     # sometimes there are other players around - confirm they are in the area that i will also be in
     # if I don't define an area, hop regardless of where other players are
     for player in qh.get_players():
@@ -321,11 +322,40 @@ def hop_handler(qh: osrs.queryHelper.QueryHelper, pre_hop, last_seen, post_login
     return None
 
 
+def hop_handler_v2(qh: osrs.queryHelper.QueryHelper or osrs.qh_v2.qh, pre_hop, last_seen, post_login=None,
+                   attackable_area=None, max_players=1):
+    # sometimes there are other players around - confirm they are in the area that i will also be in
+    # if I don't define an area, hop regardless of where other players are
+    total_players = 0
+    for player in qh.get_players():
+        if not attackable_area:
+            total_players += 1
+        elif attackable_area['x_min'] <= player['worldPoint']['x'] <= attackable_area['x_max'] \
+                and attackable_area['y_min'] <= player['worldPoint']['y'] <= attackable_area['y_max']:
+            total_players += 1
+
+    if total_players > max_players:
+        if last_seen is None:
+            return datetime.datetime.now()
+        elif (datetime.datetime.now() - last_seen).total_seconds() > 10:
+            osrs.dev.logger.info('Hopping worlds due to player in my slayer spot.')
+            osrs.game.hop_worlds(pre_hop)
+            if post_login:
+                osrs.dev.logger.info('Invoking post world hop logc.')
+                post_login()
+            return None
+        else:
+            osrs.dev.logger.info('There is still a player in my slayer spot.')
+            return last_seen
+
+    return None
+
+
 def main(
-    npc_to_kill, pots, min_health, hop=False,
-    pre_hop=False, prayers=None, ignore_interacting=False,
-    attackable_area=None,
-    post_login=None, loot_config=None
+        npc_to_kill, pots, min_health, hop=False,
+        pre_hop=False, prayers=None, ignore_interacting=False,
+        attackable_area=None,
+        post_login=None, loot_config=None, max_players=1
 ):
     player_last_seen = None
     monster = npc_to_kill if type(npc_to_kill) is list else [npc_to_kill]
@@ -360,34 +390,45 @@ def main(
             loot_handler.add_inv_config_item(item)
         for item in loot_config['loot']:
             loot_handler.add_item(item)
-
-    last_interacting = datetime.datetime.now() - datetime.timedelta(hours=1)
+    last_loot_search = -1
     while True:
         qh.query_backend()
-
         # Pull up inv if i am on another tab
         if qh.get_widgets('161,62') and qh.get_widgets('161,62')['spriteID'] != 1030:
             osrs.keeb.press_key('esc')
 
         if not qh.get_slayer() or not qh.get_slayer()['monster']:
-            print('task complete')
+            osrs.dev.logger.debug('task complete')
             # sleep for a sec while last drop appears and loot if needed
             osrs.clock.random_sleep(4, 4.1)
             loot_handler.retrieve_loot(12)
             return True
-
+        # i am not interacting with a monster or the monster i am on is dying
         if (not qh.get_detailed_interating_with() or
                 ('health' in qh.get_detailed_interating_with() and qh.get_detailed_interating_with()['health'] == 0)):
-            # Look for any loot, and we dont want to count time looking for loot as time out of combat bc it
-            # leads to weird behavior
-            loot_handler.retrieve_loot(12)
-            qh.query_backend()
+            closest_target = find_next_target(qh.get_npcs(), monster, ignore_interacting, attackable_area)
+
+            # only search for loot after i kill something
+            if last_loot_search != qh.get_slayer()['amount']:
+                last_loot_search = qh.get_slayer()['amount']
+                loot_handler.retrieve_loot(12)
+                qh.query_backend()
 
             osrs.game.break_manager_v4(script_config)
-            if hop:
-                player_last_seen = hop_handler(qh, pre_hop, player_last_seen, post_login, attackable_area)
+            # dont hop if there is something attacking me
+            if (
+                    hop
+                    and (
+                            not closest_target or
+                            'interacting' not in closest_target or
+                            closest_target['interacting'].lower() != 'utahdogs'
+                    )
+            ):
+                player_last_seen = hop_handler_v2(qh, pre_hop, player_last_seen, post_login, attackable_area, max_players)
                 if player_last_seen:
                     continue
+            '''if closest_target:
+                osrs.move.fast_click_v2(closest_target)'''
 
             monster_search_start = datetime.datetime.now()
             qh2 = osrs.qh_v2.qh()
@@ -420,4 +461,3 @@ def main(
         prayer_handler(qh, prayers)
 
         osrs.player.toggle_run('on')
-

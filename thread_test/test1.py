@@ -1,21 +1,12 @@
 import osrs
 
-'''
-'tree gnome village': '1',
-'gnome stronghold': '2',
-'battlefield of khazard': '3',
-'grand exchange': '4',
-'feldip hills': '5',
-'prifddinas': '6',
-'port sarim': '7',
-'etceteria': '8',
-'brimhaven': '9',
-'hosidius': 'A',
-'farming guild': 'b',
-'house': 'c',
-'poison waste': 'd',
 
-'''
+'''qh = osrs.qh_v2.qh()
+qh.set_game_state()
+qh.set_world()
+while True:
+    qh.query_backend()
+    print(qh.get_game_state())
+    print(qh.get_world())'''
 
-osrs.game.sprit_tree('prifddinas')
-osrs.game.sprit_tree()
+osrs.game.hop_worlds()

@@ -23,11 +23,34 @@ supplies = [
     osrs.item_ids.RUNE_POUCH,
     osrs.item_ids.KARAMJA_GLOVES_3,
     {
-        'id': [
-            osrs.item_ids.DRAMEN_STAFF
-        ],
-        'consume': 'Wield'
+        'id': osrs.item_ids.PRAYER_POTION4,
+        'quantity': '10'
+    }
+]
+
+frem_supplies = [
+    {
+        'id': osrs.item_ids.NATURE_RUNE,
+        'quantity': 'All'
     },
+    {
+        'id': [
+            osrs.item_ids.SLAYER_RING_2,
+            osrs.item_ids.SLAYER_RING_3,
+            osrs.item_ids.SLAYER_RING_4,
+            osrs.item_ids.SLAYER_RING_5,
+            osrs.item_ids.SLAYER_RING_6,
+            osrs.item_ids.SLAYER_RING_7,
+            osrs.item_ids.SLAYER_RING_8,
+        ],
+        'quantity': '1'
+    },
+    osrs.item_ids.SUPER_ATTACK4,
+    osrs.item_ids.SUPER_ATTACK4,
+    osrs.item_ids.SUPER_STRENGTH4,
+    osrs.item_ids.SUPER_STRENGTH4,
+    osrs.item_ids.RUNE_POUCH,
+    osrs.item_ids.KARAMJA_GLOVES_3,
     {
         'id': osrs.item_ids.MONKFISH,
         'quantity': 'All'
@@ -59,14 +82,12 @@ def main():
         bank(qh, task_started, equipment, supplies)
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
-        osrs.game.tele_home_fairy_ring('bjp')
-        transport_functions.isle_of_souls_dungeon_v2(2166, 9331)
-        qh.query_backend()
-        osrs.move.click(qh.get_inventory(weapon['id'][0]))
+        transport_functions.catacombs_v2(1719, 10050)
         task_started = True
         success = slayer_killer.main(
-            'greater demon', pot_config.asdict(), 35, hop=True,
-            pre_hop=lambda: transport_functions.run_to_safe_spot(2156, 9322)
+            'warped jelly', pot_config.asdict(), 35, hop=True,
+            attackable_area={'x_min': 1710, 'x_max': 1730, 'y_min': 10042, 'y_max': 10059},
+            prayers=['protect_melee']
         )
         qh.query_backend()
         osrs.game.cast_spell(varrock_tele_widget_id)
@@ -74,7 +95,7 @@ def main():
             return True
 
 
-def brim():
+def main():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     task_started = False
@@ -82,15 +103,12 @@ def brim():
         bank(qh, task_started, equipment, supplies)
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
-        osrs.game.tele_home_fairy_ring('ckr')
-        transport_functions.brimhaven_dungeon_south('greater demons')
-        qh.query_backend()
-        osrs.move.click(qh.get_inventory(weapon['id'][0]))
+        transport_functions.catacombs_v2(1719, 10050)
         task_started = True
         success = slayer_killer.main(
-            'greater demon', pot_config.asdict(), 35, hop=True,
-            pre_hop=lambda: transport_functions.run_to_safe_spot(2654, 9476, 2),
-            post_login=lambda: osrs.move.go_to_loc(2633, 9490, 2)
+            'warped jelly', pot_config.asdict(), 35, hop=True,
+            attackable_area={'x_min': 1710, 'x_max': 1730, 'y_min': 10042, 'y_max': 10059},
+            prayers=['protect_melee']
         )
         qh.query_backend()
         osrs.game.cast_spell(varrock_tele_widget_id)
@@ -98,23 +116,18 @@ def brim():
             return True
 
 
-def chasm():
+def frem():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     task_started = False
     while True:
-        bank(qh, task_started, equipment, supplies)
+        bank(qh, task_started, equipment, frem_supplies)
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
-        osrs.game.tele_home_fairy_ring('djr')
-        transport_functions.chasm_of_fire('greater demons')
-        qh.query_backend()
-        osrs.move.click(qh.get_inventory(weapon['id'][0]))
+        transport_functions.frem_dungeon('jellies')
         task_started = True
         success = slayer_killer.main(
-            'greater demon', pot_config.asdict(), 35, hop=True,
-            pre_hop=lambda: transport_functions.run_to_safe_spot(1453, 10098, 2),
-            post_login=lambda: osrs.move.go_to_loc(2633, 9490, 2)
+            'jelly', pot_config.asdict(), 35, hop=True
         )
         qh.query_backend()
         osrs.game.cast_spell(varrock_tele_widget_id)

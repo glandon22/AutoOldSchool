@@ -158,7 +158,6 @@ def dump_inv_right_click(qh, items_to_drop: list):
             move.right_click_v6(item, 'Drop', qh.get_canvas(), in_inv=True)
 
 
-
 def power_drop_v2(qh, items_to_drop):
     pattern = random.randint(0, len(patterns * 2) - 1)
     # reverse the array

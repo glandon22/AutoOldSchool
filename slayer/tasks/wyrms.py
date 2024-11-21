@@ -66,9 +66,9 @@ def main():
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
         osrs.game.tele_home_fairy_ring('cir')
-        transport_functions.mount_karuulm_wyrms()
+        transport_functions.mount_karuulm('wyrms')
         qh.query_backend()
-        osrs.move.click(qh.get_inventory(weapon['id']))
+        osrs.move.click(qh.get_inventory(weapon['id'][0]))
         task_started = True
         success = slayer_killer.main(
             'wyrm', pot_config.asdict(), 35, pre_hop=pre_log, prayers=['protect_mage'],

@@ -1,6 +1,6 @@
 import osrs
 import random
-from mining import mlm_upstairs
+from mining import mlm_upstairs, powerminer_v2
 from agility import frem_v2, ardy_v3
 from fishing import aerial
 from woodcutting import sullys
@@ -12,7 +12,13 @@ from slayer import index as slayer_loop
 {
     'func': bologano_v2.main, 'args': [False]
 },
-    '''
+{
+    'func': slayer_loop.main, 'args': [False]
+},
+{
+    'func': powerminer_v2.main, 'args': [False, 'iron']
+},
+'''
 
 config = [
     {
@@ -32,9 +38,6 @@ config = [
     },
     {
         'func': wt.main, 'args': [False]
-    },
-    {
-        'func': slayer_loop.main, 'args': [False]
     },
 ]
 

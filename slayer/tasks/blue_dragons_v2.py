@@ -84,7 +84,7 @@ def main():
         osrs.game.tele_home_fairy_ring('bjp')
         transport_functions.isle_of_souls_dungeon_v2(2134, 9305)
         qh.query_backend()
-        osrs.move.click(qh.get_inventory(weapon['id']))
+        osrs.move.click(qh.get_inventory(weapon['id'][0]))
         task_started = True
         success = slayer_killer.main(['blue dragon', 'baby blue dragon'], pot_config.asdict(), 35, hop=True, pre_hop=pre_log)
         qh.query_backend()

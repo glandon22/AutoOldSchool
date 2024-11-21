@@ -6,6 +6,7 @@ import osrs
 from slayer import transport_functions
 from combat import slayer_killer
 from slayer.tasks import gear_loadouts
+from slayer.utils import bank
 
 varrock_tele_widget_id = '218,23'
 
@@ -20,6 +21,28 @@ supplies = [
     {
         'id': osrs.item_ids.PRAYER_POTION4,
         'quantity': '10'
+    },
+]
+
+
+lighthouse_supplies = [
+    {
+        'id': osrs.item_ids.DRAMEN_STAFF,
+        'consume': 'Wield'
+    },
+    osrs.item_ids.SUPER_ATTACK4,
+    osrs.item_ids.SUPER_ATTACK4,
+    osrs.item_ids.SUPER_STRENGTH4,
+    osrs.item_ids.SUPER_STRENGTH4,
+    osrs.item_ids.RUNE_POUCH,
+    osrs.item_ids.KARAMJA_GLOVES_3,
+    {
+        'id': osrs.item_ids.PRAYER_POTION4,
+        'quantity': '5'
+    },
+    {
+        'id': osrs.item_ids.MONKFISH,
+        'quantity': 'All'
     },
 ]
 
@@ -68,36 +91,7 @@ def pre_log():
 
 
 def post_log():
-    transport_functions.catacombs(1667, 9996)
-
-
-def loot_builder():
-    config = {
-        'inv': [],
-        'loot': []
-    }
-
-    item = osrs.loot.LootConfig(osrs.item_ids.SNAPE_GRASS_SEED, 7)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(osrs.item_ids.SNAPDRAGON_SEED, 17)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(osrs.item_ids.TORSTOL_SEED, 17)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(osrs.item_ids.WARRIOR_HELM, 17)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(osrs.item_ids.ANCIENT_SHARD, 9)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(osrs.item_ids.DARK_TOTEM_TOP, 9)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(osrs.item_ids.DARK_TOTEM_BASE, 9)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(osrs.item_ids.DARK_TOTEM_MIDDLE, 9)
-    config['loot'].append(item)
-
-    item = osrs.loot.InvConfig(osrs.item_ids.MONKFISH, osrs.loot.monkfish_eval)
-    config['inv'].append(item)
-
-    return config
+    transport_functions.catacombs_v2(1667, 9996)
 
 
 def main():
@@ -124,7 +118,7 @@ def main():
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
         qh.query_backend()
-        transport_functions.catacombs(1667, 9996)
+        transport_functions.catacombs_v2(1667, 9996)
         qh.query_backend()
         task_started = True
         success = slayer_killer.main(
@@ -132,8 +126,46 @@ def main():
             pot_config.asdict(), 35,
             pre_hop=pre_log,
             hop=True,
-            loot_config=loot_builder(),
             post_login=post_log,
+            prayers=['protect_melee']
+        )
+        osrs.player.turn_off_all_prayers()
+        osrs.game.cast_spell(varrock_tele_widget_id)
+        if success:
+            return True
+        qh.query_backend()
+
+
+def return_to_lighthouse(qh):
+    while True:
+        qh.query_backend()
+        if qh.get_inventory(osrs.item_ids.DRAMEN_STAFF):
+            osrs.move.fast_click_v2(qh.get_inventory(osrs.item_ids.DRAMEN_STAFF))
+            break
+    osrs.game.tele_home()
+    osrs.game.click_restore_pool()
+    transport_functions.lighthouse()
+    qh.query_backend()
+    osrs.move.fast_click_v2(qh.get_inventory(gear_loadouts.high_def_weapon['id'][0]))
+
+
+def lighthouse():
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_inventory()
+    task_started = False
+    while True:
+        bank(qh, task_started, equipment, lighthouse_supplies)
+        osrs.game.tele_home()
+        osrs.game.click_restore_pool()
+        transport_functions.lighthouse()
+        qh.query_backend()
+        osrs.move.fast_click_v2(qh.get_inventory(gear_loadouts.high_def_weapon['id'][0]))
+        task_started = True
+        success = slayer_killer.main(
+            ['dagannoth', 'dagannoth spawn'],
+            pot_config.asdict(), 35,
+            pre_hop=lambda: osrs.game.tele_home_v2(),
+            post_login=lambda: return_to_lighthouse(qh),
             prayers=['protect_melee']
         )
         osrs.player.turn_off_all_prayers()

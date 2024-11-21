@@ -117,7 +117,7 @@ def main():
         osrs.game.tele_home_fairy_ring('bjp')
         transport_functions.isle_of_souls_dungeon_v2(2128, 9328)
         qh.query_backend()
-        osrs.move.click(qh.get_inventory(weapon['id']))
+        osrs.move.click(qh.get_inventory(weapon['id'][0]))
         task_started = True
         success = slayer_killer.main('fire giant', pot_config.asdict(), 35, hop=True, pre_hop=pre_log)
         osrs.game.cast_spell(varrock_tele_widget_id)

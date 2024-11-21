@@ -145,7 +145,8 @@ def dump_items():
             move.click(dump_inv)
 
 
-def withdraw_configured_items(item, game_state: osrs.queryHelper.QueryHelper):
+def withdraw_configured_items(item, game_state: osrs.queryHelper.QueryHelper, query=None):
+    print('qq', query)
     banked_item = game_state.get_bank(item['id'])
     if not banked_item:
         osrs.dev.logger.warn('item not found: %s', item)
@@ -191,6 +192,13 @@ def withdraw_configured_items(item, game_state: osrs.queryHelper.QueryHelper):
                     if res:
                         return True
 
+    if 'quantity' in item and item['quantity'] == 'X' and query:
+        print('here', game_state.get_widgets('12,42'))
+        osrs.move.fast_click_v2(game_state.get_widgets('12,42'))
+        osrs.clock.sleep_one_tick()
+        osrs.keeb.write(query)
+        osrs.keeb.press_key('enter')
+
     return True
 
 
@@ -229,10 +237,10 @@ def withdraw(searches, game_state: osrs.queryHelper.QueryHelper):
     return True
 
 
-def withdraw_v2(items, game_state: osrs.queryHelper.QueryHelper):
+def withdraw_v2(items, game_state: osrs.queryHelper.QueryHelper, query=None):
     for item in items:
         if type(item) is dict:
-            success = withdraw_configured_items(item, game_state)
+            success = withdraw_configured_items(item, game_state, query)
             if not success:
                 return False
         else:
@@ -253,7 +261,7 @@ def search_and_withdraw(searches, game_state: osrs.queryHelper.QueryHelper):
         osrs.keeb.press_key('enter')
         osrs.clock.sleep_one_tick()
         game_state.query_backend()
-        return withdraw_v2(search['items'], game_state)
+        return withdraw_v2(search['items'], game_state, search['query'])
     return True
 
 
@@ -409,7 +417,7 @@ def banking_handler(params, wait_on_deposited_items=True, check_bank_in_sight=Fa
         osrs.widget_ids.BANK_DEPOSIT_EQUIPMENT,
         osrs.widget_ids.BANK_SEARCH_BUTTON_BACKGROUND
     })
-    qh.set_widgets({withdraw_item_widget, withdraw_noted_widget})
+    qh.set_widgets({withdraw_item_widget, withdraw_noted_widget, '12,42'})
     qh.set_bank()
     banker_search_duration = datetime.datetime.now()
     prev_loc = None

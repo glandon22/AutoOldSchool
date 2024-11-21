@@ -2,6 +2,7 @@
 import datetime
 
 import osrs
+from osrs.widget_ids import kourend_telly_spell_widget_id
 
 from slayer import transport_functions
 from combat import slayer_killer
@@ -42,32 +43,7 @@ pot_config = slayer_killer.PotConfig(super_atk=True, super_str=True)
 
 
 def pre_log():
-    safe_tile = {
-        'x': 2848,
-        'y': 9832,
-        'z': 0
-    }
-    safe_tile_string = f'{safe_tile["x"]},{safe_tile["y"]},{safe_tile["z"]}'
-    qh = osrs.queryHelper.QueryHelper()
-    qh.set_tiles({safe_tile_string})
-    qh.set_player_world_location()
-    last_off_tile = datetime.datetime.now()
-    while True:
-        qh.query_backend()
-        if qh.get_player_world_location('x') != safe_tile["x"] \
-                or qh.get_player_world_location('y') != safe_tile["y"]:
-            last_off_tile = datetime.datetime.now()
-
-        if qh.get_player_world_location('x') == safe_tile["x"] \
-                and qh.get_player_world_location('y') == safe_tile["y"]:
-            if (datetime.datetime.now() - last_off_tile).total_seconds() > 11:
-                return
-            if (datetime.datetime.now() - last_off_tile).total_seconds() > 3:
-                osrs.player.turn_off_all_prayers()
-        elif qh.get_tiles(safe_tile_string):
-            osrs.move.fast_click(qh.get_tiles(safe_tile_string))
-        else:
-            osrs.move.follow_path(qh.get_player_world_location(), safe_tile)
+    transport_functions.run_to_safe_spot(2848, 9832)
 
 
 def main():
@@ -84,6 +60,56 @@ def main():
         qh.query_backend()
         task_started = True
         success = slayer_killer.main('hellhound', pot_config.asdict(), 35, hop=True, pre_hop=pre_log)
+        qh.query_backend()
+        osrs.game.cast_spell(varrock_tele_widget_id)
+        if success:
+            return True
+
+
+def return_to_catacombs():
+    osrs.game.tele_home()
+    osrs.game.click_restore_pool()
+    transport_functions.catacombs_v2(1644, 10067)
+
+
+def catacombs():
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_inventory()
+    task_started = False
+    while True:
+        bank(qh, task_started, equipment, supplies)
+        osrs.game.tele_home()
+        osrs.game.click_restore_pool()
+        transport_functions.catacombs_v2(1644, 10067)
+        qh.query_backend()
+        task_started = True
+        success = slayer_killer.main(
+            'hellhound', pot_config.asdict(), 35,
+            pre_hop=lambda: osrs.game.tele_home_v2(), post_login=return_to_catacombs
+        )
+        qh.query_backend()
+        osrs.game.cast_spell(varrock_tele_widget_id)
+        if success:
+            return True
+
+
+def stronghold():
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_inventory()
+    task_started = False
+    while True:
+        bank(qh, task_started, equipment, supplies)
+        osrs.game.tele_home()
+        osrs.game.click_restore_pool()
+        transport_functions.stronghold_slayer_cave(2431, 9772)
+        qh.query_backend()
+        task_started = True
+        success = slayer_killer.main(
+            'hellhound', pot_config.asdict(), 35,
+            pre_hop=lambda: transport_functions.run_to_safe_spot(2419, 9784),
+            post_login=lambda: osrs.move.go_to_loc(2431, 9772),
+            attackable_area={'x_min': 2423, 'x_max': 2436, 'y_min': 9767, 'y_max': 9778}
+        )
         qh.query_backend()
         osrs.game.cast_spell(varrock_tele_widget_id)
         if success:

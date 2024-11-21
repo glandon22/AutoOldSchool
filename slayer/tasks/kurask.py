@@ -6,6 +6,7 @@ import osrs
 from slayer import transport_functions
 from combat import slayer_killer
 from slayer.tasks import gear_loadouts
+from slayer.transport_functions import travel_to_priff
 from slayer.utils import bank
 
 
@@ -60,35 +61,6 @@ equipment = [
 pot_config = slayer_killer.PotConfig(super_atk=True, super_str=True)
 
 
-def pre_log():
-    safe_tile = {
-        'x': 2710,
-        'y': 9993,
-        'z': 0
-    }
-    safe_tile_string = f'{safe_tile["x"]},{safe_tile["y"]},{safe_tile["z"]}'
-    qh = osrs.queryHelper.QueryHelper()
-    qh.set_tiles({safe_tile_string})
-    qh.set_player_world_location()
-    last_off_tile = datetime.datetime.now()
-    while True:
-        qh.query_backend()
-        if qh.get_player_world_location('x') != safe_tile["x"] \
-                or qh.get_player_world_location('y') != safe_tile["y"]:
-            last_off_tile = datetime.datetime.now()
-
-        if qh.get_player_world_location('x') == safe_tile["x"] \
-                and qh.get_player_world_location('y') == safe_tile["y"]:
-            if (datetime.datetime.now() - last_off_tile).total_seconds() > 11:
-                return
-            if (datetime.datetime.now() - last_off_tile).total_seconds() > 3:
-                osrs.player.turn_off_all_prayers()
-        elif qh.get_tiles(safe_tile_string):
-            osrs.move.fast_click(qh.get_tiles(safe_tile_string))
-        else:
-            osrs.move.follow_path(qh.get_player_world_location(), safe_tile)
-
-
 def loot_builder():
     config = {
         'inv': [],
@@ -97,7 +69,6 @@ def loot_builder():
 
     item = osrs.loot.InvConfig(osrs.item_ids.MONKFISH, osrs.loot.monkfish_eval)
     config['inv'].append(item)
-
     item = osrs.loot.LootConfig(osrs.item_ids.RUNE_LONGSWORD, 6, alch=True)
     config['loot'].append(item)
     item = osrs.loot.LootConfig(osrs.item_ids.ADAMANT_PLATEBODY, 6, alch=True)
@@ -132,20 +103,28 @@ def main(loc=None):
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     task_started = False
+    safe_tiles = []
+    attackable_area={}
     while True:
         bank(qh, task_started, equipment, supplies)
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
         qh.query_backend()
-        if loc is None:
-            transport_functions.frem_dungeon_kurask()
+        if loc is None or loc == "Fremennik Slayer Dungeon":
+            transport_functions.frem_dungeon('kurask')
+            safe_tiles = [2710, 9993]
+            attackable_area = {'x_min': 2690, 'x_max': 2708, 'y_min': 9990, 'y_max': 10007}
         elif loc == 'Iorwerth Dungeon':
-            # TODO
-            transport_functions.duradel()
+            transport_functions.travel_to_priff()
+            transport_functions.iorworth_dungeon(3220, 12366)
+            safe_tiles = [3234, 12373]
+            attackable_area = {'x_min': 3203, 'x_max': 3236, 'y_min': 12354, 'y_max': 12379}
+
         task_started = True
         success = slayer_killer.main(
-            'kurask', pot_config.asdict(), 35, hop=True, pre_hop=pre_log, loot_config=loot_builder(),
-            attackable_area={'x_min': 2690, 'x_max': 2708, 'y_min': 9990, 'y_max': 10007},
+            'kurask', pot_config.asdict(), 35,
+            pre_hop=lambda: transport_functions.run_to_safe_spot(*safe_tiles), loot_config=loot_builder(),
+            max_players=3, hop=True, attackable_area=attackable_area
         )
         qh.query_backend()
         osrs.game.cast_spell(varrock_tele_widget_id)

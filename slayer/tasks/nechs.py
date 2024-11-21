@@ -129,7 +129,7 @@ def main():
         bank(qh, task_started, equipment, supplies)
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
-        transport_functions.morytania_nechs()
+        transport_functions.mory_slayer_tower('nechs')
         qh.query_backend()
         task_started = True
         success = slayer_killer.main(

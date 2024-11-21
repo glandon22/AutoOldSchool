@@ -717,7 +717,7 @@ def follow_path(
         elif exact_tile and dist_to_end == 0:
             osrs.dev.logger.info("On desired tile - exiting")
         for tile in reversed(parsed_tiles):
-            if qh.get_tiles(tile):
+            if qh.get_tiles(tile) and qh.get_tiles(tile)['dist'] <= 10:
                 if right_click:
                     osrs.move.right_click_v6(qh.get_tiles(tile), 'Walk here', qh.get_canvas(), in_inv=True)
                 else:

@@ -69,7 +69,7 @@ def main():
         bank(qh, task_started, equipment, supplies)
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
-        transport_functions.stronghold_slayer_dungeon_bloodvelds()
+        transport_functions.stronghold_slayer_cave(2488, 9823)
         qh.query_backend()
         task_started = True
         success = slayer_killer.main(
@@ -77,6 +77,29 @@ def main():
             pot_config.asdict(), 35,
             attackable_area={'x_min': 2481, 'x_max': 2494, 'y_min': 9814, 'y_max': 9832},
             hop=True, pre_hop=hop_logic, prayers=['protect_melee']
+        )
+        qh.query_backend()
+        osrs.player.turn_off_all_prayers()
+        osrs.game.cast_spell(varrock_tele_widget_id)
+        if success:
+            return True
+
+
+def mory():
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_inventory()
+    task_started = False
+    while True:
+        bank(qh, task_started, equipment, supplies)
+        osrs.game.tele_home()
+        osrs.game.click_restore_pool()
+        transport_functions.mory_slayer_tower('bloodvelds')
+        qh.query_backend()
+        task_started = True
+        success = slayer_killer.main(
+            'bloodveld',
+            pot_config.asdict(), 35,
+            pre_hop=hop_logic, prayers=['protect_melee']
         )
         qh.query_backend()
         osrs.player.turn_off_all_prayers()
