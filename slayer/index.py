@@ -28,7 +28,7 @@ skip_config = {
         'areas': ['Catacombs of Kourend']
     },
     'blue dragons': {
-        'areas': ['Catacombs of Kourend']
+        'areas': ['Catacombs of Kourend', 'Ogre Enclave']
     },
     'black dragons': {
         'areas': ["Evil Chicken's Lair", 'Catacombs of Kourend']
@@ -56,6 +56,24 @@ skip_config = {
     },
     'abyssal demons': {
         'areas': ['Catacombs of Kourend', 'Abyss']
+    },
+    'wyrms': {
+        'areas': ['Neypotzli']
+    },
+    'jellies': {
+        'areas': ['Ruins of Tapoyauik']
+    },
+    'fire giants': {
+        'areas': ['Waterfall Dungeon']
+    },
+    'hellhounds': {
+        'areas': ['Catacombs of Kourend']
+    },
+    'kalphite': {
+        'areas': ['Kalphite Lair']
+    },
+    'trolls': {
+        'areas': ['Troll Stronghold', 'Death Plateau']
     },
 }
 
@@ -155,8 +173,7 @@ def main(endless_loop=True):
             if slayer_task == 'Iron Dragons':
                 if area in ['Catacombs of Kourend']:
                     quick_skip()
-                    continue
-                if area in ['', 'Isle of Souls Dungeon']:
+                if area in ['', 'Isle of Souls']:
                     slayer.iron_dragons_v2.main()
                 if area in ['Brimhaven Dungeon']:
                     slayer.iron_dragons_v2.brimhaven()
@@ -168,39 +185,54 @@ def main(endless_loop=True):
                     slayer.bronze.brimhaven()
             # Verified
             elif slayer_task == 'Kalphite':
-                slayer.kalphite.main()
+                if area == 'Kalphite Lair':
+                    quick_skip()
+                elif area in ['task-only Kalphite Cave']:
+                    slayer.kalphite.main()
             # Verified
             elif slayer_task == 'Trolls':
                 if area in ['', 'South of Mount Quidamortem']:
                     slayer.trolls.main()
                 elif area == 'Keldagrim':
                     slayer.trolls.kelda()
+                elif area in ['Troll Stronghold', 'Death Plateau']:
+                    quick_skip()
             # Verified
             elif slayer_task == 'Blue Dragons':
-                if area in ['Catacombs of Kourend']:
+                if area in ['Catacombs of Kourend', 'Ogre Enclave', 'Ruins of Tapoyauik']:
                     quick_skip()
                     continue
-                slayer.blue_dragons_v2.main()
+                if area in ['', 'Isle of Souls']:
+                    slayer.blue_dragons_v2.main()
+                if area in ['Taverley Dungeon']:
+                    slayer.blue_dragons_v2.taverley()
+                if area in ["Myths' Guild Dungeon"]:
+                    slayer.blue_dragons_v2.myths()
             # Verified
             elif slayer_task == 'Black Dragons':
                 if area in ["Evil Chicken's Lair", 'Catacombs of Kourend']:
                     quick_skip()
-                slayer.black_dragons_v2.main()
+                if area == 'Taverley Dungeon':
+                    slayer.black_dragons_v2.main()
+                if area == 'Myths\' Guild Dungeon':
+                    slayer.black_dragons_v2.myths()
             # Verified
             elif slayer_task == 'Greater Demons':
-                if area in ['Isle of Souls Dungeon']:
+                if area in ['Isle of Souls']:
                     slayer.greater_demons.main()
                 elif area in ['Brimhaven Dungeon', '']:
                     slayer.greater_demons.brim()
                 elif area in ['Chasm of Fire']:
                     slayer.greater_demons.chasm()
+                elif area in ['Karuulm Slayer Dungeon']:
+                    slayer.greater_demons.karuulm()
                 elif area in ['Catacombs of Kourend']:
                     quick_skip()
             # Verified
             elif slayer_task == 'Fire Giants':
                 if area in ['Catacombs of Kourend', '']:
                     slayer.fire_giants_catacombs.main()
-                if area in ['Isle of Souls Dungeon']:
+                if area in ['Isle of Souls']:
                     slayer.fire_giants.main()
                 if area in ['Karuulm Slayer Dungeon']:
                     slayer.fire_giants_catacombs.karuulm()
@@ -208,23 +240,31 @@ def main(endless_loop=True):
                     slayer.fire_giants_catacombs.brimhaven()
                 if area in ['Stronghold Slayer Dungeon']:
                     slayer.fire_giants_catacombs.stronghold()
+                if area in ["Giants' Den"]:
+                    slayer.fire_giants_catacombs.den()
+                if area == 'Waterfall Dungeon':
+                    quick_skip()
             # Verified
             elif slayer_task == 'Dagannoth':
                 if area in ['', 'Waterbirth Island']:
                     slayer.dagganoth.main()
                 elif area == 'Catacombs of Kourend':
                     slayer.dagannoth_catacombs.main()
-                elif area == 'Lighthouse':
+                elif area == 'In the Lighthouse':
                     slayer.dagannoth_catacombs.lighthouse()
             # Verified
             elif slayer_task == 'Hellhounds':
                 if area == 'Catacombs of Kourend':
-                    slayer.hellhounds.catacombs()
+                    #slayer.hellhounds.catacombs()
+                    quick_skip()
                 elif area in ['', 'Taverley Dungeon']:
                     slayer.hellhounds.main()
                 elif area == 'Stronghold Slayer Dungeon':
                     slayer.hellhounds.stronghold()
-            # cok, t d, and b d verified
+                elif area == 'Witchaven Dungeon':
+                    slayer.hellhounds.witchaven()
+                elif area == 'Karuulm Slayer Dungeon':
+                    slayer.hellhounds.karuulm()
             elif slayer_task == 'Black Demons':
                 if area == 'Catacombs of Kourend':
                     quick_skip()
@@ -246,39 +286,53 @@ def main(endless_loop=True):
                     slayer.mutated_bloodveld.main()
                 elif area == 'Slayer Tower':
                     slayer.bloodvelds.mory()
-                elif area == 'Meiyerditch Laboratories':
+                elif area == 'Iorwerth Dungeon':
+                    slayer.bloodvelds.iorwerth()
+                elif area in ['Meiyerditch Laboratories', 'God Wars Dungeon']:
                     quick_skip()
-                    continue
             # Verified
             elif slayer_task == 'Ankou':
                 if area == 'Stronghold of Security':
                     quick_skip()
-                    continue
-                slayer.ankou.main(area)
+                if area == 'Stronghold Slayer Dungeon':
+                    slayer.ankou.stronghold()
+                if area == 'Catacombs of Kourend':
+                    slayer.ankou.catacombs()
             # Verified
             elif slayer_task == 'Wyrms':
-                slayer.wyrms.main()
+                if area == 'Neypotzli':
+                    quick_skip()
+                elif area in ['', 'Karuulm Slayer Dungeon']:
+                    slayer.wyrms.main()
             # Verified
             elif slayer_task == 'Aberrant Spectres':
-                slayer.aberrant_spectres.main(area)
+                if area in ['', None, 'Stronghold Slayer Dungeon']:
+                    slayer.aberrant_spectres.stronghold()
+                if area in ['Catacombs of Kourend']:
+                    slayer.aberrant_spectres.catacombs()
+                if area in ['Slayer Tower']:
+                    slayer.aberrant_spectres.mory()
             # Verified
             elif slayer_task == 'Dust Devils':
                 if area in ['Catacombs of Kourend']:
                     quick_skip()
-                    continue
-                slayer.dust_devils.main()
+                elif area in ['', 'Smoke Dungeon']:
+                    slayer.dust_devils.main()
             # Verified
             elif slayer_task == 'Steel Dragons':
                 if area in ['Catacombs of Kourend']:
                     quick_skip()
-                    continue
-                slayer.steel_dragons.main()
+                elif area in ['', 'Brimhaven Dungeon']:
+                    slayer.steel_dragons.main()
             # Verified
             elif slayer_task == 'Spiritual Creatures':
                 slayer.spiritual_creatures.main()
             # Verified
             elif slayer_task == 'Kurask':
-                slayer.kurask.main(area)
+                if area in ['', 'Iorwerth Dungeon']:
+                    slayer.kurask.iorwerth()
+                elif area == 'Fremennik Slayer Dungeon':
+                    slayer.kurask.frem()
             # Verified
             elif slayer_task == 'Mutated Zygomites':
                 if area in ['', 'Zanaris']:
@@ -293,13 +347,17 @@ def main(endless_loop=True):
                 if area in ['Catacombs of Kourend']:
                     quick_skip()
                     continue
-                slayer.nechs.main()
+                if area in ['', 'Slayer Tower']:
+                    slayer.nechs.main()
+                if area == 'Iorwerth Dungeon':
+                    slayer.nechs.ior()
             elif slayer_task == 'Drakes':
                 slayer.drakes.main()
             elif slayer_task == 'Abyssal Demons':
                 if area in ['Catacombs of Kourend', 'Abyss']:
                     quick_skip()
-                slayer.abby_demon.main(area)
+                if area in ['', 'Slayer Tower']:
+                    slayer.abby_demon.main(area)
             elif slayer_task == 'Cave Kraken':
                 slayer.kraken_boss.main()
             elif slayer_task == 'Waterfiends':
@@ -308,7 +366,10 @@ def main(endless_loop=True):
                 #slayer.thermonucler_smoke_devil.main()
                 slayer.smoke_devil.main()
             elif slayer_task == 'Dark Beasts':
-                slayer.dark_beast.main()
+                if area == 'Mourner Tunnels':
+                    quick_skip()
+                elif area in ['', 'Iorwerth Dungeon']:
+                    slayer.dark_beast.main()
             elif slayer_task == 'Rune Dragons':
                 slayer.rune_drags.main()
             elif slayer_task == 'Elves':
@@ -332,7 +393,6 @@ def main(endless_loop=True):
             else:
                 print(f'Can not parse {slayer_task}')
                 print('slay: ', qh.get_slayer())
-                return
         else:
             quick_skip()
             iter_count -= 1

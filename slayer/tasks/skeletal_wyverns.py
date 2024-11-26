@@ -67,9 +67,9 @@ def main():
         task_started = True
         success = slayer_killer.main(
             'skeletal wyvern', pot_config.asdict(), 35, prayers=['protect_melee'],
-            pre_hop=lambda: osrs.move.interact_with_object_v3(53250, 'x', 3014),
+            pre_hop=lambda: osrs.move.interact_with_object_v3(53251, 'x', 3022, greater_than=False),
             post_login=lambda: osrs.move.interact_with_object_v3(
-                53251, 'x', 3024, greater_than=False
+                53250, 'x', 3014
             ),
         )
         qh.query_backend()

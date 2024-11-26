@@ -106,11 +106,6 @@ def main():
         if not success:
             print('failed to withdraw supplies.')
             return False
-        while True:
-            qh.query_backend()
-            if qh.get_inventory(osrs.item_ids.DRAMEN_STAFF):
-                osrs.move.click(qh.get_inventory(osrs.item_ids.DRAMEN_STAFF))
-                break
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
         osrs.clock.random_sleep(2, 2.1)

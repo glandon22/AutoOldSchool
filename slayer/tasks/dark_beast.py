@@ -85,7 +85,7 @@ def main():
         bank(qh, task_started, equipment, supplies)
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
-        transport_functions.iorworth_dungeon_dark_beasts()
+        transport_functions.iorworth_dungeon(3176, 12420)
         qh.query_backend()
         task_started = True
         success = slayer_killer.main(

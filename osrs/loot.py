@@ -205,6 +205,9 @@ class Loot:
 
     def alch(self, item, qh):
         qh.query_backend()
+        if not qh.get_inventory(osrs.item_ids.NATURE_RUNE):
+            osrs.dev.logger.warn("Tried to alch something with no nature runes - aborting!")
+            return
         if qh.get_inventory(item['id']):
             osrs.keeb.press_key('f6')
             osrs.clock.sleep_one_tick()
@@ -249,6 +252,7 @@ class Loot:
             # Alchable Armor and Weapons
             ## Addy
             LootConfig(osrs.item_ids.ADAMANT_2H_SWORD, 3, alch=True),
+            LootConfig(osrs.item_ids.ADAMANT_PLATEBODY, 4, alch=True),
             ## Rune
             LootConfig(osrs.item_ids.RUNE_AXE, 2, alch=True),
             LootConfig(osrs.item_ids.RUNE_WARHAMMER, 24, alch=True),
@@ -276,6 +280,7 @@ class Loot:
             LootConfig(osrs.item_ids.DRAGON_THROWNAXE, 26),
             LootConfig(osrs.item_ids.DRAGON_HARPOON, 1900),
             LootConfig(osrs.item_ids.DRAGON_SWORD, 70),
+            LootConfig(osrs.item_ids.DRAGON_MACE, 35, alch=True),
             LootConfig(osrs.item_ids.DRAGON_DAGGER, 17, alch=True),
             LootConfig(osrs.item_ids.DRAGON_LONGSWORD, 60, alch=True),
             LootConfig(osrs.item_ids.DRAGON_BATTLEAXE, 119, alch=True),
@@ -391,6 +396,7 @@ class Loot:
             LootConfig(osrs.item_ids.GRIMY_SNAPDRAGON + 1, 5, stackable=True, min_quantity=2),
             LootConfig(osrs.item_ids.GRIMY_TOADFLAX + 1, 5, stackable=True, min_quantity=2),
             LootConfig(osrs.item_ids.GRIMY_TORSTOL + 1, 5, stackable=True, min_quantity=2),
+            LootConfig(osrs.item_ids.GRIMY_RANARR_WEED + 1, 7, stackable=True),
 
             # Potions
             LootConfig(osrs.item_ids.SANFEW_SERUM4, 22),
@@ -441,6 +447,7 @@ class Loot:
 
             LootConfig(osrs.item_ids.BRIMSTONE_KEY, 100, stackable=True),
             LootConfig(osrs.item_ids.BRINE_SABRE, 300),
+            LootConfig(osrs.item_ids.KURASK_HEAD, 8)
         ]
         return config
 

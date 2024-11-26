@@ -6,12 +6,13 @@ import osrs
 from slayer import transport_functions
 from combat import slayer_killer
 from slayer.tasks import gear_loadouts
+from slayer.utils import bank
 
 varrock_tele_widget_id = '218,23'
 
 weapon = gear_loadouts.dragon_melee_weapon
 supplies = [
-    osrs.item_ids.DRAMEN_STAFF,
+    {'id': osrs.item_ids.DRAMEN_STAFF, 'consume': 'Wield'},
     osrs.item_ids.SUPER_ATTACK4,
     osrs.item_ids.SUPER_ATTACK4,
     osrs.item_ids.SUPER_STRENGTH4,
@@ -48,48 +49,7 @@ equipment = [
     gear_loadouts.prayer_ammo_slot
 ]
 
-banking_config_equipment = {
-    'dump_inv': True,
-    'dump_equipment': True,
-    'search': [{'query': 'slayer', 'items': equipment}]
-}
-
-banking_config_supplies = {
-    'dump_inv': True,
-    'dump_equipment': False,
-    'search': [{'query': 'slayer', 'items': supplies}]
-}
-
 pot_config = slayer_killer.PotConfig(super_atk=True, super_str=True, antifire=True)
-
-
-def pre_log():
-    safe_tile = {
-        'x': 1316,
-        'y': 10218,
-        'z': 1
-    }
-    safe_tile_string = f'{safe_tile["x"]},{safe_tile["y"]},{safe_tile["z"]}'
-    qh = osrs.queryHelper.QueryHelper()
-    qh.set_tiles({safe_tile_string})
-    qh.set_player_world_location()
-    last_off_tile = datetime.datetime.now()
-    while True:
-        qh.query_backend()
-        if qh.get_player_world_location('x') != safe_tile["x"] \
-                or qh.get_player_world_location('y') != safe_tile["y"]:
-            last_off_tile = datetime.datetime.now()
-
-        if qh.get_player_world_location('x') == safe_tile["x"] \
-                and qh.get_player_world_location('y') == safe_tile["y"]:
-            if (datetime.datetime.now() - last_off_tile).total_seconds() > 11:
-                return
-            if (datetime.datetime.now() - last_off_tile).total_seconds() > 3:
-                osrs.player.turn_off_all_prayers()
-        elif qh.get_tiles(safe_tile_string):
-            osrs.move.fast_click(qh.get_tiles(safe_tile_string))
-        else:
-            osrs.move.follow_path(qh.get_player_world_location(), safe_tile)
 
 
 def loot_builder():
@@ -97,48 +57,10 @@ def loot_builder():
         'inv': [],
         'loot': []
     }
-
-    item = osrs.loot.LootConfig(osrs.item_ids.RUNE_FULL_HELM, 10, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(osrs.item_ids.RED_DHIDE_BODY, 10, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(osrs.item_ids.MYSTIC_EARTH_STAFF, 10, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(osrs.item_ids.DRAGON_MACE, 10, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(osrs.item_ids.RUNE_BATTLEAXE, 10, alch=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(osrs.item_ids.RUNITE_LIMBS, 10, alch=True)
-    config['loot'].append(item)
     item = osrs.loot.LootConfig(osrs.item_ids.DRAKES_TOOTH, 999)
     config['loot'].append(item)
     item = osrs.loot.LootConfig(osrs.item_ids.DRAKES_CLAW, 999)
     config['loot'].append(item)
-    item = osrs.loot.LootConfig(osrs.item_ids.DRAGON_THROWNAXE, 999)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(osrs.item_ids.DRAGON_KNIFE, 999)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(osrs.item_ids.NATURE_RUNE, 7, stackable=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(osrs.item_ids.LAW_RUNE, 7, stackable=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(osrs.item_ids.DEATH_RUNE, 7, stackable=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(osrs.item_ids.COINS_995, 7, stackable=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(osrs.item_ids.DIAMOND + 1, 7, stackable=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(osrs.item_ids.GRIMY_RANARR_WEED + 1, 7, stackable=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(osrs.item_ids.GRIMY_SNAPDRAGON + 1, 7, stackable=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(osrs.item_ids.GRIMY_TORSTOL + 1, 7, stackable=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(osrs.item_ids.SNAPDRAGON_SEED, 7, stackable=True)
-    config['loot'].append(item)
-    item = osrs.loot.LootConfig(osrs.item_ids.SNAPE_GRASS_SEED, 7, stackable=True)
-    config['loot'].append(item)
-
     return config
 
 
@@ -147,27 +69,7 @@ def main():
     qh.set_inventory()
     task_started = False
     while True:
-        qh.query_backend()
-        print('starting function')
-        if not task_started:
-            success = osrs.bank.banking_handler(banking_config_equipment)
-            if not success:
-                print('failed to withdraw equipment.')
-                return False
-            osrs.clock.sleep_one_tick()
-            qh.query_backend()
-            for item in qh.get_inventory():
-                osrs.move.click(item)
-            qh.query_backend()
-        success = osrs.bank.banking_handler(banking_config_supplies)
-        if not success:
-            print('failed to withdraw supplies.')
-            return False
-        while True:
-            qh.query_backend()
-            if qh.get_inventory(osrs.item_ids.DRAMEN_STAFF):
-                osrs.move.click(qh.get_inventory(osrs.item_ids.DRAMEN_STAFF))
-                break
+        bank(qh, task_started, equipment, supplies)
         osrs.game.tele_home()
         osrs.game.click_restore_pool()
         osrs.game.tele_home_fairy_ring('cir')
@@ -175,7 +77,11 @@ def main():
         qh.query_backend()
         osrs.move.click(qh.get_inventory(weapon['id'][0]))
         task_started = True
-        success = slayer_killer.main('drake', pot_config.asdict(), 35, prayers=['protect_range'], pre_hop=pre_log, loot_config=loot_builder())
+        success = slayer_killer.main(
+            'drake', pot_config.asdict(), 35,
+            prayers=['protect_range'], pre_hop=lambda: transport_functions.run_to_safe_spot(1316, 10218, 1),
+            loot_config=loot_builder(), hop=True, max_players=2
+        )
         qh.query_backend()
         osrs.player.turn_off_all_prayers()
         osrs.game.cast_spell(varrock_tele_widget_id)

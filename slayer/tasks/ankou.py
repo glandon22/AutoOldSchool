@@ -71,7 +71,7 @@ def return_to_catacombs():
     osrs.move.go_to_loc(1639, 9993)
 
 
-def main(area=None):
+def catacombs():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     task_started = False
@@ -81,26 +81,36 @@ def main(area=None):
         osrs.game.click_restore_pool()
         qh.query_backend()
         task_started = True
-        success = None
-        if area in ['Stronghold Slayer Dungeon', None, '']:
-            transport_functions.stronghold_slayer_cave(2478, 9800)
-            success = slayer_killer.main(
-                'ankou', pot_config.asdict(), 35, hop=True,
-                pre_hop=lambda: transport_functions.run_to_safe_spot(2471, 9813),
-                attackable_area={'x_min': 2470, 'x_max': 2479, 'y_min': 9806, 'y_max': 9810}
-            )
-        elif area == 'Catacombs of Kourend':
-            transport_functions.catacombs_v2(1688, 10047)
-            osrs.move.go_to_loc(1688, 9998)
-            osrs.move.go_to_loc(1640, 9998)
-            success = slayer_killer.main(
-                'ankou', pot_config.asdict(), 35, hop=True,
-                pre_hop=leave_catabcombs, post_login=return_to_catacombs,
-                attackable_area={'x_min': 1635, 'x_max': 1644, 'y_min': 9990, 'y_max': 9998}
-            )
-
-        qh.query_backend()
+        transport_functions.catacombs_v2(1688, 10047)
+        osrs.move.go_to_loc(1688, 9998)
+        osrs.move.go_to_loc(1640, 9998)
+        success = slayer_killer.main(
+            'ankou', pot_config.asdict(), 35, hop=True,
+            pre_hop=leave_catabcombs, post_login=return_to_catacombs,
+            attackable_area={'x_min': 1635, 'x_max': 1644, 'y_min': 9990, 'y_max': 9998}
+        )
         osrs.game.cast_spell(varrock_tele_widget_id)
         if success:
             return True
 
+
+def stronghold():
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_inventory()
+    task_started = False
+    while True:
+        bank(qh, task_started, equipment, supplies)
+        osrs.game.tele_home()
+        osrs.game.click_restore_pool()
+        qh.query_backend()
+        task_started = True
+        transport_functions.stronghold_slayer_cave(2478, 9800)
+        success = slayer_killer.main(
+            'ankou', pot_config.asdict(), 35, hop=True,
+            pre_hop=lambda: transport_functions.run_to_safe_spot(2472, 9815),
+            attackable_area={'x_min': 2470, 'x_max': 2479, 'y_min': 9806, 'y_max': 9810}
+        )
+        qh.query_backend()
+        osrs.game.cast_spell(varrock_tele_widget_id)
+        if success:
+            return True

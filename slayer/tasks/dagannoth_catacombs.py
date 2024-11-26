@@ -138,6 +138,7 @@ def main():
 
 def return_to_lighthouse(qh):
     while True:
+        osrs.keeb.press_key('esc')
         qh.query_backend()
         if qh.get_inventory(osrs.item_ids.DRAMEN_STAFF):
             osrs.move.fast_click_v2(qh.get_inventory(osrs.item_ids.DRAMEN_STAFF))
@@ -166,7 +167,8 @@ def lighthouse():
             pot_config.asdict(), 35,
             pre_hop=lambda: osrs.game.tele_home_v2(),
             post_login=lambda: return_to_lighthouse(qh),
-            prayers=['protect_melee']
+            prayers=['protect_melee'],
+            hop=True
         )
         osrs.player.turn_off_all_prayers()
         osrs.game.cast_spell(varrock_tele_widget_id)

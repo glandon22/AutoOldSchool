@@ -34,24 +34,6 @@ def south_quidamortem_trolls():
     osrs.move.go_to_loc(1230, 3496)
 
 
-def taverley_dungeon_black_dragons():
-    osrs.dev.logger.debug('running to wall')
-    osrs.move.go_to_loc(2936, 3355)
-    osrs.move.interact_with_object_v3(
-        24222, coord_type='x', coord_value=2935, greater_than=False
-    )
-    osrs.dev.logger.debug('running to ladder')
-    osrs.move.go_to_loc(2885, 3393)
-    osrs.move.interact_with_object_v3(
-        16680, coord_type='y', coord_value=9000, greater_than=True, right_click_option='Climb-down', timeout=7
-    )
-    osrs.move.go_to_loc(2883, 9820)
-    osrs.move.interact_with_object_v3(
-        30189, coord_type='z', coord_value=1, greater_than=True
-    )
-    osrs.move.go_to_loc(2868, 9827, 1)
-
-
 def waterbirth_dungeon():
     cave_entrance_tile = '2522,3738,0'
     cave_entrance_id = '8929'
@@ -72,7 +54,7 @@ def waterbirth_dungeon():
             osrs.move.follow_path(qh.get_player_world_location(), {'x': 2526, 'y': 3739, 'z': 0})
 
 
-def taverley_dungeon_hellhounds():
+def taverley(monster):
     osrs.dev.logger.debug('running to wall')
     osrs.move.go_to_loc(2936, 3355)
     osrs.move.interact_with_object_v3(
@@ -83,28 +65,27 @@ def taverley_dungeon_hellhounds():
     osrs.move.interact_with_object_v3(
         16680, coord_type='y', coord_value=9000, greater_than=True, right_click_option='Climb-down', timeout=7
     )
-    osrs.dev.logger.debug('running to steps')
-    osrs.move.go_to_loc(2882, 9813)
-    osrs.move.interact_with_object_v3(
-        16510, coord_type='x', coord_value=2878, greater_than=False, timeout=2
-    )
-
-
-def taverley_dungeon_black_demons():
-    osrs.dev.logger.debug('running to wall')
-    osrs.move.go_to_loc(2936, 3355)
-    osrs.move.interact_with_object_v3(
-        24222, coord_type='x', coord_value=2935, greater_than=False
-    )
-    osrs.dev.logger.debug('running to ladder')
-    osrs.move.go_to_loc(2885, 3393)
-    osrs.move.interact_with_object_v3(
-        16680, coord_type='y', coord_value=9000, greater_than=True, right_click_option='Climb-down', timeout=7
-    )
-    osrs.move.interact_with_object_v3(
-        16509, coord_type='x', coord_value=2888, greater_than=True
-    )
-    osrs.move.go_to_loc(2878, 9768)
+    if monster == 'blue dragons':
+        osrs.move.interact_with_object_v3(
+            16509, coord_type='x', coord_value=2888, greater_than=True
+        )
+        return
+    elif monster == 'black dragons':
+        osrs.move.go_to_loc(2883, 9820)
+        osrs.move.interact_with_object_v3(
+            30189, coord_type='z', coord_value=1, greater_than=True
+        )
+        osrs.move.go_to_loc(2868, 9827, 1)
+    elif monster == 'black demons':
+        osrs.move.interact_with_object_v3(
+            16509, coord_type='x', coord_value=2888, greater_than=True
+        )
+        osrs.move.go_to_loc(2878, 9768)
+    elif monster == 'hellhounds':
+        osrs.move.go_to_loc(2882, 9813)
+        osrs.move.interact_with_object_v3(
+            16510, coord_type='x', coord_value=2878, greater_than=False, timeout=2
+        )
 
 
 def stronghold_slayer_cave(x, y):
@@ -657,36 +638,6 @@ def morytania_spectres():
             last_ring_click = datetime.datetime.now()
 
 
-def iorworth_dungeon_dark_beasts():
-    entrance_id = 36690
-    shortcut_id = 36692
-    qh = osrs.queryHelper.QueryHelper()
-    qh.set_player_world_location()
-    qh.set_inventory()
-    qh.set_canvas()
-    last_crystal = datetime.datetime.now() - datetime.timedelta(hours=1)
-    while True:
-        qh.query_backend()
-        if 3150 <= qh.get_player_world_location('x') <= 3300 and 6000 <= qh.get_player_world_location('y') <= 6100:
-            break
-        elif qh.get_inventory(osrs.osrs.item_ids.ETERNAL_TELEPORT_CRYSTAL) and (datetime.datetime.now() - last_crystal).total_seconds() > 7:
-            osrs.move.right_click_v6(
-                qh.get_inventory(osrs.osrs.item_ids.ETERNAL_TELEPORT_CRYSTAL),
-                'Prifddinas',
-                qh.get_canvas(),
-                in_inv=True
-            )
-            last_crystal = datetime.datetime.now()
-    osrs.move.go_to_loc(3229, 6049)
-    osrs.move.interact_with_object(
-        entrance_id, 'y', 10000, True, right_click_option='Enter'
-    )
-    osrs.move.interact_with_object(
-        shortcut_id, 'x', 3221, True
-    )
-    osrs.move.go_to_loc(3176, 12420)
-
-
 def iorworth_dungeon_elves():
     entrance_id = 36690
     shortcut_id = 36692
@@ -950,3 +901,61 @@ def brine_cavern():
     )
     osrs.move.go_to_loc(2706, 10132)
 
+
+def tele_to_myths():
+    qh = osrs.qh_v2.qh()
+    qh.set_inventory()
+    qh.set_canvas()
+    qh.set_player_world_location()
+    tele = datetime.datetime.now() - datetime.timedelta(hours=1)
+    while True:
+        qh.query_backend()
+        if 2446 <= qh.get_player_world_location('x') <= 2468 and 2840 <= qh.get_player_world_location('y') <= 2857:
+            break
+        elif (datetime.datetime.now() - tele).total_seconds() > 7 and qh.get_inventory(
+                osrs.item_ids.MYTHICAL_CAPE_22114):
+            res = osrs.move.right_click_v6(
+                qh.get_inventory(osrs.item_ids.MYTHICAL_CAPE_22114),
+                'Teleport',
+                qh.get_canvas(),
+                in_inv=True
+            )
+            if res:
+                tele = datetime.datetime.now()
+
+
+def myths_guild(monster):
+    tele_to_myths()
+    osrs.move.interact_with_object_v3(
+        31626, 'z', 1
+    )
+    if monster == 'red dragons':
+        osrs.move.go_to_loc(1912, 9000, 1)
+    elif monster == 'green dragons':
+        osrs.move.go_to_loc(1945, 8998, 1)
+    elif monster == 'blue dragons':
+        osrs.move.go_to_loc(1929, 8974, 1)
+    elif monster == 'black dragons':
+        osrs.move.go_to_loc(1947, 8972, 1)
+
+
+def giants_den(monster):
+    osrs.move.go_to_loc(1455, 3650, skip_dax=True)
+    osrs.move.go_to_loc(1418, 3590)
+    osrs.move.interact_with_object_v3(42248, 'y', 9000)
+    if monster == 'hill giants':
+        osrs.move.go_to_loc(1435, 9886)
+    if monster == 'moss giants':
+        osrs.move.go_to_loc(1456, 9866)
+    if monster == 'fire giants':
+        osrs.move.go_to_loc(1457, 9902)
+
+
+def witchhaven():
+    osrs.game.standard_spells_tele('Ardougne')
+    osrs.move.go_to_loc(2701, 3283)
+    osrs.move.interact_with_object_v3(18270, 'y', 9000)
+    osrs.move.go_to_loc(2722, 9689)
+    osrs.move.interact_with_object_v3(
+        2430, 'x', 2730, intermediate_tile='2736,9689,0', obj_type='wall'
+    )

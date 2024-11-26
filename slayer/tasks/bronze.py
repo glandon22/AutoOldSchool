@@ -85,6 +85,13 @@ def pre_log():
 def return_to_dragons():
     osrs.game.tele_home()
     osrs.game.click_restore_pool()
+    while True:
+        qh = osrs.qh_v2.qh()
+        qh.set_inventory()
+        qh.query_backend()
+        if qh.get_inventory(osrs.item_ids.DRAMEN_STAFF):
+            osrs.move.fast_click_v2(qh.get_inventory(osrs.item_ids.DRAMEN_STAFF))
+            break
     osrs.game.tele_home_fairy_ring('ckr')
     transport_functions.brimhaven_dungeon_dragons(2681, 9461)
 

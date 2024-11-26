@@ -35,6 +35,10 @@ supplies = [
     osrs.item_ids.RUNE_POUCH,
     osrs.item_ids.KARAMJA_GLOVES_3,
     {
+        'id': osrs.item_ids.NATURE_RUNE,
+        'quantity': 'All'
+    },
+    {
         'id': osrs.item_ids.MONKFISH,
         'quantity': 'All'
     },
@@ -44,6 +48,7 @@ pot_config = slayer_killer.PotConfig(super_str=True, super_atk=True, antifire=Tr
 
 
 def pre_log():
+    osrs.move.go_to_loc(1577, 5074)
     osrs.move.interact_with_object(
         32153, 'x', 1574, False, obj_tile={'x': 1574, 'y': 5074, 'z': 0},
         right_click_option='Pass', timeout=10
@@ -69,7 +74,7 @@ def main():
         qh.query_backend()
         task_started = True
         success = slayer_killer.main(
-            ['rune dragon'], pot_config.asdict(), 35, pre_hop=pre_log, post_login=post_log,
+            ['rune dragon'], pot_config.asdict(), 50, pre_hop=pre_log, post_login=post_log,
             prayers=['protect_mage', 'piety']
         )
         osrs.player.turn_off_all_prayers()

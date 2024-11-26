@@ -50,7 +50,7 @@ supplies = [
     }
 ]
 
-pot_config = slayer_killer.PotConfig(super_combat=True, antifire=True)
+pot_config = slayer_killer.PotConfig(super_atk=True, super_str=True, antifire=True)
 
 
 def pre_log():

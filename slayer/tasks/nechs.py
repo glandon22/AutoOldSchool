@@ -142,3 +142,26 @@ def main():
         osrs.game.cast_spell(varrock_tele_widget_id)
         if success:
             return True
+
+
+def ior():
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_inventory()
+    task_started = False
+    while True:
+        bank(qh, task_started, equipment, supplies)
+        osrs.game.tele_home()
+        osrs.game.click_restore_pool()
+        transport_functions.travel_to_priff()
+        transport_functions.iorworth_dungeon(3225, 12458)
+        task_started = True
+        success = slayer_killer.main(
+            'greater nechryael', pot_config.asdict(), 35,
+            pre_hop=lambda: transport_functions.run_to_safe_spot(3211, 12466),
+            prayers=['protect_melee'],
+        )
+        qh.query_backend()
+        osrs.player.turn_off_all_prayers()
+        osrs.game.cast_spell(varrock_tele_widget_id)
+        if success:
+            return True

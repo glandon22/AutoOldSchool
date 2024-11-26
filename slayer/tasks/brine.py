@@ -1,6 +1,3 @@
-# 2134,9305,0
-import datetime
-
 import osrs
 from slayer.tasks import gear_loadouts
 from slayer import transport_functions

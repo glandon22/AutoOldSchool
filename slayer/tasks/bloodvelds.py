@@ -76,7 +76,7 @@ def main():
             'bloodveld',
             pot_config.asdict(), 35,
             attackable_area={'x_min': 2481, 'x_max': 2494, 'y_min': 9814, 'y_max': 9832},
-            hop=True, pre_hop=hop_logic, prayers=['protect_melee']
+            hop=True, pre_hop=hop_logic, prayers=['protect_melee'],
         )
         qh.query_backend()
         osrs.player.turn_off_all_prayers()
@@ -99,7 +99,29 @@ def mory():
         success = slayer_killer.main(
             'bloodveld',
             pot_config.asdict(), 35,
-            pre_hop=hop_logic, prayers=['protect_melee']
+            pre_hop=hop_logic, prayers=['protect_melee'], hop=True, max_players=3
+        )
+        qh.query_backend()
+        osrs.player.turn_off_all_prayers()
+        osrs.game.cast_spell(varrock_tele_widget_id)
+        if success:
+            return True
+
+
+def iorwerth():
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_inventory()
+    task_started = False
+    while True:
+        bank(qh, task_started, equipment, supplies)
+        osrs.game.tele_home()
+        transport_functions.travel_to_priff()
+        transport_functions.iorworth_dungeon(3249, 12420)
+        qh.query_backend()
+        task_started = True
+        success = slayer_killer.main(
+            'mutated bloodveld',
+            pot_config.asdict(), 35, prayers=['protect_melee'], hop=True, max_players=2
         )
         qh.query_backend()
         osrs.player.turn_off_all_prayers()

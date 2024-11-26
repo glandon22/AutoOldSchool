@@ -59,7 +59,7 @@ def main():
         qh.query_backend()
         osrs.game.cast_spell(fally_tele_widget_id)
         osrs.move.go_to_loc(2945, 3370)
-        transport_functions.taverley_dungeon_black_demons()
+        transport_functions.taverley('black demons')
         success = slayer_killer.main(
             'black demon', pot_config.asdict(), 35,
             prayers=['protect_melee'], hop=True, pre_hop=lambda: transport_functions.run_to_safe_spot(2885, 9770)

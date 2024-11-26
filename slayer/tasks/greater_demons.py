@@ -113,8 +113,31 @@ def chasm():
         task_started = True
         success = slayer_killer.main(
             'greater demon', pot_config.asdict(), 35, hop=True,
-            pre_hop=lambda: transport_functions.run_to_safe_spot(1453, 10098, 2),
-            post_login=lambda: osrs.move.go_to_loc(2633, 9490, 2)
+            pre_hop=lambda: transport_functions.run_to_safe_spot(1453, 10098, 2)
+        )
+        qh.query_backend()
+        osrs.game.cast_spell(varrock_tele_widget_id)
+        if success:
+            return True
+
+
+def karuulm():
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_inventory()
+    task_started = False
+    while True:
+        bank(qh, task_started, equipment, supplies)
+        osrs.game.tele_home()
+        osrs.game.click_restore_pool()
+        osrs.game.tele_home_fairy_ring('cir')
+        transport_functions.mount_karuulm('greater demons')
+        qh.query_backend()
+        osrs.move.click(qh.get_inventory(weapon['id'][0]))
+        task_started = True
+        success = slayer_killer.main(
+            'greater demon', pot_config.asdict(), 35, hop=True,
+            pre_hop=lambda: transport_functions.run_to_safe_spot(1300, 10213, 1),
+            post_login=lambda: osrs.move.go_to_loc(1281, 10208, 1)
         )
         qh.query_backend()
         osrs.game.cast_spell(varrock_tele_widget_id)

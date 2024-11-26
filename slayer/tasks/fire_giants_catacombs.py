@@ -103,15 +103,23 @@ def main():
 
 
 def return_to_karuulm():
+    qh = osrs.qh_v2.qh()
+    qh.set_inventory()
     osrs.game.tele_home()
     osrs.game.click_restore_pool()
+    qh.query_backend()
+    osrs.move.fast_click_v2(qh.get_inventory(osrs.item_ids.DRAMEN_STAFF))
     osrs.game.tele_home_fairy_ring('cir')
     transport_functions.mount_karuulm('fire giants')
 
 
 def return_to_brim():
+    qh = osrs.qh_v2.qh()
+    qh.set_inventory()
     osrs.game.tele_home()
     osrs.game.click_restore_pool()
+    qh.query_backend()
+    osrs.move.fast_click_v2(qh.get_inventory(osrs.item_ids.DRAMEN_STAFF))
     osrs.game.tele_home_fairy_ring('ckr')
     transport_functions.brimhaven_dungeon_south('fire giants')
 
@@ -179,6 +187,29 @@ def stronghold():
             'fire giant', pot_config.asdict(), 35,
             pre_hop=lambda: transport_functions.run_to_safe_spot(2407, 9778),
             attackable_area={'x_min': 2407, 'x_max': 2419, 'y_min': 9769, 'y_max': 9779}, hop=True
+        )
+        osrs.player.turn_off_all_prayers()
+        osrs.game.cast_spell(varrock_tele_widget_id)
+        if success:
+            return True
+
+
+def den():
+    qh = osrs.queryHelper.QueryHelper()
+    qh.set_inventory()
+    task_started = False
+    while True:
+        bank(qh, task_started, equipment, supplies + [{'id': osrs.item_ids.DRAMEN_STAFF, 'consume': 'Wield'}])
+        osrs.game.tele_home()
+        osrs.game.click_restore_pool()
+        osrs.game.tele_home_fairy_ring('djr')
+        transport_functions.giants_den('fire giants')
+        qh.query_backend()
+        osrs.move.fast_click_v2(qh.get_inventory(gear_loadouts.high_def_weapon['id']))
+        task_started = True
+        success = slayer_killer.main(
+            'fire giant', pot_config.asdict(), 35,
+            pre_hop=lambda: transport_functions.run_to_safe_spot(1458, 9886), prayers=['protect_melee']
         )
         osrs.player.turn_off_all_prayers()
         osrs.game.cast_spell(varrock_tele_widget_id)

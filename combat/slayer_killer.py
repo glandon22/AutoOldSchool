@@ -163,7 +163,6 @@ def find_next_target(npcs, monster, ignore_interacting, attackable_area):
                     attackable_area['x_min'] <= npc['x_coord'] <= attackable_area['x_max'] and
                     attackable_area['y_min'] <= npc['y_coord'] <= attackable_area['y_max']
             ):
-                osrs.dev.logger.info('npc outside of attackable area: %s', npc)
                 return False
         # Ignore any NPC that is already dead!
         if npc['health'] == 0:
@@ -178,7 +177,7 @@ def find_next_target(npcs, monster, ignore_interacting, attackable_area):
         return True
 
     # remove monsters that are out of bounds, dead, fighting someone else or not what i want to kill
-    filtered_npcs = list(filter(target_filter_function, npcs))
+    filtered_npcs = [] if not npcs else list(filter(target_filter_function, npcs))
     if len(filtered_npcs) == 0:
         print('could not find a suitable monster on first pass')
         return False
@@ -412,6 +411,7 @@ def main(
             if last_loot_search != qh.get_slayer()['amount']:
                 last_loot_search = qh.get_slayer()['amount']
                 loot_handler.retrieve_loot(12)
+                osrs.keeb.press_key('esc')
                 qh.query_backend()
 
             osrs.game.break_manager_v4(script_config)
