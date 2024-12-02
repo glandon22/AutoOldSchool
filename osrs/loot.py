@@ -447,7 +447,18 @@ class Loot:
 
             LootConfig(osrs.item_ids.BRIMSTONE_KEY, 100, stackable=True),
             LootConfig(osrs.item_ids.BRINE_SABRE, 300),
-            LootConfig(osrs.item_ids.KURASK_HEAD, 8)
+            LootConfig(osrs.item_ids.KURASK_HEAD, 8),
+
+
+            ## LEAGUES JUNK
+            LootConfig(osrs.item_ids.SCROLL_BOX_EASY, 4, stackable=True),
+            LootConfig(osrs.item_ids.PURE_ESSENCE + 1, 2, stackable=True),
+            LootConfig(osrs.item_ids.GIANT_KEY, 2, stackable=True),
+            LootConfig(osrs.item_ids.MOSSY_KEY, 2, stackable=True),
+            LootConfig(osrs.item_ids.BIG_BONES, 2,),
+            LootConfig(osrs.item_ids.BLACK_MASK, priority=10),
+            LootConfig(osrs.item_ids.BLACK_MASK_10, priority=10),
+            LootConfig(osrs.item_ids.LIMPWURT_SEED, 4, stackable=True),
         ]
         return config
 

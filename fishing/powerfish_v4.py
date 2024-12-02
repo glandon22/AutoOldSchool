@@ -90,7 +90,10 @@ def main():
     qh = osrs.queryHelper.QueryHelper()
     qh.set_inventory()
     qh.set_interating_with()
+    qh.set_canvas()
+    qh.set_widgets({'387,20'})
     qh.set_npcs(list(map(str, fish_spot_ids[fish_to_catch])))
+    last_herb = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
         osrs.game.break_manager_v4({
             'intensity': 'low',
@@ -105,7 +108,17 @@ def main():
             sorted_spots = sorted(spots, key=lambda spot: spot['dist'])
             if len(sorted_spots) > 0:
                 osrs.move.fast_click(sorted_spots[0])
+        elif (datetime.datetime.now() - last_herb).total_seconds() > 180:
+            osrs.keeb.press_key('f4')
+            if qh.get_widgets('387,20'):
+                res = osrs.move.right_click_v6(
+                    qh.get_widgets('387,20'), 'Withdraw-last', qh.get_canvas(), in_inv=True
+                )
+                osrs.keeb.press_key('esc')
+                if res:
+                    last_herb = datetime.datetime.now()
         elif qh.get_interating_with():
+            osrs.keeb.press_key('space')
             osrs.dev.logger.info('Currently fishing.')
 
 main()

@@ -5,6 +5,7 @@ import osrs.move as move
 
 
 def handle_marks(x_min, x_max, y_min, y_max, z, port):
+    return True
     retries = 0
     while retries < random.randint(3, 8):
         marks = server.get_ground_items_in_coords(x_min, x_max, y_min, y_max, z, ['11849'], port)

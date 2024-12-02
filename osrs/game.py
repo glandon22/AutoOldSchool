@@ -226,10 +226,11 @@ def set_timings(timings, current_time):
         seconds=random.randint(timings['min_session'] * 60, timings['max_session'] * 60)
     )
     # dont run the script over night
-    if config['timings']['break_start'].hour >= 21:
+    if config['timings']['break_start'].hour == 1:
         config['timings']['break_end'] = config['timings']['break_start'] + datetime.timedelta(
             seconds=random.randint(timings['min_rest'] * 60, timings['max_rest'] * 60)
         ) + datetime.timedelta(hours=8)
+        exit(4)
     else:
         config['timings']['break_end'] = config['timings']['break_start'] + datetime.timedelta(
             seconds=random.randint(timings['min_rest'] * 60, timings['max_rest'] * 60)

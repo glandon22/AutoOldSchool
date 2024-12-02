@@ -158,3 +158,12 @@ dragon_melee_shield = {
     ],
     'consume': 'Wield'
 }
+
+basilisk_shield = {
+    'id': [
+        osrs.item_ids.MIRROR_SHIELD,
+        osrs.item_ids.VS_SHIELD,
+        osrs.item_ids.VS_SHIELD_24266,
+    ],
+    'consume': 'Wield'
+}

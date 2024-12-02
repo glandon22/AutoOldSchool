@@ -68,10 +68,13 @@ def main(endless_loop=False, rock_to_mine='iron'):
     qh.set_inventory()
     qh.set_canvas()
     qh.set_is_mining()
+    qh.set_widgets({'387,20'})
     qh.set_objects_v2('game', rock_map[rock_to_mine])
-    start_function()
+    if not endless_loop:
+        start_function()
     last_click = datetime.datetime.now() - datetime.timedelta(hours=1)
     iter_count = 9999 if endless_loop else random.randint(3, 5)
+    last_herb = datetime.datetime.now() - datetime.timedelta(hours=1)
     while True:
         break_info = osrs.game.break_manager_v4({
             'intensity': 'high',
@@ -87,6 +90,15 @@ def main(endless_loop=False, rock_to_mine='iron'):
         if qh.get_inventory() and len(qh.get_inventory()) == 28:
             osrs.dev.logger.info('Ore in inventory, dropping.')
             osrs.inv.power_drop_v2(qh, ore_to_drop)
+        elif (datetime.datetime.now() - last_herb).total_seconds() > 60:
+            osrs.keeb.press_key('f4')
+            if qh.get_widgets('387,20'):
+                res = osrs.move.right_click_v6(
+                    qh.get_widgets('387,20'), 'Withdraw-last', qh.get_canvas(), in_inv=True
+                )
+                osrs.keeb.press_key('esc')
+                if res:
+                    last_herb = datetime.datetime.now()
         elif qh.get_is_mining():
             osrs.dev.logger.info('Currently mining.')
             continue
@@ -97,3 +109,6 @@ def main(endless_loop=False, rock_to_mine='iron'):
             if closest:
                 osrs.move.fast_click_v2(closest)
                 last_click = datetime.datetime.now()
+
+
+main(endless_loop=True, rock_to_mine='rune')

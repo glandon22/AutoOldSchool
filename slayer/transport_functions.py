@@ -959,3 +959,16 @@ def witchhaven():
     osrs.move.interact_with_object_v3(
         2430, 'x', 2730, intermediate_tile='2736,9689,0', obj_type='wall'
     )
+
+def jorm_prison(monster):
+    osrs.move.go_to_loc(2762, 3617, skip_dax=True)
+    osrs.move.go_to_loc(2621, 3679)
+    osrs.move.interact_with_npc('9271', right_click_option='Island of Stone', exit_on_interact=True, timeout=7)
+    osrs.move.go_to_loc(2475, 4007)
+    osrs.move.interact_with_object_v3(37433, 'y', 9000)
+    if monster == 'basilisk knights':
+        osrs.move.go_to_loc(2456, 10385)
+    elif monster == 'basilisks':
+        osrs.move.go_to_loc(2480, 10404)
+    elif monster == 'dagannoths':
+        osrs.move.go_to_loc(2480, 10434)

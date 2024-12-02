@@ -36,6 +36,10 @@ food_ids = [
     3144,  # karambwan
     379,  # lobster
     385,  # shark
+    osrs.item_ids.TROUT,
+    osrs.item_ids.SARDINE,
+    osrs.item_ids.SALMON,
+
 ]
 
 ANTIFIRE_VARBIT = '3981'
@@ -392,6 +396,7 @@ def main(
     last_loot_search = -1
     while True:
         qh.query_backend()
+        osrs.inv.power_drop(qh.get_inventory(), [], [osrs.item_ids.BIG_BONES])
         # Pull up inv if i am on another tab
         if qh.get_widgets('161,62') and qh.get_widgets('161,62')['spriteID'] != 1030:
             osrs.keeb.press_key('esc')
@@ -407,12 +412,10 @@ def main(
                 ('health' in qh.get_detailed_interating_with() and qh.get_detailed_interating_with()['health'] == 0)):
             closest_target = find_next_target(qh.get_npcs(), monster, ignore_interacting, attackable_area)
 
-            # only search for loot after i kill something
-            if last_loot_search != qh.get_slayer()['amount']:
-                last_loot_search = qh.get_slayer()['amount']
-                loot_handler.retrieve_loot(12)
-                osrs.keeb.press_key('esc')
-                qh.query_backend()
+            loot_handler.retrieve_loot(12)
+            osrs.keeb.press_key('esc')
+            qh.query_backend()
+
 
             osrs.game.break_manager_v4(script_config)
             # dont hop if there is something attacking me
