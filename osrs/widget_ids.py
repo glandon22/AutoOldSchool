@@ -2251,3 +2251,4 @@ chat_input_request_widget = '162,42'
 
 main_chat_widget = '162,34'
 run_energy_widget_id = '160,28'
+CHATBOX_SKILLING_INPUT_BOX = 17694733
