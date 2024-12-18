@@ -29,7 +29,7 @@ import osrs.queryHelper
 
 red_table_id = 40463
 blue_table_id = 40462
-partner = 'UtahDogs'
+partner = 'DummyRizzer'
 
 
 def wait_for_game():
@@ -186,7 +186,7 @@ def start_game():
             if (datetime.datetime.now() - last_accept).total_seconds() > 5:
                 osrs.move.click(qh.get_widgets('492,6'))
                 last_accept = datetime.datetime.now()
-        elif qh.get_players() and (datetime.datetime.now() - last_challenge).total_seconds() > 5:
+        elif qh.get_players() and (datetime.datetime.now() - last_challenge).total_seconds() > 5 and datetime.datetime.now().time().second % 5 != 0:
             partner_loc = list(
                 filter(
                     lambda player: player['name'].lower() == partner.lower() and 2220 <= player['worldPoint']['x'] <= 2229,
@@ -303,7 +303,18 @@ def get_second_capture(side, anchor):
 
 
 def main_active():
+    start = datetime.datetime.now()
     while True:
+        if (datetime.datetime.now() - start).total_seconds() > 60 * 45:
+            osrs.game.logout()
+            wait1 = datetime.datetime.now()
+            while True:
+                if (datetime.datetime.now() - wait1).total_seconds() > 60 * 7:
+                    break
+                else:
+                    osrs.move.click({'x': 100, 'y': 100})
+                    osrs.clock.random_sleep(30, 30.1)
+            osrs.game.login_v4()
         start_game()
         side = determine_side()
         anchor = determine_anchor(side)
@@ -347,7 +358,18 @@ def main_passive():
     qh.set_widgets({c1, c2, c3, take_bandage_widget})
     qh.set_objects_v2('game', bandage_tables)
     last_bandage_click = datetime.datetime.now() - datetime.timedelta(hours=1)
+    start = datetime.datetime.now()
     while True:
+        if (datetime.datetime.now() - start).total_seconds() > 60 * 45:
+            osrs.game.logout()
+            wait1 = datetime.datetime.now()
+            while True:
+                if (datetime.datetime.now() - wait1).total_seconds() > 60 * 7:
+                    break
+                else:
+                    osrs.move.click({'x': 100, 'y': 100})
+                    osrs.clock.random_sleep(30, 30.1)
+            osrs.game.login_v4()
         start_game()
         while True:
             qh.query_backend()
@@ -367,5 +389,5 @@ def main_passive():
                 break
 
 
-#main_active()
-main_passive()
+main_active()
+#main_passive()
